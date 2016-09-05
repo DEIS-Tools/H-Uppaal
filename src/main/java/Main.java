@@ -29,6 +29,7 @@ public class Main extends Application {
         final AnchorPane root = new AnchorPane();
         final Scene scene = new Scene(root, 1000, 1000);
 
+        scene.getStylesheets().add("colors.css");
         scene.getStylesheets().add("model_canvas/location.css");
         stage.setScene(scene);
 
@@ -40,6 +41,7 @@ public class Main extends Application {
                 if(locationOnMouse == null) {
                     final Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
                     locationOnMouse = new Location(mouseLocation.x, mouseLocation.y);
+                    locationOnMouse.setOpacity(0.5);
                     root.getChildren().add(locationOnMouse);
 
                     root.setOnMouseMoved(new EventHandler<MouseEvent>() {
@@ -47,6 +49,17 @@ public class Main extends Application {
                         public void handle(MouseEvent event) {
                             locationOnMouse.setCenterX(event.getX());
                             locationOnMouse.setCenterY(event.getY());
+                        }
+                    });
+
+                    root.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                            locationOnMouse.setOpacity(1.0f);
+                            locationOnMouse = null;
+                            root.setOnMouseMoved(null);
+
+                            root.setOnMouseClicked(null);
                         }
                     });
                 }
