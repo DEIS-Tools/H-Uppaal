@@ -1,0 +1,87 @@
+/*
+ * All colors can be found at:
+ * https://material.google.com/style/color.html#color-color-palette
+ */
+
+* {
+    -red-50: #FFEBEE;
+    -red-100: #FFCDD2;
+    -red-200: #EF9A9A;
+    -red-300: #E57373;
+    -red-400: #EF5350;
+    -red-500: #F44336;
+    -red-600: #E53935;
+    -red-700: #D32F2F;
+    -red-800: #C62828;
+    -red-900: #B71C1C;
+    -red-A100: #FF8A80;
+    -red-A200: #FF5252;
+    -red-A300: #FF1744;
+    -red-A700: #D50000;
+    -red: -red-500;
+
+    -pink-50: #FCE4EC;
+    -pink-100: #F8BBD0;
+    -pink-200: #F48FB1;
+    -pink-300: #F06292;
+    -pink-400: #EC407A;
+    -pink-500: #E91E63;
+    -pink-600: #D81B60;
+    -pink-700: #C2185B;
+    -pink-800: #AD1457;
+    -pink-900: #880E4F;
+    -pink-A100: #FF80AB;
+    -pink-A200: #FF4081;
+    -pink-A300: #F50057;
+    -pink-A700: #C51162;
+    -pink: -pink-500;
+
+    -purple-50: #F3E5F5;
+    -purple-100: #E1BEE7;
+    -purple-200: #CE93D8;
+    -purple-300: #BA68C8;
+    -purple-400: #AB47BC;
+    -purple-500: #9C27B0;
+    -purple-600: #8E24AA;
+    -purple-700: #7B1FA2;
+    -purple-800: #6A1B9A;
+    -purple-900: #4A148C;
+    -purple-A100: #EA80FC;
+    -purple-A200: #E040FB;
+    -purple-A300: #D500F9;
+    -purple-A700: #AA00FF;
+    -purple: -purple-500;
+
+    -deep-purple-50: #EDE7F6;
+    -deep-purple-100: #D1C4E9;
+    -deep-purple-200: #B39DDB;
+    -deep-purple-300: #9575CD;
+    -deep-purple-400: #7E57C2;
+    -deep-purple-500: #673AB7;
+    -deep-purple-600: #5E35B1;
+    -deep-purple-700: #512DA8;
+    -deep-purple-800: #4527A0;
+    -deep-purple-900: #311B92;
+    -deep-purple-A100: #B388FF;
+    -deep-purple-A200: #7C4DFF;
+    -deep-purple-A300: #651FFF;
+    -deep-purple-A700: #6200EA;
+    -deep-purple: -deep-purple-500;
+
+    -indigo-50: #E8EAF6;
+    -indigo-100: #C5CAE9;
+    -indigo-200: #9FA8DA;
+    -indigo-300: #7986CB;
+    -indigo-400: #5C6BC0;
+    -indigo-500: #3F51B5;
+    -indigo-600: #3949AB;
+    -indigo-700: #303F9F;
+    -indigo-800: #283593;
+    -indigo-900: #1A237E;
+    -indigo-A100: #8C9EFF;
+    -indigo-A200: #536DFE;
+    -indigo-A300: #3D5AFE;
+    -indigo-A700: #304FFE;
+    -indigo: -indigo-500;
+
+}
