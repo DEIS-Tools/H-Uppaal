@@ -1,32 +1,59 @@
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
+import model_canvas.Location;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main extends Application {
+
+    private static Location locationOnMouse = null;
+
+    private List<Shape> locationList = new ArrayList<>();
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Hello World!");
+    public void start(final Stage stage) throws Exception {
+        stage.setTitle("Kick-ass Modelchecker");
 
-        final Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent event) {
-                btn.setText("Hello world!");
+        final AnchorPane root = new AnchorPane();
+        final Scene scene = new Scene(root, 1000, 1000);
+
+        scene.getStylesheets().add("model_canvas/location.css");
+        stage.setScene(scene);
+
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(!event.getCode().equals(KeyCode.L)) return;
+
+                if(locationOnMouse == null) {
+                    final Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
+                    locationOnMouse = new Location(mouseLocation.x, mouseLocation.y);
+                    root.getChildren().add(locationOnMouse);
+
+                    root.setOnMouseMoved(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                            locationOnMouse.setCenterX(event.getX());
+                            locationOnMouse.setCenterY(event.getY());
+                        }
+                    });
+                }
             }
         });
 
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
-        primaryStage.setScene(new Scene(root, 300, 250));
-        primaryStage.show();
+        stage.show();
 
     }
 }

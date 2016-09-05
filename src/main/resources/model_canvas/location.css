@@ -1,0 +1,5 @@
+.location {
+    -fx-fill: grey;
+    -fx-stroke: black;
+    -fx-stroke-width: 2;
+}
