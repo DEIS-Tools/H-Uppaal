@@ -7,7 +7,7 @@ import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
@@ -66,7 +66,7 @@ public class Location extends Circle {
                 final Edge edge = new Edge(this, parentMouseTracker);
 
                 // Type cast the parent to be the anchor pane and disregard the safety and simple add the edge
-                ((AnchorPane) this.getParent()).getChildren().add(edge);
+                ((Pane) this.getParent()).getChildren().add(edge);
             }
         };
 

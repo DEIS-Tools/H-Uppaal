@@ -7,11 +7,12 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    private AnchorPane root;
+    private Pane root;
 
     private final MouseTracker mouseTracker = new MouseTracker();
 
@@ -26,7 +27,7 @@ public class Main extends Application {
         stage.setTitle("Kick-ass Modelchecker");
 
         // Create the root pane of the window and register mouse event listeners
-        root = new AnchorPane();
+        root = new Pane();
         root.setOnMouseMoved(mouseTracker.onMouseMovedEventHandler);
         root.setOnMouseClicked(mouseTracker.onMouseClickedEventHandler);
 
