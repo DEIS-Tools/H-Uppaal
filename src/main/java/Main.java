@@ -30,6 +30,8 @@ public class Main extends Application {
     // Place the new location when the mouse is pressed (i.e. stop moving it)
     private final EventHandler<MouseEvent> mouseClickedEventHandler = mouseClickedEvent -> {
         if (locationOnMouse != null) {
+            mouseTracker.unregisterOnMouseMovedEventHandler(mouseMovedEventHandler);
+            
             Animation locationPlaceAnimation = new Transition() {
                 {
                     setCycleDuration(Duration.millis(50));
@@ -43,7 +45,6 @@ public class Main extends Application {
 
             locationPlaceAnimation.setOnFinished(event -> {
                 locationOnMouse = null;
-                mouseTracker.unregisterOnMouseMovedEventHandler(mouseMovedEventHandler);
             });
         }
     };
