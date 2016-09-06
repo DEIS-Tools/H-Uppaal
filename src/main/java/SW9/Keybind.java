@@ -5,7 +5,7 @@ import javafx.scene.input.KeyEvent;
 
 public class Keybind {
 
-    private KeyCodeCombination keyCombo;
+    public final KeyCodeCombination keyCombo;
     private Runnable action;
 
     public Keybind(final KeyCodeCombination keyCombo, final Runnable action) {
@@ -19,6 +19,7 @@ public class Keybind {
     }
 
     public void fire(KeyEvent keyEvent) {
+        System.out.println("hej");
         if (matches(keyEvent)) {
             action.run();
         }

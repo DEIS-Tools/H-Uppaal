@@ -1,11 +1,14 @@
 package SW9.model_canvas;
 
-import SW9.Main;
+import SW9.Keybind;
+import SW9.KeyboardTracker;
 import SW9.MouseTracker;
 import SW9.utility.DropShadowHelper;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.event.EventHandler;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
@@ -43,8 +46,8 @@ public class Location extends Circle {
             if (isOnMouse) {
                 parentMouseTracker.unregisterOnMouseMovedEventHandler(followMouseHandler);
 
-                // Tell parent that the mouse is no longer occupied
-                Main.mouseHasLocation = false;
+                // Tell the canvas that the mouse is no longer occupied
+                ModelCanvas.mouseHasLocation = false;
 
                 Animation locationPlaceAnimation = new Transition() {
                     {
@@ -67,6 +70,20 @@ public class Location extends Circle {
 
                 // Type cast the parent to be the anchor pane and disregard the safety and simple add the edge
                 ((Pane) this.getParent()).getChildren().add(edge);
+
+                // Notify the canvas that we are creating an edge
+                ModelCanvas.mouseHasEdge = true;
+
+                final Keybind escKeybind[] = { null };
+                escKeybind[0] = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+                    // Notify the canvas that we not longer are creating an edge
+                    ModelCanvas.mouseHasEdge = false;
+
+                    ((Pane) this.getParent()).getChildren().remove(edge);
+
+                    KeyboardTracker.unregisterKeybind(escKeybind[0]);
+                });
+                KeyboardTracker.registerKeybind(escKeybind[0]);
             }
         };
 
