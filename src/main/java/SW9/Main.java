@@ -1,3 +1,6 @@
+package SW9;
+
+import SW9.model_canvas.Edge;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.application.Application;
@@ -8,14 +11,17 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import model_canvas.Location;
-import utility.DropShadowHelper;
+import SW9.model_canvas.Location;
+import SW9.utility.DropShadowHelper;
 
 public class Main extends Application {
+
+    private AnchorPane root;
 
     private final MouseTracker mouseTracker = new MouseTracker();
 
     private static Location locationOnMouse = null;
+    private static Edge edgeOnMouse = null;
 
     public static void main(String[] args) {
         launch(args);
@@ -31,7 +37,7 @@ public class Main extends Application {
     private final EventHandler<MouseEvent> mouseClickedEventHandler = mouseClickedEvent -> {
         if (locationOnMouse != null) {
             mouseTracker.unregisterOnMouseMovedEventHandler(mouseMovedEventHandler);
-            
+
             Animation locationPlaceAnimation = new Transition() {
                 {
                     setCycleDuration(Duration.millis(50));
@@ -55,14 +61,14 @@ public class Main extends Application {
         stage.setTitle("Kick-ass Modelchecker");
 
         // Create the root pane of the window and register mouse event listeners
-        final AnchorPane root = new AnchorPane();
+        root = new AnchorPane();
         root.setOnMouseMoved(mouseTracker.onMouseMovedEventHandler);
         root.setOnMouseClicked(mouseTracker.onMouseClickedEventHandler);
 
         final Scene scene = new Scene(root, 1000, 1000);
 
-        scene.getStylesheets().add("colors.css");
-        scene.getStylesheets().add("model_canvas/location.css");
+        scene.getStylesheets().add("SW9/colors.css");
+        scene.getStylesheets().add("SW9/model_canvas/location.css");
         stage.setScene(scene);
 
         // Whenever the L key is pressed, create a new location following the cursor
@@ -70,9 +76,16 @@ public class Main extends Application {
             if (!event.getCode().equals(KeyCode.L)) return;
 
             if (locationOnMouse == null) {
-                locationOnMouse = new Location(mouseTracker.getX(), mouseTracker.getY());
+                final Location newLocation = new Location(mouseTracker.getX(), mouseTracker.getY());
+                locationOnMouse = newLocation;
                 locationOnMouse.setEffect(DropShadowHelper.generateElevationShadow(22));
                 root.getChildren().add(locationOnMouse);
+
+                // Start a new edge from the location
+                newLocation.mouseTracker.registerOnMouseClickedEventHandler(mouseClickedHandler -> {
+                    final Edge edge = new Edge(newLocation, mouseTracker);
+                    root.getChildren().add(edge);
+                });
 
                 mouseTracker.registerOnMouseMovedEventHandler(mouseMovedEventHandler);
             }

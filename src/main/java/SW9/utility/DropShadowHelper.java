@@ -1,6 +1,5 @@
-package utility;
+package SW9.utility;
 
-import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 
