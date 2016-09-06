@@ -1,11 +1,13 @@
 package SW9.model_canvas;
 
+import SW9.Main;
 import SW9.MouseTracker;
 import SW9.utility.DropShadowHelper;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
@@ -14,7 +16,6 @@ public class Location extends Circle {
     private final static double RADIUS = 25.0f;
 
     private boolean isOnMouse = true;
-    private final MouseTracker parentMouseTracker;
     public final MouseTracker localMouseTracker = new MouseTracker();
 
     public Location(MouseTracker parentMouseTracker) {
@@ -23,7 +24,6 @@ public class Location extends Circle {
 
     public Location(final double centerX, final double centerY, final MouseTracker parentMouseTracker) {
         super(centerX, centerY, RADIUS);
-        this.parentMouseTracker = parentMouseTracker;
 
         // Initialize the local mouse tracker
         this.setOnMouseMoved(localMouseTracker.onMouseMovedEventHandler);
@@ -43,6 +43,9 @@ public class Location extends Circle {
             if (isOnMouse) {
                 parentMouseTracker.unregisterOnMouseMovedEventHandler(followMouseHandler);
 
+                // Tell parent that the mouse is no longer occupied
+                Main.mouseHasLocation = false;
+
                 Animation locationPlaceAnimation = new Transition() {
                     {
                         setCycleDuration(Duration.millis(50));
@@ -52,12 +55,18 @@ public class Location extends Circle {
                         Location.this.setEffect(DropShadowHelper.generateElevationShadow(12 - 12 * frac));
                     }
                 };
+
                 locationPlaceAnimation.play();
 
                 locationPlaceAnimation.setOnFinished(event -> {
                     isOnMouse = false;
-                    System.out.println("aids");
                 });
+            } else if (mouseClickedEvent.isShiftDown()) {
+
+                final Edge edge = new Edge(this, parentMouseTracker);
+
+                // Type cast the parent to be the anchor pane and disregard the safety and simple add the edge
+                ((AnchorPane) this.getParent()).getChildren().add(edge);
             }
         };
 

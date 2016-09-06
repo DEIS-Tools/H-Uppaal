@@ -1,16 +1,13 @@
 package SW9;
 
-import SW9.model_canvas.Edge;
-import javafx.application.Application;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 import SW9.model_canvas.Location;
 import SW9.utility.DropShadowHelper;
+import javafx.application.Application;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 public class Main extends Application {
 
@@ -18,7 +15,7 @@ public class Main extends Application {
 
     private final MouseTracker mouseTracker = new MouseTracker();
 
-    private static boolean mouseHasLocation = false;
+    public static boolean mouseHasLocation = false;
 
     public static void main(String[] args) {
         launch(args);
@@ -47,22 +44,13 @@ public class Main extends Application {
                 mouseHasLocation = true;
                 final Location newLocation = new Location(mouseTracker);
 
-                final EventHandler<MouseEvent> mousePlacedEvent = event1 -> {
-                    mouseHasLocation = false;
-                };
-
-                newLocation.localMouseTracker.registerOnMouseClickedEventHandler(mousePlacedEvent);
                 newLocation.setEffect(DropShadowHelper.generateElevationShadow(22));
                 root.getChildren().add(newLocation);
-
-                // Start a new edge from the location
-                newLocation.localMouseTracker.registerOnMouseClickedEventHandler(mouseClickedHandler -> {
-                    final Edge edge = new Edge(newLocation, mouseTracker);
-                    root.getChildren().add(edge);
-                });
             }
         });
 
         stage.show();
     }
+
+
 }
