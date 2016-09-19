@@ -7,7 +7,7 @@ import javafx.scene.shape.Line;
 
 public class Edge extends Line {
 
-    private final Location sourceLocation;
+    private Location sourceLocation;
     private Location targetLocation;
     private final MouseTracker mouseTracker;
 
@@ -24,5 +24,29 @@ public class Edge extends Line {
         this.setEndX(event.getX());
         this.setEndY(event.getY());
     };
+
+    public Location getSourceLocation() {
+        final Location sourceLocation = this.sourceLocation;
+        return sourceLocation;
+    }
+
+    public void setSourceLocation(final Location sourceLocation) {
+        this.sourceLocation = sourceLocation;
+        this.setEndX(sourceLocation.getCenterX());
+        this.setEndY(sourceLocation.getCenterY());
+    }
+
+    public Location getTargetLocation() {
+        final Location targetLocation = this.targetLocation;
+        return targetLocation;
+    }
+
+    public void setTargetLocation(final Location targetLocation) {
+        mouseTracker.unregisterOnMouseMovedEventHandler(mouseMovedEventHandler);
+
+        this.targetLocation = targetLocation;
+        this.setEndX(targetLocation.getCenterX());
+        this.setEndY(targetLocation.getCenterY());
+    }
 
 }

@@ -19,7 +19,6 @@ public class Keybind {
     }
 
     public void fire(KeyEvent keyEvent) {
-        System.out.println("hej");
         if (matches(keyEvent)) {
             action.run();
         }
