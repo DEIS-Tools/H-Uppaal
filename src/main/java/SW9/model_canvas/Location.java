@@ -16,7 +16,7 @@ import javafx.util.Duration;
 
 public class Location extends Circle {
 
-    private final static double RADIUS = 25.0f;
+    public final static double RADIUS = 25.0f;
 
     private boolean isOnMouse = true;
     public final MouseTracker localMouseTracker = new MouseTracker();

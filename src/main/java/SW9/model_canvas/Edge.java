@@ -4,6 +4,7 @@ import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
@@ -38,6 +39,13 @@ public class Edge extends Line {
     private final EventHandler<MouseEvent> mouseMovedEventHandler = event -> {
         this.setEndX(event.getX() - 2);
         this.setEndY(event.getY() - 2);
+        
+        double angle = Math.atan2(sourceLocation.getCenterY() - event.getY(), sourceLocation.getCenterX() - event.getX()) - Math.toRadians(180);
+        double newX = sourceLocation.getCenterX() + Location.RADIUS * Math.cos(angle);
+        double newY = sourceLocation.getCenterY() + Location.RADIUS * Math.sin(angle);
+
+        this.setStartX(newX);
+        this.setStartY(newY);
     };
 
     public Location getSourceLocation() {
