@@ -9,10 +9,19 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.Pane;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ModelCanvas extends Pane {
 
-    public static boolean mouseHasLocation = false;
-    public static boolean mouseHasEdge = false;
+    public static Location locationOnMouse = null;
+    public static Edge edgeOnMouse = null;
+
+    private static List<Location> locations = new ArrayList<>();
+    private static List<Edge> edges = new ArrayList<>();
+
+    public static boolean mouseHasLocation() { return locationOnMouse != null; }
+    public static boolean mouseHasEdge() { return edgeOnMouse != null; }
 
     public ModelCanvas() {
         initialize();
@@ -21,9 +30,9 @@ public class ModelCanvas extends Pane {
     @FXML
     public void initialize() {
         KeyboardTracker.registerKeybind(new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
-            if (!mouseHasLocation) {
-                mouseHasLocation = true;
+            if (!mouseHasLocation()) {
                 final Location newLocation = new Location(Main.mouseTracker);
+                locationOnMouse = newLocation;
 
                 newLocation.setEffect(DropShadowHelper.generateElevationShadow(22));
                 ModelCanvas.this.getChildren().add(newLocation);

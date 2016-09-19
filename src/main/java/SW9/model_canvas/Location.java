@@ -4,6 +4,7 @@ import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
 import SW9.utility.DropShadowHelper;
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.event.EventHandler;
@@ -42,12 +43,12 @@ public class Location extends Circle {
         };
 
         // Place the new location when the mouse is pressed (i.e. stop moving it)
-        final EventHandler<MouseEvent> placeAtMouseHandler = mouseClickedEvent -> {
+        final EventHandler<MouseEvent> locationMouseClick = mouseClickedEvent -> {
             if (isOnMouse) {
                 parentMouseTracker.unregisterOnMouseMovedEventHandler(followMouseHandler);
 
                 // Tell the canvas that the mouse is no longer occupied
-                ModelCanvas.mouseHasLocation = false;
+                ModelCanvas.locationOnMouse = null;
 
                 Animation locationPlaceAnimation = new Transition() {
                     {
@@ -64,7 +65,7 @@ public class Location extends Circle {
                 locationPlaceAnimation.setOnFinished(event -> {
                     isOnMouse = false;
                 });
-            } else if (mouseClickedEvent.isShiftDown()) {
+            } else if (mouseClickedEvent.isShiftDown() && !ModelCanvas.mouseHasEdge()) {
 
                 final Edge edge = new Edge(this, parentMouseTracker);
 
@@ -72,23 +73,18 @@ public class Location extends Circle {
                 ((Pane) this.getParent()).getChildren().add(edge);
 
                 // Notify the canvas that we are creating an edge
-                ModelCanvas.mouseHasEdge = true;
+                ModelCanvas.edgeOnMouse = edge;
 
-                final Keybind escKeybind[] = { null };
-                escKeybind[0] = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
-                    // Notify the canvas that we not longer are creating an edge
-                    ModelCanvas.mouseHasEdge = false;
 
-                    ((Pane) this.getParent()).getChildren().remove(edge);
-
-                    KeyboardTracker.unregisterKeybind(escKeybind[0]);
-                });
-                KeyboardTracker.registerKeybind(escKeybind[0]);
+            } else if (ModelCanvas.mouseHasEdge()) {
+                ModelCanvas.edgeOnMouse.setTargetLocation(this);
+                ModelCanvas.edgeOnMouse = null;
             }
         };
 
+
         // Register the handler for placing the location
-        localMouseTracker.registerOnMouseClickedEventHandler(placeAtMouseHandler);
+        localMouseTracker.registerOnMouseClickedEventHandler(locationMouseClick);
 
         // Register the handler for dragging of the location (is unregistered when clicked)
         parentMouseTracker.registerOnMouseMovedEventHandler(followMouseHandler);

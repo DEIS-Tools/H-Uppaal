@@ -1,8 +1,13 @@
 package SW9.model_canvas;
 
+import SW9.Keybind;
+import SW9.KeyboardTracker;
 import SW9.MouseTracker;
 import javafx.event.EventHandler;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 
 public class Edge extends Line {
@@ -18,11 +23,21 @@ public class Edge extends Line {
         this.mouseTracker = mouseTracker;
 
         mouseTracker.registerOnMouseMovedEventHandler(mouseMovedEventHandler);
+        KeyboardTracker.registerKeybind(removeOnEscape);
     }
 
+    private final Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+        Pane parent = (Pane) this.getParent();
+        if(parent == null) return;
+        parent.getChildren().remove(this);
+
+        // Notify the canvas that we not longer are creating an edge
+        ModelCanvas.edgeOnMouse = null;
+    });
+
     private final EventHandler<MouseEvent> mouseMovedEventHandler = event -> {
-        this.setEndX(event.getX());
-        this.setEndY(event.getY());
+        this.setEndX(event.getX() - 2);
+        this.setEndY(event.getY() - 2);
     };
 
     public Location getSourceLocation() {
@@ -43,6 +58,7 @@ public class Edge extends Line {
 
     public void setTargetLocation(final Location targetLocation) {
         mouseTracker.unregisterOnMouseMovedEventHandler(mouseMovedEventHandler);
+        KeyboardTracker.unregisterKeybind(removeOnEscape);
 
         this.targetLocation = targetLocation;
         this.setEndX(targetLocation.getCenterX());
