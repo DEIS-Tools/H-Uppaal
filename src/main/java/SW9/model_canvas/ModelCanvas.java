@@ -4,6 +4,7 @@ import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.Main;
 import SW9.utility.DropShadowHelper;
+import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.Pane;
@@ -14,6 +15,11 @@ public class ModelCanvas extends Pane {
     public static boolean mouseHasEdge = false;
 
     public ModelCanvas() {
+        initialize();
+    }
+
+    @FXML
+    public void initialize() {
         KeyboardTracker.registerKeybind(new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
             if (!mouseHasLocation) {
                 mouseHasLocation = true;
