@@ -4,7 +4,6 @@ import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
 import SW9.utility.DropShadowHelper;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.event.EventHandler;
@@ -49,6 +48,8 @@ public class Location extends Circle {
 
                 // Tell the canvas that the mouse is no longer occupied
                 ModelCanvas.locationOnMouse = null;
+                KeyboardTracker.unregisterKeybind(removeOnEscape);
+
 
                 Animation locationPlaceAnimation = new Transition() {
                     {
@@ -88,7 +89,18 @@ public class Location extends Circle {
 
         // Register the handler for dragging of the location (is unregistered when clicked)
         parentMouseTracker.registerOnMouseMovedEventHandler(followMouseHandler);
+
+        KeyboardTracker.registerKeybind(removeOnEscape);
     }
+
+    private final Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+        Pane parent = (Pane) this.getParent();
+        if(parent == null) return;
+        parent.getChildren().remove(this);
+
+        // Notify the canvas that we not longer are creating an edge
+        ModelCanvas.locationOnMouse = null;
+    });
 
 
 }
