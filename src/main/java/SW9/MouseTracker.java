@@ -1,5 +1,7 @@
 package SW9;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 
@@ -7,13 +9,15 @@ import java.util.ArrayList;
 
 public class MouseTracker {
 
-    private double x = 0;
-    private double y = 0;
+    private DoubleProperty x = new SimpleDoubleProperty(0);
+    private DoubleProperty y = new SimpleDoubleProperty(0);
 
     private final ArrayList<EventHandler<MouseEvent>> onMouseMovedEventHandlers = new ArrayList<>();
     private final ArrayList<EventHandler<MouseEvent>> onMouseClickedEventHandlers = new ArrayList<>();
     private final ArrayList<EventHandler<MouseEvent>> onMouseEnteredEventHandlers = new ArrayList<>();
     private final ArrayList<EventHandler<MouseEvent>> onMouseExitedEventHandlers = new ArrayList<>();
+    private final ArrayList<EventHandler<MouseEvent>> onMouseDraggedEventHandlers = new ArrayList<>();
+
 
     public final EventHandler<MouseEvent> onMouseMovedEventHandler = event -> {
 
@@ -55,19 +59,29 @@ public class MouseTracker {
         }
     };
 
+    public final EventHandler<MouseEvent> onMouseDraggesEventHandler = event -> {
+
+        // Purge the list for unregistered handlers
+        onMouseDraggedEventHandlers.removeIf(handler -> handler == null);
+
+        for (EventHandler<MouseEvent> onMouseDraggedEventHandler : onMouseDraggedEventHandlers) {
+            onMouseDraggedEventHandler.handle(event);
+        }
+    };
+
     public MouseTracker() {
         // Register our own event handler to register mouse placement at all times
         registerOnMouseMovedEventHandler(event -> {
-            x = event.getX();
-            y = event.getY();
+            x.set(event.getX());
+            y.set(event.getY());
         });
     }
 
-    public double getX() {
+    public DoubleProperty getXProperty() {
         return x;
     }
 
-    public double getY() {
+    public DoubleProperty getYProperty() {
         return y;
     }
 
@@ -107,6 +121,16 @@ public class MouseTracker {
 
     public boolean unregisterOnMouseExitedEventHandler(final EventHandler<MouseEvent> eventHandler) {
         if (!onMouseExitedEventHandlers.contains(eventHandler)) return false;
+        onMouseExitedEventHandlers.set(onMouseExitedEventHandlers.indexOf(eventHandler), null);
+        return true;
+    }
+
+    public boolean registerOnMouseDraggedEventHandler(final EventHandler<MouseEvent> eventHandler) {
+        return onMouseDraggedEventHandlers.add(eventHandler);
+    }
+
+    public boolean unregisterOnMouseDraggedEventHandler(final EventHandler<MouseEvent> eventHandler) {
+        if (!onMouseDraggedEventHandlers.contains(eventHandler)) return false;
         onMouseExitedEventHandlers.set(onMouseExitedEventHandlers.indexOf(eventHandler), null);
         return true;
     }
