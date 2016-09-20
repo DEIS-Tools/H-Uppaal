@@ -48,7 +48,7 @@ public class Location extends Circle {
 
                 // Tell the canvas that the mouse is no longer occupied
                 ModelCanvas.locationOnMouse = null;
-                KeyboardTracker.unregisterKeybind(removeOnEscape);
+                KeyboardTracker.unregisterKeybind(KeyboardTracker.DISCARD_NEW_LOCATION);
 
 
                 Animation locationPlaceAnimation = new Transition() {
@@ -90,7 +90,7 @@ public class Location extends Circle {
         // Register the handler for dragging of the location (is unregistered when clicked)
         parentMouseTracker.registerOnMouseMovedEventHandler(followMouseHandler);
 
-        KeyboardTracker.registerKeybind(removeOnEscape);
+        KeyboardTracker.registerKeybind(KeyboardTracker.DISCARD_NEW_LOCATION, removeOnEscape);
     }
 
     private final Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {

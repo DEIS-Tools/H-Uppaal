@@ -24,7 +24,7 @@ public class Edge extends Line {
         this.mouseTracker = mouseTracker;
 
         mouseTracker.registerOnMouseMovedEventHandler(mouseMovedEventHandler);
-        KeyboardTracker.registerKeybind(removeOnEscape);
+        KeyboardTracker.registerKeybind(KeyboardTracker.DISCARD_NEW_EDGE, removeOnEscape);
     }
 
     private final Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
@@ -66,7 +66,7 @@ public class Edge extends Line {
 
     public void setTargetLocation(final Location targetLocation) {
         mouseTracker.unregisterOnMouseMovedEventHandler(mouseMovedEventHandler);
-        KeyboardTracker.unregisterKeybind(removeOnEscape);
+        KeyboardTracker.unregisterKeybind(KeyboardTracker.DISCARD_NEW_EDGE);
 
         this.targetLocation = targetLocation;
         this.setEndX(targetLocation.getCenterX());
