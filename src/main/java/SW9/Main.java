@@ -27,7 +27,6 @@ public class Main extends Application {
         // Remove the classic
         stage.initStyle(StageStyle.UNDECORATED);
 
-        final URL file = new 
         root = FXMLLoader.load(getClass().getResource("main.fxml"));
         root.setOnMouseMoved(mouseTracker.onMouseMovedEventHandler);
         root.setOnMouseClicked(mouseTracker.onMouseClickedEventHandler);
