@@ -28,8 +28,6 @@ public class Main extends Application {
         stage.initStyle(StageStyle.UNDECORATED);
 
         root = FXMLLoader.load(getClass().getResource("main.fxml"));
-        root.setOnMouseMoved(mouseTracker.onMouseMovedEventHandler);
-        root.setOnMouseClicked(mouseTracker.onMouseClickedEventHandler);
 
         stage.setTitle("Kick-ass Modelchecker");
 
@@ -38,6 +36,10 @@ public class Main extends Application {
         scene.getStylesheets().add("SW9/colors.css");
         scene.getStylesheets().add("SW9/model_canvas/location.css");
         stage.setScene(scene);
+
+        final Node modelCanvas = scene.lookup("#model_canvas");
+        modelCanvas.setOnMouseMoved(mouseTracker.onMouseMovedEventHandler);
+        modelCanvas.setOnMouseClicked(mouseTracker.onMouseClickedEventHandler);
 
         final Node statusBar = scene.lookup("#status_bar");
         statusBar.setOnMousePressed(new EventHandler<MouseEvent>() {

@@ -15,12 +15,13 @@
 
     </StackPane>
 
-    <ModelCanvas maxHeight="-Infinity"
+    <ModelCanvas id="model_canvas"
+                 maxHeight="-Infinity"
                  maxWidth="-Infinity"
                  minHeight="200"
                  minWidth="200"
                  prefHeight="400.0"
-                 prefWidth="600.0" />
+                 prefWidth="600.0"/>
 
 </VBox>
 
