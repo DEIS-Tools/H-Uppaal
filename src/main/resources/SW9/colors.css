@@ -85,3 +85,7 @@
     -indigo: -indigo-500;
 
 }
+
+.status_bar {
+    -fx-background-color: #1d1d1d;
+}
