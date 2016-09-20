@@ -6,6 +6,7 @@ import SW9.MouseTracker;
 import SW9.utility.DropShadowHelper;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
+import javafx.beans.property.DoubleProperty;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -22,11 +23,13 @@ public class Location extends Circle {
     public final MouseTracker localMouseTracker = new MouseTracker();
 
     public Location(MouseTracker parentMouseTracker) {
-        this(parentMouseTracker.getX(), parentMouseTracker.getY(), parentMouseTracker);
+        this(parentMouseTracker.getXProperty(), parentMouseTracker.getYProperty(), parentMouseTracker);
     }
 
-    public Location(final double centerX, final double centerY, final MouseTracker parentMouseTracker) {
-        super(centerX, centerY, RADIUS);
+    public Location(final DoubleProperty centerX, final DoubleProperty centerY, final MouseTracker parentMouseTracker) {
+        super(centerX.doubleValue(), centerY.doubleValue(), RADIUS);
+        this.centerXProperty().bind(centerX);
+        this.centerYProperty().bind(centerY);
 
         // Initialize the local mouse tracker
         this.setOnMouseMoved(localMouseTracker.onMouseMovedEventHandler);
@@ -37,11 +40,6 @@ public class Location extends Circle {
         // Add style
         this.getStyleClass().add("location");
 
-        // Update the position of the new location when the mouse moved
-        final EventHandler<MouseEvent> followMouseHandler = mouseMovedEvent -> {
-            Location.this.setCenterX(mouseMovedEvent.getX());
-            Location.this.setCenterY(mouseMovedEvent.getY());
-        };
 
         final EventHandler<MouseEvent> mouseEntered = mouseMovedEvent -> {
             ModelCanvas.hoveredLocation = this;
@@ -56,7 +54,8 @@ public class Location extends Circle {
         // Place the new location when the mouse is pressed (i.e. stop moving it)
         final EventHandler<MouseEvent> locationMouseClick = mouseClickedEvent -> {
             if (isOnMouse) {
-                parentMouseTracker.unregisterOnMouseMovedEventHandler(followMouseHandler);
+                this.centerXProperty().unbind();;
+                this.centerYProperty().unbind();;
 
                 // Tell the canvas that the mouse is no longer occupied
                 ModelCanvas.locationOnMouse = null;
@@ -83,7 +82,7 @@ public class Location extends Circle {
                 final Edge edge = new Edge(this, parentMouseTracker);
 
                 // Type cast the parent to be the anchor pane and disregard the safety and simple add the edge
-                ((Pane) this.getParent()).getChildren().add(edge);
+                //((Pane) this.getParent()).getChildren().add(edge);
 
                 // Notify the canvas that we are creating an edge
                 ModelCanvas.edgeOnMouse = edge;
@@ -100,7 +99,6 @@ public class Location extends Circle {
         localMouseTracker.registerOnMouseClickedEventHandler(locationMouseClick);
 
         // Register the handler for dragging of the location (is unregistered when clicked)
-        parentMouseTracker.registerOnMouseMovedEventHandler(followMouseHandler);
         localMouseTracker.registerOnMouseEnteredEventHandler(mouseEntered);
         localMouseTracker.registerOnMouseExitedEventHandler(mouseExited);
 
