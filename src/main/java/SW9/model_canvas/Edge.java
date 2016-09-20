@@ -4,7 +4,6 @@ import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
 import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
@@ -29,7 +28,7 @@ public class Edge extends Line {
 
     private final Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
         Pane parent = (Pane) this.getParent();
-        if(parent == null) return;
+        if (parent == null) return;
         parent.getChildren().remove(this);
 
         // Notify the canvas that we not longer are creating an edge
@@ -37,15 +36,37 @@ public class Edge extends Line {
     });
 
     private final EventHandler<MouseEvent> mouseMovedEventHandler = event -> {
-        this.setEndX(event.getX() - 2);
-        this.setEndY(event.getY() - 2);
-        
-        double angle = Math.atan2(sourceLocation.getCenterY() - event.getY(), sourceLocation.getCenterX() - event.getX()) - Math.toRadians(180);
-        double newX = sourceLocation.getCenterX() + Location.RADIUS * Math.cos(angle);
-        double newY = sourceLocation.getCenterY() + Location.RADIUS * Math.sin(angle);
+        double angle,
+                newX,
+                newY;
 
-        this.setStartX(newX);
-        this.setStartY(newY);
+
+        if (ModelCanvas.locationIsHovered()) {
+            angle = Math.atan2(sourceLocation.getCenterY() - ModelCanvas.hoveredLocation.getCenterY(), sourceLocation.getCenterX() - ModelCanvas.hoveredLocation.getCenterX());
+            newX = ModelCanvas.hoveredLocation.getCenterX() + Location.RADIUS * Math.cos(angle);
+            newY = ModelCanvas.hoveredLocation.getCenterY() + Location.RADIUS * Math.sin(angle);
+
+            this.setEndX(newX);
+            this.setEndY(newY);
+            angle -= Math.toRadians(180);
+            newX = sourceLocation.getCenterX() + Location.RADIUS * Math.cos(angle) ;
+            newY = sourceLocation.getCenterY() + Location.RADIUS * Math.sin(angle);
+
+            this.setStartX(newX);
+            this.setStartY(newY);
+
+        } else {
+            this.setEndX(event.getX() - 1);
+            this.setEndY(event.getY() - 1);
+
+            angle = Math.atan2(sourceLocation.getCenterY() - event.getY(), sourceLocation.getCenterX() - event.getX()) - Math.toRadians(180);
+            newX = sourceLocation.getCenterX() + Location.RADIUS * Math.cos(angle);
+            newY = sourceLocation.getCenterY() + Location.RADIUS * Math.sin(angle);
+
+            this.setStartX(newX);
+            this.setStartY(newY);
+        }
+
     };
 
     public Location getSourceLocation() {
@@ -68,9 +89,14 @@ public class Edge extends Line {
         mouseTracker.unregisterOnMouseMovedEventHandler(mouseMovedEventHandler);
         KeyboardTracker.unregisterKeybind(KeyboardTracker.DISCARD_NEW_EDGE);
 
+        double angle = Math.atan2(sourceLocation.getCenterY() - targetLocation.getCenterY(), sourceLocation.getCenterX() - targetLocation.getCenterX());
+        double newX = targetLocation.getCenterX() + Location.RADIUS * Math.cos(angle);
+        double newY = targetLocation.getCenterY() + Location.RADIUS * Math.sin(angle);
+
+        this.setEndX(newX);
+        this.setEndY(newY);
+
         this.targetLocation = targetLocation;
-        this.setEndX(targetLocation.getCenterX());
-        this.setEndY(targetLocation.getCenterY());
     }
 
 }

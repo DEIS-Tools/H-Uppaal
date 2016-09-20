@@ -1,6 +1,10 @@
 package SW9;
 
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.NumberBinding;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -40,6 +44,8 @@ public class Main extends Application {
         final Node modelCanvas = scene.lookup("#model_canvas");
         modelCanvas.setOnMouseMoved(mouseTracker.onMouseMovedEventHandler);
         modelCanvas.setOnMouseClicked(mouseTracker.onMouseClickedEventHandler);
+        modelCanvas.setOnMouseEntered(mouseTracker.onMouseEnteredEventHandler);
+        modelCanvas.setOnMouseExited(mouseTracker.onMouseExitedEventHandler);
 
         final Node statusBar = scene.lookup("#status_bar");
         statusBar.setOnMousePressed(new EventHandler<MouseEvent>() {

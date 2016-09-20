@@ -9,19 +9,24 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.Pane;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ModelCanvas extends Pane {
 
     public static Location locationOnMouse = null;
     public static Edge edgeOnMouse = null;
+    public static Location hoveredLocation = null;
 
-    private static List<Location> locations = new ArrayList<>();
-    private static List<Edge> edges = new ArrayList<>();
+    public static boolean mouseHasLocation() {
+        return locationOnMouse != null;
+    }
 
-    public static boolean mouseHasLocation() { return locationOnMouse != null; }
-    public static boolean mouseHasEdge() { return edgeOnMouse != null; }
+    public static boolean mouseHasEdge() {
+        return edgeOnMouse != null;
+    }
+
+    public static boolean locationIsHovered() {
+        return hoveredLocation != null;
+    }
+
 
     public ModelCanvas() {
         initialize();
