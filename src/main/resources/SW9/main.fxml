@@ -1,27 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import SW9.model_canvas.ModelCanvas?>
-<VBox xmlns="http://javafx.com/javafx/8.0.76-ea">
-
-    <StackPane id="status_bar"
-               styleClass="status_bar"
-               maxHeight="30"
-               minHeight="30"
-               minWidth="-Infinity"
-               prefWidth="30">
-
-    </StackPane>
+<StackPane xmlns="http://javafx.com/javafx/8.0.76-ea"
+           id="stackpane">
 
     <ModelCanvas id="model_canvas"
-                 maxHeight="-Infinity"
-                 maxWidth="-Infinity"
-                 minHeight="200"
-                 minWidth="200"
-                 prefHeight="400.0"
-                 prefWidth="600.0"/>
+                 prefHeight="Infinity"
+                 prefWidth="Infinity"/>
 
-</VBox>
+    <BorderPane id="status_bar"
+                styleClass="cyan-900"
+                prefHeight="20"
+                maxHeight="20">
+        <left>
+            <HBox id="status_bar_left"/>
+        </left>
+
+        <center>
+            <HBox id="status_bar_middle"/>
+        </center>
+
+        <right>
+            <HBox id="status_bar_right"/>
+        </right>
+    </BorderPane>
+
+</StackPane>
 

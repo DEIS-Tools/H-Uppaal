@@ -1,5 +1,8 @@
 package SW9;
 
+import com.jfoenix.controls.JFXButton;
+import com.sun.javafx.geom.Shape;
+import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
@@ -7,12 +10,26 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import jiconfont.icons.GoogleMaterialDesignIcons;
+import jiconfont.javafx.IconFontFX;
+import jiconfont.javafx.IconNode;
+
+import javax.swing.*;
 
 public class Main extends Application {
 
@@ -27,6 +44,8 @@ public class Main extends Application {
     }
 
     public void start(final Stage stage) throws Exception {
+
+        IconFontFX.register(GoogleMaterialDesignIcons.getIconFont());
 
         // Remove the classic
         stage.initStyle(StageStyle.UNDECORATED);
@@ -47,23 +66,42 @@ public class Main extends Application {
         modelCanvas.setOnMouseEntered(mouseTracker.onMouseEnteredEventHandler);
         modelCanvas.setOnMouseExited(mouseTracker.onMouseExitedEventHandler);
 
-        final Node statusBar = scene.lookup("#status_bar");
-        statusBar.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                xOffset = stage.getX() - event.getScreenX();
-                yOffset = stage.getY() - event.getScreenY();
-            }
-        });
-        statusBar.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                stage.setX(event.getScreenX() + xOffset);
-                stage.setY(event.getScreenY() + yOffset);
-            }
-        });
+        initializeStatusBar(stage);
 
         stage.show();
+    }
+
+    private void initializeStatusBar(final Stage stage) {
+        final Scene scene = stage.getScene();
+
+        // Find the status bar and make it draggable
+        final BorderPane statusBar = (BorderPane) scene.lookup("#status_bar");
+        statusBar.setOnMousePressed(event -> {
+            xOffset = stage.getX() - event.getScreenX();
+            yOffset = stage.getY() - event.getScreenY();
+        });
+        statusBar.setOnMouseDragged(event -> {
+            stage.setX(event.getScreenX() + xOffset);
+            stage.setY(event.getScreenY() + yOffset);
+        });
+
+        // Align the status bar to the top of the window
+        final StackPane stackpane = (StackPane) scene.lookup("#stackpane");
+        stackpane.setAlignment(Pos.TOP_LEFT);
+
+        final HBox leftStatusBar = (HBox) scene.lookup("#status_bar_left");
+        // TODO: Add stuff to the left section
+
+        final HBox middleStatusBar = (HBox) scene.lookup("#status_bar_middle");
+        // TODO: Add stuff to the middle section
+
+        final HBox rightStatusBar = (HBox) scene.lookup("#status_bar_right");
+        final IconNode closeIcon = new IconNode(GoogleMaterialDesignIcons.CLOSE);
+        closeIcon.setFill(Color.WHITE);
+        final JFXButton closeBtn = new JFXButton("", closeIcon);
+        closeBtn.setButtonType(JFXButton.ButtonType.FLAT);
+        closeBtn.setRipplerFill(Color.WHITE);
+        rightStatusBar.getChildren().add(closeBtn);
     }
 
 
