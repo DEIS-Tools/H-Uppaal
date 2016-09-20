@@ -46,6 +46,7 @@ public class Main extends Application {
         modelCanvas.setOnMouseClicked(mouseTracker.onMouseClickedEventHandler);
         modelCanvas.setOnMouseEntered(mouseTracker.onMouseEnteredEventHandler);
         modelCanvas.setOnMouseExited(mouseTracker.onMouseExitedEventHandler);
+        modelCanvas.setOnMouseDragged(mouseTracker.onMouseDraggesEventHandler);
 
         final Node statusBar = scene.lookup("#status_bar");
         statusBar.setOnMousePressed(new EventHandler<MouseEvent>() {
