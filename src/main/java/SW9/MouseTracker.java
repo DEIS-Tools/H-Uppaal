@@ -12,14 +12,16 @@ public class MouseTracker {
 
     private final ArrayList<EventHandler<MouseEvent>> onMouseMovedEventHandlers = new ArrayList<>();
     private final ArrayList<EventHandler<MouseEvent>> onMouseClickedEventHandlers = new ArrayList<>();
+    private final ArrayList<EventHandler<MouseEvent>> onMouseEnteredEventHandlers = new ArrayList<>();
+    private final ArrayList<EventHandler<MouseEvent>> onMouseExitedEventHandlers = new ArrayList<>();
 
     public final EventHandler<MouseEvent> onMouseMovedEventHandler = event -> {
 
         // Purge the list for unregistered handlers
         onMouseMovedEventHandlers.removeIf(handler -> handler == null);
 
-        for (EventHandler<MouseEvent> onMouseMovedEventHandler1 : onMouseMovedEventHandlers) {
-            onMouseMovedEventHandler1.handle(event);
+        for (EventHandler<MouseEvent> onMouseMovedEventHandler : onMouseMovedEventHandlers) {
+            onMouseMovedEventHandler.handle(event);
         }
     };
 
@@ -28,8 +30,28 @@ public class MouseTracker {
         // Purge the list for unregistered handlers
         onMouseClickedEventHandlers.removeIf(handler -> handler == null);
 
-        for (EventHandler<MouseEvent> onMouseClickedEventHandler1 : onMouseClickedEventHandlers) {
-            onMouseClickedEventHandler1.handle(event);
+        for (EventHandler<MouseEvent> onMouseClickedEventHandler : onMouseClickedEventHandlers) {
+            onMouseClickedEventHandler.handle(event);
+        }
+    };
+
+    public final EventHandler<MouseEvent> onMouseEnteredEventHandler = event -> {
+
+        // Purge the list for unregistered handlers
+        onMouseEnteredEventHandlers.removeIf(handler -> handler == null);
+
+        for (EventHandler<MouseEvent> onMouseEnteredEventHandler : onMouseEnteredEventHandlers) {
+            onMouseEnteredEventHandler.handle(event);
+        }
+    };
+
+    public final EventHandler<MouseEvent> onMouseExitedEventHandler = event -> {
+
+        // Purge the list for unregistered handlers
+        onMouseExitedEventHandlers.removeIf(handler -> handler == null);
+
+        for (EventHandler<MouseEvent> onMouseExitedEventHandler : onMouseExitedEventHandlers) {
+            onMouseExitedEventHandler.handle(event);
         }
     };
 
@@ -66,6 +88,26 @@ public class MouseTracker {
     public boolean unregisterOnMouseClickedEventHandler(final EventHandler<MouseEvent> eventHandler) {
         if (!onMouseClickedEventHandlers.contains(eventHandler)) return false;
         onMouseClickedEventHandlers.set(onMouseClickedEventHandlers.indexOf(eventHandler), null);
+        return true;
+    }
+
+    public boolean registerOnMouseEnteredEventHandler(final EventHandler<MouseEvent> eventHandler) {
+        return onMouseEnteredEventHandlers.add(eventHandler);
+    }
+
+    public boolean unregisterOnMouseEnteredEventHandler(final EventHandler<MouseEvent> eventHandler) {
+        if (!onMouseEnteredEventHandlers.contains(eventHandler)) return false;
+        onMouseEnteredEventHandlers.set(onMouseEnteredEventHandlers.indexOf(eventHandler), null);
+        return true;
+    }
+
+    public boolean registerOnMouseExitedEventHandler(final EventHandler<MouseEvent> eventHandler) {
+        return onMouseExitedEventHandlers.add(eventHandler);
+    }
+
+    public boolean unregisterOnMouseExitedEventHandler(final EventHandler<MouseEvent> eventHandler) {
+        if (!onMouseExitedEventHandlers.contains(eventHandler)) return false;
+        onMouseExitedEventHandlers.set(onMouseExitedEventHandlers.indexOf(eventHandler), null);
         return true;
     }
 

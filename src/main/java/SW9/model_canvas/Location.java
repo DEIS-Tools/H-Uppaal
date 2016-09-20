@@ -31,6 +31,8 @@ public class Location extends Circle {
         // Initialize the local mouse tracker
         this.setOnMouseMoved(localMouseTracker.onMouseMovedEventHandler);
         this.setOnMouseClicked(localMouseTracker.onMouseClickedEventHandler);
+        this.setOnMouseEntered(localMouseTracker.onMouseEnteredEventHandler);
+        this.setOnMouseExited(localMouseTracker.onMouseExitedEventHandler);
 
         // Add style
         this.getStyleClass().add("location");
@@ -39,6 +41,16 @@ public class Location extends Circle {
         final EventHandler<MouseEvent> followMouseHandler = mouseMovedEvent -> {
             Location.this.setCenterX(mouseMovedEvent.getX());
             Location.this.setCenterY(mouseMovedEvent.getY());
+        };
+
+        final EventHandler<MouseEvent> mouseEntered = mouseMovedEvent -> {
+            ModelCanvas.hoveredLocation = this;
+        };
+
+        final EventHandler<MouseEvent> mouseExited = mouseMovedEvent -> {
+            if(ModelCanvas.hoveredLocation == this) {
+                ModelCanvas.hoveredLocation = null;
+            }
         };
 
         // Place the new location when the mouse is pressed (i.e. stop moving it)
@@ -89,6 +101,8 @@ public class Location extends Circle {
 
         // Register the handler for dragging of the location (is unregistered when clicked)
         parentMouseTracker.registerOnMouseMovedEventHandler(followMouseHandler);
+        localMouseTracker.registerOnMouseEnteredEventHandler(mouseEntered);
+        localMouseTracker.registerOnMouseExitedEventHandler(mouseExited);
 
         KeyboardTracker.registerKeybind(KeyboardTracker.DISCARD_NEW_LOCATION, removeOnEscape);
     }
