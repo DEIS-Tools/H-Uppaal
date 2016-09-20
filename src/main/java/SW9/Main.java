@@ -96,11 +96,15 @@ public class Main extends Application {
         // TODO: Add stuff to the middle section
 
         final HBox rightStatusBar = (HBox) scene.lookup("#status_bar_right");
+
         final IconNode closeIcon = new IconNode(GoogleMaterialDesignIcons.CLOSE);
         closeIcon.setFill(Color.WHITE);
+
         final JFXButton closeBtn = new JFXButton("", closeIcon);
         closeBtn.setButtonType(JFXButton.ButtonType.FLAT);
         closeBtn.setRipplerFill(Color.WHITE);
+        closeBtn.setOnMouseClicked(event -> System.exit(0));
+
         rightStatusBar.getChildren().add(closeBtn);
     }
 
