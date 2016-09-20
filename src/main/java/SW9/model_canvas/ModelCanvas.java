@@ -29,7 +29,7 @@ public class ModelCanvas extends Pane {
 
     @FXML
     public void initialize() {
-        KeyboardTracker.registerKeybind(new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
+        KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
             if (!mouseHasLocation()) {
                 final Location newLocation = new Location(Main.mouseTracker);
                 locationOnMouse = newLocation;
