@@ -6,6 +6,8 @@ import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -13,6 +15,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -95,11 +98,12 @@ public class Main extends Application {
         final StackPane stackpane = (StackPane) scene.lookup("#stackpane");
         stackpane.setAlignment(Pos.TOP_LEFT);
 
-        final HBox leftStatusBar = (HBox) scene.lookup("#status_bar_left");
+        final StackPane leftStatusBar = (StackPane) scene.lookup("#status_bar_left");
         // TODO: Add stuff to the left section
 
         final HBox middleStatusBar = (HBox) scene.lookup("#status_bar_middle");
-        // TODO: Add stuff to the middle section
+        final Label titleLabel = (Label) scene.lookup("#status_bar_title");
+        titleLabel.textProperty().bind(stage.titleProperty());
 
         final HBox rightStatusBar = (HBox) scene.lookup("#status_bar_right");
 
