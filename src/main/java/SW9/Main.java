@@ -1,24 +1,22 @@
 package SW9;
 
+import SW9.utility.ResizeHelper;
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Application;
-import javafx.beans.binding.DoubleBinding;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ObservableDoubleValue;
-import javafx.event.EventHandler;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import jiconfont.icons.GoogleMaterialDesignIcons;
@@ -30,6 +28,7 @@ public class Main extends Application {
     private Parent root;
     private double xOffset;
     private double yOffset;
+    private double previousX, previousY, previousWidth, previousHeight;
 
     private final static DoubleProperty border = new SimpleDoubleProperty(3d);
     public static MouseTracker mouseTracker;
@@ -79,8 +78,17 @@ public class Main extends Application {
             yOffset = stage.getY() - event.getScreenY();
         });
         statusBar.setOnMouseDragged(event -> {
-            stage.setX(event.getScreenX() + xOffset);
-            stage.setY(event.getScreenY() + yOffset);
+            if(stage.isMaximized()) {
+                xOffset = -1 * previousWidth * (event.getX() / (stage.getWidth() * 10/8));
+                yOffset = -1 * event.getY();
+
+                stage.setMaximized(false);
+                stage.setWidth(previousWidth);
+                stage.setHeight(previousHeight);
+            } else {
+                stage.setX(event.getScreenX() + xOffset);
+                stage.setY(event.getScreenY() + yOffset);
+            }
         });
 
         // Align the status bar to the top of the window
@@ -105,15 +113,40 @@ public class Main extends Application {
         rightStatusBar.getChildren().add(minimizeBtn);
 
         // Add the resize window button to the status bar
-        final IconNode resizeIcon = new IconNode(GoogleMaterialDesignIcons.FULLSCREEN);
+        stage.setMaximized(false);
+        final IconNode resizeIcon = new IconNode();
         resizeIcon.setFill(Color.WHITE);
+        resizeIcon.iconCodeProperty().bind(Bindings.when(stage.maximizedProperty())
+                .then(GoogleMaterialDesignIcons.FULLSCREEN_EXIT)
+                .otherwise(GoogleMaterialDesignIcons.FULLSCREEN));
+
         final JFXButton resizeBtn = new JFXButton("", resizeIcon);
         resizeBtn.setButtonType(JFXButton.ButtonType.FLAT);
         resizeBtn.setRipplerFill(Color.WHITE);
         resizeBtn.setOnMouseClicked(event -> {
-            System.out.println("data");
-            stage.resizableProperty().setValue(true);
+            if(stage.isMaximized()) {
+                stage.setMaximized(false);
+                stage.setX(previousX);
+                stage.setY(previousY);
+                stage.setWidth(previousWidth);
+                stage.setHeight(previousHeight);
+            } else {
+                previousX = stage.getX();
+                previousY = stage.getY();
+                previousWidth = stage.getWidth();
+                previousHeight = stage.getHeight();
+                stage.setMaximized(true);
+                stage.setX(0d);
+                stage.setY(0d);
+            }
         });
+        final ChangeListener<Number> windowResized = (observable, oldValue, newValue) -> {
+            if(newValue.doubleValue() < oldValue.doubleValue()) {
+                stage.setMaximized(false);
+            }
+        };
+        stage.widthProperty().addListener(windowResized);
+        stage.heightProperty().addListener(windowResized);
         rightStatusBar.getChildren().add(resizeBtn);
 
         // Add the close button to the status bar
@@ -126,134 +159,6 @@ public class Main extends Application {
         rightStatusBar.getChildren().add(closeBtn);
     }
 
-}
-
-class ResizeHelper {
-    private static final double minHeight = 200, minWidth = 200;
-    private static double xOffset, yOffset, width, height;
-
-    private static Stage stage;
-
-    private static EventHandler<MouseEvent> updateOffsets = event -> {
-        xOffset = event.getScreenX();
-        yOffset = event.getScreenY();
-        width = stage.getWidth();
-        height = stage.getHeight();
-    };
-
-    private static EventHandler<MouseEvent> resizeLeft = event -> {
-        final double newWidth = width + (xOffset - event.getScreenX());
-        if(newWidth < minWidth) return;
-
-        stage.setWidth(newWidth);
-        stage.setX(event.getScreenX());
-    };
-
-    private static EventHandler<MouseEvent> resizeRight = event -> {
-        final double newWidth = width + (event.getScreenX() - xOffset);
-        if(newWidth < minWidth) return;
-
-        stage.setWidth(newWidth);
-    };
-
-    private static EventHandler<MouseEvent> resizeUp = event -> {
-        final double newHeight = height + (yOffset - event.getScreenY());
-        if(newHeight < minHeight) return;
-
-        stage.setHeight(newHeight);
-        stage.setY(event.getScreenY());
-    };
-
-    private static EventHandler<MouseEvent> resizeDown = event -> {
-        final double newHeight = height - (yOffset - event.getScreenY());
-        if(newHeight < minHeight) return;
-
-        stage.setHeight(newHeight);
-    };
-
-    static void initialize(final Stage stage, final DoubleProperty border) {
-        ResizeHelper.stage = stage;
-
-        // Find the scene set on stage
-        final Scene scene = stage.getScene();
-
-        // Find the stack panel (which we will be adding draggable regions to)
-        final StackPane stackpane = (StackPane) scene.lookup("#stackpane");
-
-        // Add the north west corner
-
-        final Rectangle NWDragCorner = rectangleHelper(border, border, stackpane, Pos.TOP_LEFT, Cursor.NW_RESIZE, event -> {
-            resizeLeft.handle(event);
-            resizeUp.handle(event);
-        });
-
-        final Rectangle SWDragCorner = rectangleHelper(border, border, stackpane, Pos.BOTTOM_LEFT, Cursor.SW_RESIZE, event -> {
-            resizeLeft.handle(event);
-            resizeDown.handle(event);
-        });
-
-        final Rectangle SEDragCorner = rectangleHelper(border, border, stackpane, Pos.BOTTOM_RIGHT, Cursor.SE_RESIZE, event -> {
-            resizeRight.handle(event);
-            resizeDown.handle(event);
-        });
-
-        final Rectangle NEDragCorner = rectangleHelper(border, border, stackpane, Pos.TOP_RIGHT, Cursor.NE_RESIZE, event -> {
-            resizeRight.handle(event);
-            resizeUp.handle(event);
-        });
-
-        final DoubleBinding heightBinding = new DoubleBinding() {
-            {
-                super.bind(stage.heightProperty(), border);
-            }
-
-            @Override
-            protected double computeValue() {
-                return stage.heightProperty().get() - 2 * border.get();
-            }
-        };
-
-        final DoubleBinding widthBinding = new DoubleBinding() {
-            {
-                super.bind(stage.widthProperty(), border);
-            }
-
-            @Override
-            protected double computeValue() {
-                return stage.widthProperty().get() - 2 * border.get();
-            }
-        };
-
-        final Rectangle EDragRegion = rectangleHelper(border, heightBinding, stackpane, Pos.CENTER_RIGHT, Cursor.E_RESIZE, event -> resizeRight.handle(event));
-        final Rectangle WDragRegion = rectangleHelper(border, heightBinding, stackpane, Pos.CENTER_LEFT, Cursor.W_RESIZE, event -> resizeLeft.handle(event));
-        final Rectangle NDragRegion = rectangleHelper(widthBinding, border, stackpane, Pos.TOP_CENTER, Cursor.N_RESIZE, event -> resizeUp.handle(event));
-        final Rectangle SDragRegion = rectangleHelper(widthBinding, border, stackpane, Pos.BOTTOM_CENTER, Cursor.S_RESIZE, event -> resizeDown.handle(event));
-    }
-
-    private static Rectangle rectangleHelper(final ObservableDoubleValue width, final ObservableDoubleValue height, final StackPane parent, final Pos alignment, final Cursor cursor, final EventHandler<MouseEvent> onMouseDragged) {
-        final Rectangle rectangle = new Rectangle(width.get(), height.get());
-        rectangle.widthProperty().bind(width);
-        rectangle.heightProperty().bind(height);
-
-        rectangle.setFill(Color.TRANSPARENT);
-
-        parent.getChildren().add(rectangle);
-
-        StackPane.setAlignment(rectangle, alignment);
-
-        rectangle.setOnMouseEntered(event -> {
-            ResizeHelper.stage.getScene().setCursor(cursor);
-            updateOffsets.handle(event);
-        });
-
-        rectangle.setOnMouseExited(event -> {
-            ResizeHelper.stage.getScene().setCursor(Cursor.DEFAULT);
-        });
-
-        rectangle.setOnMouseDragged(onMouseDragged);
-
-        return rectangle;
-    }
 }
 
 
