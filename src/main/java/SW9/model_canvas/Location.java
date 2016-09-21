@@ -14,9 +14,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
-import org.apache.xpath.operations.Mod;
 
 public class Location extends Circle {
+
+    // Used to drag the location around
+    private double dragXoffSet = 0;
+    private double dragYoffSet = 0;
+    private boolean isBeingDragged = false;
 
     public final static double RADIUS = 25.0f;
 
@@ -39,20 +43,20 @@ public class Location extends Circle {
         this.getStyleClass().add("location");
 
 
-        final EventHandler<MouseEvent> mouseEntered = event -> {
+        // Register the handler for entering the location
+        localMouseTracker.registerOnMouseEnteredEventHandler(event -> {
             ModelCanvas.setHoveredLocation(this);
-        };
+        });
 
-        final EventHandler<MouseEvent> mouseExited = event -> {
+        // Register the handler for existing the locations
+        localMouseTracker.registerOnMouseExitedEventHandler(event -> {
             if(ModelCanvas.locationIsHovered() && ModelCanvas.getHoveredLocation().equals(this)) {
                 ModelCanvas.setHoveredLocation(null);
             }
-        };
-
-
+        });
 
         // Place the new location when the mouse is pressed (i.e. stop moving it)
-        final EventHandler<MouseEvent> locationMouseClick = mouseClickedEvent -> {
+        localMouseTracker.registerOnMousePressedEventHandler( mouseClickedEvent -> {
             if (isOnMouse) {
                 this.centerXProperty().unbind();
                 this.centerYProperty().unbind();
@@ -77,34 +81,39 @@ public class Location extends Circle {
                 locationPlaceAnimation.setOnFinished(event -> {
                     isOnMouse = false;
                 });
-            } else if (mouseClickedEvent.isShiftDown() && !ModelCanvas.mouseHasEdge()) {
-
-                final Edge edge = new Edge(this, parentMouseTracker);
-
-                // Type cast the parent to be the anchor pane and disregard the safety and simple add the edge
-                //((Pane) this.getParent()).getChildren().add(edge);
-
-                // Notify the canvas that we are creating an edge
-                ModelCanvas.setEdgeOnMouse(edge);
-
-
-            } else if (ModelCanvas.mouseHasEdge()) {
-                ModelCanvas.getEdgeOnMouse().setTargetLocation(this);
-                ModelCanvas.setEdgeOnMouse(null);
             }
+        });
 
-            // TODO add move behaviour
-        };
+        // Enable dragging of locations
+        localMouseTracker.registerOnMousePressedEventHandler(event -> {
+            if(!event.isShiftDown()) {
+                dragXoffSet = this.centerXProperty().get() - event.getX();
+                dragYoffSet = this.centerYProperty().get() - event.getY();
+                isBeingDragged = true;
+            }
+        });
 
+        // Make the location follow the mouse on drag (if enabled)
+        localMouseTracker.registerOnMouseDraggedEventHandler(event -> {
+            if(isBeingDragged) {
+                this.setCenterX(event.getX() + dragXoffSet);
+                this.setCenterY(event.getY() + dragYoffSet);
+            }
+        });
 
-        // Register the handler for placing the location
-        localMouseTracker.registerOnMouseClickedEventHandler(locationMouseClick);
+        // Disable dragging of location
+        localMouseTracker.registerOnMouseReleasedEventHandler(event -> {
+           if(isBeingDragged) {
+              isBeingDragged = false;
+           }
+        });
 
-        // Register the handler for entering the location
-        localMouseTracker.registerOnMouseEnteredEventHandler(mouseEntered);
-
-        // Register the handler for existing the locations
-        localMouseTracker.registerOnMouseExitedEventHandler(mouseExited);
+        // Draw a new edge from the location
+        localMouseTracker.registerOnMousePressedEventHandler(event -> {
+            if(event.isShiftDown()) {
+                System.out.println("TODO tegn en edge");
+            }
+        });
 
         KeyboardTracker.registerKeybind(KeyboardTracker.DISCARD_NEW_LOCATION, removeOnEscape);
     }
