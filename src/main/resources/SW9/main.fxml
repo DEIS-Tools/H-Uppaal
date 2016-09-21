@@ -16,7 +16,7 @@
                 maxHeight="20">
         <left>
             <StackPane id="status_bar_left">
-                <Label id="status_bar_title" textFill="white" style="-fx-padding: 5 5 5 5"/>
+                <Label id="status_bar_title" styleClass="caption" textFill="white" style="-fx-padding: 5 5 5 5"/>
             </StackPane>
         </left>
 

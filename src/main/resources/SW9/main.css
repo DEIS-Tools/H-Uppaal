@@ -1,0 +1,44 @@
+.display4{
+	-fx-font-family: "Roboto Light";
+	-fx-font-size: 112.0;
+}
+.display3{
+	-fx-font-family: "Roboto";
+	-fx-font-size: 56.0;
+}
+.display2{
+	-fx-font-family: "Roboto";
+	-fx-font-size: 45.0;
+}
+.display1{
+	-fx-font-family: "Roboto";
+	-fx-font-size: 34.0;
+}
+.headline{
+	-fx-font-family: "Roboto";
+	-fx-font-size: 24.0;
+}
+.title{
+	-fx-font-family: "Roboto Medium";
+	-fx-font-size: 20.0;
+}
+.subhead{
+	-fx-font-family: "Roboto";
+	-fx-font-size: 15.0;
+}
+.body2{
+	-fx-font-family: "Roboto Medium";
+	-fx-font-size: 13.0;
+}
+.body1{
+	-fx-font-family: "Roboto";
+	-fx-font-size: 13.0;
+}
+.caption{
+	-fx-font-family: "Roboto";
+	-fx-font-size: 12.0;
+}
+.button{
+	-fx-font-family: "Roboto Medium";
+	-fx-font-size: 14.0;
+}
