@@ -276,6 +276,19 @@
     -blue-grey-700 : #455a64;
     -blue-grey-800 : #37474f;
     -blue-grey-900 : #263238;
+
+    -primary-color : -blue-grey-500;
+    -primary-color-darker : -blue-grey-700;
+    -primary-color-darkest : -blue-grey-900;
+
+    -accent-color : -deep-orange-500;
+    -accent-color-darker : -deep-orange-700;
+    -accent-color-darkest : -deep-orange-900;
+
+    -primary-text-color : -grey-900;
+    -secondary-text-color : -grey-600;
+    -divider-color : -grey-400;
+    -icon-color : #ffffff;
 }
 
 .red-50{ -fx-background-color: #ffebee; -fx-text-fill: rgba(0, 0, 0, 0.87); }

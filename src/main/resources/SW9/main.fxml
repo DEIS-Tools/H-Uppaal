@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <?import SW9.model_canvas.ModelCanvas?>
 <StackPane xmlns="http://javafx.com/javafx/8.0.76-ea"
            id="stackpane">
 
-    <ModelCanvas id="model_canvas"
+    <ModelCanvas id="model-canvas"
                  prefHeight="Infinity"
                  prefWidth="Infinity"/>
 
-    <BorderPane id="status_bar"
-                styleClass="cyan-900"
+    <BorderPane id="status-bar"
+                styleClass="status-bar"
                 prefHeight="20"
                 maxHeight="20">
         <left>
-            <HBox id="status_bar_left"/>
+            <StackPane id="status-bar-left">
+                <Label id="status-bar-title" styleClass="caption, white-text"/>
+            </StackPane>
         </left>
 
         <center>
-            <HBox id="status_bar_middle"/>
+            <HBox id="status-bar-middle"/>
         </center>
 
         <right>
-            <HBox id="status_bar_right"/>
+            <HBox id="status-bar-right"/>
         </right>
     </BorderPane>
 

@@ -6,6 +6,8 @@ import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -13,10 +15,12 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import jiconfont.icons.GoogleMaterialDesignIcons;
@@ -38,8 +42,9 @@ public class Main extends Application {
     }
 
     public void start(final Stage stage) throws Exception {
-
         IconFontFX.register(GoogleMaterialDesignIcons.getIconFont());
+        
+        loadFonts();
 
         // Remove the classic decoration
         stage.initStyle(StageStyle.UNDECORATED);
@@ -50,11 +55,12 @@ public class Main extends Application {
 
         final Scene scene = new Scene(root, 500, 500);
         scene.setOnKeyPressed(KeyboardTracker.handleKeyPress);
+        scene.getStylesheets().add("SW9/main.css");
         scene.getStylesheets().add("SW9/colors.css");
         scene.getStylesheets().add("SW9/model_canvas/location.css");
         stage.setScene(scene);
 
-        final Node modelCanvas = scene.lookup("#model_canvas");
+        final Node modelCanvas = scene.lookup("#model-canvas");
         mouseTracker = new MouseTracker(modelCanvas);
 
         initializeStatusBar(stage);
@@ -66,11 +72,32 @@ public class Main extends Application {
         stage.show();
     }
 
+    private void loadFonts() {
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-Black.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-BlackItalic.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-Bold.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-BoldItalic.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/RobotoCondensed-Bold.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/RobotoCondensed-BoldItalic.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/RobotoCondensed-Italic.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/RobotoCondensed-Light.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/RobotoCondensed-LightItalic.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/RobotoCondensed-Regular.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-Italic.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-Light.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-LightItalic.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-Medium.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-MediumItalic.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-Regular.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-Thin.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-ThinItalic.ttf"), 14);
+    }
+
     private void initializeStatusBar(final Stage stage) {
         final Scene scene = stage.getScene();
 
         // Find the status bar and make it draggable
-        final BorderPane statusBar = (BorderPane) scene.lookup("#status_bar");
+        final BorderPane statusBar = (BorderPane) scene.lookup("#status-bar");
         statusBar.setOnMouseEntered(event -> scene.setCursor(Cursor.CLOSED_HAND)); // Update the cursor to look draggable
         statusBar.setOnMouseExited(event -> scene.setCursor(Cursor.DEFAULT)); // Update the cursor to look normal
         statusBar.setOnMousePressed(event -> {
@@ -95,13 +122,14 @@ public class Main extends Application {
         final StackPane stackpane = (StackPane) scene.lookup("#stackpane");
         stackpane.setAlignment(Pos.TOP_LEFT);
 
-        final HBox leftStatusBar = (HBox) scene.lookup("#status_bar_left");
+        final StackPane leftStatusBar = (StackPane) scene.lookup("#status-bar-left");
         // TODO: Add stuff to the left section
 
-        final HBox middleStatusBar = (HBox) scene.lookup("#status_bar_middle");
-        // TODO: Add stuff to the middle section
+        final HBox middleStatusBar = (HBox) scene.lookup("#status-bar-middle");
+        final Label titleLabel = (Label) scene.lookup("#status-bar-title");
+        titleLabel.textProperty().bind(stage.titleProperty());
 
-        final HBox rightStatusBar = (HBox) scene.lookup("#status_bar_right");
+        final HBox rightStatusBar = (HBox) scene.lookup("#status-bar-right");
 
         // Add the minimize window button to the status bar
         final IconNode minimizeIcon = new IconNode(GoogleMaterialDesignIcons.REMOVE);
