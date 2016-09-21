@@ -120,9 +120,7 @@ public class Edge {
         Line newLine = new Line();
         newLine.setMouseTransparent(true); // Sets the transparency of the mouse to true
         getParentPane().getChildren().add(newLine);
-
-
-        System.out.println(lines.size());
+        
         // No lines added already add the first one
         if (lines.isEmpty()) {
 
