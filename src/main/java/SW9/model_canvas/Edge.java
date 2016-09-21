@@ -3,12 +3,14 @@ package SW9.model_canvas;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ObservableDoubleValue;
+import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 import javafx.util.Pair;
@@ -20,7 +22,7 @@ public class Edge {
 
     private Location sourceLocation;
     private Location targetLocation;
-    private final MouseTracker praentMouseTracker;
+    private final MouseTracker parentMouseTracker;
     private final List<Line> lines = new ArrayList<>();
     private final Line arrowHeadLeft = new Line();
     private final Line arrowHeadRight = new Line();
@@ -30,14 +32,28 @@ public class Edge {
 
     public Edge(final Location sourceLocation, final MouseTracker parentMouseTracker) {
         // Add the parentMouseTracker
-        this.praentMouseTracker = parentMouseTracker;
+        this.parentMouseTracker = parentMouseTracker;
 
         // After the mousetracker and line have been added, add the sorucelocation
         setSourceLocation(sourceLocation);
 
+        // Add arrow heads
+        arrowHeadLeft.setMouseTransparent(true);
+        arrowHeadRight.setMouseTransparent(true);
+        getParentPane().getChildren().add(arrowHeadRight);
+        getParentPane().getChildren().add(arrowHeadLeft);
+
         // Enable escape key to discard the edge
         KeyboardTracker.registerKeybind(KeyboardTracker.DISCARD_NEW_EDGE, removeOnEscape);
+        this.parentMouseTracker.registerOnMouseClickedEventHandler(addNailEvent);
     }
+
+    final EventHandler<MouseEvent> addNailEvent = event -> {
+
+        if (ModelCanvas.mouseHasEdge() && ModelCanvas.getEdgeOnMouse().equals(this)) {
+            addLine();
+        }
+    };
 
     private final Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
         Pane parent = getParentPane();
@@ -45,37 +61,45 @@ public class Edge {
         eraseFromParent();
 
         // Notify the canvas that we not longer are creating an edge
-        ModelCanvas.edgeOnMouse = null;
+        ModelCanvas.setEdgeOnMouse(null);
     });
 
     public void setSourceLocation(final Location sourceLocation) {
         this.sourceLocation = sourceLocation;
-
-        // Create the initial line
-        addLine();
-
-        Pair<DoubleBinding, DoubleBinding> startBindings = getStartBindings(this.sourceLocation, this.praentMouseTracker);
-        lines.get(0).startXProperty().bind(startBindings.getKey());
-        lines.get(0).startYProperty().bind(startBindings.getValue());
-
-        Pair<DoubleBinding, DoubleBinding> endBindings = getEndBindings(this.sourceLocation, this.praentMouseTracker);
-        lines.get(0).endXProperty().bind(endBindings.getKey());
-        lines.get(0).endYProperty().bind(endBindings.getValue());
     }
 
     public void setTargetLocation(final Location targetLocation) {
         this.targetLocation = targetLocation;
+
+        // Notify the canvas that we not longer are creating an edge
+        ModelCanvas.setEdgeOnMouse(null);
+
         KeyboardTracker.unregisterKeybind(KeyboardTracker.DISCARD_NEW_EDGE);
 
-        Pair<DoubleBinding, DoubleBinding> startBindings = getStartBindings(sourceLocation, this.targetLocation);
-        lines.get(0).startXProperty().bind(startBindings.getKey());
-        lines.get(0).startYProperty().bind(startBindings.getValue());
 
-        Pair<DoubleBinding, DoubleBinding> endBindings = getEndBindings(sourceLocation, this.targetLocation);
-        lines.get(lines.size() - 1).endXProperty().bind(endBindings.getKey());
-        lines.get(lines.size() - 1).endYProperty().bind(endBindings.getValue());
+        Line lastLink = lines.get(lines.size() - 1);
 
-        activateMouseEvents();
+        ObservableDoubleValue startX, startY;
+
+        if (lines.size() > 1) {
+            Line secondLastLink = lines.get(lines.size() - 2);
+            startX = secondLastLink.endXProperty();
+            startY = secondLastLink.endYProperty();
+        } else {
+            Pair<DoubleBinding, DoubleBinding> startBindings = getStartBindings(sourceLocation.centerXProperty(), sourceLocation.centerYProperty(), targetLocation.centerXProperty(), targetLocation.centerXProperty());
+            startX = startBindings.getKey();
+            startY = startBindings.getValue();
+        }
+
+
+        lastLink.startXProperty().bind(startX);
+        lastLink.startYProperty().bind(startY);
+
+        Pair<DoubleBinding, DoubleBinding> endBindings = getEndBindings(startX, startY, targetLocation.centerXProperty(), targetLocation.centerXProperty());
+        lastLink.endXProperty().bind(endBindings.getKey());
+        lastLink.endYProperty().bind(endBindings.getValue());
+
+        //   activateMouseEvents();
     }
 
     public Pane getParentPane() {
@@ -93,24 +117,70 @@ public class Edge {
     }
 
     private void addLine() {
+        Line newLine = new Line();
+        newLine.setMouseTransparent(true); // Sets the transparency of the mouse to true
+        getParentPane().getChildren().add(newLine);
 
-        if(lines.size() == 0) {
-            arrowHeadLeft.setMouseTransparent(true);
-            arrowHeadRight.setMouseTransparent(true);
-            getParentPane().getChildren().add(arrowHeadRight);
-            getParentPane().getChildren().add(arrowHeadLeft);
+
+        System.out.println(lines.size());
+        // No lines added already add the first one
+        if (lines.isEmpty()) {
+
+            ObservableDoubleValue mouseX, mouseY;
+            mouseX = this.parentMouseTracker.getXProperty();
+            mouseY = this.parentMouseTracker.getYProperty();
+
+            Pair<DoubleBinding, DoubleBinding> startBindings = getStartBindings(this.sourceLocation.centerXProperty(), this.sourceLocation.centerYProperty(), mouseX, mouseY);
+
+            // Bind start of the new line to point calculated of the source locations
+            newLine.startXProperty().bind(startBindings.getKey());
+            newLine.startYProperty().bind(startBindings.getValue());
+
+            // Bind the new line to follow the mouse
+            newLine.endXProperty().bind(mouseX);
+            newLine.endYProperty().bind(mouseY);
+        } else {
+            ObservableDoubleValue prevLineEndX, prevLineEndY, mouseX, mouseY;
+            mouseX = this.parentMouseTracker.getXProperty();
+            mouseY = this.parentMouseTracker.getYProperty();
+
+
+            final Line prevLine = lines.get(lines.size() - 1);
+
+            prevLineEndX = new SimpleDoubleProperty(prevLine.getEndX());
+            prevLineEndY = new SimpleDoubleProperty(prevLine.getEndY());
+
+            // Bind the new line to start where the previous ended
+            newLine.startXProperty().bind(prevLineEndX);
+            newLine.startYProperty().bind(prevLineEndY);
+
+            // Bind the new line to follow the mouse
+            newLine.endXProperty().bind(mouseX);
+            newLine.endYProperty().bind(mouseY);
+
+            // Update the previous line
+
+            // Unbind the previous line's end position
+            prevLine.endXProperty().unbind();
+            prevLine.endYProperty().unbind();
+
+            // If it is the first line (connected to the source locations) stop following the mouse
+            if(lines.size() == 1) {
+                Pair<DoubleBinding, DoubleBinding> startBindings = getStartBindings(this.sourceLocation.centerXProperty(), this.sourceLocation.centerYProperty(), newLine.startXProperty(), newLine.startYProperty());
+                prevLine.startXProperty().bind(startBindings.getKey());
+                prevLine.startYProperty().bind(startBindings.getValue());
+
+            }
+
         }
 
-        Line line = new Line();
-        line.setMouseTransparent(true); // Sets the transparency of the mouse to true
-        this.lines.add(line);
-        getParentPane().getChildren().add(line);
-
+        this.lines.add(newLine);
         updateArrow();
     }
 
+
     private void activateMouseEvents() {
-        for(final Line line : this.lines) {
+        for (final Line line : this.lines) {
             line.setMouseTransparent(false);
         }
 
@@ -128,6 +198,7 @@ public class Edge {
             {
                 super.bind(startX, startY, endX, endY);
             }
+
             @Override
             protected double computeValue() {
                 double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) + Math.toRadians(ARROW_HEAD_ANGLE);
@@ -139,6 +210,7 @@ public class Edge {
             {
                 super.bind(startX, startY, endX, endY);
             }
+
             @Override
             protected double computeValue() {
                 double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) + Math.toRadians(ARROW_HEAD_ANGLE);
@@ -150,6 +222,7 @@ public class Edge {
             {
                 super.bind(startX, startY, endX, endY);
             }
+
             @Override
             protected double computeValue() {
                 double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) - Math.toRadians(ARROW_HEAD_ANGLE);
@@ -161,6 +234,7 @@ public class Edge {
             {
                 super.bind(startX, startY, endX, endY);
             }
+
             @Override
             protected double computeValue() {
                 double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) - Math.toRadians(ARROW_HEAD_ANGLE);
@@ -179,20 +253,10 @@ public class Edge {
         arrowHeadRight.endYProperty().bind(endY);
 
 
-
-
     }
 
-    // Bindings for starting in a location
-    private Pair<DoubleBinding, DoubleBinding> getStartBindings(final Location sourceLocation, final MouseTracker mouseTracker) {
-        return getStartBindings(sourceLocation.centerXProperty(), sourceLocation.centerYProperty(), mouseTracker.getXProperty(), mouseTracker.getYProperty());
-    }
-
-    private Pair<DoubleBinding, DoubleBinding> getStartBindings(final Location sourceLocation, final Location targetLocation) {
-        return getStartBindings(sourceLocation.centerXProperty(), sourceLocation.centerYProperty(), targetLocation.centerXProperty(), targetLocation.centerYProperty());
-    }
-
-    private Pair<DoubleBinding, DoubleBinding> getStartBindings(final DoubleProperty startX, final DoubleProperty startY, final DoubleProperty endX, final DoubleProperty endY) {
+    // Bindings for starting in a location (handles mouse and hover location)
+    private Pair<DoubleBinding, DoubleBinding> getStartBindings(final ObservableDoubleValue startX, final ObservableDoubleValue startY, final ObservableDoubleValue endX, final ObservableDoubleValue endY) {
 
 
         return new Pair<>(
@@ -227,7 +291,7 @@ public class Edge {
                         double endXValue = endX.get();
                         double endYValue = endY.get();
 
-                        if(ModelCanvas.locationIsHovered()) {
+                        if (ModelCanvas.locationIsHovered()) {
                             endXValue = ModelCanvas.getHoveredLocation().getCenterX();
                             endYValue = ModelCanvas.getHoveredLocation().getCenterY();
                         }
@@ -240,16 +304,8 @@ public class Edge {
 
     }
 
-    // Bindings for ending in a location
-    private Pair<DoubleBinding, DoubleBinding> getEndBindings(final Location sourceLocation, final Location targetLocation) {
-        return getEndBindings(sourceLocation.centerXProperty(), sourceLocation.centerYProperty(), targetLocation.centerXProperty(), targetLocation.centerYProperty());
-    }
-
-    // Bindings for ending in a location
-    private Pair<DoubleBinding, DoubleBinding> getEndBindings(final Location sourceLocation, final MouseTracker mouseTracker) {
-        return getEndBindings(sourceLocation.centerXProperty(), sourceLocation.centerYProperty(), mouseTracker.getXProperty(), mouseTracker.getYProperty());
-    }
-    private Pair<DoubleBinding, DoubleBinding> getEndBindings(final DoubleProperty startX, final DoubleProperty startY, final DoubleProperty endX, final DoubleProperty endY) {
+    // Bindings for ending in a location (handles mouse and hover location)
+    private Pair<DoubleBinding, DoubleBinding> getEndBindings(final ObservableDoubleValue startX, final ObservableDoubleValue startY, final ObservableDoubleValue endX, final ObservableDoubleValue endY) {
 
         return new Pair<>(
                 new DoubleBinding() {
@@ -262,7 +318,7 @@ public class Edge {
 
                         double endXValue, endYValue;
 
-                        if(ModelCanvas.locationIsHovered()) {
+                        if (ModelCanvas.locationIsHovered()) {
                             endXValue = ModelCanvas.getHoveredLocation().getCenterX();
                             endYValue = ModelCanvas.getHoveredLocation().getCenterY();
                         } else {
@@ -283,7 +339,7 @@ public class Edge {
 
                         double endXValue, endYValue;
 
-                        if(ModelCanvas.locationIsHovered()) {
+                        if (ModelCanvas.locationIsHovered()) {
                             endXValue = ModelCanvas.getHoveredLocation().getCenterX();
                             endYValue = ModelCanvas.getHoveredLocation().getCenterY();
                         } else {

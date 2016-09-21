@@ -14,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import org.apache.xpath.operations.Mod;
 
 public class Location extends Circle {
 
@@ -42,18 +43,13 @@ public class Location extends Circle {
             ModelCanvas.setHoveredLocation(this);
         };
 
-        final EventHandler<MouseEvent> mouseDragged = event -> {
-            ModelCanvas.locationOnMouse = this;
-            this.centerXProperty().bind(parentMouseTracker.getXProperty());
-            this.centerYProperty().bind(parentMouseTracker.getYProperty());
-            isOnMouse = true;
-        };
-
         final EventHandler<MouseEvent> mouseExited = event -> {
-            if(ModelCanvas.getHoveredLocation().equals(this)) {
+            if(ModelCanvas.locationIsHovered() && ModelCanvas.getHoveredLocation().equals(this)) {
                 ModelCanvas.setHoveredLocation(null);
             }
         };
+
+
 
         // Place the new location when the mouse is pressed (i.e. stop moving it)
         final EventHandler<MouseEvent> locationMouseClick = mouseClickedEvent -> {
@@ -62,7 +58,7 @@ public class Location extends Circle {
                 this.centerYProperty().unbind();
 
                 // Tell the canvas that the mouse is no longer occupied
-                ModelCanvas.locationOnMouse = null;
+                ModelCanvas.setLocationOnMouse(null);
                 KeyboardTracker.unregisterKeybind(KeyboardTracker.DISCARD_NEW_LOCATION);
 
 
@@ -89,23 +85,26 @@ public class Location extends Circle {
                 //((Pane) this.getParent()).getChildren().add(edge);
 
                 // Notify the canvas that we are creating an edge
-                ModelCanvas.edgeOnMouse = edge;
+                ModelCanvas.setEdgeOnMouse(edge);
 
 
             } else if (ModelCanvas.mouseHasEdge()) {
-                ModelCanvas.edgeOnMouse.setTargetLocation(this);
-                ModelCanvas.edgeOnMouse = null;
+                ModelCanvas.getEdgeOnMouse().setTargetLocation(this);
+                ModelCanvas.setEdgeOnMouse(null);
             }
+
+            // TODO add move behaviour
         };
 
 
         // Register the handler for placing the location
         localMouseTracker.registerOnMouseClickedEventHandler(locationMouseClick);
 
-        // Register the handler for dragging of the location (is unregistered when clicked)
+        // Register the handler for entering the location
         localMouseTracker.registerOnMouseEnteredEventHandler(mouseEntered);
+
+        // Register the handler for existing the locations
         localMouseTracker.registerOnMouseExitedEventHandler(mouseExited);
-        localMouseTracker.registerOnMouseDraggedEventHandler(mouseDragged);
 
         KeyboardTracker.registerKeybind(KeyboardTracker.DISCARD_NEW_LOCATION, removeOnEscape);
     }
@@ -115,8 +114,8 @@ public class Location extends Circle {
         if(parent == null) return;
         parent.getChildren().remove(this);
 
-        // Notify the canvas that we not longer are creating an edge
-        ModelCanvas.locationOnMouse = null;
+        // Notify the canvas that we are no longer placing a location
+        ModelCanvas.setLocationOnMouse(null);
     });
 
 

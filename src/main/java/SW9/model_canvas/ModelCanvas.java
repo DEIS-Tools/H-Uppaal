@@ -15,8 +15,8 @@ import javafx.util.Duration;
 
 public class ModelCanvas extends Pane {
 
-    public static Location locationOnMouse = null;
-    public static Edge edgeOnMouse = null;
+    private static Location locationOnMouse = null;
+    private static Edge edgeOnMouse = null;
     private static Location hoveredLocation = null;
 
     public static boolean mouseHasLocation() {
@@ -83,6 +83,22 @@ public class ModelCanvas extends Pane {
 
             hoveredLocation = location;
         }
+    }
+
+    public static Edge getEdgeOnMouse() {
+        return edgeOnMouse;
+    }
+
+    public static void setEdgeOnMouse(final Edge edge) {
+        edgeOnMouse = edge;
+    }
+
+    public static Location getLocationOnMouse() {
+        return locationOnMouse;
+    }
+
+    public static void setLocationOnMouse(final Location location) {
+        locationOnMouse = location;
     }
 
 }
