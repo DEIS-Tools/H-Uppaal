@@ -4,17 +4,20 @@ import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.Main;
 import SW9.utility.DropShadowHelper;
+import javafx.animation.Animation;
+import javafx.animation.Transition;
 import javafx.beans.property.BooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 
 public class ModelCanvas extends Pane {
 
     public static Location locationOnMouse = null;
     public static Edge edgeOnMouse = null;
-    public static Location hoveredLocation = null;
+    private static Location hoveredLocation = null;
 
     public static boolean mouseHasLocation() {
         return locationOnMouse != null;
@@ -45,5 +48,41 @@ public class ModelCanvas extends Pane {
         }));
     }
 
+    public static Location getHoveredLocation() {
+        return hoveredLocation;
+    }
+
+    public static void setHoveredLocation(final Location location) {
+        final Location prevHovered = getHoveredLocation();
+
+        if(prevHovered != location) {
+
+            if(prevHovered != null) {
+                new Transition() {
+                    {
+                        setCycleDuration(Duration.millis(100));
+                    }
+
+                    protected void interpolate(double frac) {
+                        prevHovered.setEffect(DropShadowHelper.generateElevationShadow(6 - 6 * frac));
+                    }
+                }.play();
+            }
+
+            if(location != null) {
+                new Transition() {
+                    {
+                        setCycleDuration(Duration.millis(100));
+                    }
+
+                    protected void interpolate(double frac) {
+                        location.setEffect(DropShadowHelper.generateElevationShadow(6 * frac));
+                    }
+                }.play();
+            }
+
+            hoveredLocation = location;
+        }
+    }
 
 }

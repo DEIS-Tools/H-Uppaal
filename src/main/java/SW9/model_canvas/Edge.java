@@ -208,8 +208,8 @@ public class Edge {
                         double endYValue = endY.get();
 
                         if(ModelCanvas.locationIsHovered()) {
-                            endXValue = ModelCanvas.hoveredLocation.getCenterX();
-                            endYValue = ModelCanvas.hoveredLocation.getCenterY();
+                            endXValue = ModelCanvas.getHoveredLocation().getCenterX();
+                            endYValue = ModelCanvas.getHoveredLocation().getCenterY();
                         }
 
                         double angle = Math.atan2(startY.get() - endYValue, startX.get() - endXValue) - Math.toRadians(180);
@@ -228,8 +228,8 @@ public class Edge {
                         double endYValue = endY.get();
 
                         if(ModelCanvas.locationIsHovered()) {
-                            endXValue = ModelCanvas.hoveredLocation.getCenterX();
-                            endYValue = ModelCanvas.hoveredLocation.getCenterY();
+                            endXValue = ModelCanvas.getHoveredLocation().getCenterX();
+                            endYValue = ModelCanvas.getHoveredLocation().getCenterY();
                         }
 
                         double angle = Math.atan2(startY.get() - endYValue, startX.get() - endXValue) - Math.toRadians(180);
@@ -263,8 +263,8 @@ public class Edge {
                         double endXValue, endYValue;
 
                         if(ModelCanvas.locationIsHovered()) {
-                            endXValue = ModelCanvas.hoveredLocation.getCenterX();
-                            endYValue = ModelCanvas.hoveredLocation.getCenterY();
+                            endXValue = ModelCanvas.getHoveredLocation().getCenterX();
+                            endYValue = ModelCanvas.getHoveredLocation().getCenterY();
                         } else {
                             return endX.get();
                         }
@@ -284,8 +284,8 @@ public class Edge {
                         double endXValue, endYValue;
 
                         if(ModelCanvas.locationIsHovered()) {
-                            endXValue = ModelCanvas.hoveredLocation.getCenterX();
-                            endYValue = ModelCanvas.hoveredLocation.getCenterY();
+                            endXValue = ModelCanvas.getHoveredLocation().getCenterX();
+                            endYValue = ModelCanvas.getHoveredLocation().getCenterY();
                         } else {
                             return endY.get();
                         }
