@@ -6,26 +6,26 @@
 <StackPane xmlns="http://javafx.com/javafx/8.0.76-ea"
            id="stackpane">
 
-    <ModelCanvas id="model_canvas"
+    <ModelCanvas id="model-canvas"
                  prefHeight="Infinity"
                  prefWidth="Infinity"/>
 
-    <BorderPane id="status_bar"
-                styleClass="cyan-900"
+    <BorderPane id="status-bar"
+                styleClass="status-bar"
                 prefHeight="20"
                 maxHeight="20">
         <left>
-            <StackPane id="status_bar_left">
-                <Label id="status_bar_title" styleClass="caption" textFill="white" style="-fx-padding: 5 5 5 5"/>
+            <StackPane id="status-bar-left">
+                <Label id="status-bar-title" styleClass="caption, white-text"/>
             </StackPane>
         </left>
 
         <center>
-            <HBox id="status_bar_middle"/>
+            <HBox id="status-bar-middle"/>
         </center>
 
         <right>
-            <HBox id="status_bar_right"/>
+            <HBox id="status-bar-right"/>
         </right>
     </BorderPane>
 

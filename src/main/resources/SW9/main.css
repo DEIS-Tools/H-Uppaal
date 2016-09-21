@@ -42,3 +42,12 @@
 	-fx-font-family: "Roboto Medium";
 	-fx-font-size: 14.0;
 }
+
+.white-text {
+    -fx-text-fill: #ffffff;
+    -fx-padding: 5 5 5 5
+}
+
+.status-bar {
+    -fx-background-color: -primary-color-darkest;
+}

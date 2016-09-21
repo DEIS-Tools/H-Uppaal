@@ -60,7 +60,7 @@ public class Main extends Application {
         scene.getStylesheets().add("SW9/model_canvas/location.css");
         stage.setScene(scene);
 
-        final Node modelCanvas = scene.lookup("#model_canvas");
+        final Node modelCanvas = scene.lookup("#model-canvas");
         mouseTracker = new MouseTracker(modelCanvas);
 
         initializeStatusBar(stage);
@@ -97,7 +97,7 @@ public class Main extends Application {
         final Scene scene = stage.getScene();
 
         // Find the status bar and make it draggable
-        final BorderPane statusBar = (BorderPane) scene.lookup("#status_bar");
+        final BorderPane statusBar = (BorderPane) scene.lookup("#status-bar");
         statusBar.setOnMouseEntered(event -> scene.setCursor(Cursor.CLOSED_HAND)); // Update the cursor to look draggable
         statusBar.setOnMouseExited(event -> scene.setCursor(Cursor.DEFAULT)); // Update the cursor to look normal
         statusBar.setOnMousePressed(event -> {
@@ -122,14 +122,14 @@ public class Main extends Application {
         final StackPane stackpane = (StackPane) scene.lookup("#stackpane");
         stackpane.setAlignment(Pos.TOP_LEFT);
 
-        final StackPane leftStatusBar = (StackPane) scene.lookup("#status_bar_left");
+        final StackPane leftStatusBar = (StackPane) scene.lookup("#status-bar-left");
         // TODO: Add stuff to the left section
 
-        final HBox middleStatusBar = (HBox) scene.lookup("#status_bar_middle");
-        final Label titleLabel = (Label) scene.lookup("#status_bar_title");
+        final HBox middleStatusBar = (HBox) scene.lookup("#status-bar-middle");
+        final Label titleLabel = (Label) scene.lookup("#status-bar-title");
         titleLabel.textProperty().bind(stage.titleProperty());
 
-        final HBox rightStatusBar = (HBox) scene.lookup("#status_bar_right");
+        final HBox rightStatusBar = (HBox) scene.lookup("#status-bar-right");
 
         // Add the minimize window button to the status bar
         final IconNode minimizeIcon = new IconNode(GoogleMaterialDesignIcons.REMOVE);
