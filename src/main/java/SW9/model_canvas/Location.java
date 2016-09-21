@@ -39,8 +39,7 @@ public class Location extends Circle {
 
 
         final EventHandler<MouseEvent> mouseEntered = event -> {
-            ModelCanvas.hoveredLocation = this;
-            System.out.println("ind");
+            ModelCanvas.setHoveredLocation(this);
         };
 
         final EventHandler<MouseEvent> mouseDragged = event -> {
@@ -51,9 +50,8 @@ public class Location extends Circle {
         };
 
         final EventHandler<MouseEvent> mouseExited = event -> {
-            if(ModelCanvas.hoveredLocation == this) {
-                ModelCanvas.hoveredLocation = null;
-                System.out.println("ud");
+            if(ModelCanvas.getHoveredLocation().equals(this)) {
+                ModelCanvas.setHoveredLocation(null);
             }
         };
 
