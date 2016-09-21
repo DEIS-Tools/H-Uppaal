@@ -2,6 +2,10 @@ package SW9;
 
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Application;
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -10,7 +14,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -19,15 +25,13 @@ import jiconfont.icons.GoogleMaterialDesignIcons;
 import jiconfont.javafx.IconFontFX;
 import jiconfont.javafx.IconNode;
 
-import static javafx.scene.layout.BorderStroke.THICK;
-
 public class Main extends Application {
 
     private Parent root;
     private double xOffset;
     private double yOffset;
 
-    private final static int border = 7;
+    private final static DoubleProperty border = new SimpleDoubleProperty(3d);
     public static MouseTracker mouseTracker;
 
     public static void main(String[] args) {
@@ -52,7 +56,7 @@ public class Main extends Application {
         stage.setScene(scene);
 
         final Node modelCanvas = scene.lookup("#model_canvas");
-        this.mouseTracker = new MouseTracker(modelCanvas);
+        mouseTracker = new MouseTracker(modelCanvas);
 
         initializeStatusBar(stage);
 
@@ -125,8 +129,7 @@ public class Main extends Application {
 }
 
 class ResizeHelper {
-
-    private static boolean updateRequired = true;
+    private static final double minHeight = 200, minWidth = 200;
     private static double xOffset, yOffset, width, height;
 
     private static Stage stage;
@@ -136,28 +139,39 @@ class ResizeHelper {
         yOffset = event.getScreenY();
         width = stage.getWidth();
         height = stage.getHeight();
-        updateRequired = false;
     };
 
     private static EventHandler<MouseEvent> resizeLeft = event -> {
-        stage.setWidth(width + (xOffset - event.getScreenX()));
+        final double newWidth = width + (xOffset - event.getScreenX());
+        if(newWidth < minWidth) return;
+
+        stage.setWidth(newWidth);
         stage.setX(event.getScreenX());
     };
 
     private static EventHandler<MouseEvent> resizeRight = event -> {
-        stage.setWidth(width + (event.getScreenX() - xOffset));
+        final double newWidth = width + (event.getScreenX() - xOffset);
+        if(newWidth < minWidth) return;
+
+        stage.setWidth(newWidth);
     };
 
     private static EventHandler<MouseEvent> resizeUp = event -> {
-        stage.setHeight(height + (yOffset - event.getScreenY()));
+        final double newHeight = height + (yOffset - event.getScreenY());
+        if(newHeight < minHeight) return;
+
+        stage.setHeight(newHeight);
         stage.setY(event.getScreenY());
     };
 
     private static EventHandler<MouseEvent> resizeDown = event -> {
-        stage.setHeight(height - (yOffset - event.getScreenY()));
+        final double newHeight = height - (yOffset - event.getScreenY());
+        if(newHeight < minHeight) return;
+
+        stage.setHeight(newHeight);
     };
 
-    static void initialize(final Stage stage, final int border) {
+    static void initialize(final Stage stage, final DoubleProperty border) {
         ResizeHelper.stage = stage;
 
         // Find the scene set on stage
@@ -187,12 +201,41 @@ class ResizeHelper {
             resizeRight.handle(event);
             resizeUp.handle(event);
         });
+
+        final DoubleBinding heightBinding = new DoubleBinding() {
+            {
+                super.bind(stage.heightProperty(), border);
+            }
+
+            @Override
+            protected double computeValue() {
+                return stage.heightProperty().get() - 2 * border.get();
+            }
+        };
+
+        final DoubleBinding widthBinding = new DoubleBinding() {
+            {
+                super.bind(stage.widthProperty(), border);
+            }
+
+            @Override
+            protected double computeValue() {
+                return stage.widthProperty().get() - 2 * border.get();
+            }
+        };
+
+        final Rectangle EDragRegion = rectangleHelper(border, heightBinding, stackpane, Pos.CENTER_RIGHT, Cursor.E_RESIZE, event -> resizeRight.handle(event));
+        final Rectangle WDragRegion = rectangleHelper(border, heightBinding, stackpane, Pos.CENTER_LEFT, Cursor.W_RESIZE, event -> resizeLeft.handle(event));
+        final Rectangle NDragRegion = rectangleHelper(widthBinding, border, stackpane, Pos.TOP_CENTER, Cursor.N_RESIZE, event -> resizeUp.handle(event));
+        final Rectangle SDragRegion = rectangleHelper(widthBinding, border, stackpane, Pos.BOTTOM_CENTER, Cursor.S_RESIZE, event -> resizeDown.handle(event));
     }
 
-    private static Rectangle rectangleHelper(final double width, final double height, final StackPane parent, final Pos alignment, final Cursor cursor, final EventHandler<MouseEvent> onMouseDragged) {
-        final Rectangle rectangle = new Rectangle(width, height);
+    private static Rectangle rectangleHelper(final ObservableDoubleValue width, final ObservableDoubleValue height, final StackPane parent, final Pos alignment, final Cursor cursor, final EventHandler<MouseEvent> onMouseDragged) {
+        final Rectangle rectangle = new Rectangle(width.get(), height.get());
+        rectangle.widthProperty().bind(width);
+        rectangle.heightProperty().bind(height);
 
-        rectangle.setFill(Color.RED);
+        rectangle.setFill(Color.TRANSPARENT);
 
         parent.getChildren().add(rectangle);
 
@@ -205,7 +248,6 @@ class ResizeHelper {
 
         rectangle.setOnMouseExited(event -> {
             ResizeHelper.stage.getScene().setCursor(Cursor.DEFAULT);
-            updateRequired = true;
         });
 
         rectangle.setOnMouseDragged(onMouseDragged);
