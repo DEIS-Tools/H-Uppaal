@@ -20,7 +20,7 @@ public class Location extends Circle {
     public final static double RADIUS = 25.0f;
 
     private boolean isOnMouse = true;
-    public final MouseTracker localMouseTracker = new MouseTracker();
+    public final MouseTracker localMouseTracker;
 
     public Location(MouseTracker parentMouseTracker) {
         this(parentMouseTracker.getXProperty(), parentMouseTracker.getYProperty(), parentMouseTracker);
@@ -32,11 +32,7 @@ public class Location extends Circle {
         this.centerYProperty().bind(centerY);
 
         // Initialize the local mouse tracker
-        this.setOnMouseMoved(localMouseTracker.onMouseMovedEventHandler);
-        this.setOnMouseClicked(localMouseTracker.onMouseClickedEventHandler);
-        this.setOnMouseEntered(localMouseTracker.onMouseEnteredEventHandler);
-        this.setOnMouseExited(localMouseTracker.onMouseExitedEventHandler);
-        this.setOnMouseDragged(localMouseTracker.onMouseDraggesEventHandler);
+        this.localMouseTracker = new MouseTracker(this);
 
         // Add style
         this.getStyleClass().add("location");
@@ -44,6 +40,7 @@ public class Location extends Circle {
 
         final EventHandler<MouseEvent> mouseEntered = event -> {
             ModelCanvas.hoveredLocation = this;
+            System.out.println("ind");
         };
 
         final EventHandler<MouseEvent> mouseDragged = event -> {
@@ -56,6 +53,7 @@ public class Location extends Circle {
         final EventHandler<MouseEvent> mouseExited = event -> {
             if(ModelCanvas.hoveredLocation == this) {
                 ModelCanvas.hoveredLocation = null;
+                System.out.println("ud");
             }
         };
 

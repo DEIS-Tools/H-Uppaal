@@ -4,6 +4,7 @@ import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.input.KeyCode;
@@ -27,9 +28,9 @@ public class Edge {
     private static final double ARROW_HEAD_ANGLE = 15;
     private static final double ARROW_HEAD_LENGTH = 15;
 
-    public Edge(final Location sourceLocation, final MouseTracker mouseTracker) {
-        // Add the mouseTracker
-        this.praentMouseTracker = mouseTracker;
+    public Edge(final Location sourceLocation, final MouseTracker parentMouseTracker) {
+        // Add the parentMouseTracker
+        this.praentMouseTracker = parentMouseTracker;
 
         // After the mousetracker and line have been added, add the sorucelocation
         setSourceLocation(sourceLocation);
@@ -57,8 +58,9 @@ public class Edge {
         lines.get(0).startXProperty().bind(startBindings.getKey());
         lines.get(0).startYProperty().bind(startBindings.getValue());
 
-        lines.get(0).endXProperty().bind(Bindings.add(this.praentMouseTracker.getXProperty(), 1d));
-        lines.get(0).endYProperty().bind(Bindings.add(this.praentMouseTracker.getYProperty(), 1d));
+        Pair<DoubleBinding, DoubleBinding> endBindings = getEndBindings(this.sourceLocation, this.praentMouseTracker);
+        lines.get(0).endXProperty().bind(endBindings.getKey());
+        lines.get(0).endYProperty().bind(endBindings.getValue());
     }
 
     public void setTargetLocation(final Location targetLocation) {
@@ -72,6 +74,8 @@ public class Edge {
         Pair<DoubleBinding, DoubleBinding> endBindings = getEndBindings(sourceLocation, this.targetLocation);
         lines.get(lines.size() - 1).endXProperty().bind(endBindings.getKey());
         lines.get(lines.size() - 1).endYProperty().bind(endBindings.getValue());
+
+        activateMouseEvents();
     }
 
     public Pane getParentPane() {
@@ -91,15 +95,27 @@ public class Edge {
     private void addLine() {
 
         if(lines.size() == 0) {
+            arrowHeadLeft.setMouseTransparent(true);
+            arrowHeadRight.setMouseTransparent(true);
             getParentPane().getChildren().add(arrowHeadRight);
             getParentPane().getChildren().add(arrowHeadLeft);
         }
 
         Line line = new Line();
+        line.setMouseTransparent(true); // Sets the transparency of the mouse to true
         this.lines.add(line);
         getParentPane().getChildren().add(line);
 
         updateArrow();
+    }
+
+    private void activateMouseEvents() {
+        for(final Line line : this.lines) {
+            line.setMouseTransparent(false);
+        }
+
+        arrowHeadLeft.setMouseTransparent(false);
+        arrowHeadRight.setMouseTransparent(false);
     }
 
     private void updateArrow() {
@@ -187,7 +203,16 @@ public class Edge {
 
                     @Override
                     protected double computeValue() {
-                        double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) - Math.toRadians(180);
+
+                        double endXValue = endX.get();
+                        double endYValue = endY.get();
+
+                        if(ModelCanvas.locationIsHovered()) {
+                            endXValue = ModelCanvas.hoveredLocation.getCenterX();
+                            endYValue = ModelCanvas.hoveredLocation.getCenterY();
+                        }
+
+                        double angle = Math.atan2(startY.get() - endYValue, startX.get() - endXValue) - Math.toRadians(180);
                         return startX.get() + Location.RADIUS * Math.cos(angle);
                     }
                 },
@@ -198,7 +223,16 @@ public class Edge {
 
                     @Override
                     protected double computeValue() {
-                        double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) - Math.toRadians(180);
+
+                        double endXValue = endX.get();
+                        double endYValue = endY.get();
+
+                        if(ModelCanvas.locationIsHovered()) {
+                            endXValue = ModelCanvas.hoveredLocation.getCenterX();
+                            endYValue = ModelCanvas.hoveredLocation.getCenterY();
+                        }
+
+                        double angle = Math.atan2(startY.get() - endYValue, startX.get() - endXValue) - Math.toRadians(180);
                         return startY.get() + Location.RADIUS * Math.sin(angle);
                     }
                 }
@@ -206,10 +240,14 @@ public class Edge {
 
     }
 
-
     // Bindings for ending in a location
     private Pair<DoubleBinding, DoubleBinding> getEndBindings(final Location sourceLocation, final Location targetLocation) {
         return getEndBindings(sourceLocation.centerXProperty(), sourceLocation.centerYProperty(), targetLocation.centerXProperty(), targetLocation.centerYProperty());
+    }
+
+    // Bindings for ending in a location
+    private Pair<DoubleBinding, DoubleBinding> getEndBindings(final Location sourceLocation, final MouseTracker mouseTracker) {
+        return getEndBindings(sourceLocation.centerXProperty(), sourceLocation.centerYProperty(), mouseTracker.getXProperty(), mouseTracker.getYProperty());
     }
     private Pair<DoubleBinding, DoubleBinding> getEndBindings(final DoubleProperty startX, final DoubleProperty startY, final DoubleProperty endX, final DoubleProperty endY) {
 
@@ -221,8 +259,18 @@ public class Edge {
 
                     @Override
                     protected double computeValue() {
-                        double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
-                        return endX.get() + Location.RADIUS * Math.cos(angle);
+
+                        double endXValue, endYValue;
+
+                        if(ModelCanvas.locationIsHovered()) {
+                            endXValue = ModelCanvas.hoveredLocation.getCenterX();
+                            endYValue = ModelCanvas.hoveredLocation.getCenterY();
+                        } else {
+                            return endX.get();
+                        }
+
+                        double angle = Math.atan2(startY.get() - endYValue, startX.get() - endXValue);
+                        return endXValue + Location.RADIUS * Math.cos(angle);
                     }
                 },
                 new DoubleBinding() {
@@ -232,8 +280,18 @@ public class Edge {
 
                     @Override
                     protected double computeValue() {
-                        double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
-                        return endY.get() + Location.RADIUS * Math.sin(angle);
+
+                        double endXValue, endYValue;
+
+                        if(ModelCanvas.locationIsHovered()) {
+                            endXValue = ModelCanvas.hoveredLocation.getCenterX();
+                            endYValue = ModelCanvas.hoveredLocation.getCenterY();
+                        } else {
+                            return endY.get();
+                        }
+
+                        double angle = Math.atan2(startY.get() - endYValue, startX.get() - endXValue);
+                        return endYValue + Location.RADIUS * Math.sin(angle);
                     }
                 }
         );

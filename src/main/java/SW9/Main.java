@@ -35,7 +35,7 @@ public class Main extends Application {
     private double previousX, previousY, previousWidth, previousHeight;
 
     private final static DoubleProperty border = new SimpleDoubleProperty(3d);
-    public final static MouseTracker mouseTracker = new MouseTracker();
+    public static MouseTracker mouseTracker;
 
     public static void main(String[] args) {
         launch(Main.class, args);
@@ -59,11 +59,7 @@ public class Main extends Application {
         stage.setScene(scene);
 
         final Node modelCanvas = scene.lookup("#model_canvas");
-        modelCanvas.setOnMouseMoved(mouseTracker.onMouseMovedEventHandler);
-        modelCanvas.setOnMouseClicked(mouseTracker.onMouseClickedEventHandler);
-        modelCanvas.setOnMouseEntered(mouseTracker.onMouseEnteredEventHandler);
-        modelCanvas.setOnMouseExited(mouseTracker.onMouseExitedEventHandler);
-        modelCanvas.setOnMouseDragged(mouseTracker.onMouseDraggesEventHandler);
+        mouseTracker = new MouseTracker(modelCanvas);
 
         initializeStatusBar(stage);
 

@@ -3,6 +3,7 @@ package SW9;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class MouseTracker {
     private final ArrayList<EventHandler<MouseEvent>> onMouseDraggedEventHandlers = new ArrayList<>();
 
 
-    public final EventHandler<MouseEvent> onMouseMovedEventHandler = event -> {
+    private final EventHandler<MouseEvent> onMouseMovedEventHandler = event -> {
 
         // Purge the list for unregistered handlers
         onMouseMovedEventHandlers.removeIf(handler -> handler == null);
@@ -29,7 +30,7 @@ public class MouseTracker {
         }
     };
 
-    public final EventHandler<MouseEvent> onMouseClickedEventHandler = event -> {
+    private final EventHandler<MouseEvent> onMouseClickedEventHandler = event -> {
 
         // Purge the list for unregistered handlers
         onMouseClickedEventHandlers.removeIf(handler -> handler == null);
@@ -39,7 +40,7 @@ public class MouseTracker {
         }
     };
 
-    public final EventHandler<MouseEvent> onMouseEnteredEventHandler = event -> {
+    private final EventHandler<MouseEvent> onMouseEnteredEventHandler = event -> {
 
         // Purge the list for unregistered handlers
         onMouseEnteredEventHandlers.removeIf(handler -> handler == null);
@@ -49,7 +50,7 @@ public class MouseTracker {
         }
     };
 
-    public final EventHandler<MouseEvent> onMouseExitedEventHandler = event -> {
+    private final EventHandler<MouseEvent> onMouseExitedEventHandler = event -> {
 
         // Purge the list for unregistered handlers
         onMouseExitedEventHandlers.removeIf(handler -> handler == null);
@@ -59,7 +60,7 @@ public class MouseTracker {
         }
     };
 
-    public final EventHandler<MouseEvent> onMouseDraggesEventHandler = event -> {
+    private final EventHandler<MouseEvent> onMouseDraggesEventHandler = event -> {
 
         // Purge the list for unregistered handlers
         onMouseDraggedEventHandlers.removeIf(handler -> handler == null);
@@ -69,7 +70,13 @@ public class MouseTracker {
         }
     };
 
-    public MouseTracker() {
+    public MouseTracker(final Node owner) {
+        owner.setOnMouseMoved(this.onMouseMovedEventHandler);
+        owner.setOnMouseClicked(this.onMouseClickedEventHandler);
+        owner.setOnMouseEntered(this.onMouseEnteredEventHandler);
+        owner.setOnMouseExited(this.onMouseExitedEventHandler);
+        owner.setOnMouseDragged(this.onMouseDraggesEventHandler);
+
         // Register our own event handler to register mouse placement at all times
         registerOnMouseMovedEventHandler(event -> {
             x.set(event.getX());
