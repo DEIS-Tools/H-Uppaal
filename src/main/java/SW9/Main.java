@@ -133,8 +133,7 @@ public class Main extends Application {
 }
 
 class ResizeHelper {
-
-    private static boolean updateRequired = true;
+    private static final double minHeight = 200, minWidth = 200;
     private static double xOffset, yOffset, width, height;
 
     private static Stage stage;
@@ -144,25 +143,36 @@ class ResizeHelper {
         yOffset = event.getScreenY();
         width = stage.getWidth();
         height = stage.getHeight();
-        updateRequired = false;
     };
 
     private static EventHandler<MouseEvent> resizeLeft = event -> {
-        stage.setWidth(width + (xOffset - event.getScreenX()));
+        final double newWidth = width + (xOffset - event.getScreenX());
+        if(newWidth < minWidth) return;
+
+        stage.setWidth(newWidth);
         stage.setX(event.getScreenX());
     };
 
     private static EventHandler<MouseEvent> resizeRight = event -> {
-        stage.setWidth(width + (event.getScreenX() - xOffset));
+        final double newWidth = width + (event.getScreenX() - xOffset);
+        if(newWidth < minWidth) return;
+
+        stage.setWidth(newWidth);
     };
 
     private static EventHandler<MouseEvent> resizeUp = event -> {
-        stage.setHeight(height + (yOffset - event.getScreenY()));
+        final double newHeight = height + (yOffset - event.getScreenY());
+        if(newHeight < minHeight) return;
+
+        stage.setHeight(newHeight);
         stage.setY(event.getScreenY());
     };
 
     private static EventHandler<MouseEvent> resizeDown = event -> {
-        stage.setHeight(height - (yOffset - event.getScreenY()));
+        final double newHeight = height - (yOffset - event.getScreenY());
+        if(newHeight < minHeight) return;
+
+        stage.setHeight(newHeight);
     };
 
     static void initialize(final Stage stage, final DoubleProperty border) {
@@ -242,7 +252,6 @@ class ResizeHelper {
 
         rectangle.setOnMouseExited(event -> {
             ResizeHelper.stage.getScene().setCursor(Cursor.DEFAULT);
-            updateRequired = true;
         });
 
         rectangle.setOnMouseDragged(onMouseDragged);
