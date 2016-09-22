@@ -51,7 +51,7 @@ public class Location extends Circle {
 
         // Register the handler for existing the locations
         localMouseTracker.registerOnMouseExitedEventHandler(event -> {
-            if(ModelCanvas.mouseHoveringLocation() && ModelCanvas.getHoveredLocation().equals(this)) {
+            if(ModelCanvas.mouseIsHoveringLocation() && ModelCanvas.getHoveredLocation().equals(this)) {
                 ModelCanvas.setHoveredLocation(null);
             }
         });

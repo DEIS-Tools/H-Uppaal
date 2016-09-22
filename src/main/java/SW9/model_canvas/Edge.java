@@ -8,6 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.util.Pair;
 
@@ -17,7 +18,7 @@ import java.util.List;
 public class Edge {
 
     private final Location sourceLocation;
-    private Location targetLocations = null;
+    private Location targetLocation = null;
 
 
     private final List<Nail> nails = new ArrayList<>();
@@ -55,48 +56,82 @@ public class Edge {
         addChildToParent(lineCue);
 
         this.canvasMouseTracker.registerOnMousePressedEventHandler(event -> {
-            if (!skipLine) {
+            if (skipLine) {
+                skipLine = false;
+                return;
+            } else if (this.targetLocation != null) {
+                return;
+            }
 
-                // Create nail
-                final Nail nail = new Nail(lineCue.getEndX(), lineCue.getEndY());
+            // Create nail
+            final Nail nail = new Nail(lineCue.getEndX(), lineCue.getEndY());
 
+            // Create a new line
+            final Line line = new Line();
 
+            // If it is the first line to be placed on the canvas
+            if (linesIsEmpty.get()) {
+                Pair<DoubleBinding, DoubleBinding> newLineStartBindings = getStartBindings(
+                        sourceLocation.centerXProperty(),
+                        sourceLocation.centerYProperty(),
+                        nail.centerXProperty(),
+                        nail.centerYProperty()
+                );
+                line.startXProperty().bind(newLineStartBindings.getKey());
+                line.startYProperty().bind(newLineStartBindings.getValue());
+            } else {
+                final Nail previousNail = nails.get(nails.size() - 1);
+                line.startXProperty().bind(previousNail.centerXProperty());
+                line.startYProperty().bind(previousNail.centerYProperty());
+            }
 
-                final Line line = new Line();
-                if (linesIsEmpty.get()) {
-                    Pair<DoubleBinding, DoubleBinding> newLineStartBindings = getStartBindings(
-                            sourceLocation.centerXProperty(),
-                            sourceLocation.centerYProperty(),
-                            nail.centerXProperty(),
-                            nail.centerYProperty()
-                    );
-                    line.startXProperty().bind(newLineStartBindings.getKey());
-                    line.startYProperty().bind(newLineStartBindings.getValue());
-                } else {
-                    final Nail previousNail = nails.get(nails.size() - 1);
-                    line.startXProperty().bind(previousNail.centerXProperty());
-                    line.startYProperty().bind(previousNail.centerYProperty());
-                }
+            if (ModelCanvas.mouseIsHoveringLocation()) {
+                final Nail previousNail = nails.get(nails.size() - 1);
+                this.targetLocation = ModelCanvas.getHoveredLocation();
+                Pair<DoubleBinding, DoubleBinding> newLineEndBindings = getEndBindings(
+                        previousNail.centerXProperty(),
+                        previousNail.centerYProperty(),
+                        targetLocation.centerXProperty(),
+                        targetLocation.centerYProperty()
+                );
 
+                line.startXProperty().bind(previousNail.centerXProperty());
+                line.startYProperty().bind(previousNail.centerYProperty());
+
+                line.endXProperty().bind(newLineEndBindings.getKey());
+                line.endYProperty().bind(newLineEndBindings.getValue());
+
+            } else {
                 line.endXProperty().bind(nail.centerXProperty());
                 line.endYProperty().bind(nail.centerYProperty());
+            }
 
+            // TODO ensure you cannot link an edge to the sourcelocaton directly, you muhst have at least one nail
+
+
+            if (this.targetLocation == null) {
+                // Add the nail to the collection
                 nail.setMouseTransparent(true);
                 addChildToParent(nail);
-
-                line.setMouseTransparent(true);
-                addChildToParent(line);
-
-                // Add the nail to the collection
                 nails.add(nail);
-
-                // Add the line to the collection
-                lines.add(line);
             } else {
-                skipLine = false;
+                removeChildFromParent(lineCue);
             }
-        });
 
+            // Add the line to the collection
+            line.setMouseTransparent(true);
+            addChildToParent(line);
+            lines.add(line);
+        });
+    }
+
+    private void removeChildFromParent(final Node node) {
+        // Get the parent from the source location
+        Pane parent = (Pane) this.sourceLocation.getParent();
+
+        if (parent == null) return;
+
+        parent.getChildren().remove(node);
     }
 
     private void addChildToParent(final Node node) {
@@ -191,7 +226,7 @@ public class Edge {
         };
     }
 
-    // Bindings for starting in a location (handles mouse and hover location)
+    // Bindings for starting in a location
     private Pair<DoubleBinding, DoubleBinding> getStartBindings(final ObservableDoubleValue startX, final ObservableDoubleValue startY, final ObservableDoubleValue endX, final ObservableDoubleValue endY) {
         return new Pair<>(
                 new DoubleBinding() {
@@ -220,5 +255,64 @@ public class Edge {
 
     }
 
+    // Bindings for ending in a location (handles mouse and hover location)
+    private Pair<DoubleBinding, DoubleBinding> getEndBindings(final ObservableDoubleValue startX, final ObservableDoubleValue startY, final ObservableDoubleValue endX, final ObservableDoubleValue endY) {
 
+        return new Pair<>(
+                new DoubleBinding() {
+                    {
+                        super.bind(startX, startY, endX, endY);
+                    }
+
+                    @Override
+                    protected double computeValue() {
+                        double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
+                        return endX.get() + Location.RADIUS * Math.cos(angle);
+                    }
+                },
+                new DoubleBinding() {
+                    {
+                        super.bind(startX, startY, endX, endY);
+                    }
+
+                    @Override
+                    protected double computeValue() {
+                        double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
+                        return endY.get() + Location.RADIUS * Math.sin(angle);
+                    }
+                }
+        );
+
+    }
+
+    // Bindings for ending in a location
+    /*private Pair<DoubleBinding, DoubleBinding> getEndBindings(final ObservableDoubleValue startX, final ObservableDoubleValue startY, final ObservableDoubleValue endX, final ObservableDoubleValue endY) {
+        return new Pair<>(
+                new DoubleBinding() {
+                    {
+                        super.bind(startX, startY, endX, endY);
+                    }
+
+                    @Override
+                    protected double computeValue() {
+                        double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
+                        return startX.get() + Location.RADIUS * Math.cos(angle);
+                    }
+                },
+                new DoubleBinding() {
+                    {
+                        super.bind(startX, startY, endX, endY);
+                    }
+
+                    @Override
+                    protected double computeValue() {
+                        double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
+                        return startY.get() + Location.RADIUS * Math.sin(angle);
+                    }
+                }
+        );
+
+    }
+
+*/
 }
