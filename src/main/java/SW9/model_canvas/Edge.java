@@ -85,29 +85,57 @@ public class Edge {
                 line.startYProperty().bind(previousNail.centerYProperty());
             }
 
+            // If we are hovering a location we want to set the target location and draw the last line
             if (ModelCanvas.mouseIsHoveringLocation()) {
-                final Nail previousNail = nails.get(nails.size() - 1);
+
                 this.targetLocation = ModelCanvas.getHoveredLocation();
-                Pair<DoubleBinding, DoubleBinding> newLineEndBindings = getEndBindings(
-                        previousNail.centerXProperty(),
-                        previousNail.centerYProperty(),
-                        targetLocation.centerXProperty(),
-                        targetLocation.centerYProperty()
-                );
 
-                line.startXProperty().bind(previousNail.centerXProperty());
-                line.startYProperty().bind(previousNail.centerYProperty());
+                // If the source location should be connected directly to itself
+                if(this.targetLocation.equals(this.sourceLocation) && nails.isEmpty()) {
+                    // TODO connect them (draw two nails and three lines connecting it)
+                } else if(!this.targetLocation.equals(this.sourceLocation) && nails.isEmpty()) {
 
-                line.endXProperty().bind(newLineEndBindings.getKey());
-                line.endYProperty().bind(newLineEndBindings.getValue());
+                    Pair<DoubleBinding, DoubleBinding> newLineStartBindings = getStartBindings(
+                            sourceLocation.centerXProperty(),
+                            sourceLocation.centerYProperty(),
+                            targetLocation.centerXProperty(),
+                            targetLocation.centerYProperty()
+                    );
+
+                    Pair<DoubleBinding, DoubleBinding> newLineEndBindings = getEndBindings(
+                            sourceLocation.centerXProperty(),
+                            sourceLocation.centerYProperty(),
+                            targetLocation.centerXProperty(),
+                            targetLocation.centerYProperty()
+                    );
+
+                    line.startXProperty().bind(newLineStartBindings.getKey());
+                    line.startYProperty().bind(newLineStartBindings.getValue());
+
+                    line.endXProperty().bind(newLineEndBindings.getKey());
+                    line.endYProperty().bind(newLineEndBindings.getValue());
+                } else {
+
+                    final Nail previousNail = nails.get(nails.size() - 1);
+
+                    Pair<DoubleBinding, DoubleBinding> newLineEndBindings = getEndBindings(
+                            previousNail.centerXProperty(),
+                            previousNail.centerYProperty(),
+                            targetLocation.centerXProperty(),
+                            targetLocation.centerYProperty()
+                    );
+
+                    line.startXProperty().bind(previousNail.centerXProperty());
+                    line.startYProperty().bind(previousNail.centerYProperty());
+
+                    line.endXProperty().bind(newLineEndBindings.getKey());
+                    line.endYProperty().bind(newLineEndBindings.getValue());
+                }
 
             } else {
                 line.endXProperty().bind(nail.centerXProperty());
                 line.endYProperty().bind(nail.centerYProperty());
             }
-
-            // TODO ensure you cannot link an edge to the sourcelocaton directly, you muhst have at least one nail
-
 
             if (this.targetLocation == null) {
                 // Add the nail to the collection
