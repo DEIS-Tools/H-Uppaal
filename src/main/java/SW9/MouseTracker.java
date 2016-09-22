@@ -21,72 +21,50 @@ public class MouseTracker {
     private final ArrayList<EventHandler<MouseEvent>> onMousePressedEventHandlers = new ArrayList<>();
     private final ArrayList<EventHandler<MouseEvent>> onMouseReleasedEventHandlers = new ArrayList<>();
 
-
     private final EventHandler<MouseEvent> onMouseMovedEventHandler = event -> {
-
-        // Purge the list for unregistered handlers
         onMouseMovedEventHandlers.removeIf(handler -> handler == null);
-
         for (EventHandler<MouseEvent> handler : onMouseMovedEventHandlers) {
             handler.handle(event);
         }
     };
 
     private final EventHandler<MouseEvent> onMouseClickedEventHandler = event -> {
-
-        // Purge the list for unregistered handlers
         onMouseClickedEventHandlers.removeIf(handler -> handler == null);
-
         for (EventHandler<MouseEvent> handler : onMouseClickedEventHandlers) {
             handler.handle(event);
         }
     };
 
     private final EventHandler<MouseEvent> onMouseEnteredEventHandler = event -> {
-
-        // Purge the list for unregistered handlers
         onMouseEnteredEventHandlers.removeIf(handler -> handler == null);
-
         for (EventHandler<MouseEvent> handler : onMouseEnteredEventHandlers) {
             handler.handle(event);
         }
     };
 
     private final EventHandler<MouseEvent> onMouseExitedEventHandler = event -> {
-
-        // Purge the list for unregistered handlers
         onMouseExitedEventHandlers.removeIf(handler -> handler == null);
-
         for (EventHandler<MouseEvent> handler : onMouseExitedEventHandlers) {
             handler.handle(event);
         }
     };
 
     private final EventHandler<MouseEvent> onMouseDraggedEventHandler = event -> {
-
-        // Purge the list for unregistered handlers
         onMouseDraggedEventHandlers.removeIf(handler -> handler == null);
-
         for (EventHandler<MouseEvent> handler : onMouseDraggedEventHandlers) {
             handler.handle(event);
         }
     };
 
     private final EventHandler<MouseEvent> onMousePressedEventHandler = event -> {
-
-        // Purge the list for unregistered handlers
         onMousePressedEventHandlers.removeIf(handler -> handler == null);
-
         for (EventHandler<MouseEvent> handler : onMousePressedEventHandlers) {
             handler.handle(event);
         }
     };
 
     private final EventHandler<MouseEvent> onMouseReleasedEventHandler = event -> {
-
-        // Purge the list for unregistered handlers
         onMouseReleasedEventHandlers.removeIf(handler -> handler == null);
-
         for (EventHandler<MouseEvent> handler : onMouseReleasedEventHandlers) {
             handler.handle(event);
         }

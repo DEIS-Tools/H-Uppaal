@@ -15,21 +15,11 @@ import javafx.util.Duration;
 
 public class ModelCanvas extends Pane {
 
+
+    // Variables describing the state of the canvas
     private static Location locationOnMouse = null;
     private static Edge edgeOnMouse = null;
     private static Location hoveredLocation = null;
-
-    public static boolean mouseHasLocation() {
-        return locationOnMouse != null;
-    }
-
-    public static boolean mouseHasEdge() {
-        return edgeOnMouse != null;
-    }
-
-    public static boolean locationIsHovered() {
-        return hoveredLocation != null;
-    }
 
     public ModelCanvas() {
         initialize();
@@ -48,10 +38,60 @@ public class ModelCanvas extends Pane {
         }));
     }
 
+    /**
+     * Gets the Location that currently follows the mouse on the canvas
+     * This functionality is maintained by the Location themselves.
+     * @return the Locations following the mouse on the canvas
+     */
+    public static Location getLocationOnMouse() {
+        return locationOnMouse;
+    }
+
+    /**
+     * Sets a Location to follow the mouse on the canvas
+     * This functionality is maintained by the Location themselves.
+     * @param location - a Location to follow the mouse
+     */
+    public static void setLocationOnMouse(final Location location) {
+        locationOnMouse = location;
+    }
+
+    /**
+     * Checks if a Location is currently following the mouse on the canvas
+     * This functionality is maintained by the Location themselves.
+     * @return true if a Location is following the mouse, otherwise false
+     */
+    public static boolean mouseHasLocation() {
+        return locationOnMouse != null;
+    }
+
+    // TODO javadoc for these three (if they are to be used)
+    public static Edge getEdgeOnMouse() {
+        return edgeOnMouse;
+    }
+
+    public static void setEdgeOnMouse(final Edge edge) {
+        edgeOnMouse = edge;
+    }
+
+    public static boolean mouseHasEdge() {
+        return edgeOnMouse != null;
+    }
+
+    /**
+     * Gets the Location currently being hovered by the mouse on the canvas
+     * This functionality is maintained by the Location themselves.
+     * @return the Location be hovered on the canvas
+     */
     public static Location getHoveredLocation() {
         return hoveredLocation;
     }
 
+    /**
+     * Sets a Location to currently being hovered by the mouse on the canvas
+     * This functionality is maintained by the Location themselves.
+     * @param location - a Location that is being hovered
+     */
     public static void setHoveredLocation(final Location location) {
         final Location prevHovered = getHoveredLocation();
 
@@ -85,20 +125,13 @@ public class ModelCanvas extends Pane {
         }
     }
 
-    public static Edge getEdgeOnMouse() {
-        return edgeOnMouse;
-    }
-
-    public static void setEdgeOnMouse(final Edge edge) {
-        edgeOnMouse = edge;
-    }
-
-    public static Location getLocationOnMouse() {
-        return locationOnMouse;
-    }
-
-    public static void setLocationOnMouse(final Location location) {
-        locationOnMouse = location;
+    /**
+     * Checks if a Location is currently being hovered by the mouse on the canvas
+     * This functionality is maintained by the Location themselves.
+     * @return true if a Location is beging hovered bt the mouse, otherwise false
+     */
+    public static boolean mouseHoveringLocation() {
+        return hoveredLocation != null;
     }
 
 }
