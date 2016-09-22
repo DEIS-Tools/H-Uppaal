@@ -16,7 +16,7 @@ import javafx.util.Duration;
 public class Location extends Circle {
 
     // Used to create the Location
-    private final static double RADIUS = 25.0f;
+    public final static double RADIUS = 25.0f;
 
     // Used to drag the location around
     private double dragXOffSet = 0;
