@@ -8,9 +8,8 @@ import javafx.scene.shape.Circle;
 public class Nail extends Circle {
 
     private final static double RADIUS = 5d;
-    
+
     public Nail(final double centerX, final double centerY) {
         super(centerX, centerY, RADIUS);
-        this.setFill(Color.AQUA);
     }
 }

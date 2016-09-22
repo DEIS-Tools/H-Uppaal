@@ -115,8 +115,6 @@ public class Location extends Circle {
         // Draw a new edge from the location
         localMouseTracker.registerOnMousePressedEventHandler(event -> {
             if(event.isShiftDown()) {
-                // TODO draw an edge
-                System.out.println("TODO tegn en edge");
                 new Edge(this, canvasMouseTracker);
             }
         });
