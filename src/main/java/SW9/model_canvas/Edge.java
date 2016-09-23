@@ -1,6 +1,7 @@
 package SW9.model_canvas;
 
 import SW9.MouseTracker;
+import SW9.utility.BindingHelper;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
@@ -108,26 +109,7 @@ public class Edge {
                 if(this.targetLocation.equals(this.sourceLocation) && nails.isEmpty()) {
                     // TODO connect them (draw two nails and three lines connecting it)
                 } else if(!this.targetLocation.equals(this.sourceLocation) && nails.isEmpty()) {
-
-                    Pair<DoubleBinding, DoubleBinding> newLineStartBindings = getStartBindings(
-                            sourceLocation.centerXProperty(),
-                            sourceLocation.centerYProperty(),
-                            targetLocation.centerXProperty(),
-                            targetLocation.centerYProperty()
-                    );
-
-                    Pair<DoubleBinding, DoubleBinding> newLineEndBindings = getEndBindings(
-                            sourceLocation.centerXProperty(),
-                            sourceLocation.centerYProperty(),
-                            targetLocation.centerXProperty(),
-                            targetLocation.centerYProperty()
-                    );
-
-                    line.startXProperty().bind(newLineStartBindings.getKey());
-                    line.startYProperty().bind(newLineStartBindings.getValue());
-
-                    line.endXProperty().bind(newLineEndBindings.getKey());
-                    line.endYProperty().bind(newLineEndBindings.getValue());
+                    BindingHelper.bind(line, sourceLocation, targetLocation);
                 } else {
 
                     final Nail previousNail = nails.get(nails.size() - 1);
