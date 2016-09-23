@@ -23,8 +23,7 @@ public class Edge {
     private final Location sourceLocation;
     private Location targetLocation = null;
 
-    private final Line arrowHeadLeft = new Line();
-    private final Line arrowHeadRight = new Line();
+    private final ArrowHead arrowHead = new ArrowHead();
     private static final double ARROW_HEAD_ANGLE = 15;
     private static final double ARROW_HEAD_LENGTH = 15;
 
@@ -64,6 +63,8 @@ public class Edge {
         this.sourceLocation = sourceLocation;
         this.canvasMouseTracker = canvasMouseTracker;
 
+        addChildToParent(new ArrowHead());
+
         // Bind the lineCue from the source location to the mouse (will be rebound when nails are created)
         BindingHelper.bind(lineCue, sourceLocation, canvasMouseTracker);
 
@@ -71,14 +72,10 @@ public class Edge {
         lineCue.setMouseTransparent(true);
         addChildToParent(lineCue);
 
-        // Add the arrowhead to the canvas
-        arrowHeadRight.setMouseTransparent(true);
-        arrowHeadLeft.setMouseTransparent(true);
-        addChildToParent(arrowHeadRight);
-        addChildToParent(arrowHeadLeft);
+        addChildToParent(arrowHead);
 
         // Bind arrowhead to the line cue
-        bindArrowHeadToLine(lineCue);
+        BindingHelper.bind(arrowHead, lineCue);
 
         this.canvasMouseTracker.registerOnMousePressedEventHandler(event -> {
             if (skipLine) {
@@ -141,7 +138,7 @@ public class Edge {
             // We did finish the edge, remove the cue and move the arrow head
             else {
                 removeChildFromParent(lineCue);
-                bindArrowHeadToLine(line);
+                BindingHelper.bind(arrowHead, line);
             }
 
             BindingHelper.bind(lineCue, nail, canvasMouseTracker);
@@ -169,73 +166,5 @@ public class Edge {
         if (parent == null) return;
 
         parent.getChildren().add(node);
-    }
-
-    private void bindArrowHeadToLine(final Line line) {
-
-        DoubleProperty startX = line.startXProperty();
-        DoubleProperty startY = line.startYProperty();
-        DoubleProperty endX = line.endXProperty();
-        DoubleProperty endY = line.endYProperty();
-
-        DoubleBinding arrowHeadLeftX = new DoubleBinding() {
-            {
-                super.bind(startX, startY, endX, endY);
-            }
-
-            @Override
-            protected double computeValue() {
-                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) + Math.toRadians(ARROW_HEAD_ANGLE);
-                return endX.get() + Math.cos(angle) * ARROW_HEAD_LENGTH;
-            }
-        };
-
-        DoubleBinding arrowHeadLeftY = new DoubleBinding() {
-            {
-                super.bind(startX, startY, endX, endY);
-            }
-
-            @Override
-            protected double computeValue() {
-                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) + Math.toRadians(ARROW_HEAD_ANGLE);
-                return endY.get() + Math.sin(angle) * ARROW_HEAD_LENGTH;
-            }
-        };
-
-        DoubleBinding arrowHeadRightX = new DoubleBinding() {
-            {
-                super.bind(startX, startY, endX, endY);
-            }
-
-            @Override
-            protected double computeValue() {
-                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) - Math.toRadians(ARROW_HEAD_ANGLE);
-                return endX.get() + Math.cos(angle) * ARROW_HEAD_LENGTH;
-            }
-        };
-
-        DoubleBinding arrowHeadRightY = new DoubleBinding() {
-            {
-                super.bind(startX, startY, endX, endY);
-            }
-
-            @Override
-            protected double computeValue() {
-                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) - Math.toRadians(ARROW_HEAD_ANGLE);
-                return endY.get() + Math.sin(angle) * ARROW_HEAD_LENGTH;
-            }
-        };
-
-        arrowHeadLeft.startXProperty().bind(arrowHeadLeftX);
-        arrowHeadLeft.startYProperty().bind(arrowHeadLeftY);
-        arrowHeadLeft.endXProperty().bind(endX);
-        arrowHeadLeft.endYProperty().bind(endY);
-
-        arrowHeadRight.startXProperty().bind(arrowHeadRightX);
-        arrowHeadRight.startYProperty().bind(arrowHeadRightY);
-        arrowHeadRight.endXProperty().bind(endX);
-        arrowHeadRight.endYProperty().bind(endY);
-
-
     }
 }
