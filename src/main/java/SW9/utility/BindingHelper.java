@@ -5,7 +5,6 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.util.Pair;
 
 public class BindingHelper {
 
@@ -61,16 +60,16 @@ public class BindingHelper {
         };
     }
 
-    protected static class LineBinding {
+    private static class LineBinding {
         final ObservableDoubleValue startX;
         final ObservableDoubleValue startY;
         final ObservableDoubleValue endX;
         final ObservableDoubleValue endY;
 
-        public LineBinding (final ObservableDoubleValue startX,
-                            final ObservableDoubleValue startY,
-                            final ObservableDoubleValue endX,
-                            final ObservableDoubleValue endY) {
+        LineBinding(final ObservableDoubleValue startX,
+                    final ObservableDoubleValue startY,
+                    final ObservableDoubleValue endX,
+                    final ObservableDoubleValue endY) {
             this.startX = startX;
             this.startY = startY;
             this.endX = endX;
