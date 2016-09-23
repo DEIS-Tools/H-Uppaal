@@ -10,54 +10,13 @@ public class BindingHelper {
 
     public static void bind(final Line subject, final Location source, final Location target) {
         // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
-        final LineBinding lineBinding = getCircleBindings(source, target);
+        final LineBinding lineBinding = LineBinding.getCircleBindings(source, target);
 
         // Bind the subjects properties accordingly to our calculations
         subject.startXProperty().bind(lineBinding.startX);
         subject.startYProperty().bind(lineBinding.startY);
         subject.endXProperty().bind(lineBinding.endX);
         subject.endYProperty().bind(lineBinding.endY);
-    }
-
-    // Bindings for starting in a location
-    private static LineBinding getCircleBindings(final Circle source, final Circle target) {
-        return new BindingHelper.LineBinding(
-                calculateCircleXLineBinding(source, target),
-                calculateCircleYLineBinding(source, target),
-                calculateCircleXLineBinding(target, source),
-                calculateCircleYLineBinding(target, source));
-    }
-
-    private static ObservableDoubleValue calculateCircleXLineBinding(final Circle source, final Circle target) {
-        return new DoubleBinding() {
-            {
-                super.bind(source.centerXProperty(), source.centerYProperty());
-                super.bind(target.centerXProperty(), target.centerYProperty());
-                super.bind(source.radiusProperty());
-            }
-
-            @Override
-            protected double computeValue() {
-                double angle = Math.atan2(source.centerYProperty().get() - target.centerYProperty().get(), source.centerXProperty().get() - target.centerXProperty().get()) - Math.toRadians(180);
-                return source.centerXProperty().get() + source.radiusProperty().get() * Math.cos(angle);
-            }
-        };
-    }
-
-    private static ObservableDoubleValue calculateCircleYLineBinding(final Circle source, final Circle target) {
-        return new DoubleBinding() {
-            {
-                super.bind(source.centerXProperty(), source.centerYProperty());
-                super.bind(target.centerXProperty(), target.centerYProperty());
-                super.bind(source.radiusProperty());
-            }
-
-            @Override
-            protected double computeValue() {
-                double angle = Math.atan2(source.centerYProperty().get() - target.centerYProperty().get(), source.centerXProperty().get() - target.centerXProperty().get()) - Math.toRadians(180);
-                return source.centerYProperty().get() + source.radiusProperty().get() * Math.sin(angle);
-            }
-        };
     }
 
     private static class LineBinding {
@@ -74,8 +33,47 @@ public class BindingHelper {
             this.startY = startY;
             this.endX = endX;
             this.endY = endY;
+        }
 
+        // Bindings for starting in a location
+        private static LineBinding getCircleBindings(final Circle source, final Circle target) {
+            return new BindingHelper.LineBinding(
+                    calculateXBinding(source, target),
+                    calculateYBinding(source, target),
+                    calculateXBinding(target, source),
+                    calculateYBinding(target, source));
+        }
 
+        private static ObservableDoubleValue calculateXBinding(final Circle source, final Circle target) {
+            return new DoubleBinding() {
+                {
+                    super.bind(source.centerXProperty(), source.centerYProperty());
+                    super.bind(target.centerXProperty(), target.centerYProperty());
+                    super.bind(source.radiusProperty());
+                }
+
+                @Override
+                protected double computeValue() {
+                    double angle = Math.atan2(source.centerYProperty().get() - target.centerYProperty().get(), source.centerXProperty().get() - target.centerXProperty().get()) - Math.toRadians(180);
+                    return source.centerXProperty().get() + source.radiusProperty().get() * Math.cos(angle);
+                }
+            };
+        }
+
+        private static ObservableDoubleValue calculateYBinding(final Circle source, final Circle target) {
+            return new DoubleBinding() {
+                {
+                    super.bind(source.centerXProperty(), source.centerYProperty());
+                    super.bind(target.centerXProperty(), target.centerYProperty());
+                    super.bind(source.radiusProperty());
+                }
+
+                @Override
+                protected double computeValue() {
+                    double angle = Math.atan2(source.centerYProperty().get() - target.centerYProperty().get(), source.centerXProperty().get() - target.centerXProperty().get()) - Math.toRadians(180);
+                    return source.centerYProperty().get() + source.radiusProperty().get() * Math.sin(angle);
+                }
+            };
         }
     }
 
