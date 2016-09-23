@@ -11,5 +11,6 @@ public class Nail extends Circle {
 
     public Nail(final double centerX, final double centerY) {
         super(centerX, centerY, RADIUS);
+        this.setFill(Color.grayRgb(100, 0.5));
     }
 }

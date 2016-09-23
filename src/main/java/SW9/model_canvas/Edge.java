@@ -13,6 +13,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.util.Pair;
+import org.apache.xpath.operations.Mod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,6 @@ public class Edge {
     private static final double ARROW_HEAD_ANGLE = 15;
     private static final double ARROW_HEAD_LENGTH = 15;
 
-    private final List<Nail> nails = new ArrayList<>();
     private Line lineCue = new Line();
 
     private boolean skipLine = true;
@@ -44,6 +44,18 @@ public class Edge {
         }
     };
 
+    ObservableList<Nail> nails = FXCollections.observableArrayList();
+    private BooleanBinding nailsIsEmpty = new BooleanBinding() {
+        {
+            super.bind(nails);
+        }
+
+        @Override
+        protected boolean computeValue() {
+            return nails.isEmpty();
+        }
+    };
+
 
     // Mouse trackers
     private final MouseTracker canvasMouseTracker;
@@ -52,12 +64,10 @@ public class Edge {
         this.sourceLocation = sourceLocation;
         this.canvasMouseTracker = canvasMouseTracker;
 
-        DoubleBinding[] cueBindings = getCueBindings();
+        // Bind the lineCue from the source location to the mouse (will be rebound when nails are created)
+        BindingHelper.bind(lineCue, sourceLocation, canvasMouseTracker);
 
-        lineCue.startXProperty().bind(cueBindings[0]);
-        lineCue.startYProperty().bind(cueBindings[1]);
-        lineCue.endXProperty().bind(cueBindings[2]);
-        lineCue.endYProperty().bind(cueBindings[3]);
+        // Add the lineCue to the canvas and make it click-through
         lineCue.setMouseTransparent(true);
         addChildToParent(lineCue);
 
@@ -78,73 +88,65 @@ public class Edge {
                 return;
             }
 
-            // Create nail
+            // Create a new nail and a line that will connect to it
             final Nail nail = new Nail(lineCue.getEndX(), lineCue.getEndY());
-
-            // Create a new line
+            nail.setMouseTransparent(true);
             final Line line = new Line();
+            line.setMouseTransparent(true);
 
-            // If it is the first line to be placed on the canvas
-            if (linesIsEmpty.get()) {
-                Pair<DoubleBinding, DoubleBinding> newLineStartBindings = getStartBindings(
-                        sourceLocation.centerXProperty(),
-                        sourceLocation.centerYProperty(),
-                        nail.centerXProperty(),
-                        nail.centerYProperty()
-                );
-                line.startXProperty().bind(newLineStartBindings.getKey());
-                line.startYProperty().bind(newLineStartBindings.getValue());
-            } else {
-                final Nail previousNail = nails.get(nails.size() - 1);
-                line.startXProperty().bind(previousNail.centerXProperty());
-                line.startYProperty().bind(previousNail.centerYProperty());
+            // If we are creating the first nail and line
+            // Bind the line from the source location to the location we clicked
+            // Bind the nail to the coordinates we clicked
+            if(!ModelCanvas.mouseIsHoveringLocation() && linesIsEmpty.get() && nailsIsEmpty.get()) {
+                BindingHelper.bind(nail, event);
+                BindingHelper.bind(line, sourceLocation, nail);
             }
 
-            // If we are hovering a location we want to set the target location and draw the last line
-            if (ModelCanvas.mouseIsHoveringLocation()) {
+            // If we are creating the n'th nail and line
+            // Bind the line from the n-1 nail to the n nail
+            // Bind the nail to the coordinates we clicked
+            else if(!ModelCanvas.mouseIsHoveringLocation() && !linesIsEmpty.get() && !nailsIsEmpty.get()) {
+                final Nail previousNail = nails.get(nails.size() - 1);
 
+                BindingHelper.bind(nail, event);
+                BindingHelper.bind(line, previousNail, nail);
+            }
+
+            // We have at least one nail and one line, and are now finishing the edge by pressing a location
+            // Bind the line from the last nail, to the target location
+            else if(ModelCanvas.mouseIsHoveringLocation() && !nailsIsEmpty.get()) {
+                this.targetLocation = ModelCanvas.getHoveredLocation();
+                final Nail previousNail = nails.get(nails.size() - 1);
+
+                BindingHelper.bind(line, previousNail, targetLocation);
+            }
+
+            // We have no nails, i.e. we are creating an edge directly from a source location to a target location
+            else if(ModelCanvas.mouseIsHoveringLocation() && nailsIsEmpty.get()) {
                 this.targetLocation = ModelCanvas.getHoveredLocation();
 
-                // If the source location should be connected directly to itself
-                if(this.targetLocation.equals(this.sourceLocation) && nails.isEmpty()) {
-                    // TODO connect them (draw two nails and three lines connecting it)
-                } else if(!this.targetLocation.equals(this.sourceLocation) && nails.isEmpty()) {
-                    BindingHelper.bind(line, sourceLocation, targetLocation);
+                // If the target location is the same as the source, add some nails to make the view readable
+                if(sourceLocation.equals(targetLocation)) {
+                    System.out.println("data");
                 } else {
-
-                    final Nail previousNail = nails.get(nails.size() - 1);
-
-                    Pair<DoubleBinding, DoubleBinding> newLineEndBindings = getEndBindings(
-                            previousNail.centerXProperty(),
-                            previousNail.centerYProperty(),
-                            targetLocation.centerXProperty(),
-                            targetLocation.centerYProperty()
-                    );
-
-                    line.startXProperty().bind(previousNail.centerXProperty());
-                    line.startYProperty().bind(previousNail.centerYProperty());
-
-                    line.endXProperty().bind(newLineEndBindings.getKey());
-                    line.endYProperty().bind(newLineEndBindings.getValue());
+                    BindingHelper.bind(line, sourceLocation, targetLocation);
                 }
-
-            } else {
-                line.endXProperty().bind(nail.centerXProperty());
-                line.endYProperty().bind(nail.centerYProperty());
             }
 
-            if (this.targetLocation == null) {
-                // Add the nail to the collection
-                nail.setMouseTransparent(true);
+            // We did finish the edge by pressing a location, add the new nail
+            if(this.targetLocation == null) {
                 addChildToParent(nail);
                 nails.add(nail);
-            } else {
-                bindArrowHeadToLine(line);
+            }
+            // We did finish the edge, remove the cue and move the arrow head
+            else {
                 removeChildFromParent(lineCue);
+                bindArrowHeadToLine(line);
             }
 
-            // Add the line to the collection
-            line.setMouseTransparent(true);
+            BindingHelper.bind(lineCue, nail, canvasMouseTracker);
+
+            // Add the line and nail to the canvas
             addChildToParent(line);
             lines.add(line);
         });
@@ -167,147 +169,6 @@ public class Edge {
         if (parent == null) return;
 
         parent.getChildren().add(node);
-    }
-
-    /**
-     * Returns 4 elements in an array the index describes:
-     * 0 - startXProperty
-     * 1 - startYProperty
-     * 2 - endXProperty
-     * 3 - endYProperty
-     *
-     * @return the array of bindings
-     */
-    private DoubleBinding[] getCueBindings() {
-        Pair<DoubleBinding, DoubleBinding> startBindingsWhenLinesEmpty = getStartBindings(
-                sourceLocation.centerXProperty(),
-                sourceLocation.centerYProperty(),
-                canvasMouseTracker.getXProperty(),
-                canvasMouseTracker.getYProperty()
-        );
-
-        return new DoubleBinding[]{
-                new DoubleBinding() {
-                    {
-                        super.bind(lines,
-                                sourceLocation.centerXProperty(),
-                                sourceLocation.centerYProperty(),
-                                canvasMouseTracker.getXProperty(),
-                                canvasMouseTracker.getYProperty());
-                    }
-
-                    @Override
-                    protected double computeValue() {
-
-                        if (linesIsEmpty.get()) {
-                            return startBindingsWhenLinesEmpty.getKey().get();
-                        }
-
-                        return lines.get(lines.size() - 1).endXProperty().get();
-                    }
-                },
-                new DoubleBinding() {
-                    {
-                        super.bind(lines,
-                                sourceLocation.centerXProperty(),
-                                sourceLocation.centerYProperty(),
-                                canvasMouseTracker.getXProperty(),
-                                canvasMouseTracker.getYProperty());
-                    }
-
-                    @Override
-                    protected double computeValue() {
-
-                        if (linesIsEmpty.get()) {
-                            return startBindingsWhenLinesEmpty.getValue().get();
-                        }
-
-                        return lines.get(lines.size() - 1).endYProperty().get();
-                    }
-                },
-                new DoubleBinding() {
-                    {
-                        super.bind(canvasMouseTracker.getXProperty());
-                    }
-
-                    @Override
-                    protected double computeValue() {
-
-                        return canvasMouseTracker.getXProperty().get();
-                    }
-                },
-                new DoubleBinding() {
-                    {
-                        super.bind(canvasMouseTracker.getYProperty());
-                    }
-
-                    @Override
-                    protected double computeValue() {
-
-                        return canvasMouseTracker.getYProperty().get();
-                    }
-                }
-
-        };
-    }
-
-    // Bindings for starting in a location
-    private Pair<DoubleBinding, DoubleBinding> getStartBindings(final ObservableDoubleValue startX, final ObservableDoubleValue startY, final ObservableDoubleValue endX, final ObservableDoubleValue endY) {
-        return new Pair<>(
-                new DoubleBinding() {
-                    {
-                        super.bind(startX, startY, endX, endY);
-                    }
-
-                    @Override
-                    protected double computeValue() {
-                        double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) - Math.toRadians(180);
-                        return startX.get() + Location.RADIUS * Math.cos(angle);
-                    }
-                },
-                new DoubleBinding() {
-                    {
-                        super.bind(startX, startY, endX, endY);
-                    }
-
-                    @Override
-                    protected double computeValue() {
-                        double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) - Math.toRadians(180);
-                        return startY.get() + Location.RADIUS * Math.sin(angle);
-                    }
-                }
-        );
-
-    }
-
-    // Bindings for ending in a location (handles mouse and hover location)
-    private Pair<DoubleBinding, DoubleBinding> getEndBindings(final ObservableDoubleValue startX, final ObservableDoubleValue startY, final ObservableDoubleValue endX, final ObservableDoubleValue endY) {
-
-        return new Pair<>(
-                new DoubleBinding() {
-                    {
-                        super.bind(startX, startY, endX, endY);
-                    }
-
-                    @Override
-                    protected double computeValue() {
-                        double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
-                        return endX.get() + Location.RADIUS * Math.cos(angle);
-                    }
-                },
-                new DoubleBinding() {
-                    {
-                        super.bind(startX, startY, endX, endY);
-                    }
-
-                    @Override
-                    protected double computeValue() {
-                        double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
-                        return endY.get() + Location.RADIUS * Math.sin(angle);
-                    }
-                }
-        );
-
     }
 
     private void bindArrowHeadToLine(final Line line) {
