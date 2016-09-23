@@ -3,6 +3,7 @@ package SW9.model_canvas;
 import SW9.MouseTracker;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +21,10 @@ public class Edge {
     private final Location sourceLocation;
     private Location targetLocation = null;
 
+    private final Line arrowHeadLeft = new Line();
+    private final Line arrowHeadRight = new Line();
+    private static final double ARROW_HEAD_ANGLE = 15;
+    private static final double ARROW_HEAD_LENGTH = 15;
 
     private final List<Nail> nails = new ArrayList<>();
     private Line lineCue = new Line();
@@ -54,6 +59,15 @@ public class Edge {
         lineCue.endYProperty().bind(cueBindings[3]);
         lineCue.setMouseTransparent(true);
         addChildToParent(lineCue);
+
+        // Add the arrowhead to the canvas
+        arrowHeadRight.setMouseTransparent(true);
+        arrowHeadLeft.setMouseTransparent(true);
+        addChildToParent(arrowHeadRight);
+        addChildToParent(arrowHeadLeft);
+
+        // Bind arrowhead to the line cue
+        bindArrowHeadToLine(lineCue);
 
         this.canvasMouseTracker.registerOnMousePressedEventHandler(event -> {
             if (skipLine) {
@@ -143,6 +157,7 @@ public class Edge {
                 addChildToParent(nail);
                 nails.add(nail);
             } else {
+                bindArrowHeadToLine(line);
                 removeChildFromParent(lineCue);
             }
 
@@ -313,34 +328,71 @@ public class Edge {
 
     }
 
-    // Bindings for ending in a location
-    /*private Pair<DoubleBinding, DoubleBinding> getEndBindings(final ObservableDoubleValue startX, final ObservableDoubleValue startY, final ObservableDoubleValue endX, final ObservableDoubleValue endY) {
-        return new Pair<>(
-                new DoubleBinding() {
-                    {
-                        super.bind(startX, startY, endX, endY);
-                    }
+    private void bindArrowHeadToLine(final Line line) {
 
-                    @Override
-                    protected double computeValue() {
-                        double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
-                        return startX.get() + Location.RADIUS * Math.cos(angle);
-                    }
-                },
-                new DoubleBinding() {
-                    {
-                        super.bind(startX, startY, endX, endY);
-                    }
+        DoubleProperty startX = line.startXProperty();
+        DoubleProperty startY = line.startYProperty();
+        DoubleProperty endX = line.endXProperty();
+        DoubleProperty endY = line.endYProperty();
 
-                    @Override
-                    protected double computeValue() {
-                        double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
-                        return startY.get() + Location.RADIUS * Math.sin(angle);
-                    }
-                }
-        );
+        DoubleBinding arrowHeadLeftX = new DoubleBinding() {
+            {
+                super.bind(startX, startY, endX, endY);
+            }
+
+            @Override
+            protected double computeValue() {
+                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) + Math.toRadians(ARROW_HEAD_ANGLE);
+                return endX.get() + Math.cos(angle) * ARROW_HEAD_LENGTH;
+            }
+        };
+
+        DoubleBinding arrowHeadLeftY = new DoubleBinding() {
+            {
+                super.bind(startX, startY, endX, endY);
+            }
+
+            @Override
+            protected double computeValue() {
+                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) + Math.toRadians(ARROW_HEAD_ANGLE);
+                return endY.get() + Math.sin(angle) * ARROW_HEAD_LENGTH;
+            }
+        };
+
+        DoubleBinding arrowHeadRightX = new DoubleBinding() {
+            {
+                super.bind(startX, startY, endX, endY);
+            }
+
+            @Override
+            protected double computeValue() {
+                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) - Math.toRadians(ARROW_HEAD_ANGLE);
+                return endX.get() + Math.cos(angle) * ARROW_HEAD_LENGTH;
+            }
+        };
+
+        DoubleBinding arrowHeadRightY = new DoubleBinding() {
+            {
+                super.bind(startX, startY, endX, endY);
+            }
+
+            @Override
+            protected double computeValue() {
+                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) - Math.toRadians(ARROW_HEAD_ANGLE);
+                return endY.get() + Math.sin(angle) * ARROW_HEAD_LENGTH;
+            }
+        };
+
+        arrowHeadLeft.startXProperty().bind(arrowHeadLeftX);
+        arrowHeadLeft.startYProperty().bind(arrowHeadLeftY);
+        arrowHeadLeft.endXProperty().bind(endX);
+        arrowHeadLeft.endYProperty().bind(endY);
+
+        arrowHeadRight.startXProperty().bind(arrowHeadRightX);
+        arrowHeadRight.startYProperty().bind(arrowHeadRightY);
+        arrowHeadRight.endXProperty().bind(endX);
+        arrowHeadRight.endYProperty().bind(endY);
+
 
     }
-
-*/
 }
