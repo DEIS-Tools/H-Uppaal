@@ -2,11 +2,9 @@ package SW9;
 
 import SW9.utility.ResizeHelper;
 import com.jfoenix.controls.JFXButton;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -58,7 +56,7 @@ public class Main extends Application {
         scene.setOnKeyPressed(KeyboardTracker.handleKeyPress);
         scene.getStylesheets().add("SW9/main.css");
         scene.getStylesheets().add("SW9/colors.css");
-        scene.getStylesheets().add("SW9/model_canvas/location.css");
+        scene.getStylesheets().add("SW9/model_canvas.css");
         stage.setScene(scene);
 
         final Node modelCanvas = scene.lookup("#model-canvas");
