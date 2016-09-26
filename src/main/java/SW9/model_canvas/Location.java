@@ -9,6 +9,7 @@ import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.Pane;
@@ -96,7 +97,8 @@ public class Location extends Circle implements MouseTracker.hasMouseTracker {
         // Draw a new edge from the location
         localMouseTracker.registerOnMousePressedEventHandler(event -> {
             if(event.isShiftDown()) {
-                new Edge(this, canvasMouseTracker);
+                final Edge edge = new Edge(this, canvasMouseTracker);
+                addChildToParent(edge);
             }
         });
 
@@ -113,6 +115,15 @@ public class Location extends Circle implements MouseTracker.hasMouseTracker {
         // Notify the canvas that we are no longer placing a location
         ModelCanvas.setLocationOnMouse(null);
     });
+
+    private void addChildToParent(final Node node) {
+        // Get the parent from the source location
+        Pane parent = (Pane) this.getParent();
+
+        if (parent == null) return;
+
+        parent.getChildren().add(node);
+    }
 
 
     @Override
