@@ -9,7 +9,6 @@ import SW9.utility.DropShadowHelper;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.binding.StringBinding;
-import javafx.beans.binding.When;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -135,7 +134,7 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
 
         // Draw a new edge from the location
         localMouseTracker.registerOnMousePressedEventHandler(event -> {
-            if(event.isShiftDown() && ! ModelCanvas.edgeIsBeingDrawn()) {
+            if (event.isShiftDown() && !ModelCanvas.edgeIsBeingDrawn()) {
                 final Edge edge = new Edge(this, canvasMouseTracker);
                 addChildToParent(edge);
             }
@@ -146,7 +145,7 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
 
         // Register toggle urgent and committed keybinds when the locations is hovered, and unregister them when we are not
         localMouseTracker.registerOnMouseEnteredEventHandler(event -> {
-           KeyboardTracker.registerKeybind(KeyboardTracker.MAKE_LOCATION_URGENT, makeLocationUrgent);
+            KeyboardTracker.registerKeybind(KeyboardTracker.MAKE_LOCATION_URGENT, makeLocationUrgent);
             KeyboardTracker.registerKeybind(KeyboardTracker.MAKE_LOCATION_COMMITTED, makeLocationCommitted);
         });
         localMouseTracker.registerOnMouseExitedEventHandler(event -> {
