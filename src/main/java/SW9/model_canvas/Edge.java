@@ -28,7 +28,7 @@ public class Edge extends Parent {
 
     private boolean skipLine = true;
 
-    ObservableList<Line> lines = FXCollections.observableArrayList();
+    ObservableList<Link> lines = FXCollections.observableArrayList();
     private BooleanBinding linesIsEmpty = new BooleanBinding() {
         {
             super.bind(lines);
@@ -102,36 +102,36 @@ public class Edge extends Parent {
                 return;
             }
 
-            // Create a new nail and a line that will connect to it
+            // Create a new nail and a link that will connect to it
             final Nail nail = new Nail(lineCue.getEndX(), lineCue.getEndY());
-            final Line line = new Line();
-            line.setMouseTransparent(true);
+            final Link link = new Link();
+            link.setMouseTransparent(true);
 
-            // If we are creating the first nail and line
-            // Bind the line from the source location to the location we clicked
+            // If we are creating the first nail and link
+            // Bind the link from the source location to the location we clicked
             // Bind the nail to the coordinates we clicked
             if (!ModelCanvas.mouseIsHoveringLocation() && linesIsEmpty.get() && nailsIsEmpty.get()) {
                 BindingHelper.place(nail, event);
-                BindingHelper.bind(line, sourceLocation, nail);
+                BindingHelper.bind(link.line, sourceLocation, nail);
             }
 
-            // If we are creating the n'th nail and line
-            // Bind the line from the n-1 nail to the n nail
+            // If we are creating the n'th nail and link
+            // Bind the link from the n-1 nail to the n nail
             // Bind the nail to the coordinates we clicked
             else if (!ModelCanvas.mouseIsHoveringLocation() && !linesIsEmpty.get() && !nailsIsEmpty.get()) {
                 final Nail previousNail = nails.get(nails.size() - 1);
 
                 BindingHelper.place(nail, event);
-                BindingHelper.bind(line, previousNail, nail);
+                BindingHelper.bind(link.line, previousNail, nail);
             }
 
-            // We have at least one nail and one line, and are now finishing the edge by pressing a location
-            // Bind the line from the last nail, to the target location
+            // We have at least one nail and one link, and are now finishing the edge by pressing a location
+            // Bind the link from the last nail, to the target location
             else if (ModelCanvas.mouseIsHoveringLocation() && !nailsIsEmpty.get()) {
                 Edge.this.targetLocation = ModelCanvas.getHoveredLocation();
                 final Nail previousNail = nails.get(nails.size() - 1);
 
-                BindingHelper.bind(line, previousNail, targetLocation);
+                BindingHelper.bind(link.line, previousNail, targetLocation);
             }
 
             // We have no nails, i.e. we are creating an edge directly from a source location to a target location
@@ -142,7 +142,7 @@ public class Edge extends Parent {
                 if (sourceLocation.equals(targetLocation)) {
                     System.out.println("Den samme øv bøv");
                 } else {
-                    BindingHelper.bind(line, sourceLocation, targetLocation);
+                    BindingHelper.bind(link.line, sourceLocation, targetLocation);
                 }
             }
 
@@ -154,21 +154,21 @@ public class Edge extends Parent {
             // We did finish the edge, remove the cue and move the arrow head
             else {
                 Edge.this.getChildren().remove(lineCue);
-                BindingHelper.bind(arrowHead, line);
+                BindingHelper.bind(arrowHead, link.line);
 
                 // We no longer wish to discard the edge when pressing the esc button
                 KeyboardTracker.unregisterKeybind(KeyboardTracker.DISCARD_NEW_EDGE);
 
                 // Make all lines visible to the mouse (so that we can show nails when we hover the lines)
                 lines.forEach(l -> l.setMouseTransparent(false));
-                line.setMouseTransparent(false);
+                link.setMouseTransparent(false);
             }
 
             BindingHelper.bind(lineCue, nail, canvasMouseTracker);
 
-            // Add the line and nail to the canvas
-            Edge.this.getChildren().add(line);
-            lines.add(line);
+            // Add the link and nail to the canvas
+            Edge.this.getChildren().add(0, link);
+            lines.add(link);
         }
     };
 
