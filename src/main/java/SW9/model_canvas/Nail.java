@@ -17,7 +17,9 @@ public class Nail extends Circle implements MouseTracker.hasMouseTracker {
 
     public Nail(final double centerX, final double centerY) {
         super(centerX, centerY, HIDDEN_RADIUS);
-        this.setFill(Color.grayRgb(100, 0.5));
+
+        // Style the nail
+        getStyleClass().add("nail");
 
         // Hide the nails so that they do not become rendered right away
         visibleProperty().setValue(false);

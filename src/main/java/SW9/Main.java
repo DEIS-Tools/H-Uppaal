@@ -59,7 +59,7 @@ public class Main extends Application {
         scene.setOnKeyPressed(KeyboardTracker.handleKeyPress);
         scene.getStylesheets().add("SW9/main.css");
         scene.getStylesheets().add("SW9/colors.css");
-        scene.getStylesheets().add("SW9/model_canvas/location.css");
+        scene.getStylesheets().add("SW9/model_canvas.css");
         stage.setScene(scene);
 
         final Node modelCanvas = scene.lookup("#model-canvas");
