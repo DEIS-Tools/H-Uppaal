@@ -9,13 +9,14 @@ import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
-public class Location extends Circle implements MouseTracker.hasMouseTracker {
+public class Location extends Parent implements MouseTracker.hasMouseTracker {
 
     // Used to create the Location
     public final static double RADIUS = 25.0f;
@@ -24,22 +25,25 @@ public class Location extends Circle implements MouseTracker.hasMouseTracker {
     private boolean isOnMouse = true;
     public final MouseTracker localMouseTracker;
 
+    public Circle circle;
+
     public Location(MouseTracker canvasMouseTracker) {
         this(canvasMouseTracker.getXProperty(), canvasMouseTracker.getYProperty(), canvasMouseTracker);
     }
 
     public Location(final DoubleProperty centerX, final DoubleProperty centerY, final MouseTracker canvasMouseTracker) {
-        super(centerX.doubleValue(), centerY.doubleValue(), RADIUS);
+        circle = new Circle(centerX.doubleValue(), centerY.doubleValue(), RADIUS);
+        getChildren().add(circle);
 
         // Bind the Location to the property
-        this.centerXProperty().bind(centerX);
-        this.centerYProperty().bind(centerY);
+        circle.centerXProperty().bind(centerX);
+        circle.centerYProperty().bind(centerY);
 
         // Initialize the local mouse tracker
         this.localMouseTracker = new MouseTracker(this);
 
         // Add style
-        this.getStyleClass().add("location");
+        circle.getStyleClass().add("location");
 
         // Register the handler for entering the location
         localMouseTracker.registerOnMouseEnteredEventHandler(event -> {
@@ -56,8 +60,8 @@ public class Location extends Circle implements MouseTracker.hasMouseTracker {
         // Place the new location when the mouse is pressed (i.e. stop moving it)
         localMouseTracker.registerOnMousePressedEventHandler(mouseClickedEvent -> {
             if (isOnMouse) {
-                this.centerXProperty().unbind();
-                this.centerYProperty().unbind();
+                circle.centerXProperty().unbind();
+                circle.centerYProperty().unbind();
 
                 // Tell the canvas that the mouse is no longer occupied
                 ModelCanvas.setLocationOnMouse(null);
@@ -127,11 +131,11 @@ public class Location extends Circle implements MouseTracker.hasMouseTracker {
 
     @Override
     public DoubleProperty xProperty() {
-        return this.centerXProperty();
+        return circle.centerXProperty();
     }
 
     @Override
     public DoubleProperty yProperty() {
-        return this.centerYProperty();
+        return circle.centerYProperty();
     }
 }

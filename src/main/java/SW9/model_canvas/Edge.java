@@ -65,7 +65,7 @@ public class Edge extends Parent {
         getChildren().add(new ArrowHead());
 
         // Bind the lineCue from the source location to the mouse (will be rebound when nails are created)
-        BindingHelper.bind(lineCue, sourceLocation, canvasMouseTracker);
+        BindingHelper.bind(lineCue, sourceLocation.circle, canvasMouseTracker);
 
         // Add the lineCue to the canvas
         getChildren().add(lineCue);
@@ -123,7 +123,7 @@ public class Edge extends Parent {
             // Bind the nail to the coordinates we clicked
             if (!ModelCanvas.mouseIsHoveringLocation() && linesIsEmpty.get() && nailsIsEmpty.get()) {
                 BindingHelper.place(nail, event);
-                BindingHelper.bind(link.line, sourceLocation, nail);
+                BindingHelper.bind(link.line, sourceLocation.circle, nail);
             }
 
             // If we are creating the n'th nail and link
@@ -142,7 +142,7 @@ public class Edge extends Parent {
                 Edge.this.targetLocation = ModelCanvas.getHoveredLocation();
                 final Nail previousNail = nails.get(nails.size() - 1);
 
-                BindingHelper.bind(link.line, previousNail, targetLocation);
+                BindingHelper.bind(link.line, previousNail, targetLocation.circle);
             }
 
             // We have no nails, i.e. we are creating an edge directly from a source location to a target location
@@ -154,8 +154,8 @@ public class Edge extends Parent {
 
                     targetLocation = sourceLocation;
                     // Create two nails outside the source locations
-                    Nail firstNail = new Nail(sourceLocation.getCenterX() + Location.RADIUS * 3, sourceLocation.getCenterY());
-                    Nail secondNail  = new Nail(sourceLocation.getCenterX(), sourceLocation.getCenterY()  + Location.RADIUS * 3);
+                    Nail firstNail = new Nail(sourceLocation.circle.getCenterX() + Location.RADIUS * 3, sourceLocation.circle.getCenterY());
+                    Nail secondNail  = new Nail(sourceLocation.circle.getCenterX(), sourceLocation.circle.getCenterY()  + Location.RADIUS * 3);
 
                     // Create two links for connecting the edge (the link created before is the third link in the chain)
                     Link firstLink = new Link();
@@ -169,12 +169,12 @@ public class Edge extends Parent {
                     nails.addAll(firstNail, secondNail);
 
                     // Bind the links between the nails and source locations
-                    BindingHelper.bind(firstLink.line, sourceLocation, firstNail);
+                    BindingHelper.bind(firstLink.line, sourceLocation.circle, firstNail);
                     BindingHelper.bind(secondLink.line, firstNail, secondNail);
-                    BindingHelper.bind(link.line, secondNail, targetLocation);
+                    BindingHelper.bind(link.line, secondNail, targetLocation.circle);
 
                 } else {
-                    BindingHelper.bind(link.line, sourceLocation, targetLocation);
+                    BindingHelper.bind(link.line, sourceLocation.circle, targetLocation.circle);
                 }
             }
 
