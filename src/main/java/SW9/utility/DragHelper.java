@@ -10,6 +10,10 @@ import java.util.function.Function;
 
 public class DragHelper {
 
+    public static <T extends Node & MouseTracker.hasMouseTracker> void makeDraggable(final T subject) {
+        makeDraggable(subject, mouseEvent -> true);
+    }
+
     public static <T extends Node & MouseTracker.hasMouseTracker> void makeDraggable(final T subject, final Function<MouseEvent, Boolean> conditional) {
         final MouseTracker mouseTracker = subject.getMouseTracker();
 
@@ -47,17 +51,15 @@ public class DragHelper {
         mouseTracker.registerOnMouseMovedEventHandler(event -> {
             if (conditional.apply(event)) {
                 subject.setCursor(Cursor.OPEN_HAND);
-            }
-            else {
+            } else {
                 subject.setCursor(Cursor.DEFAULT);
             }
         });
 
         // The cursor should look normal when we are no longer dragging the subject
         mouseTracker.registerOnMouseExitedEventHandler(event -> {
-           subject.setCursor(Cursor.DEFAULT);
+            subject.setCursor(Cursor.DEFAULT);
         });
 
     }
-
 }

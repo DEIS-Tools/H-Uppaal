@@ -87,7 +87,6 @@ public class Edge {
 
             // Create a new nail and a line that will connect to it
             final Nail nail = new Nail(lineCue.getEndX(), lineCue.getEndY());
-            nail.setMouseTransparent(true);
             final Line line = new Line();
             line.setMouseTransparent(true);
 
@@ -95,7 +94,7 @@ public class Edge {
             // Bind the line from the source location to the location we clicked
             // Bind the nail to the coordinates we clicked
             if(!ModelCanvas.mouseIsHoveringLocation() && linesIsEmpty.get() && nailsIsEmpty.get()) {
-                BindingHelper.bind(nail, event);
+                BindingHelper.place(nail, event);
                 BindingHelper.bind(line, sourceLocation, nail);
             }
 
@@ -105,7 +104,7 @@ public class Edge {
             else if(!ModelCanvas.mouseIsHoveringLocation() && !linesIsEmpty.get() && !nailsIsEmpty.get()) {
                 final Nail previousNail = nails.get(nails.size() - 1);
 
-                BindingHelper.bind(nail, event);
+                BindingHelper.place(nail, event);
                 BindingHelper.bind(line, previousNail, nail);
             }
 

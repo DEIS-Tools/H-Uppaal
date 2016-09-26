@@ -34,10 +34,10 @@ public class BindingHelper {
         subject.endYProperty().bind(lineBinding.endY);
     }
 
-    public static void bind(final Circle subject, final MouseEvent target) {
+    public static void place(final Circle subject, final MouseEvent target) {
         // Calculate the bindings (so that the subject will be centered on where the mouse event happened)
-        subject.centerXProperty().bind(new SimpleDoubleProperty(target.getX()));
-        subject.centerYProperty().bind(new SimpleDoubleProperty(target.getY()));
+        subject.centerXProperty().set(target.getX());
+        subject.centerYProperty().set(target.getY());
     }
 
     public static void bind(final ArrowHead subject, final Line source) {
