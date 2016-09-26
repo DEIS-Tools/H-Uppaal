@@ -2,18 +2,26 @@ package SW9.model_canvas;
 
 import SW9.MouseTracker;
 import SW9.utility.DragHelper;
+import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 public class Nail extends Circle implements MouseTracker.hasMouseTracker {
 
-    private final static double RADIUS = 5d;
+    private final static double HIDDEN_RADIUS = 1d;
+    private final static double VISIBLE_RADIUS = 5d;
     private final MouseTracker mouseTracker = new MouseTracker(this);
 
     public Nail(final double centerX, final double centerY) {
-        super(centerX, centerY, RADIUS);
+        super(centerX, centerY, HIDDEN_RADIUS);
         this.setFill(Color.grayRgb(100, 0.5));
+
+        // Hide the nails so that they do not become rendered right away
+        visibleProperty().setValue(false);
+
+        // Bind the radius to the visibility property (so that we do not get space between lines)
+        radiusProperty().bind(new When(visibleProperty()).then(VISIBLE_RADIUS).otherwise(HIDDEN_RADIUS));
 
         DragHelper.makeDraggable(this);
     }

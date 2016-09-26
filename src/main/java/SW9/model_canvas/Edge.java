@@ -54,6 +54,7 @@ public class Edge extends Parent {
 
     // Mouse trackers
     private MouseTracker canvasMouseTracker = null;
+    private final MouseTracker localMouseTracker = new MouseTracker(this);
 
     public Edge(final Location sourceLocation, final MouseTracker canvasMouseTracker) {
         this.sourceLocation = sourceLocation;
@@ -77,7 +78,6 @@ public class Edge extends Parent {
 
         // Add keybind to discard the nails and lines if ESC is pressed
         Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
-            System.out.println("data");
             // Get the parent from the source location
             Pane parent = (Pane) this.getParent();
             if (parent == null) return;
@@ -86,6 +86,10 @@ public class Edge extends Parent {
             this.canvasMouseTracker.unregisterOnMousePressedEventHandler(drawEdgeStepWhenCanvasPressed);
         });
         KeyboardTracker.registerKeybind(KeyboardTracker.DISCARD_NEW_EDGE, removeOnEscape);
+
+        // Make nails visible when we hover the edge
+        localMouseTracker.registerOnMouseEnteredEventHandler(event -> nails.forEach(nail -> nail.setVisible(true)));
+        localMouseTracker.registerOnMouseExitedEventHandler(event -> nails.forEach(nail -> nail.setVisible(false)));
     }
 
     private final EventHandler<MouseEvent> drawEdgeStepWhenCanvasPressed = new EventHandler<MouseEvent>() {
@@ -136,7 +140,7 @@ public class Edge extends Parent {
 
                 // If the target location is the same as the source, add some nails to make the view readable
                 if (sourceLocation.equals(targetLocation)) {
-                    System.out.println("data");
+                    System.out.println("Den samme øv bøv");
                 } else {
                     BindingHelper.bind(line, sourceLocation, targetLocation);
                 }
@@ -155,7 +159,9 @@ public class Edge extends Parent {
                 // We no longer wish to discard the edge when pressing the esc button
                 KeyboardTracker.unregisterKeybind(KeyboardTracker.DISCARD_NEW_EDGE);
 
-                System.out.println("remove");
+                // Make all lines visible to the mouse (so that we can show nails when we hover the lines)
+                lines.forEach(l -> l.setMouseTransparent(false));
+                line.setMouseTransparent(false);
             }
 
             BindingHelper.bind(lineCue, nail, canvasMouseTracker);
