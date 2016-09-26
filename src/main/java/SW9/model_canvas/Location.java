@@ -3,17 +3,19 @@ package SW9.model_canvas;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
+import SW9.utility.DragHelper;
 import SW9.utility.DropShadowHelper;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
-public class Location extends Circle {
+public class Location extends Circle implements MouseTracker.hasMouseTracker {
 
     // Used to create the Location
     public final static double RADIUS = 25.0f;
@@ -88,29 +90,8 @@ public class Location extends Circle {
             }
         });
 
-        // Enable dragging of locations (only if shift is not used)
-        localMouseTracker.registerOnMousePressedEventHandler(event -> {
-            if(!event.isShiftDown()) {
-                dragXOffSet = this.centerXProperty().get() - event.getX();
-                dragYOffSet = this.centerYProperty().get() - event.getY();
-                isBeingDragged = true;
-            }
-        });
-
-        // Make the location follow the mouse on drag (if enabled)
-        localMouseTracker.registerOnMouseDraggedEventHandler(event -> {
-            if(isBeingDragged) {
-                this.setCenterX(event.getX() + dragXOffSet);
-                this.setCenterY(event.getY() + dragYOffSet);
-            }
-        });
-
-        // Disable dragging of location
-        localMouseTracker.registerOnMouseReleasedEventHandler(event -> {
-           if(isBeingDragged) {
-              isBeingDragged = false;
-           }
-        });
+        // Make the location draggable
+        DragHelper.makeDraggable(this, (event) -> !event.isShiftDown());
 
         // Draw a new edge from the location
         localMouseTracker.registerOnMousePressedEventHandler(event -> {
@@ -134,4 +115,18 @@ public class Location extends Circle {
     });
 
 
+    @Override
+    public MouseTracker getMouseTracker() {
+        return this.localMouseTracker;
+    }
+
+    @Override
+    public DoubleProperty xProperty() {
+        return this.centerXProperty();
+    }
+
+    @Override
+    public DoubleProperty yProperty() {
+        return this.centerYProperty();
+    }
 }
