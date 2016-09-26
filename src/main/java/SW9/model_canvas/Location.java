@@ -21,11 +21,6 @@ public class Location extends Circle implements MouseTracker.hasMouseTracker {
     // Used to create the Location
     public final static double RADIUS = 25.0f;
 
-    // Used to drag the location around
-    private double dragXOffSet = 0;
-    private double dragYOffSet = 0;
-    private boolean isBeingDragged = false;
-
     // Used to update the interaction with the mouse
     private boolean isOnMouse = true;
     public final MouseTracker localMouseTracker;
