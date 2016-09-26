@@ -60,13 +60,15 @@ public class Edge extends Parent {
         this.sourceLocation = sourceLocation;
         this.canvasMouseTracker = canvasMouseTracker;
 
+        // Make the edge click-through until it is placed
+        this.setMouseTransparent(true);
+
         getChildren().add(new ArrowHead());
 
         // Bind the lineCue from the source location to the mouse (will be rebound when nails are created)
         BindingHelper.bind(lineCue, sourceLocation, canvasMouseTracker);
 
-        // Add the lineCue to the canvas and make it click-through
-        lineCue.setMouseTransparent(true);
+        // Add the lineCue to the canvas
         getChildren().add(lineCue);
 
         getChildren().add(arrowHead);
@@ -89,7 +91,14 @@ public class Edge extends Parent {
 
         // Make nails visible when we hover the edge
         localMouseTracker.registerOnMouseEnteredEventHandler(event -> nails.forEach(nail -> nail.setVisible(true)));
-        localMouseTracker.registerOnMouseExitedEventHandler(event -> nails.forEach(nail -> nail.setVisible(false)));
+
+        // If no nail is being dragged and we are not hovering the edge, make the nails invisible
+        localMouseTracker.registerOnMouseExitedEventHandler(event -> {
+            for(Nail nail : nails) {
+                if(nail.isBeingDragged) return;
+            }
+            nails.forEach(nail -> nail.setVisible(false));
+        });
     }
 
     private final EventHandler<MouseEvent> drawEdgeStepWhenCanvasPressed = new EventHandler<MouseEvent>() {
@@ -105,7 +114,6 @@ public class Edge extends Parent {
             // Create a new nail and a link that will connect to it
             final Nail nail = new Nail(lineCue.getEndX(), lineCue.getEndY());
             final Link link = new Link();
-            link.setMouseTransparent(true);
 
             // If we are creating the first nail and link
             // Bind the link from the source location to the location we clicked
@@ -159,9 +167,8 @@ public class Edge extends Parent {
                 // We no longer wish to discard the edge when pressing the esc button
                 KeyboardTracker.unregisterKeybind(KeyboardTracker.DISCARD_NEW_EDGE);
 
-                // Make all lines visible to the mouse (so that we can show nails when we hover the lines)
-                lines.forEach(l -> l.setMouseTransparent(false));
-                link.setMouseTransparent(false);
+                // Make the edge visible to the mouse (so that we can show nails when we hover the lines)
+                Edge.this.setMouseTransparent(false);
             }
 
             BindingHelper.bind(lineCue, nail, canvasMouseTracker);

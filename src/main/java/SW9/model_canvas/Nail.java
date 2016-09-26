@@ -9,9 +9,11 @@ import javafx.scene.shape.Circle;
 
 public class Nail extends Circle implements MouseTracker.hasMouseTracker {
 
-    private final static double HIDDEN_RADIUS = 1d;
+    private final static double HIDDEN_RADIUS = 0d;
     private final static double VISIBLE_RADIUS = 5d;
     private final MouseTracker mouseTracker = new MouseTracker(this);
+
+    public boolean isBeingDragged = false;
 
     public Nail(final double centerX, final double centerY) {
         super(centerX, centerY, HIDDEN_RADIUS);
@@ -24,6 +26,9 @@ public class Nail extends Circle implements MouseTracker.hasMouseTracker {
         radiusProperty().bind(new When(visibleProperty()).then(VISIBLE_RADIUS).otherwise(HIDDEN_RADIUS));
 
         DragHelper.makeDraggable(this);
+
+        mouseTracker.registerOnMousePressedEventHandler(event -> isBeingDragged = true);
+        mouseTracker.registerOnMouseReleasedEventHandler(event -> isBeingDragged = false);
     }
 
     @Override
