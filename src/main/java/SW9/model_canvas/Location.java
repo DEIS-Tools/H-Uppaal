@@ -8,7 +8,6 @@ import SW9.utility.DropShadowHelper;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -86,12 +85,12 @@ public class Location extends Circle implements MouseTracker.hasMouseTracker {
             }
         });
 
-        // Make the location draggable
-        DragHelper.makeDraggable(this, (event) -> !event.isShiftDown());
+        // Make the location draggable (if shift is not pressed, and there is no edge currently being drawn)
+        DragHelper.makeDraggable(this, (event) -> !event.isShiftDown() && !ModelCanvas.edgeIsBeingDrawn());
 
         // Draw a new edge from the location
         localMouseTracker.registerOnMousePressedEventHandler(event -> {
-            if(event.isShiftDown()) {
+            if(event.isShiftDown() && ! ModelCanvas.edgeIsBeingDrawn()) {
                 final Edge edge = new Edge(this, canvasMouseTracker);
                 addChildToParent(edge);
             }

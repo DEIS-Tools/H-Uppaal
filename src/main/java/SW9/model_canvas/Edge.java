@@ -21,22 +21,20 @@ public class Edge extends Parent {
     private Location targetLocation = null;
 
     private final ArrowHead arrowHead = new ArrowHead();
-    private static final double ARROW_HEAD_ANGLE = 15;
-    private static final double ARROW_HEAD_LENGTH = 15;
 
     private Line lineCue = new Line();
 
     private boolean skipLine = true;
 
-    ObservableList<Link> lines = FXCollections.observableArrayList();
+    ObservableList<Link> links = FXCollections.observableArrayList();
     private BooleanBinding linesIsEmpty = new BooleanBinding() {
         {
-            super.bind(lines);
+            super.bind(links);
         }
 
         @Override
         protected boolean computeValue() {
-            return lines.isEmpty();
+            return links.isEmpty();
         }
     };
 
@@ -59,6 +57,7 @@ public class Edge extends Parent {
     public Edge(final Location sourceLocation, final MouseTracker canvasMouseTracker) {
         this.sourceLocation = sourceLocation;
         this.canvasMouseTracker = canvasMouseTracker;
+        ModelCanvas.setEdgeBeingDrawn(this);
 
         // Make the edge click-through until it is placed
         this.setMouseTransparent(true);
@@ -78,14 +77,18 @@ public class Edge extends Parent {
 
         this.canvasMouseTracker.registerOnMousePressedEventHandler(drawEdgeStepWhenCanvasPressed);
 
-        // Add keybind to discard the nails and lines if ESC is pressed
+        // Add keybind to discard the nails and links if ESC is pressed
         Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
             // Get the parent from the source location
             Pane parent = (Pane) this.getParent();
             if (parent == null) return;
 
+            // Remove this edge from the canvas and unregister its draw ednge handler
             parent.getChildren().remove(this);
             this.canvasMouseTracker.unregisterOnMousePressedEventHandler(drawEdgeStepWhenCanvasPressed);
+
+            // Tell the canvas that this edge is no longer being drawn
+            ModelCanvas.setEdgeBeingDrawn(null);
         });
         KeyboardTracker.registerKeybind(KeyboardTracker.DISCARD_NEW_EDGE, removeOnEscape);
 
@@ -148,7 +151,28 @@ public class Edge extends Parent {
 
                 // If the target location is the same as the source, add some nails to make the view readable
                 if (sourceLocation.equals(targetLocation)) {
-                    System.out.println("Den samme øv bøv");
+
+                    targetLocation = sourceLocation;
+                    // Create two nails outside the source locations
+                    Nail firstNail = new Nail(sourceLocation.getCenterX() + Location.RADIUS * 3, sourceLocation.getCenterY());
+                    Nail secondNail  = new Nail(sourceLocation.getCenterX(), sourceLocation.getCenterY()  + Location.RADIUS * 3);
+
+                    // Create two links for connecting the edge (the link created before is the third link in the chain)
+                    Link firstLink = new Link();
+                    Link secondLink = new Link();
+
+                    // Add them to the view
+                    Edge.this.getChildren().addAll(firstLink, secondLink,firstNail, secondNail);
+
+                    // Add links and edges to the collections
+                    links.addAll(firstLink, secondLink);
+                    nails.addAll(firstNail, secondNail);
+
+                    // Bind the links between the nails and source locations
+                    BindingHelper.bind(firstLink.line, sourceLocation, firstNail);
+                    BindingHelper.bind(secondLink.line, firstNail, secondNail);
+                    BindingHelper.bind(link.line, secondNail, targetLocation);
+
                 } else {
                     BindingHelper.bind(link.line, sourceLocation, targetLocation);
                 }
@@ -167,15 +191,18 @@ public class Edge extends Parent {
                 // We no longer wish to discard the edge when pressing the esc button
                 KeyboardTracker.unregisterKeybind(KeyboardTracker.DISCARD_NEW_EDGE);
 
-                // Make the edge visible to the mouse (so that we can show nails when we hover the lines)
+                // Make the edge visible to the mouse (so that we can show nails when we hover the links)
                 Edge.this.setMouseTransparent(false);
+
+                // Tell the canvas that this edge is no longer being drawn
+                ModelCanvas.setEdgeBeingDrawn(null);
             }
 
             BindingHelper.bind(lineCue, nail, canvasMouseTracker);
 
             // Add the link and nail to the canvas
             Edge.this.getChildren().add(0, link);
-            lines.add(link);
+            links.add(link);
         }
     };
 

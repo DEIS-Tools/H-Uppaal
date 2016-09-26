@@ -22,7 +22,7 @@ public class Nail extends Circle implements MouseTracker.hasMouseTracker {
         // Hide the nails so that they do not become rendered right away
         visibleProperty().setValue(false);
 
-        // Bind the radius to the visibility property (so that we do not get space between lines)
+        // Bind the radius to the visibility property (so that we do not get space between links)
         radiusProperty().bind(new When(visibleProperty()).then(VISIBLE_RADIUS).otherwise(HIDDEN_RADIUS));
 
         DragHelper.makeDraggable(this);
