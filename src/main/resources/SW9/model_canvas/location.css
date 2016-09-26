@@ -1,4 +1,5 @@
 .location {
-    -fx-fill: -cyan-800;
+    -fx-fill: -primary-color;
+    -fx-stroke: -primary-color-darkest;
     -fx-stroke-width: 2;
 }

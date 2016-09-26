@@ -48,13 +48,13 @@ public class Location extends Circle implements MouseTracker.hasMouseTracker {
 
         // Register the handler for existing the locations
         localMouseTracker.registerOnMouseExitedEventHandler(event -> {
-            if(ModelCanvas.mouseIsHoveringLocation() && ModelCanvas.getHoveredLocation().equals(this)) {
+            if (ModelCanvas.mouseIsHoveringLocation() && ModelCanvas.getHoveredLocation().equals(this)) {
                 ModelCanvas.setHoveredLocation(null);
             }
         });
 
         // Place the new location when the mouse is pressed (i.e. stop moving it)
-        localMouseTracker.registerOnMousePressedEventHandler( mouseClickedEvent -> {
+        localMouseTracker.registerOnMousePressedEventHandler(mouseClickedEvent -> {
             if (isOnMouse) {
                 this.centerXProperty().unbind();
                 this.centerYProperty().unbind();
@@ -103,7 +103,7 @@ public class Location extends Circle implements MouseTracker.hasMouseTracker {
     private final Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
         // Get the parent and detach this Location
         Pane parent = (Pane) this.getParent();
-        if(parent == null) return;
+        if (parent == null) return;
         parent.getChildren().remove(this);
 
         // Notify the canvas that we are no longer placing a location
