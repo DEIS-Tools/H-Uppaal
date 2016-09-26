@@ -33,7 +33,7 @@ public class Main extends Application {
     private double xOffset;
     private double yOffset;
     private double previousX, previousY, previousWidth, previousHeight;
-    private BooleanProperty isMaximized = new SimpleBooleanProperty(false);
+    public static BooleanProperty isMaximized = new SimpleBooleanProperty(false);
 
     private final static DoubleProperty border = new SimpleDoubleProperty(3d);
     public static MouseTracker mouseTracker;
@@ -116,7 +116,7 @@ public class Main extends Application {
 
                 isMaximized.set(false);
             }
-            // Mov the stage
+            // Move the stage
             else {
                 stage.setX(event.getScreenX() + xOffset);
                 stage.setY(event.getScreenY() + yOffset);
@@ -182,12 +182,7 @@ public class Main extends Application {
                 isMaximized.set(true);
             }
         });
-        final ChangeListener<Number> windowResized = (observable, oldValue, newValue) -> {
-            if(newValue.doubleValue() < oldValue.doubleValue()) {
-            }
-        };
-        stage.widthProperty().addListener(windowResized);
-        stage.heightProperty().addListener(windowResized);
+
         rightStatusBar.getChildren().add(resizeBtn);
 
         // Add the close button to the status bar

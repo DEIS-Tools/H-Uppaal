@@ -1,5 +1,6 @@
 package SW9.utility;
 
+import SW9.Main;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
@@ -28,7 +29,7 @@ public class ResizeHelper {
 
     private static EventHandler<MouseEvent> resizeLeft = event -> {
         final double newWidth = width + (xOffset - event.getScreenX());
-        if(newWidth < minWidth) return;
+        if (newWidth < minWidth) return;
 
         stage.setWidth(newWidth);
         stage.setX(event.getScreenX());
@@ -36,14 +37,14 @@ public class ResizeHelper {
 
     private static EventHandler<MouseEvent> resizeRight = event -> {
         final double newWidth = width + (event.getScreenX() - xOffset);
-        if(newWidth < minWidth) return;
+        if (newWidth < minWidth) return;
 
         stage.setWidth(newWidth);
     };
 
     private static EventHandler<MouseEvent> resizeUp = event -> {
         final double newHeight = height + (yOffset - event.getScreenY());
-        if(newHeight < minHeight) return;
+        if (newHeight < minHeight) return;
 
         stage.setHeight(newHeight);
         stage.setY(event.getScreenY());
@@ -51,7 +52,7 @@ public class ResizeHelper {
 
     private static EventHandler<MouseEvent> resizeDown = event -> {
         final double newHeight = height - (yOffset - event.getScreenY());
-        if(newHeight < minHeight) return;
+        if (newHeight < minHeight) return;
 
         stage.setHeight(newHeight);
     };
@@ -127,15 +128,26 @@ public class ResizeHelper {
         StackPane.setAlignment(rectangle, alignment);
 
         rectangle.setOnMouseEntered(event -> {
+            // The window is maximized do not allow resizing
+            if (Main.isMaximized.get()) return;
+
             ResizeHelper.stage.getScene().setCursor(cursor);
             updateOffsets.handle(event);
         });
 
         rectangle.setOnMouseExited(event -> {
+            // The window is maximized do not allow resizing
+            if (Main.isMaximized.get()) return;
+
             ResizeHelper.stage.getScene().setCursor(Cursor.DEFAULT);
         });
 
-        rectangle.setOnMouseDragged(onMouseDragged);
+        rectangle.setOnMouseDragged(event -> {
+            // The window is maximized do not allow resizing
+            if (Main.isMaximized.get()) return;
+
+            onMouseDragged.handle(event);
+        });
 
         return rectangle;
     }
