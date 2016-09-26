@@ -8,7 +8,6 @@ import SW9.utility.DropShadowHelper;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -49,13 +48,13 @@ public class Location extends Circle implements MouseTracker.hasMouseTracker {
 
         // Register the handler for existing the locations
         localMouseTracker.registerOnMouseExitedEventHandler(event -> {
-            if(ModelCanvas.mouseIsHoveringLocation() && ModelCanvas.getHoveredLocation().equals(this)) {
+            if (ModelCanvas.mouseIsHoveringLocation() && ModelCanvas.getHoveredLocation().equals(this)) {
                 ModelCanvas.setHoveredLocation(null);
             }
         });
 
         // Place the new location when the mouse is pressed (i.e. stop moving it)
-        localMouseTracker.registerOnMousePressedEventHandler( mouseClickedEvent -> {
+        localMouseTracker.registerOnMousePressedEventHandler(mouseClickedEvent -> {
             if (isOnMouse) {
                 this.centerXProperty().unbind();
                 this.centerYProperty().unbind();
@@ -91,7 +90,7 @@ public class Location extends Circle implements MouseTracker.hasMouseTracker {
 
         // Draw a new edge from the location
         localMouseTracker.registerOnMousePressedEventHandler(event -> {
-            if(event.isShiftDown()) {
+            if (event.isShiftDown()) {
                 final Edge edge = new Edge(this, canvasMouseTracker);
                 addChildToParent(edge);
             }
@@ -104,7 +103,7 @@ public class Location extends Circle implements MouseTracker.hasMouseTracker {
     private final Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
         // Get the parent and detach this Location
         Pane parent = (Pane) this.getParent();
-        if(parent == null) return;
+        if (parent == null) return;
         parent.getChildren().remove(this);
 
         // Notify the canvas that we are no longer placing a location
