@@ -12,6 +12,8 @@ public class KeyboardTracker {
     public static final String ADD_NEW_LOCATION = "ADD_NEW_LOCATION";
     public static final String DISCARD_NEW_LOCATION = "DISCARD_NEW_LOCATION";
     public static final String DISCARD_NEW_EDGE = "DISCARD_NEW_EDGE";
+    public static final String MAKE_LOCATION_URGENT = "MAKE_LOCATION_URGENT";
+    public static final String MAKE_LOCATION_COMMITTED = "MAKE_LOCATION_COMMITTED";
 
     public static final EventHandler<KeyEvent> handleKeyPress = event -> {
         for (final Keybind keybind : keyMap.values()) {

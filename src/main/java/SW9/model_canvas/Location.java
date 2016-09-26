@@ -3,13 +3,19 @@ package SW9.model_canvas;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
+import SW9.utility.BindingHelper;
 import SW9.utility.DragHelper;
 import SW9.utility.DropShadowHelper;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
+import javafx.beans.binding.StringBinding;
+import javafx.beans.binding.When;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.Pane;
@@ -26,14 +32,52 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
     public final MouseTracker localMouseTracker;
 
     public Circle circle;
+    public Label locationLabel;
+
+    public BooleanProperty isUrgent = new SimpleBooleanProperty(false);
+    public BooleanProperty isCommitted = new SimpleBooleanProperty(false);
 
     public Location(MouseTracker canvasMouseTracker) {
         this(canvasMouseTracker.getXProperty(), canvasMouseTracker.getYProperty(), canvasMouseTracker);
     }
 
     public Location(final DoubleProperty centerX, final DoubleProperty centerY, final MouseTracker canvasMouseTracker) {
+        // Add the circle and add it at a child
         circle = new Circle(centerX.doubleValue(), centerY.doubleValue(), RADIUS);
         getChildren().add(circle);
+
+        // Add a text which we will use as a label for urgent and committed locations
+        locationLabel = new Label();
+        locationLabel.textProperty().bind(new StringBinding() {
+            {
+                super.bind(isUrgent, isCommitted);
+            }
+
+            @Override
+            protected String computeValue() {
+                if (isUrgent.get()) {
+                    return "U";
+                } else if (isCommitted.get()) {
+                    return "C";
+                } else {
+                    return "";
+                }
+            }
+        });
+        locationLabel.setMinWidth(2 * RADIUS);
+        locationLabel.setMaxWidth(2 * RADIUS);
+        locationLabel.setMinHeight(2 * RADIUS);
+        locationLabel.setMaxHeight(2 * RADIUS);
+        getChildren().add(locationLabel);
+
+        // Bind the label to the circle
+        BindingHelper.bind(locationLabel, this);
+
+        // Add style for the circle and label
+        circle.getStyleClass().add("location");
+        locationLabel.getStyleClass().add("location-label");
+        locationLabel.getStyleClass().add("headline");
+        locationLabel.getStyleClass().add("white-text");
 
         // Bind the Location to the property
         circle.centerXProperty().bind(centerX);
@@ -41,9 +85,6 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
 
         // Initialize the local mouse tracker
         this.localMouseTracker = new MouseTracker(this);
-
-        // Add style
-        circle.getStyleClass().add("location");
 
         // Register the handler for entering the location
         localMouseTracker.registerOnMouseEnteredEventHandler(event -> {
@@ -102,6 +143,16 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
 
         // Add keybind to discard the location if ESC is pressed
         KeyboardTracker.registerKeybind(KeyboardTracker.DISCARD_NEW_LOCATION, removeOnEscape);
+
+        // Register toggle urgent and committed keybinds when the locations is hovered, and unregister them when we are not
+        localMouseTracker.registerOnMouseEnteredEventHandler(event -> {
+           KeyboardTracker.registerKeybind(KeyboardTracker.MAKE_LOCATION_URGENT, makeLocationUrgent);
+            KeyboardTracker.registerKeybind(KeyboardTracker.MAKE_LOCATION_COMMITTED, makeLocationCommitted);
+        });
+        localMouseTracker.registerOnMouseExitedEventHandler(event -> {
+            KeyboardTracker.unregisterKeybind(KeyboardTracker.MAKE_LOCATION_URGENT);
+            KeyboardTracker.unregisterKeybind(KeyboardTracker.MAKE_LOCATION_COMMITTED);
+        });
     }
 
     private final Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
@@ -112,6 +163,22 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
 
         // Notify the canvas that we are no longer placing a location
         ModelCanvas.setLocationOnMouse(null);
+    });
+
+    private final Keybind makeLocationUrgent = new Keybind(new KeyCodeCombination(KeyCode.U), () -> {
+        // The location cannot be committed
+        isCommitted.set(false);
+
+        // Toggle the urgent boolean
+        isUrgent.set(!isUrgent.get());
+    });
+
+    private final Keybind makeLocationCommitted = new Keybind(new KeyCodeCombination(KeyCode.C), () -> {
+        // The location cannot be committed
+        isUrgent.set(false);
+
+        // Toggle the urgent boolean
+        isCommitted.set(!isCommitted.get());
     });
 
     private void addChildToParent(final Node node) {

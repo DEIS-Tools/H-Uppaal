@@ -2,13 +2,17 @@ package SW9.utility;
 
 import SW9.MouseTracker;
 import SW9.model_canvas.ArrowHead;
+import SW9.model_canvas.Location;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
 
 public class BindingHelper {
 
@@ -107,7 +111,29 @@ public class BindingHelper {
         subject.getArrowHeadRight().endYProperty().bind(endY);
     }
 
-private static class LineBinding {
+    public static void bind(final Label subject, final Location target) {
+        subject.layoutXProperty().bind(new DoubleBinding() {
+            {
+                super.bind(subject.textProperty(), target.circle.centerXProperty());
+            }
+            @Override
+            protected double computeValue() {
+                return target.circle.getCenterX() - Location.RADIUS;
+            }
+        });
+
+        subject.layoutYProperty().bind(new DoubleBinding() {
+            {
+                super.bind(subject.textProperty(), target.circle.centerYProperty());
+            }
+            @Override
+            protected double computeValue() {
+                return target.circle.getCenterY() - Location.RADIUS;
+            }
+        });
+    }
+
+    private static class LineBinding {
     final ObservableDoubleValue startX;
     final ObservableDoubleValue startY;
     final ObservableDoubleValue endX;
