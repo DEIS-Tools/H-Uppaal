@@ -2,15 +2,14 @@ package SW9;
 
 import SW9.utility.ResizeHelper;
 import com.jfoenix.controls.JFXButton;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -21,6 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import jiconfont.icons.GoogleMaterialDesignIcons;
@@ -33,6 +33,7 @@ public class Main extends Application {
     private double xOffset;
     private double yOffset;
     private double previousX, previousY, previousWidth, previousHeight;
+    private BooleanProperty isMaximized = new SimpleBooleanProperty(false);
 
     private final static DoubleProperty border = new SimpleDoubleProperty(3d);
     public static MouseTracker mouseTracker;
@@ -105,14 +106,18 @@ public class Main extends Application {
             yOffset = stage.getY() - event.getScreenY();
         });
         statusBar.setOnMouseDragged(event -> {
-            if(stage.isMaximized()) {
+            // Undo maximized if pulled while maximized
+            if(isMaximized.get()) {
                 xOffset = -1 * previousWidth * (event.getX() / (stage.getWidth() * 10/8));
                 yOffset = -1 * event.getY();
 
-                stage.setMaximized(false);
                 stage.setWidth(previousWidth);
                 stage.setHeight(previousHeight);
-            } else {
+
+                isMaximized.set(false);
+            }
+            // Mov the stage
+            else {
                 stage.setX(event.getScreenX() + xOffset);
                 stage.setY(event.getScreenY() + yOffset);
             }
@@ -141,10 +146,9 @@ public class Main extends Application {
         rightStatusBar.getChildren().add(minimizeBtn);
 
         // Add the resize window button to the status bar
-        stage.setMaximized(false);
         final IconNode resizeIcon = new IconNode();
         resizeIcon.setFill(Color.WHITE);
-        resizeIcon.iconCodeProperty().bind(Bindings.when(stage.maximizedProperty())
+        resizeIcon.iconCodeProperty().bind(Bindings.when(isMaximized)
                 .then(GoogleMaterialDesignIcons.FULLSCREEN_EXIT)
                 .otherwise(GoogleMaterialDesignIcons.FULLSCREEN));
 
@@ -152,25 +156,34 @@ public class Main extends Application {
         resizeBtn.setButtonType(JFXButton.ButtonType.FLAT);
         resizeBtn.setRipplerFill(Color.WHITE);
         resizeBtn.setOnMouseClicked(event -> {
-            if(stage.isMaximized()) {
-                stage.setMaximized(false);
+            if(isMaximized.get()) {
+
+                // Undo maximized again
                 stage.setX(previousX);
                 stage.setY(previousY);
                 stage.setWidth(previousWidth);
                 stage.setHeight(previousHeight);
+                isMaximized.set(false);
             } else {
                 previousX = stage.getX();
                 previousY = stage.getY();
                 previousWidth = stage.getWidth();
                 previousHeight = stage.getHeight();
-                stage.setMaximized(true);
                 stage.setX(0d);
                 stage.setY(0d);
+
+                // Maximize the window
+                Screen screen = Screen.getPrimary();
+                Rectangle2D bounds = screen.getVisualBounds();
+                stage.setX(bounds.getMinX());
+                stage.setY(bounds.getMinY());
+                stage.setWidth(bounds.getWidth());
+                stage.setHeight(bounds.getHeight());
+                isMaximized.set(true);
             }
         });
         final ChangeListener<Number> windowResized = (observable, oldValue, newValue) -> {
             if(newValue.doubleValue() < oldValue.doubleValue()) {
-                stage.setMaximized(false);
             }
         };
         stage.widthProperty().addListener(windowResized);
