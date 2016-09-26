@@ -50,3 +50,7 @@
 .status-bar {
     -fx-background-color: -primary-color-darkest;
 }
+
+.window-title {
+ -fx-label-padding: 0 0 0 10px;
+}

@@ -16,7 +16,7 @@
                 maxHeight="20">
         <left>
             <StackPane id="status-bar-left">
-                <Label id="status-bar-title" styleClass="caption, white-text"/>
+                <Label id="status-bar-title" styleClass="caption, white-text, window-title"/>
             </StackPane>
         </left>
 

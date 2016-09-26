@@ -2,11 +2,12 @@ package SW9;
 
 import SW9.utility.ResizeHelper;
 import com.jfoenix.controls.JFXButton;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -44,7 +45,7 @@ public class Main extends Application {
 
     public void start(final Stage stage) throws Exception {
         IconFontFX.register(GoogleMaterialDesignIcons.getIconFont());
-        
+
         loadFonts();
 
         // Remove the classic decoration
@@ -107,8 +108,8 @@ public class Main extends Application {
         });
         statusBar.setOnMouseDragged(event -> {
             // Undo maximized if pulled while maximized
-            if(isMaximized.get()) {
-                xOffset = -1 * previousWidth * (event.getX() / (stage.getWidth() * 10/8));
+            if (isMaximized.get()) {
+                xOffset = -1 * previousWidth * (event.getX() / (stage.getWidth() * 10 / 8));
                 yOffset = -1 * event.getY();
 
                 stage.setWidth(previousWidth);
@@ -127,10 +128,6 @@ public class Main extends Application {
         final StackPane stackpane = (StackPane) scene.lookup("#stackpane");
         stackpane.setAlignment(Pos.TOP_LEFT);
 
-        final StackPane leftStatusBar = (StackPane) scene.lookup("#status-bar-left");
-        // TODO: Add stuff to the left section
-
-        final HBox middleStatusBar = (HBox) scene.lookup("#status-bar-middle");
         final Label titleLabel = (Label) scene.lookup("#status-bar-title");
         titleLabel.textProperty().bind(stage.titleProperty());
 
@@ -156,7 +153,7 @@ public class Main extends Application {
         resizeBtn.setButtonType(JFXButton.ButtonType.FLAT);
         resizeBtn.setRipplerFill(Color.WHITE);
         resizeBtn.setOnMouseClicked(event -> {
-            if(isMaximized.get()) {
+            if (isMaximized.get()) {
 
                 // Undo maximized again
                 stage.setX(previousX);
