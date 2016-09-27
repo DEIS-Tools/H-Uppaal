@@ -1,6 +1,7 @@
 package SW9.model_canvas;
 
 import SW9.MouseTracker;
+import SW9.utility.DragHelper;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
@@ -13,6 +14,7 @@ import javafx.scene.shape.*;
 
 public class ModelComponent extends Parent implements MouseTracker.hasMouseTracker {
 
+    private final MouseTracker mouseTracker = new MouseTracker(this);
 
     public final DoubleProperty xProperty;
     public final DoubleProperty yProperty;
@@ -67,37 +69,42 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
         intialLocationLine.startYProperty().bind(yProperty.add(CORNER_SIZE));
         intialLocationLine.endXProperty().bind(xProperty.add(CORNER_SIZE));
         intialLocationLine.endYProperty().bind(yProperty);
+        intialLocationLine.setStrokeWidth(2d);
 
         // Bind the top line
         topLine.startXProperty().bind(xProperty.add(CORNER_SIZE));
         topLine.startYProperty().bind(yProperty);
         topLine.endXProperty().bind(xProperty.add(widthProperty));
         topLine.endYProperty().bind(yProperty);
+        topLine.setStrokeWidth(2d);
 
         // Bind the right line
         rightLine.startXProperty().bind(xProperty.add(widthProperty));
         rightLine.startYProperty().bind(yProperty);
         rightLine.endXProperty().bind(xProperty.add(widthProperty));
         rightLine.endYProperty().bind(yProperty.add(heightProperty).subtract(CORNER_SIZE));
+        rightLine.setStrokeWidth(2d);
 
         // Bind the line where the final location is placed
         finalLocationLine.startXProperty().bind(xProperty.add(widthProperty));
         finalLocationLine.startYProperty().bind(yProperty.add(heightProperty).subtract(CORNER_SIZE));
         finalLocationLine.endXProperty().bind(xProperty.add(widthProperty).subtract(CORNER_SIZE));
         finalLocationLine.endYProperty().bind(yProperty.add(heightProperty));
+        finalLocationLine.setStrokeWidth(2d);
 
         // Bind the bottom line
         bottomLine.startXProperty().bind(xProperty.add(widthProperty).subtract(CORNER_SIZE));
         bottomLine.startYProperty().bind(yProperty.add(heightProperty));
         bottomLine.endXProperty().bind(xProperty);
         bottomLine.endYProperty().bind(yProperty.add(heightProperty));
+        bottomLine.setStrokeWidth(2d);
 
         // Bind the left line
         leftLine.startXProperty().bind(xProperty);
         leftLine.startYProperty().bind(yProperty.add(heightProperty));
         leftLine.endXProperty().bind(xProperty);
         leftLine.endYProperty().bind(yProperty.add(CORNER_SIZE));
-
+        leftLine.setStrokeWidth(2d);
 
         // Initialize properties for the name of the component
         labelContainer = new Rectangle();
@@ -119,7 +126,6 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
 
 
         // Style the name of the component
-
         Color redColor = Color.web("#D50000");
         labelContainer.fillProperty().set(redColor);
         labelContainer.setStrokeWidth(1d);
@@ -136,6 +142,8 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
         labelTriangle.setStroke(redColor);
         labelTriangle.setStrokeType(StrokeType.OUTSIDE);
         labelTriangle.setStrokeLineJoin(StrokeLineJoin.ROUND);
+        labelTriangle.layoutXProperty().bind(xProperty.subtract(x));
+        labelTriangle.layoutYProperty().bind(yProperty.subtract(y));
 
         getChildren().addAll(
                 intialLocationLine,
@@ -150,21 +158,23 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
                 initialLocation,
                 finalLocation
         );
+
+        DragHelper.makeDraggable(this);
     }
 
 
     @Override
     public MouseTracker getMouseTracker() {
-        return null;
+        return mouseTracker;
     }
 
     @Override
     public DoubleProperty xProperty() {
-        return xProperty();
+        return xProperty;
     }
 
     @Override
     public DoubleProperty yProperty() {
-        return yProperty();
+        return yProperty;
     }
 }
