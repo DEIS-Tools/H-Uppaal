@@ -1,11 +1,17 @@
 package SW9.model_canvas;
 
+import SW9.MouseTracker;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.shape.Line;
+import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.*;
 
-public class ModelComponent extends Parent {
+
+public class ModelComponent extends Parent implements MouseTracker.hasMouseTracker {
 
 
     public final DoubleProperty xProperty;
@@ -21,14 +27,20 @@ public class ModelComponent extends Parent {
     private final Line bottomLine = new Line();
     private final Line leftLine = new Line();
 
+    // The initial and final locations
     private final InitialLocation initialLocation;
     private final FinalLocation finalLocation;
 
-    private static final double CORNER_SIZE = 50;
+    // The name of the component
+    private final Label label;
+    private final Rectangle labelContainer;
+    private final Polygon labelTriangle;
 
-    public ModelComponent(final double x, final double y, final double width, final double height) {
+    private static final double CORNER_SIZE = 60;
 
-        // Initialize the properties
+    public ModelComponent(final double x, final double y, final double width, final double height, final String name) {
+
+        // Initialize the spacial properties
         xProperty = new SimpleDoubleProperty(x);
         yProperty = new SimpleDoubleProperty(y);
         widthProperty = new SimpleDoubleProperty(width);
@@ -39,8 +51,6 @@ public class ModelComponent extends Parent {
                 xProperty.add(CORNER_SIZE / 2d),
                 yProperty.add(CORNER_SIZE / 2d)
         );
-
-
 
         finalLocation = new FinalLocation(
                 xProperty.add(widthProperty.subtract(CORNER_SIZE / 2d)),
@@ -88,8 +98,73 @@ public class ModelComponent extends Parent {
         leftLine.endXProperty().bind(xProperty);
         leftLine.endYProperty().bind(yProperty.add(CORNER_SIZE));
 
-        getChildren().addAll(intialLocationLine, topLine, rightLine, finalLocationLine, bottomLine, leftLine, initialLocation, finalLocation);
+
+        // Initialize properties for the name of the component
+        labelContainer = new Rectangle();
+        label = new Label(name);
+        labelTriangle = new Polygon(
+                xProperty.get() + CORNER_SIZE / 2, yProperty.get() + CORNER_SIZE / 2,
+                xProperty.get() + CORNER_SIZE, yProperty.get(),
+                xProperty.get() + CORNER_SIZE, yProperty.get() + CORNER_SIZE / 2
+        );
+
+        // Bind the properties for the name of the component
+        labelContainer.xProperty().bind(xProperty.add(CORNER_SIZE));
+        labelContainer.yProperty().bind(yProperty);
+        labelContainer.widthProperty().bind(widthProperty.subtract(CORNER_SIZE));
+        labelContainer.heightProperty().set(CORNER_SIZE / 2);
+
+        label.layoutXProperty().bind(labelContainer.xProperty());
+        label.layoutYProperty().bind(labelContainer.yProperty());
+
+
+        // Style the name of the component
+
+        Color redColor = Color.web("#D50000");
+        labelContainer.fillProperty().set(redColor);
+        labelContainer.setStrokeWidth(1d);
+        labelContainer.setStroke(redColor);
+        labelContainer.setStrokeType(StrokeType.OUTSIDE);
+        labelContainer.setStrokeLineJoin(StrokeLineJoin.ROUND);
+        label.textFillProperty().set(Color.WHITE);
+        label.alignmentProperty().set(Pos.CENTER);
+        label.setPrefHeight(CORNER_SIZE / 2);
+        label.paddingProperty().set(new Insets(0, 0, 0, 10));
+        label.getStyleClass().add("subhead");
+        labelTriangle.setFill(redColor);
+        labelTriangle.setStrokeWidth(1d);
+        labelTriangle.setStroke(redColor);
+        labelTriangle.setStrokeType(StrokeType.OUTSIDE);
+        labelTriangle.setStrokeLineJoin(StrokeLineJoin.ROUND);
+
+        getChildren().addAll(
+                intialLocationLine,
+                topLine,
+                rightLine,
+                finalLocationLine,
+                bottomLine,
+                leftLine,
+                labelTriangle,
+                labelContainer,
+                label,
+                initialLocation,
+                finalLocation
+        );
     }
 
 
+    @Override
+    public MouseTracker getMouseTracker() {
+        return null;
+    }
+
+    @Override
+    public DoubleProperty xProperty() {
+        return xProperty();
+    }
+
+    @Override
+    public DoubleProperty yProperty() {
+        return yProperty();
+    }
 }
