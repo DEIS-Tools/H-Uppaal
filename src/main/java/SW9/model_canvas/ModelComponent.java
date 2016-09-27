@@ -40,10 +40,17 @@ public class ModelComponent extends Parent {
                 yProperty.add(CORNER_SIZE / 2d)
         );
 
+
+
         finalLocation = new FinalLocation(
                 xProperty.add(widthProperty.subtract(CORNER_SIZE / 2d)),
                 yProperty.add(heightProperty.subtract(CORNER_SIZE / 2d))
         );
+
+
+        // Disable the locations mouse-trackers
+        initialLocation.localMouseTracker.disable();
+        finalLocation.localMouseTracker.disable();
 
         // Bind the line where the initial location is placed
         intialLocationLine.startXProperty().bind(xProperty);

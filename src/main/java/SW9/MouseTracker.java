@@ -1,6 +1,7 @@
 package SW9;
 
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
@@ -21,6 +22,7 @@ public class MouseTracker {
 
     private DoubleProperty x = new SimpleDoubleProperty(0);
     private DoubleProperty y = new SimpleDoubleProperty(0);
+    private boolean isActive = true;
 
     private final ArrayList<EventHandler<MouseEvent>> onMouseMovedEventHandlers = new ArrayList<>();
     private final ArrayList<EventHandler<MouseEvent>> onMouseClickedEventHandlers = new ArrayList<>();
@@ -31,6 +33,7 @@ public class MouseTracker {
     private final ArrayList<EventHandler<MouseEvent>> onMouseReleasedEventHandlers = new ArrayList<>();
 
     private final EventHandler<MouseEvent> onMouseMovedEventHandler = event -> {
+        if(!isActive) return;
         onMouseMovedEventHandlers.removeIf(handler -> handler == null);
         for (EventHandler<MouseEvent> handler : onMouseMovedEventHandlers) {
             handler.handle(event);
@@ -38,6 +41,7 @@ public class MouseTracker {
     };
 
     private final EventHandler<MouseEvent> onMouseClickedEventHandler = event -> {
+        if(!isActive) return;
         onMouseClickedEventHandlers.removeIf(handler -> handler == null);
         for (EventHandler<MouseEvent> handler : onMouseClickedEventHandlers) {
             handler.handle(event);
@@ -45,6 +49,7 @@ public class MouseTracker {
     };
 
     private final EventHandler<MouseEvent> onMouseEnteredEventHandler = event -> {
+        if(!isActive) return;
         onMouseEnteredEventHandlers.removeIf(handler -> handler == null);
         for (EventHandler<MouseEvent> handler : onMouseEnteredEventHandlers) {
             handler.handle(event);
@@ -52,6 +57,7 @@ public class MouseTracker {
     };
 
     private final EventHandler<MouseEvent> onMouseExitedEventHandler = event -> {
+        if(!isActive) return;
         onMouseExitedEventHandlers.removeIf(handler -> handler == null);
         for (EventHandler<MouseEvent> handler : onMouseExitedEventHandlers) {
             handler.handle(event);
@@ -59,6 +65,7 @@ public class MouseTracker {
     };
 
     private final EventHandler<MouseEvent> onMouseDraggedEventHandler = event -> {
+        if(!isActive) return;
         onMouseDraggedEventHandlers.removeIf(handler -> handler == null);
         for (EventHandler<MouseEvent> handler : onMouseDraggedEventHandlers) {
             handler.handle(event);
@@ -66,6 +73,7 @@ public class MouseTracker {
     };
 
     private final EventHandler<MouseEvent> onMousePressedEventHandler = event -> {
+        if(!isActive) return;
         onMousePressedEventHandlers.removeIf(handler -> handler == null);
         for (EventHandler<MouseEvent> handler : onMousePressedEventHandlers) {
             handler.handle(event);
@@ -73,6 +81,7 @@ public class MouseTracker {
     };
 
     private final EventHandler<MouseEvent> onMouseReleasedEventHandler = event -> {
+        if(!isActive) return;
         onMouseReleasedEventHandlers.removeIf(handler -> handler == null);
         for (EventHandler<MouseEvent> handler : onMouseReleasedEventHandlers) {
             handler.handle(event);
@@ -171,6 +180,20 @@ public class MouseTracker {
         if (!onMouseReleasedEventHandlers.contains(eventHandler)) return false;
         onMouseReleasedEventHandlers.set(onMouseReleasedEventHandlers.indexOf(eventHandler), null);
         return true;
+    }
+
+    /**
+     * Disables the mouse tracker, stopping all events from being handled
+     */
+    public void disable() {
+        isActive = false;
+    }
+
+    /**
+     * Enables the mouse tracker, all events will now be handled
+     */
+    public void enable() {
+        isActive = true;
     }
 
 }
