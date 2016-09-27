@@ -26,6 +26,7 @@ public class ModelCanvas extends Pane {
     /**
      * Gets the Edge that is currently being drawn on the canvas
      * This functionality is maintained by the Edge itself.
+     *
      * @return the Edge bewing drawn on the canvas
      */
     public static Edge getEdgeBeingDrawn() {
@@ -35,6 +36,7 @@ public class ModelCanvas extends Pane {
     /**
      * Sets the Edge that is currently being drawn on the canvas
      * This functionality is maintained by the Edge itself.
+     *
      * @param edgeBeingDrawn - the Edge being drawn
      */
     public static void setEdgeBeingDrawn(Edge edgeBeingDrawn) {
