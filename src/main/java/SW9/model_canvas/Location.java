@@ -12,6 +12,7 @@ import javafx.beans.binding.StringBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -40,7 +41,7 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
         this(canvasMouseTracker.getXProperty(), canvasMouseTracker.getYProperty(), canvasMouseTracker);
     }
 
-    public Location(final DoubleProperty centerX, final DoubleProperty centerY, final MouseTracker canvasMouseTracker) {
+    public Location(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY, final MouseTracker canvasMouseTracker) {
         // Add the circle and add it at a child
         circle = new Circle(centerX.doubleValue(), centerY.doubleValue(), RADIUS);
         getChildren().add(circle);
