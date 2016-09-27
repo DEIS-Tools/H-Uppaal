@@ -5,6 +5,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 
 import java.util.function.Function;
 
@@ -25,6 +26,8 @@ public class DragHelper {
             subject.yProperty().setValue(event.getY() + dragYOffset[0]);
 
             subject.setCursor(Cursor.CLOSED_HAND);
+
+            event.consume();
         };
 
         // Register the onMouseDragged event listener if the provided conditional returns true
@@ -61,5 +64,46 @@ public class DragHelper {
             subject.setCursor(Cursor.DEFAULT);
         });
 
+    }
+
+    public static <T extends Pane & MouseTracker.hasMouseTracker> void makeDraggable(final T subject) {
+        makeDraggable(subject, mouseEvent -> true);
+    }
+
+    public static <T extends Pane & MouseTracker.hasMouseTracker> void makeDraggable(final T subject, final Function<MouseEvent, Boolean> conditional) {
+        final MouseTracker mouseTracker = subject.getMouseTracker();
+
+        final double[] dragXOffset = {0d};
+        final double[] dragYOffset = {0d};
+
+        final double[] previousXTranslation = {0d};
+        final double[] previousYTranslation = {0d};
+
+        mouseTracker.registerOnMousePressedEventHandler(event -> {
+            if (!conditional.apply(event)) return;
+
+            dragXOffset[0] = subject.xProperty().get() - event.getScreenX();
+            dragYOffset[0] = subject.yProperty().get() - event.getScreenY();
+
+            previousXTranslation[0] = subject.getTranslateX();
+            previousYTranslation[0] = subject.getTranslateY();
+
+            subject.setCursor(Cursor.MOVE);
+
+            event.consume();
+        });
+
+        mouseTracker.registerOnMouseDraggedEventHandler(event -> {
+            if (!conditional.apply(event)) return;
+
+            subject.translateXProperty().setValue(previousXTranslation[0] + event.getScreenX() + dragXOffset[0]);
+            subject.translateYProperty().setValue(previousYTranslation[0] + event.getScreenY() + dragYOffset[0]);
+
+            subject.setCursor(Cursor.MOVE);
+
+            event.consume();
+        });
+
+        mouseTracker.registerOnMouseReleasedEventHandler(event -> subject.setCursor(Cursor.DEFAULT));
     }
 }

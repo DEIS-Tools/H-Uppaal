@@ -1,5 +1,7 @@
 package SW9;
 
+import SW9.model_canvas.ModelCanvas;
+import SW9.utility.DragHelper;
 import SW9.utility.ResizeHelper;
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Application;
@@ -16,8 +18,11 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -62,8 +67,9 @@ public class Main extends Application {
         scene.getStylesheets().add("SW9/model_canvas.css");
         stage.setScene(scene);
 
-        final Node modelCanvas = scene.lookup("#model-canvas");
+        final ModelCanvas modelCanvas = (ModelCanvas) scene.lookup("#model-canvas");
         mouseTracker = new MouseTracker(modelCanvas);
+        DragHelper.makeDraggable(modelCanvas, mouseEvent -> mouseEvent.getButton().equals(MouseButton.SECONDARY));
 
         initializeStatusBar(stage);
 

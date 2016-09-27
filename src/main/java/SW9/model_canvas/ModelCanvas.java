@@ -3,15 +3,20 @@ package SW9.model_canvas;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.Main;
+import SW9.MouseTracker;
 import SW9.utility.DropShadowHelper;
 import javafx.animation.Transition;
+import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Circle;
+import javafx.stage.Screen;
 import javafx.util.Duration;
 
-public class ModelCanvas extends Pane {
+public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker {
 
 
     // Variables describing the state of the canvas
@@ -21,6 +26,13 @@ public class ModelCanvas extends Pane {
 
     public ModelCanvas() {
         initialize();
+
+        // This is a fix to make the canvas larger when we translate it away from 0,0
+        final Circle canvasExpanderNode = new Circle();
+        canvasExpanderNode.radiusProperty().set(0);
+        getChildren().add(canvasExpanderNode);
+        canvasExpanderNode.translateXProperty().bind(this.translateXProperty().multiply(-1));
+        canvasExpanderNode.translateYProperty().bind(this.translateYProperty().multiply(-1));
     }
 
     @FXML
@@ -155,4 +167,18 @@ public class ModelCanvas extends Pane {
         ModelCanvas.edgeBeingDrawn = edgeBeingDrawn;
     }
 
+    @Override
+    public MouseTracker getMouseTracker() {
+        return Main.mouseTracker;
+    }
+
+    @Override
+    public DoubleProperty xProperty() {
+        return layoutXProperty();
+    }
+
+    @Override
+    public DoubleProperty yProperty() {
+        return layoutYProperty();
+    }
 }

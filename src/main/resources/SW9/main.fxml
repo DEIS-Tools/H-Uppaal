@@ -8,7 +8,9 @@
 
     <ModelCanvas id="model-canvas"
                  prefHeight="Infinity"
-                 prefWidth="Infinity"/>
+                 prefWidth="Infinity"
+                 minWidth="Infinity"
+                 minHeight="Infinity"/>
 
     <BorderPane id="status-bar"
                 styleClass="status-bar"
