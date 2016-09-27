@@ -42,7 +42,6 @@ public class Main extends Application {
     public static BooleanProperty isMaximized = new SimpleBooleanProperty(false);
 
     private final static DoubleProperty border = new SimpleDoubleProperty(3d);
-    public static MouseTracker mouseTracker;
 
     public static void main(String[] args) {
         launch(Main.class, args);
@@ -66,10 +65,6 @@ public class Main extends Application {
         scene.getStylesheets().add("SW9/colors.css");
         scene.getStylesheets().add("SW9/model_canvas.css");
         stage.setScene(scene);
-
-        final ModelCanvas modelCanvas = (ModelCanvas) scene.lookup("#model-canvas");
-        mouseTracker = new MouseTracker(modelCanvas);
-        DragHelper.makeDraggable(modelCanvas, mouseEvent -> mouseEvent.getButton().equals(MouseButton.SECONDARY));
 
         initializeStatusBar(stage);
 

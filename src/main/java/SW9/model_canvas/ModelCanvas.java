@@ -4,6 +4,7 @@ import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.Main;
 import SW9.MouseTracker;
+import SW9.utility.DragHelper;
 import SW9.utility.DropShadowHelper;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
@@ -11,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.stage.Screen;
@@ -24,6 +26,8 @@ public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker {
     private static Location hoveredLocation = null;
     private static Edge edgeBeingDrawn = null;
 
+    private final MouseTracker mouseTracker = new MouseTracker(this);
+
     public ModelCanvas() {
         initialize();
 
@@ -33,13 +37,16 @@ public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker {
         getChildren().add(canvasExpanderNode);
         canvasExpanderNode.translateXProperty().bind(this.translateXProperty().multiply(-1));
         canvasExpanderNode.translateYProperty().bind(this.translateYProperty().multiply(-1));
+
+
+        DragHelper.makeDraggable(this, mouseEvent -> mouseEvent.getButton().equals(MouseButton.SECONDARY));
     }
 
     @FXML
     public void initialize() {
         KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
             if (!mouseHasLocation()) {
-                final Location newLocation = new Location(Main.mouseTracker);
+                final Location newLocation = new Location(mouseTracker);
                 locationOnMouse = newLocation;
 
                 newLocation.setEffect(DropShadowHelper.generateElevationShadow(22));
@@ -169,7 +176,7 @@ public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker {
 
     @Override
     public MouseTracker getMouseTracker() {
-        return Main.mouseTracker;
+        return mouseTracker;
     }
 
     @Override
