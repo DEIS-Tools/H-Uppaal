@@ -4,6 +4,12 @@
     -fx-stroke-width: 2;
 }
 
+.initial-location-inner-circle {
+    -fx-fill: rgba(0,0,0,0);
+    -fx-stroke: -blue-grey-600;
+    -fx-stroke-width: 2;
+}
+
 .location-label {
     -fx-text-fill: -blue-grey-900;
     -fx-fill: -primary-color-darkest;
