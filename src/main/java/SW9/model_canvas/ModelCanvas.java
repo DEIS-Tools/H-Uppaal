@@ -23,36 +23,6 @@ public class ModelCanvas extends Pane {
         initialize();
     }
 
-    /**
-     * Gets the Edge that is currently being drawn on the canvas
-     * This functionality is maintained by the Edge itself.
-     *
-     * @return the Edge bewing drawn on the canvas
-     */
-    public static Edge getEdgeBeingDrawn() {
-        return edgeBeingDrawn;
-    }
-
-    /**
-     * Sets the Edge that is currently being drawn on the canvas
-     * This functionality is maintained by the Edge itself.
-     *
-     * @param edgeBeingDrawn - the Edge being drawn
-     */
-    public static void setEdgeBeingDrawn(Edge edgeBeingDrawn) {
-        ModelCanvas.edgeBeingDrawn = edgeBeingDrawn;
-    }
-
-    /**
-     * Checks if an Edge is currently being drawn on the canvas
-     * This functionality is maintained by the Edge itself.
-     *
-     * @return true if an Edge is being drawn, otherwise false
-     */
-    public static boolean edgeIsBeingDrawn() {
-        return edgeBeingDrawn != null;
-    }
-
     @FXML
     public void initialize() {
         KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
@@ -153,6 +123,36 @@ public class ModelCanvas extends Pane {
      */
     public static boolean mouseIsHoveringLocation() {
         return hoveredLocation != null;
+    }
+
+    /**
+     * Checks if an Edge is currently being drawn on the canvas
+     * This functionality is maintained by the Edge itself.
+     *
+     * @return true if an Edge is being drawn, otherwise false
+     */
+    public static boolean edgeIsBeingDrawn() {
+        return edgeBeingDrawn != null;
+    }
+
+    /**
+     * Gets the Edge that is currently being drawn on the canvas
+     * This functionality is maintained by the Edge itself.
+     *
+     * @return the Edge bewing drawn on the canvas
+     */
+    public static Edge getEdgeBeingDrawn() {
+        return edgeBeingDrawn;
+    }
+
+    /**
+     * Sets the Edge that is currently being drawn on the canvas
+     * This functionality is maintained by the Edge itself.
+     *
+     * @param edgeBeingDrawn - the Edge being drawn
+     */
+    public static void setEdgeBeingDrawn(Edge edgeBeingDrawn) {
+        ModelCanvas.edgeBeingDrawn = edgeBeingDrawn;
     }
 
 }
