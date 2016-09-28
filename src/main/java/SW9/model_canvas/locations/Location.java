@@ -3,6 +3,7 @@ package SW9.model_canvas.locations;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
+import SW9.model_canvas.ModelContainer;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.IParent;
 import SW9.model_canvas.ModelCanvas;
@@ -122,9 +123,14 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
 
         // Place the new location when the mouse is pressed (i.e. stop moving it)
         canvasMouseTracker.registerOnMousePressedEventHandler(mouseClickedEvent -> {
-            if (isOnMouse.get()) {
-                circle.centerXProperty().unbind();
-                circle.centerYProperty().unbind();
+            if (isOnMouse.get() && ModelCanvas.mouseIsHoveringModelContainer()) {
+
+                ModelContainer modelContainer = ModelCanvas.getHoveredModelContainer();
+
+                circle.centerXProperty().bind(modelContainer.xProperty().add(mouseClickedEvent.getX() - (modelContainer.xProperty().get())));
+                circle.centerYProperty().bind(modelContainer.yProperty().add(mouseClickedEvent.getY() - (modelContainer.yProperty().get())));
+
+                modelContainer.addLocation(this);
 
                 // Tell the canvas that the mouse is no longer occupied
                 ModelCanvas.setLocationOnMouse(null);

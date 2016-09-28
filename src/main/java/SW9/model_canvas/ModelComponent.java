@@ -12,9 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 
 
-public class ModelComponent extends Parent implements MouseTracker.hasMouseTracker {
-
-    private final MouseTracker mouseTracker = new MouseTracker(this);
+public class ModelComponent extends ModelContainer {
 
     public final DoubleProperty xProperty;
     public final DoubleProperty yProperty;
@@ -172,8 +170,6 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
                 initialLocation,
                 finalLocation
         );
-
-        mouseTracker.registerOnMouseClickedEventHandler(event -> System.out.println("tryk på component"));
     }
 
 

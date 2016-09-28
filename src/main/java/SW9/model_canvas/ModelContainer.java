@@ -7,7 +7,7 @@ import SW9.model_canvas.locations.Location;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModelContainer extends Parent {
+public abstract class ModelContainer extends Parent implements MouseTracker.hasMouseTracker {
 
     private final List<Location> locations = new ArrayList<>();
     private final List<Edge> edges = new ArrayList<>();
@@ -17,11 +17,11 @@ public class ModelContainer extends Parent {
         super();
 
         mouseTracker.registerOnMouseEnteredEventHandler(event -> {
-            ModelCanvas.setHoveredModelContainer(this);
+           ModelCanvas.setHoveredModelContainer(this);
         });
 
         mouseTracker.registerOnMouseExitedEventHandler(event -> {
-            if (this.equals(ModelCanvas.getHoveredModelContainer())) ModelCanvas.setHoveredModelContainer(null);
+            if(this.equals(ModelCanvas.getHoveredModelContainer())) ModelCanvas.setHoveredModelContainer(null);
         });
     }
 

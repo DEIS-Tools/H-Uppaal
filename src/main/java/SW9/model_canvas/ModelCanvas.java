@@ -26,6 +26,7 @@ public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker, I
     private static Location locationOnMouse = null;
     private static Location hoveredLocation = null;
     private static Edge edgeBeingDrawn = null;
+    private static ModelContainer hoveredModelContainer = null;
 
     private final MouseTracker mouseTracker = new MouseTracker(this);
 
@@ -181,6 +182,18 @@ public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker, I
      */
     public static void setEdgeBeingDrawn(Edge edgeBeingDrawn) {
         ModelCanvas.edgeBeingDrawn = edgeBeingDrawn;
+    }
+
+    public static ModelContainer getHoveredModelContainer() {
+        return hoveredModelContainer;
+    }
+
+    public static void setHoveredModelContainer(final ModelContainer modelContainer) {
+        hoveredModelContainer = modelContainer;
+    }
+
+    public static boolean mouseIsHoveringModelContainer() {
+        return hoveredModelContainer != null;
     }
 
     @Override

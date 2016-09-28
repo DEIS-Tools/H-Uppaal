@@ -2,6 +2,7 @@ package SW9.utility;
 
 import SW9.MouseTracker;
 import SW9.model_canvas.ModelCanvas;
+import javafx.beans.binding.DoubleBinding;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -26,8 +27,19 @@ public class DragHelper {
             final double x = event.getX() + dragXOffset[0];
             final double y = event.getY() + dragYOffset[0];
 
-            subject.xProperty().setValue(x - x % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2));
-            subject.yProperty().setValue(y - y % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2));
+            if(subject.xProperty().isBound() && subject.getParent() instanceof MouseTracker.hasMouseTracker) {
+                MouseTracker.hasMouseTracker parent = (MouseTracker.hasMouseTracker) subject.getParent();
+                subject.xProperty().bind(parent.xProperty().add(x - x % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2) - parent.xProperty().get()));
+            } else {
+                subject.xProperty().setValue(x - x % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2));
+            }
+
+            if(subject.yProperty().isBound() && subject.getParent() instanceof MouseTracker.hasMouseTracker) {
+                MouseTracker.hasMouseTracker parent = (MouseTracker.hasMouseTracker) subject.getParent();
+                subject.yProperty().bind(parent.yProperty().add(y - y % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2) - parent.yProperty().get()));
+            } else {
+                subject.yProperty().setValue(y - y % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2));
+            }
 
             subject.setCursor(Cursor.CLOSED_HAND);
 
