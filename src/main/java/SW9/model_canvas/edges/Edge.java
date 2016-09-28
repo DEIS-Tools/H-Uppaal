@@ -117,14 +117,13 @@ public class Edge extends Parent {
             }
 
             // Create a new nail and a link that will connect to it
-            final Nail nail = new Nail(lineCue.getEndX(), lineCue.getEndY());
+            final Nail nail = new Nail(canvasMouseTracker.getXProperty().get(), canvasMouseTracker.getYProperty().get());
             final Link link = new Link();
 
             // If we are creating the first nail and link
             // Bind the link from the source location to the location we clicked
             // Bind the nail to the coordinates we clicked
             if (!ModelCanvas.mouseIsHoveringLocation() && linesIsEmpty.get() && nailsIsEmpty.get()) {
-                BindingHelper.place(nail, event);
                 BindingHelper.bind(link.line, sourceLocation.circle, nail);
             }
 
@@ -134,7 +133,6 @@ public class Edge extends Parent {
             else if (!ModelCanvas.mouseIsHoveringLocation() && !linesIsEmpty.get() && !nailsIsEmpty.get()) {
                 final Nail previousNail = nails.get(nails.size() - 1);
 
-                BindingHelper.place(nail, event);
                 BindingHelper.bind(link.line, previousNail, nail);
             }
 
