@@ -1,4 +1,4 @@
-package SW9.model_canvas;
+package SW9.model_canvas.edges;
 
 import SW9.MouseTracker;
 import SW9.utility.DragHelper;

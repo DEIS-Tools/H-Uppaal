@@ -3,7 +3,7 @@ package SW9.model_canvas.locations;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
-import SW9.model_canvas.Edge;
+import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.IParent;
 import SW9.model_canvas.ModelCanvas;
 import SW9.model_canvas.Parent;

@@ -1,7 +1,7 @@
 package SW9.utility;
 
 import SW9.MouseTracker;
-import SW9.model_canvas.ArrowHead;
+import SW9.model_canvas.edges.ArrowHead;
 import SW9.model_canvas.locations.Location;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
