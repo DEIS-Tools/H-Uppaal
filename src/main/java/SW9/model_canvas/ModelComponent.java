@@ -1,6 +1,7 @@
 package SW9.model_canvas;
 
 import SW9.MouseTracker;
+import SW9.model_canvas.locations.Location;
 import SW9.utility.DragHelper;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -29,8 +30,8 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
     private final Line leftLine = new Line();
 
     // The initial and final locations
-    private final InitialLocation initialLocation;
-    private final FinalLocation finalLocation;
+    private final Location initialLocation;
+    private final Location finalLocation;
 
     // The name of the component
     private final Label label;
@@ -50,14 +51,18 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
         heightProperty = new SimpleDoubleProperty(height);
 
         // Initialize locations
-        initialLocation = new InitialLocation(
+        initialLocation = new Location(
                 xProperty.add(CORNER_SIZE / 2d),
-                yProperty.add(CORNER_SIZE / 2d)
+                yProperty.add(CORNER_SIZE / 2d),
+                canvasMouseTracker,
+                Location.Type.INITIAL
         );
 
-        finalLocation = new FinalLocation(
+        finalLocation = new Location(
                 xProperty.add(widthProperty.subtract(CORNER_SIZE / 2d)),
-                yProperty.add(heightProperty.subtract(CORNER_SIZE / 2d))
+                yProperty.add(heightProperty.subtract(CORNER_SIZE / 2d)),
+                canvasMouseTracker,
+                Location.Type.FINAL
         );
 
 

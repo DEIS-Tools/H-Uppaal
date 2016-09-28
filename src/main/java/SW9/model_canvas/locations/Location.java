@@ -1,8 +1,12 @@
-package SW9.model_canvas;
+package SW9.model_canvas.locations;
 
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
+import SW9.model_canvas.Edge;
+import SW9.model_canvas.IParent;
+import SW9.model_canvas.ModelCanvas;
+import SW9.model_canvas.Parent;
 import SW9.utility.BindingHelper;
 import SW9.utility.DragHelper;
 import SW9.utility.DropShadowHelper;
@@ -17,7 +21,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
@@ -36,14 +39,30 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
     public BooleanProperty isUrgent = new SimpleBooleanProperty(false);
     public BooleanProperty isCommitted = new SimpleBooleanProperty(false);
 
-    public Location(MouseTracker canvasMouseTracker) {
-        this(canvasMouseTracker.getXProperty(), canvasMouseTracker.getYProperty(), canvasMouseTracker);
+    public enum Type {
+        NORMAL, INITIAL, FINAL
     }
 
-    public Location(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY, final MouseTracker canvasMouseTracker) {
+    public Type type;
+
+    public Location(MouseTracker canvasMouseTracker) {
+        this(canvasMouseTracker.getXProperty(), canvasMouseTracker.getYProperty(), canvasMouseTracker, Type.NORMAL);
+    }
+
+    public Location(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY, final MouseTracker canvasMouseTracker, Type type) {
+        // Initialize the type property
+        this.type = type;
+
         // Add the circle and add it at a child
         circle = new Circle(centerX.doubleValue(), centerY.doubleValue(), RADIUS);
         addChild(circle);
+
+        // If the location is not a normal locations draw the visual cues
+        if(type == Type.INITIAL) {
+            addChild(new InitialLocationCircle(this));
+        } else if(type == Type.FINAL) {
+            addChild(new FinalLocationCross(this));
+        }
 
         // Add a text which we will use as a label for urgent and committed locations
         locationLabel = new Label();
@@ -130,7 +149,12 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
         });
 
         // Make the location draggable (if shift is not pressed, and there is no edge currently being drawn)
-        DragHelper.makeDraggable(this, (event) -> !event.isShiftDown() && !ModelCanvas.edgeIsBeingDrawn() && !this.equals(ModelCanvas.getLocationOnMouse()));
+        DragHelper.makeDraggable(this, (event) -> {
+            return !event.isShiftDown() &&
+                    !ModelCanvas.edgeIsBeingDrawn() &&
+                    !this.equals(ModelCanvas.getLocationOnMouse()) &&
+                    type.equals(Type.NORMAL);
+        });
 
         // Draw a new edge from the location
         localMouseTracker.registerOnMousePressedEventHandler(event -> {
