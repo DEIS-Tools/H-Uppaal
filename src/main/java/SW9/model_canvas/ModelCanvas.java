@@ -20,6 +20,7 @@ import javafx.util.Duration;
 
 public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker, IParent {
 
+    private static int GRID_SIZE = 50;
 
     // Variables describing the state of the canvas
     private static Location locationOnMouse = null;
@@ -38,6 +39,9 @@ public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker, I
         canvasExpanderNode.translateXProperty().bind(this.translateXProperty().multiply(-1));
         canvasExpanderNode.translateYProperty().bind(this.translateYProperty().multiply(-1));
 
+        // Add a grid to the canvas
+        final Grid grid = new Grid(GRID_SIZE);
+        getChildren().add(grid);
 
         DragHelper.makeDraggable(this, mouseEvent -> mouseEvent.getButton().equals(MouseButton.SECONDARY));
     }
