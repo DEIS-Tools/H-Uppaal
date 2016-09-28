@@ -3,11 +3,12 @@ package SW9.model_canvas;
 import SW9.MouseTracker;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
+import SW9.utility.DragHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ModelContainer extends Parent implements MouseTracker.hasMouseTracker {
+public abstract class ModelContainer extends Parent implements DragHelper.Draggable {
 
     private final List<Location> locations = new ArrayList<>();
     private final List<Edge> edges = new ArrayList<>();
@@ -17,11 +18,11 @@ public abstract class ModelContainer extends Parent implements MouseTracker.hasM
         super();
 
         mouseTracker.registerOnMouseEnteredEventHandler(event -> {
-           ModelCanvas.setHoveredModelContainer(this);
+            ModelCanvas.setHoveredModelContainer(this);
         });
 
         mouseTracker.registerOnMouseExitedEventHandler(event -> {
-            if(this.equals(ModelCanvas.getHoveredModelContainer())) ModelCanvas.setHoveredModelContainer(null);
+            if (this.equals(ModelCanvas.getHoveredModelContainer())) ModelCanvas.setHoveredModelContainer(null);
         });
     }
 

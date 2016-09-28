@@ -99,8 +99,8 @@ public class Edge extends Parent {
 
         // If no nail is being dragged and we are not hovering the edge, make the nails invisible
         localMouseTracker.registerOnMouseExitedEventHandler(event -> {
-            for(Nail nail : nails) {
-                if(nail.isBeingDragged) return;
+            for (Nail nail : nails) {
+                if (nail.isBeingDragged) return;
             }
             nails.forEach(nail -> nail.setVisible(false));
         });
@@ -155,14 +155,14 @@ public class Edge extends Parent {
                     targetLocation = sourceLocation;
                     // Create two nails outside the source locations
                     Nail firstNail = new Nail(sourceLocation.circle.getCenterX() + Location.RADIUS * 3, sourceLocation.circle.getCenterY());
-                    Nail secondNail  = new Nail(sourceLocation.circle.getCenterX(), sourceLocation.circle.getCenterY()  + Location.RADIUS * 3);
+                    Nail secondNail = new Nail(sourceLocation.circle.getCenterX(), sourceLocation.circle.getCenterY() + Location.RADIUS * 3);
 
                     // Create two links for connecting the edge (the link created before is the third link in the chain)
                     Link firstLink = new Link();
                     Link secondLink = new Link();
 
                     // Add them to the view
-                    Edge.this.getChildren().addAll(firstLink, secondLink,firstNail, secondNail);
+                    Edge.this.getChildren().addAll(firstLink, secondLink, firstNail, secondNail);
 
                     // Add links and edges to the collections
                     links.addAll(firstLink, secondLink);

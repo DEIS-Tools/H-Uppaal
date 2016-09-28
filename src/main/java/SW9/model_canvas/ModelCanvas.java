@@ -18,7 +18,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
-public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker, IParent {
+public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
 
     public static int GRID_SIZE = 25;
 

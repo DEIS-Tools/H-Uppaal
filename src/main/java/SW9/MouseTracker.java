@@ -13,14 +13,6 @@ import java.util.ArrayList;
 
 public class MouseTracker {
 
-    public interface hasMouseTracker {
-        MouseTracker getMouseTracker();
-
-        DoubleProperty xProperty();
-
-        DoubleProperty yProperty();
-    }
-
     private DoubleProperty x = new SimpleDoubleProperty(0);
     private DoubleProperty y = new SimpleDoubleProperty(0);
     private boolean isActive = true;

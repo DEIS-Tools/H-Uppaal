@@ -4,10 +4,9 @@ import SW9.MouseTracker;
 import SW9.utility.DragHelper;
 import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-public class Nail extends Circle implements MouseTracker.hasMouseTracker {
+public class Nail extends Circle implements DragHelper.Draggable {
 
     private final static double HIDDEN_RADIUS = 0d;
     private final static double VISIBLE_RADIUS = 5d;

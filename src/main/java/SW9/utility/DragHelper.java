@@ -2,7 +2,7 @@ package SW9.utility;
 
 import SW9.MouseTracker;
 import SW9.model_canvas.ModelCanvas;
-import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -13,11 +13,11 @@ import java.util.function.Function;
 
 public class DragHelper {
 
-    public static <T extends Node & MouseTracker.hasMouseTracker> void makeDraggable(final T subject) {
+    public static <T extends Node & Draggable> void makeDraggable(final T subject) {
         makeDraggable(subject, mouseEvent -> true);
     }
 
-    public static <T extends Node & MouseTracker.hasMouseTracker> void makeDraggable(final T subject, final Function<MouseEvent, Boolean> conditional) {
+    public static <T extends Node & Draggable> void makeDraggable(final T subject, final Function<MouseEvent, Boolean> conditional) {
         final MouseTracker mouseTracker = subject.getMouseTracker();
 
         final double[] dragXOffset = {0d};
@@ -29,12 +29,12 @@ public class DragHelper {
             double y = event.getY() + dragYOffset[0];
 
             // Make coordinates snap to the grip on the canvas
-            x -= x % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2);
-            y -= y % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2);
+            x -= x % ModelCanvas.GRID_SIZE - (ModelCanvas.GRID_SIZE / 2);
+            y -= y % ModelCanvas.GRID_SIZE - (ModelCanvas.GRID_SIZE / 2);
 
             // If the subject has its x property bound have a parent where we can get the xProperty as well
-            if(subject.xProperty().isBound() && subject.getParent() instanceof MouseTracker.hasMouseTracker) {
-                MouseTracker.hasMouseTracker parent = (MouseTracker.hasMouseTracker) subject.getParent();
+            if(subject.xProperty().isBound() && subject.getParent() instanceof Draggable) {
+                Draggable parent = (Draggable) subject.getParent();
                 // Bind the x property of the subject to the value of the mouse event relative to the x property of the parent
                 subject.xProperty().bind(parent.xProperty().add(x - parent.xProperty().get()));
             } else {
@@ -42,8 +42,8 @@ public class DragHelper {
                 subject.xProperty().setValue(x);
             }
             // If the subject has its y property bound have a parent where we can get the yProperty as well
-            if(subject.yProperty().isBound() && subject.getParent() instanceof MouseTracker.hasMouseTracker) {
-                MouseTracker.hasMouseTracker parent = (MouseTracker.hasMouseTracker) subject.getParent();
+            if(subject.yProperty().isBound() && subject.getParent() instanceof Draggable) {
+                Draggable parent = (Draggable) subject.getParent();
                 // Bind the y property of the subject to the value of the mouse event relative to the y property of the parent
                 subject.yProperty().bind(parent.yProperty().add(y - parent.yProperty().get()));
             } else {
@@ -93,11 +93,11 @@ public class DragHelper {
 
     }
 
-    public static <T extends Pane & MouseTracker.hasMouseTracker> void makeDraggable(final T subject) {
+    public static <T extends Pane & Draggable> void makeDraggable(final T subject) {
         makeDraggable(subject, mouseEvent -> true);
     }
 
-    public static <T extends Pane & MouseTracker.hasMouseTracker> void makeDraggable(final T subject, final Function<MouseEvent, Boolean> conditional) {
+    public static <T extends Pane & Draggable> void makeDraggable(final T subject, final Function<MouseEvent, Boolean> conditional) {
         final MouseTracker mouseTracker = subject.getMouseTracker();
 
         final double[] dragXOffset = {0d};
@@ -132,5 +132,13 @@ public class DragHelper {
         });
 
         mouseTracker.registerOnMouseReleasedEventHandler(event -> subject.setCursor(Cursor.DEFAULT));
+    }
+
+    public interface Draggable {
+        MouseTracker getMouseTracker();
+
+        DoubleProperty xProperty();
+
+        DoubleProperty yProperty();
     }
 }

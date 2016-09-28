@@ -1,9 +1,7 @@
 package SW9.model_canvas.edges;
 
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Shape;
 
 public class ArrowHead extends Parent {
     private final Line arrowHeadRight = new Line();

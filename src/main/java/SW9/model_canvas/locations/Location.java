@@ -3,11 +3,11 @@ package SW9.model_canvas.locations;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
-import SW9.model_canvas.ModelContainer;
-import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.IParent;
 import SW9.model_canvas.ModelCanvas;
+import SW9.model_canvas.ModelContainer;
 import SW9.model_canvas.Parent;
+import SW9.model_canvas.edges.Edge;
 import SW9.utility.BindingHelper;
 import SW9.utility.DragHelper;
 import SW9.utility.DropShadowHelper;
@@ -25,7 +25,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
-public class Location extends Parent implements MouseTracker.hasMouseTracker {
+public class Location extends Parent implements DragHelper.Draggable {
 
     // Used to create the Location
     public final static double RADIUS = 25.0f;
@@ -63,9 +63,9 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
         addChild(circle);
 
         // If the location is not a normal locations draw the visual cues
-        if(type == Type.INITIAL) {
+        if (type == Type.INITIAL) {
             addChild(new InitialLocationCircle(this));
-        } else if(type == Type.FINAL) {
+        } else if (type == Type.FINAL) {
             addChild(new FinalLocationCross(this));
         }
 
