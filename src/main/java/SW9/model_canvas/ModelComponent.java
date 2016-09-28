@@ -40,6 +40,8 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
 
     private static final double CORNER_SIZE = 60;
 
+    private final Rectangle hiddenFrame = new Rectangle();
+
     public ModelComponent(final double x, final double y, final double width, final double height, final String name, final MouseTracker canvasMouseTracker) {
 
         DragHelper.makeDraggable(this);
@@ -64,6 +66,16 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
                 canvasMouseTracker,
                 Location.Type.FINAL
         );
+
+        // Bind the hidden frame
+        hiddenFrame.xProperty().bind(xProperty);
+        hiddenFrame.yProperty().bind(yProperty);
+        hiddenFrame.widthProperty().bind(widthProperty);
+        hiddenFrame.heightProperty().bind(heightProperty);
+
+        // Style the hidden frame
+        hiddenFrame.setStroke(Color.TRANSPARENT);
+        hiddenFrame.setFill(Color.TRANSPARENT);
 
         // Bind the line where the initial location is placed
         intialLocationLine.startXProperty().bind(xProperty);
@@ -147,6 +159,7 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
         labelTriangle.layoutYProperty().bind(yProperty.subtract(y));
 
         addChildren(
+                hiddenFrame,
                 intialLocationLine,
                 topLine,
                 rightLine,
@@ -159,6 +172,8 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
                 initialLocation,
                 finalLocation
         );
+
+        mouseTracker.registerOnMouseClickedEventHandler(event -> System.out.println("tryk på component"));
     }
 
 
