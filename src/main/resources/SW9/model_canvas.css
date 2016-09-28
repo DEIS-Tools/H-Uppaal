@@ -22,3 +22,7 @@
     -fx-stroke: -blue-grey-600;
     -fx-stroke-width: 2;
 }
+
+.grid-line {
+    -fx-stroke: -grey-300;
+}
