@@ -30,7 +30,7 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
     public final static double RADIUS = 25.0f;
 
     // Used to update the interaction with the mouse
-    private boolean isOnMouse = false;
+    private BooleanProperty isOnMouse = new SimpleBooleanProperty(false);
     public final MouseTracker localMouseTracker;
 
     public Circle circle;
@@ -47,12 +47,15 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
 
     public Location(MouseTracker canvasMouseTracker) {
         this(canvasMouseTracker.getXProperty(), canvasMouseTracker.getYProperty(), canvasMouseTracker, Type.NORMAL);
-        isOnMouse = true;
+        isOnMouse.set(true);
     }
 
     public Location(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY, final MouseTracker canvasMouseTracker, Type type) {
         // Initialize the type property
         this.type = type;
+
+        // Bind the mouse transparency to the boolean telling if the location is on the mouse
+        this.mouseTransparentProperty().bind(isOnMouse);
 
         // Add the circle and add it at a child
         circle = new Circle(centerX.doubleValue(), centerY.doubleValue(), RADIUS);
@@ -118,8 +121,8 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
         });
 
         // Place the new location when the mouse is pressed (i.e. stop moving it)
-        localMouseTracker.registerOnMousePressedEventHandler(mouseClickedEvent -> {
-            if (isOnMouse) {
+        canvasMouseTracker.registerOnMousePressedEventHandler(mouseClickedEvent -> {
+            if (isOnMouse.get()) {
                 circle.centerXProperty().unbind();
                 circle.centerYProperty().unbind();
 
@@ -142,7 +145,7 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
 
                 // When the animation is done ensure that we note that we are no longer on the mouse
                 locationPlaceAnimation.setOnFinished(event -> {
-                    isOnMouse = false;
+                    isOnMouse.set(false);
                 });
 
                 locationPlaceAnimation.play();
@@ -150,12 +153,10 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
         });
 
         // Make the location draggable (if shift is not pressed, and there is no edge currently being drawn)
-        DragHelper.makeDraggable(this, (event) -> {
-            return !event.isShiftDown() &&
-                    !ModelCanvas.edgeIsBeingDrawn() &&
-                    !this.equals(ModelCanvas.getLocationOnMouse()) &&
-                    type.equals(Type.NORMAL);
-        });
+        DragHelper.makeDraggable(this, (event) -> !event.isShiftDown() &&
+                !ModelCanvas.edgeIsBeingDrawn() &&
+                !this.equals(ModelCanvas.getLocationOnMouse()) &&
+                type.equals(Type.NORMAL));
 
         // Draw a new edge from the location
         localMouseTracker.registerOnMousePressedEventHandler(event -> {
