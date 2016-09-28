@@ -14,7 +14,6 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -44,7 +43,7 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
     public Location(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY, final MouseTracker canvasMouseTracker) {
         // Add the circle and add it at a child
         circle = new Circle(centerX.doubleValue(), centerY.doubleValue(), RADIUS);
-        getChildren().add(circle);
+        addChild(circle);
 
         // Add a text which we will use as a label for urgent and committed locations
         locationLabel = new Label();
@@ -68,7 +67,7 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
         locationLabel.setMaxWidth(2 * RADIUS);
         locationLabel.setMinHeight(2 * RADIUS);
         locationLabel.setMaxHeight(2 * RADIUS);
-        getChildren().add(locationLabel);
+        addChild(locationLabel);
 
         // Bind the label to the circle
         BindingHelper.bind(locationLabel, this);
@@ -157,9 +156,10 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
 
     private final Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
         // Get the parent and detach this Location
-        Pane parent = (Pane) this.getParent();
+        IParent parent = (IParent) this.getParent();
         if (parent == null) return;
-        parent.getChildren().remove(this);
+
+        parent.removeChild(this);
 
         // Notify the canvas that we are no longer placing a location
         ModelCanvas.setLocationOnMouse(null);
@@ -181,13 +181,13 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
         isCommitted.set(!isCommitted.get());
     });
 
-    private void addChildToParent(final Node node) {
+    private void addChildToParent(final Node child) {
         // Get the parent from the source location
-        Pane parent = (Pane) this.getParent();
+        IParent parent = (IParent) this.getParent();
 
         if (parent == null) return;
 
-        parent.getChildren().add(node);
+        parent.addChild(child);
     }
 
 
