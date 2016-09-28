@@ -159,10 +159,20 @@ public class Location extends Parent implements DragHelper.Draggable {
         });
 
         // Make the location draggable (if shift is not pressed, and there is no edge currently being drawn)
-        DragHelper.makeDraggable(this, (event) -> !event.isShiftDown() &&
-                !ModelCanvas.edgeIsBeingDrawn() &&
-                !this.equals(ModelCanvas.getLocationOnMouse()) &&
-                type.equals(Type.NORMAL));
+        DragHelper.makeDraggable(this, (event) -> {
+
+            ModelContainer parent = (ModelContainer) getParent();
+            boolean allowX = event.getX() - RADIUS >= parent.xProperty().get() && event.getX() < parent.xProperty().get() + parent.getXLimit().get() - RADIUS;
+            boolean allowY = event.getY() - RADIUS >= parent.yProperty().get() && event.getY() < parent.yProperty().get() + parent.getYLimit().get() - RADIUS;
+
+
+            return !event.isShiftDown() &&
+                    !ModelCanvas.edgeIsBeingDrawn() &&
+                    !this.equals(ModelCanvas.getLocationOnMouse()) &&
+                    type.equals(Type.NORMAL) &&
+                    allowX &&
+                    allowY;
+        });
 
         // Draw a new edge from the location
         localMouseTracker.registerOnMousePressedEventHandler(event -> {

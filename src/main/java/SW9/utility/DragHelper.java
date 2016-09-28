@@ -24,6 +24,10 @@ public class DragHelper {
         final double[] dragYOffset = {0d};
 
         final EventHandler<MouseEvent> onMouseDragged = event -> {
+            // Stop propagation of this event
+            event.consume();
+
+            if (!conditional.apply(event)) return;
             // The location of the mouse (added with the relative to the subject)
             double x = event.getX() + dragXOffset[0];
             double y = event.getY() + dragYOffset[0];
@@ -53,8 +57,7 @@ public class DragHelper {
 
             subject.setCursor(Cursor.CLOSED_HAND);
 
-            // Stop propagation of this event
-            event.consume();
+
         };
 
         // Register the onMouseDragged event listener if the provided conditional returns true

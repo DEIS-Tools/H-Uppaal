@@ -4,6 +4,10 @@ import SW9.MouseTracker;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.DragHelper;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableDoubleValue;
+import javafx.scene.input.MouseEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,4 +57,7 @@ public abstract class ModelContainer extends Parent implements DragHelper.Dragga
         removeChild(edge);
         return edges.remove(edge);
     }
+
+    public abstract ObservableDoubleValue getXLimit();
+    public abstract ObservableDoubleValue getYLimit();
 }

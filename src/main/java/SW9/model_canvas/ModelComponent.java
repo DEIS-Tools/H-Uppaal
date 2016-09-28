@@ -5,6 +5,7 @@ import SW9.model_canvas.locations.Location;
 import SW9.utility.DragHelper;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -42,13 +43,16 @@ public class ModelComponent extends ModelContainer {
 
     public ModelComponent(final double x, final double y, final double width, final double height, final String name, final MouseTracker canvasMouseTracker) {
 
-        DragHelper.makeDraggable(this);
-
         // Initialize the spacial properties
         xProperty = new SimpleDoubleProperty(x);
         yProperty = new SimpleDoubleProperty(y);
         widthProperty = new SimpleDoubleProperty(width);
         heightProperty = new SimpleDoubleProperty(height);
+
+        DragHelper.makeDraggable(this, mouseEvent -> {
+            return (mouseEvent.getX() < xProperty().get() + widthProperty.get()) &&
+                    (mouseEvent.getY() < yProperty().get() + heightProperty.get());
+        });
 
         // Initialize locations
         initialLocation = new Location(
@@ -186,5 +190,15 @@ public class ModelComponent extends ModelContainer {
     @Override
     public DoubleProperty yProperty() {
         return yProperty;
+    }
+
+    @Override
+    public ObservableDoubleValue getXLimit() {
+        return widthProperty;
+    }
+
+    @Override
+    public ObservableDoubleValue getYLimit() {
+        return heightProperty;
     }
 }
