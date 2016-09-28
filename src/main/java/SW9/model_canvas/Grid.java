@@ -38,7 +38,7 @@ public class Grid extends Parent {
                         @Override
                         protected double computeValue() {
                             int moveFactor = (int) (getParent().getTranslateX() / gridSize);
-                            return -1 * moveFactor * gridSize;
+                            return -1 * moveFactor * gridSize + gridSize / 2;
                         }
                     };
 
@@ -75,7 +75,7 @@ public class Grid extends Parent {
                         @Override
                         protected double computeValue() {
                             int moveFactor = (int) (getParent().getTranslateY() / gridSize);
-                            return -1 * moveFactor * gridSize;
+                            return -1 * moveFactor * gridSize + gridSize / 2;
                         }
                     };
 

@@ -1,5 +1,6 @@
 package SW9;
 
+import SW9.model_canvas.ModelCanvas;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -99,8 +100,8 @@ public class MouseTracker {
 
         // Register our own event handler to register mouse placement at all times
         registerOnMouseMovedEventHandler(event -> {
-            x.set(event.getX());
-            y.set(event.getY());
+            x.set(event.getX() - (event.getX() % ModelCanvas.GRID_SIZE) + (ModelCanvas.GRID_SIZE / 2));
+            y.set(event.getY() - (event.getY() % ModelCanvas.GRID_SIZE) + (ModelCanvas.GRID_SIZE / 2));
         });
     }
 
