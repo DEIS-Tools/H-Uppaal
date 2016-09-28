@@ -24,25 +24,36 @@ public class DragHelper {
         final double[] dragYOffset = {0d};
 
         final EventHandler<MouseEvent> onMouseDragged = event -> {
-            final double x = event.getX() + dragXOffset[0];
-            final double y = event.getY() + dragYOffset[0];
+            // The location of the mouse (added with the relative to the subject)
+            double x = event.getX() + dragXOffset[0];
+            double y = event.getY() + dragYOffset[0];
 
+            // Make coordinates snap to the grip on the canvas
+            x -= x % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2);
+            y -= y % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2);
+
+            // If the subject has its x property bound have a parent where we can get the xProperty as well
             if(subject.xProperty().isBound() && subject.getParent() instanceof MouseTracker.hasMouseTracker) {
                 MouseTracker.hasMouseTracker parent = (MouseTracker.hasMouseTracker) subject.getParent();
-                subject.xProperty().bind(parent.xProperty().add(x - x % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2) - parent.xProperty().get()));
+                // Bind the x property of the subject to the value of the mouse event relative to the x property of the parent
+                subject.xProperty().bind(parent.xProperty().add(x - parent.xProperty().get()));
             } else {
-                subject.xProperty().setValue(x - x % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2));
+                // Update the x property value to the value of the mouse
+                subject.xProperty().setValue(x);
             }
-
+            // If the subject has its y property bound have a parent where we can get the yProperty as well
             if(subject.yProperty().isBound() && subject.getParent() instanceof MouseTracker.hasMouseTracker) {
                 MouseTracker.hasMouseTracker parent = (MouseTracker.hasMouseTracker) subject.getParent();
-                subject.yProperty().bind(parent.yProperty().add(y - y % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2) - parent.yProperty().get()));
+                // Bind the y property of the subject to the value of the mouse event relative to the y property of the parent
+                subject.yProperty().bind(parent.yProperty().add(y - parent.yProperty().get()));
             } else {
-                subject.yProperty().setValue(y - y % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2));
+                // Update the y property value to the value of the mouse
+                subject.yProperty().setValue(y);
             }
 
             subject.setCursor(Cursor.CLOSED_HAND);
 
+            // Stop propagation of this event
             event.consume();
         };
 
