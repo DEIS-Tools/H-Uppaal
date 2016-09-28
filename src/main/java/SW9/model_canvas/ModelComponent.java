@@ -38,7 +38,7 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
     private final Rectangle labelContainer;
     private final Polygon labelTriangle;
 
-    private static final double CORNER_SIZE = 60;
+    private static final double CORNER_SIZE = 50;
 
     private final Rectangle hiddenFrame = new Rectangle();
 

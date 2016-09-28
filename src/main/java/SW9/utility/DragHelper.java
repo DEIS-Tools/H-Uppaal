@@ -1,6 +1,7 @@
 package SW9.utility;
 
 import SW9.MouseTracker;
+import SW9.model_canvas.ModelCanvas;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -22,8 +23,11 @@ public class DragHelper {
         final double[] dragYOffset = {0d};
 
         final EventHandler<MouseEvent> onMouseDragged = event -> {
-            subject.xProperty().setValue(event.getX() + dragXOffset[0]);
-            subject.yProperty().setValue(event.getY() + dragYOffset[0]);
+            final double x = event.getX() + dragXOffset[0];
+            final double y = event.getY() + dragYOffset[0];
+
+            subject.xProperty().setValue(x - x % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2));
+            subject.yProperty().setValue(y - y % ModelCanvas.GRID_SIZE + (ModelCanvas.GRID_SIZE / 2));
 
             subject.setCursor(Cursor.CLOSED_HAND);
 

@@ -20,7 +20,7 @@ import javafx.util.Duration;
 
 public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker, IParent {
 
-    public static int GRID_SIZE = 50;
+    public static int GRID_SIZE = 25;
 
     // Variables describing the state of the canvas
     private static Location locationOnMouse = null;
