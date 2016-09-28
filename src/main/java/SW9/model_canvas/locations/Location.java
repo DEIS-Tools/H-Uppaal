@@ -30,7 +30,7 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
     public final static double RADIUS = 25.0f;
 
     // Used to update the interaction with the mouse
-    private boolean isOnMouse = true;
+    private boolean isOnMouse = false;
     public final MouseTracker localMouseTracker;
 
     public Circle circle;
@@ -47,6 +47,7 @@ public class Location extends Parent implements MouseTracker.hasMouseTracker {
 
     public Location(MouseTracker canvasMouseTracker) {
         this(canvasMouseTracker.getXProperty(), canvasMouseTracker.getYProperty(), canvasMouseTracker, Type.NORMAL);
+        isOnMouse = true;
     }
 
     public Location(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY, final MouseTracker canvasMouseTracker, Type type) {
