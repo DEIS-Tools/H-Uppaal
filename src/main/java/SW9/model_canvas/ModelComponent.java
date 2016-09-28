@@ -1,12 +1,12 @@
 package SW9.model_canvas;
 
 import SW9.MouseTracker;
+import SW9.model_canvas.locations.Location;
 import SW9.utility.DragHelper;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
@@ -30,8 +30,8 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
     private final Line leftLine = new Line();
 
     // The initial and final locations
-    private final InitialLocation initialLocation;
-    private final FinalLocation finalLocation;
+    private final Location initialLocation;
+    private final Location finalLocation;
 
     // The name of the component
     private final Label label;
@@ -40,7 +40,9 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
 
     private static final double CORNER_SIZE = 60;
 
-    public ModelComponent(final double x, final double y, final double width, final double height, final String name) {
+    public ModelComponent(final double x, final double y, final double width, final double height, final String name, final MouseTracker canvasMouseTracker) {
+
+        DragHelper.makeDraggable(this);
 
         // Initialize the spacial properties
         xProperty = new SimpleDoubleProperty(x);
@@ -49,20 +51,19 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
         heightProperty = new SimpleDoubleProperty(height);
 
         // Initialize locations
-        initialLocation = new InitialLocation(
+        initialLocation = new Location(
                 xProperty.add(CORNER_SIZE / 2d),
-                yProperty.add(CORNER_SIZE / 2d)
+                yProperty.add(CORNER_SIZE / 2d),
+                canvasMouseTracker,
+                Location.Type.INITIAL
         );
 
-        finalLocation = new FinalLocation(
+        finalLocation = new Location(
                 xProperty.add(widthProperty.subtract(CORNER_SIZE / 2d)),
-                yProperty.add(heightProperty.subtract(CORNER_SIZE / 2d))
+                yProperty.add(heightProperty.subtract(CORNER_SIZE / 2d)),
+                canvasMouseTracker,
+                Location.Type.FINAL
         );
-
-
-        // Disable the locations mouse-trackers
-        initialLocation.localMouseTracker.disable();
-        finalLocation.localMouseTracker.disable();
 
         // Bind the line where the initial location is placed
         intialLocationLine.startXProperty().bind(xProperty);
@@ -145,7 +146,7 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
         labelTriangle.layoutXProperty().bind(xProperty.subtract(x));
         labelTriangle.layoutYProperty().bind(yProperty.subtract(y));
 
-        getChildren().addAll(
+        addChildren(
                 intialLocationLine,
                 topLine,
                 rightLine,
@@ -158,8 +159,6 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
                 initialLocation,
                 finalLocation
         );
-
-        DragHelper.makeDraggable(this);
     }
 
 

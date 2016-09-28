@@ -14,9 +14,13 @@ public class KeyboardTracker {
     public static final String DISCARD_NEW_EDGE = "DISCARD_NEW_EDGE";
     public static final String MAKE_LOCATION_URGENT = "MAKE_LOCATION_URGENT";
     public static final String MAKE_LOCATION_COMMITTED = "MAKE_LOCATION_COMMITTED";
+    public static final String CREATE_COMPONENT = "CREATE_COMPONENT";
 
     public static final EventHandler<KeyEvent> handleKeyPress = event -> {
-        for (final Keybind keybind : keyMap.values()) {
+
+        Map<String, Keybind> copy = new HashMap<>(keyMap);
+
+        for (final Keybind keybind : copy.values()) {
             if (keybind == null) continue;
             if (keybind.matches(event)) {
                 keybind.fire(event);
@@ -24,11 +28,11 @@ public class KeyboardTracker {
         }
     };
 
-    public static void registerKeybind(final String id, final Keybind keybind) {
+    public synchronized static void registerKeybind(final String id, final Keybind keybind) {
         keyMap.put(id, keybind);
     }
 
-    public static void unregisterKeybind(final String id) {
+    public synchronized static void unregisterKeybind(final String id) {
         keyMap.put(id, null);
     }
 }

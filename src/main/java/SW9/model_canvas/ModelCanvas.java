@@ -2,23 +2,23 @@ package SW9.model_canvas;
 
 import SW9.Keybind;
 import SW9.KeyboardTracker;
-import SW9.Main;
 import SW9.MouseTracker;
+import SW9.model_canvas.edges.Edge;
+import SW9.model_canvas.locations.Location;
 import SW9.utility.DragHelper;
 import SW9.utility.DropShadowHelper;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
-import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
-import javafx.stage.Screen;
 import javafx.util.Duration;
 
-public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker {
+public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker, IParent {
 
     private static int GRID_SIZE = 50;
 
@@ -35,7 +35,7 @@ public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker {
         // This is a fix to make the canvas larger when we translate it away from 0,0
         final Circle canvasExpanderNode = new Circle();
         canvasExpanderNode.radiusProperty().set(0);
-        getChildren().add(canvasExpanderNode);
+        addChild(canvasExpanderNode);
         canvasExpanderNode.translateXProperty().bind(this.translateXProperty().multiply(-1));
         canvasExpanderNode.translateYProperty().bind(this.translateYProperty().multiply(-1));
 
@@ -54,8 +54,13 @@ public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker {
                 locationOnMouse = newLocation;
 
                 newLocation.setEffect(DropShadowHelper.generateElevationShadow(22));
-                ModelCanvas.this.getChildren().add(newLocation);
+                ModelCanvas.this.addChild(newLocation);
             }
+        }));
+
+        KeyboardTracker.registerKeybind(KeyboardTracker.CREATE_COMPONENT, new Keybind(new KeyCodeCombination(KeyCode.K), () -> {
+            ModelComponent mc = new ModelComponent(mouseTracker.getXProperty().get(), mouseTracker.getYProperty().get(), 400, 600, "Component", mouseTracker);
+            addChild(mc);
         }));
     }
 
@@ -191,5 +196,20 @@ public class ModelCanvas extends Pane implements MouseTracker.hasMouseTracker {
     @Override
     public DoubleProperty yProperty() {
         return layoutYProperty();
+    }
+
+    @Override
+    public void addChild(Node child) {
+        getChildren().add(child);
+    }
+
+    @Override
+    public void removeChild(Node child) {
+        getChildren().remove(child);
+    }
+
+    @Override
+    public void addChildren(Node... children) {
+        getChildren().addAll(children);
     }
 }

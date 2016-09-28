@@ -1,4 +1,4 @@
-package SW9.model_canvas;
+package SW9.model_canvas.edges;
 
 import javafx.scene.Parent;
 import javafx.scene.paint.Color;
