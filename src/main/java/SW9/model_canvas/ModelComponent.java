@@ -65,11 +65,6 @@ public class ModelComponent extends Parent implements MouseTracker.hasMouseTrack
                 Location.Type.FINAL
         );
 
-
-        // Disable the locations mouse-trackers
-        //initialLocation.localMouseTracker.disable();
-        //finalLocation.localMouseTracker.disable();
-
         // Bind the line where the initial location is placed
         intialLocationLine.startXProperty().bind(xProperty);
         intialLocationLine.startYProperty().bind(yProperty.add(CORNER_SIZE));
