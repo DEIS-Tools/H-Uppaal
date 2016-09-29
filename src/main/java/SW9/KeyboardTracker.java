@@ -16,6 +16,8 @@ public class KeyboardTracker {
     public static final String MAKE_LOCATION_COMMITTED = "MAKE_LOCATION_COMMITTED";
     public static final String CREATE_COMPONENT = "CREATE_COMPONENT";
 
+    public static final String TEST_ARROW_ONE = "TEST_ARROW_ONE";
+
     public static final EventHandler<KeyEvent> handleKeyPress = event -> {
 
         Map<String, Keybind> copy = new HashMap<>(keyMap);

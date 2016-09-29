@@ -3,8 +3,10 @@ package SW9.model_canvas;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
+import SW9.model_canvas.edges.ChannelHandshakeHead;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
+import SW9.utility.BindingHelper;
 import SW9.utility.DragHelper;
 import SW9.utility.DropShadowHelper;
 import javafx.animation.Transition;
@@ -13,9 +15,11 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.util.Duration;
 
 public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
@@ -27,6 +31,11 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
     private static Location hoveredLocation = null;
     private static Edge edgeBeingDrawn = null;
     private static ModelContainer hoveredModelContainer = null;
+
+    // TODO - remove me eventually
+    private static Line testLine = new Line();
+    private Node testHead = null;
+    private int testCounter = 0;
 
     private final MouseTracker mouseTracker = new MouseTracker(this);
 
@@ -49,6 +58,13 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
 
     @FXML
     public void initialize() {
+        // TODO Remove this binding eventually
+        // Bind the test line
+        testLine.setStartX(200);
+        testLine.setStartY(200);
+        testLine.endXProperty().bind(mouseTracker.getXProperty());
+        testLine.endYProperty().bind(mouseTracker.getYProperty());
+
         KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
             if (!mouseHasLocation()) {
                 final Location newLocation = new Location(mouseTracker);
@@ -62,6 +78,30 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
         KeyboardTracker.registerKeybind(KeyboardTracker.CREATE_COMPONENT, new Keybind(new KeyCodeCombination(KeyCode.K), () -> {
             ModelComponent mc = new ModelComponent(mouseTracker.getXProperty().get(), mouseTracker.getYProperty().get(), 400, 600, "Component", mouseTracker);
             addChild(mc);
+        }));
+
+        // TODO remove me when testing of heads is done
+        KeyboardTracker.registerKeybind(KeyboardTracker.TEST_ARROW_ONE, new Keybind(new KeyCodeCombination(KeyCode.T, KeyCombination.SHIFT_ANY), () -> {
+
+            if(!getChildren().contains(testLine)) {
+                addChild(testLine);
+            }
+
+            if(testHead != null) {
+                removeChild(testHead);
+            }
+
+            testCounter++;
+
+            if(testCounter == 1) {
+                ChannelHandshakeHead head = new ChannelHandshakeHead();
+                testHead = head;
+                addChild(head);
+                BindingHelper.bind(head, testLine);
+            } else {
+                removeChild(testLine);
+                testCounter = 0;
+            }
         }));
     }
 

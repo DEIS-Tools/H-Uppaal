@@ -2,6 +2,7 @@ package SW9.utility;
 
 import SW9.MouseTracker;
 import SW9.model_canvas.edges.ArrowHead;
+import SW9.model_canvas.edges.ChannelHandshakeHead;
 import SW9.model_canvas.locations.Location;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
@@ -106,6 +107,30 @@ public class BindingHelper {
         subject.getArrowHeadRight().startYProperty().bind(arrowHeadRightY);
         subject.getArrowHeadRight().endXProperty().bind(endX);
         subject.getArrowHeadRight().endYProperty().bind(endY);
+    }
+
+    public static void bind(final ChannelHandshakeHead subject, final Line source) {
+        DoubleProperty startX = source.startXProperty();
+        DoubleProperty startY = source.startYProperty();
+        DoubleProperty endX = source.endXProperty();
+        DoubleProperty endY = source.endYProperty();
+
+        subject.xProperty.bind(endX);
+        subject.yProperty.bind(endY);
+
+        DoubleBinding rotationBinding = new DoubleBinding() {
+            {
+                super.bind(startX, startY, endX, endY);
+            }
+
+            @Override
+            protected double computeValue() {
+                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
+                return Math.toDegrees(angle) + 90;
+            }
+        };
+
+        subject.rotateProperty().bind(rotationBinding);
     }
 
     public static void bind(final Label subject, final Location target) {
