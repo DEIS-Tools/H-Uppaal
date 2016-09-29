@@ -3,6 +3,7 @@ package SW9.model_canvas.edges;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
+import SW9.model_canvas.IParent;
 import SW9.model_canvas.ModelCanvas;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.BindingHelper;
@@ -82,11 +83,11 @@ public class Edge extends Parent {
         // Add keybind to discard the nails and links if ESC is pressed
         Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
             // Get the parent from the source location
-            Pane parent = (Pane) this.getParent();
+            IParent parent = (IParent) this.getParent();
             if (parent == null) return;
 
             // Remove this edge from the canvas and unregister its draw ednge handler
-            parent.getChildren().remove(this);
+            parent.removeChild(this);
             this.canvasMouseTracker.unregisterOnMousePressedEventHandler(drawEdgeStepWhenCanvasPressed);
 
             // Tell the canvas that this edge is no longer being drawn
