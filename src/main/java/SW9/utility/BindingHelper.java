@@ -1,6 +1,7 @@
 package SW9.utility;
 
 import SW9.MouseTracker;
+import SW9.model_canvas.arrow_heads.ArrowHead;
 import SW9.model_canvas.arrow_heads.SimpleArrow;
 import SW9.model_canvas.arrow_heads.ChannelBroadcastHead;
 import SW9.model_canvas.arrow_heads.ChannelHandshakeHead;
@@ -110,31 +111,7 @@ public class BindingHelper {
         subject.getArrowHeadRight().endYProperty().bind(endY);
     }
 
-    public static void bind(final ChannelHandshakeHead subject, final Line source) {
-        DoubleProperty startX = source.startXProperty();
-        DoubleProperty startY = source.startYProperty();
-        DoubleProperty endX = source.endXProperty();
-        DoubleProperty endY = source.endYProperty();
-
-        subject.xProperty.bind(endX);
-        subject.yProperty.bind(endY);
-
-        DoubleBinding rotationBinding = new DoubleBinding() {
-            {
-                super.bind(startX, startY, endX, endY);
-            }
-
-            @Override
-            protected double computeValue() {
-                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
-                return Math.toDegrees(angle) + 90;
-            }
-        };
-
-        subject.rotateProperty().bind(rotationBinding);
-    }
-
-    public static void bind(final ChannelBroadcastHead subject, final Line source) {
+    public static void bind(final ArrowHead subject, final Line source) {
         DoubleProperty startX = source.startXProperty();
         DoubleProperty startY = source.startYProperty();
         DoubleProperty endX = source.endXProperty();

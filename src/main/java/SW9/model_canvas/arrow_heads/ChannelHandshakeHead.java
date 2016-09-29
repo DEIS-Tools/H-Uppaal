@@ -1,17 +1,10 @@
 package SW9.model_canvas.arrow_heads;
 
-import SW9.model_canvas.Parent;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 
-public class ChannelHandshakeHead extends Parent {
-
-    public DoubleProperty xProperty = new SimpleDoubleProperty(0d);
-    public DoubleProperty yProperty = new SimpleDoubleProperty(0d);;
-
-    private Rectangle rotationBody = new Rectangle();
+public class ChannelHandshakeHead extends ArrowHead {
     private Path halfCircle = new Path();
     private Path triangle = new Path();
 
@@ -31,12 +24,12 @@ public class ChannelHandshakeHead extends Parent {
         rotationBody.xProperty().bind(xProperty.subtract(TRIANGLE_WIDTH / 2));
         rotationBody.yProperty().bind(yProperty.subtract(HALF_CIRCLE_RADIUS + TRIANGLE_LENGTH));
         rotationBody.widthProperty().set(TRIANGLE_WIDTH);
-        rotationBody.heightProperty().set((HALF_CIRCLE_RADIUS + TRIANGLE_LENGTH) *2 );
-        rotationBody.setFill(Color.TRANSPARENT);
+        rotationBody.heightProperty().set((HALF_CIRCLE_RADIUS + TRIANGLE_LENGTH) * 2);
         rotationBody.setMouseTransparent(true);
+        rotationBody.setFill(Color.TRANSPARENT);
     }
+
     private void initializeHalfCircle() {
-        halfCircle.setFill(Color.TRANSPARENT);
         halfCircle.setStroke(Color.BLACK);
         MoveTo p1 = new MoveTo();
         ArcTo p2 = new ArcTo();
@@ -52,6 +45,7 @@ public class ChannelHandshakeHead extends Parent {
         halfCircle.getElements().add(p1);
         halfCircle.getElements().add(p2);
     }
+
     private void initializeTriangle() {
         MoveTo start = new MoveTo();
         LineTo l1 = new LineTo();

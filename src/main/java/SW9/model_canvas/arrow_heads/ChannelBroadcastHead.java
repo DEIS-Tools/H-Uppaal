@@ -1,16 +1,9 @@
 package SW9.model_canvas.arrow_heads;
 
-import SW9.model_canvas.Parent;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 
-public class ChannelBroadcastHead extends Parent {
-    public DoubleProperty xProperty = new SimpleDoubleProperty(0d);
-    public DoubleProperty yProperty = new SimpleDoubleProperty(0d);
-
-    private Rectangle rotationBody = new Rectangle();
+public class ChannelBroadcastHead extends ArrowHead {
     private Path largeCircle = new Path();
     private Path mediumCircle = new Path();
     private Path smallCircle = new Path();
@@ -32,7 +25,7 @@ public class ChannelBroadcastHead extends Parent {
         addChildren(largeCircle, mediumCircle, smallCircle, triangle, rotationBody);
     }
 
-    private void initializeRotationBody() {
+    protected void initializeRotationBody() {
         rotationBody.xProperty().bind(xProperty.subtract(TRIANGLE_WIDTH / 2));
         rotationBody.yProperty().bind(yProperty.subtract(LARGE_CIRCLE_RADIUS + TRIANGLE_LENGTH));
         rotationBody.widthProperty().set(TRIANGLE_WIDTH);
@@ -42,7 +35,6 @@ public class ChannelBroadcastHead extends Parent {
     }
 
     private void initializeLargeCircle() {
-        largeCircle.setFill(Color.TRANSPARENT);
         largeCircle.setStroke(Color.BLACK);
         MoveTo p1 = new MoveTo();
         ArcTo p2 = new ArcTo();
@@ -60,7 +52,6 @@ public class ChannelBroadcastHead extends Parent {
     }
 
     private void initializeMediumCircle() {
-        mediumCircle.setFill(Color.TRANSPARENT);
         mediumCircle.setStroke(Color.BLACK);
         MoveTo p1 = new MoveTo();
         ArcTo p2 = new ArcTo();
@@ -78,7 +69,6 @@ public class ChannelBroadcastHead extends Parent {
     }
 
     private void initializeSmallCircle() {
-        smallCircle.setFill(Color.TRANSPARENT);
         smallCircle.setStroke(Color.BLACK);
         MoveTo p1 = new MoveTo();
         ArcTo p2 = new ArcTo();
