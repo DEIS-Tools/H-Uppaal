@@ -15,9 +15,9 @@ public class ChannelHandshakeHead extends Parent {
     private Path halfCircle = new Path();
     private Path triangle = new Path();
 
-    private static final double HALF_CIRCLE_RADIUS = 25d;
-    private static final double TRIANGLE_LENGTH = 25d;
-    private static final double TRIANGLE_WIDTH = 25d;
+    private static final double HALF_CIRCLE_RADIUS = 15d;
+    private static final double TRIANGLE_LENGTH = 15d;
+    private static final double TRIANGLE_WIDTH = 15d;
 
     public ChannelHandshakeHead() {
         initializeRotationBody();

@@ -3,6 +3,7 @@ package SW9.model_canvas;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
+import SW9.model_canvas.edges.ChannelBroadcastHead;
 import SW9.model_canvas.edges.ChannelHandshakeHead;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
@@ -98,7 +99,12 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
                 testHead = head;
                 addChild(head);
                 BindingHelper.bind(head, testLine);
-            } else {
+            } else if(testCounter == 2) {
+                ChannelBroadcastHead head = new ChannelBroadcastHead();
+                testHead = head;
+                addChild(head);
+                BindingHelper.bind(head, testLine);
+            }else {
                 removeChild(testLine);
                 testCounter = 0;
             }
