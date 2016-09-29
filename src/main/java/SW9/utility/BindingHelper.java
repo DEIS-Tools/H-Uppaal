@@ -1,9 +1,9 @@
 package SW9.utility;
 
 import SW9.MouseTracker;
-import SW9.model_canvas.edges.ArrowHead;
-import SW9.model_canvas.edges.ChannelBroadcastHead;
-import SW9.model_canvas.edges.ChannelHandshakeHead;
+import SW9.model_canvas.arrow_heads.SimpleArrow;
+import SW9.model_canvas.arrow_heads.ChannelBroadcastHead;
+import SW9.model_canvas.arrow_heads.ChannelHandshakeHead;
 import SW9.model_canvas.locations.Location;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
@@ -43,7 +43,7 @@ public class BindingHelper {
         subject.centerYProperty().set(target.getY());
     }
 
-    public static void bind(final ArrowHead subject, final Line source) {
+    public static void bind(final SimpleArrow subject, final Line source) {
         // Calculate the bindings (so that the arrow head is bound to the end of the line)
 
         DoubleProperty startX = source.startXProperty();
@@ -58,8 +58,8 @@ public class BindingHelper {
 
             @Override
             protected double computeValue() {
-                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) + Math.toRadians(ArrowHead.ANGLE);
-                return endX.get() + Math.cos(angle) * ArrowHead.LENGTH;
+                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) + Math.toRadians(SimpleArrow.ANGLE);
+                return endX.get() + Math.cos(angle) * SimpleArrow.LENGTH;
             }
         };
 
@@ -70,8 +70,8 @@ public class BindingHelper {
 
             @Override
             protected double computeValue() {
-                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) + Math.toRadians(ArrowHead.ANGLE);
-                return endY.get() + Math.sin(angle) * ArrowHead.LENGTH;
+                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) + Math.toRadians(SimpleArrow.ANGLE);
+                return endY.get() + Math.sin(angle) * SimpleArrow.LENGTH;
             }
         };
 
@@ -82,8 +82,8 @@ public class BindingHelper {
 
             @Override
             protected double computeValue() {
-                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) - Math.toRadians(ArrowHead.ANGLE);
-                return endX.get() + Math.cos(angle) * ArrowHead.LENGTH;
+                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) - Math.toRadians(SimpleArrow.ANGLE);
+                return endX.get() + Math.cos(angle) * SimpleArrow.LENGTH;
             }
         };
 
@@ -94,8 +94,8 @@ public class BindingHelper {
 
             @Override
             protected double computeValue() {
-                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) - Math.toRadians(ArrowHead.ANGLE);
-                return endY.get() + Math.sin(angle) * ArrowHead.LENGTH;
+                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get()) - Math.toRadians(SimpleArrow.ANGLE);
+                return endY.get() + Math.sin(angle) * SimpleArrow.LENGTH;
             }
         };
 

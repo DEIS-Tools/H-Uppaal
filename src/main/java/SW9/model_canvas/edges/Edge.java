@@ -5,6 +5,7 @@ import SW9.KeyboardTracker;
 import SW9.MouseTracker;
 import SW9.model_canvas.IParent;
 import SW9.model_canvas.ModelCanvas;
+import SW9.model_canvas.arrow_heads.SimpleArrow;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.BindingHelper;
 import javafx.beans.binding.BooleanBinding;
@@ -15,7 +16,6 @@ import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
 
 public class Edge extends Parent {
@@ -23,7 +23,7 @@ public class Edge extends Parent {
     private final Location sourceLocation;
     private Location targetLocation = null;
 
-    private final ArrowHead arrowHead = new ArrowHead();
+    private final SimpleArrow simpleArrow = new SimpleArrow();
 
     private Line lineCue = new Line();
 
@@ -65,7 +65,7 @@ public class Edge extends Parent {
         // Make the edge click-through until it is placed
         this.setMouseTransparent(true);
 
-        getChildren().add(new ArrowHead());
+        getChildren().add(new SimpleArrow());
 
         // Bind the lineCue from the source location to the mouse (will be rebound when nails are created)
         BindingHelper.bind(lineCue, sourceLocation.circle, canvasMouseTracker);
@@ -73,10 +73,10 @@ public class Edge extends Parent {
         // Add the lineCue to the canvas
         getChildren().add(lineCue);
 
-        getChildren().add(arrowHead);
+        getChildren().add(simpleArrow);
 
         // Bind arrowhead to the line cue
-        BindingHelper.bind(arrowHead, lineCue);
+        BindingHelper.bind(simpleArrow, lineCue);
 
         this.canvasMouseTracker.registerOnMousePressedEventHandler(drawEdgeStepWhenCanvasPressed);
 
@@ -187,7 +187,7 @@ public class Edge extends Parent {
             // We did finish the edge, remove the cue and move the arrow head
             else {
                 Edge.this.getChildren().remove(lineCue);
-                BindingHelper.bind(arrowHead, link.line);
+                BindingHelper.bind(simpleArrow, link.line);
 
                 // We no longer wish to discard the edge when pressing the esc button
                 KeyboardTracker.unregisterKeybind(KeyboardTracker.DISCARD_NEW_EDGE);

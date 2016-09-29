@@ -1,4 +1,4 @@
-package SW9.model_canvas.edges;
+package SW9.model_canvas.arrow_heads;
 
 import SW9.model_canvas.Parent;
 import javafx.beans.property.DoubleProperty;
