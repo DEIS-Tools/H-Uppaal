@@ -1,59 +1,61 @@
 package SW9.model_canvas.arrow_heads;
 
-import javafx.beans.value.ObservableDoubleValue;
+import SW9.model_canvas.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 
-public class ChannelHandshakeHead extends ArrowHead {
-    private Path halfCircle = new Path();
-    private Path triangle = new Path();
+public class ChannelHandshake extends Arrow {
+    private Path halfCircle;
+    private Path triangle;
 
-    private static final double HALF_CIRCLE_RADIUS = 15d;
+    private static final double CIRCLE_RADIUS = 15d;
     private static final double TRIANGLE_LENGTH = 15d;
     private static final double TRIANGLE_WIDTH = 15d;
 
-    public ChannelHandshakeHead() {
-        initializeRotationBody();
+    @Override
+    protected void initializeHead(Parent head) {
         initializeHalfCircle();
         initializeTriangle();
-
-        addChildren(halfCircle, triangle, rotationBody);
+        head.addChildren(halfCircle, triangle);
     }
 
-    private void initializeRotationBody() {
-        rotationBody.xProperty().bind(xProperty.subtract(TRIANGLE_WIDTH / 2));
-        rotationBody.yProperty().bind(yProperty.subtract(HALF_CIRCLE_RADIUS + TRIANGLE_LENGTH));
-        rotationBody.widthProperty().set(TRIANGLE_WIDTH);
-        rotationBody.heightProperty().set((HALF_CIRCLE_RADIUS + TRIANGLE_LENGTH) * 2);
-        rotationBody.setMouseTransparent(true);
-        rotationBody.setFill(Color.TRANSPARENT);
+    @Override
+    public double getHeadHeight() {
+        return CIRCLE_RADIUS + TRIANGLE_LENGTH;
+    }
+
+    @Override
+    public double getHeadWidth() {
+        return Math.max(TRIANGLE_WIDTH, CIRCLE_RADIUS * 2);
     }
 
     private void initializeHalfCircle() {
+        halfCircle = new Path();
         halfCircle.setStroke(Color.BLACK);
         MoveTo p1 = new MoveTo();
         ArcTo p2 = new ArcTo();
 
-        p1.xProperty().bind(xProperty.add(HALF_CIRCLE_RADIUS));
+        p1.xProperty().bind(xProperty.add(CIRCLE_RADIUS));
         p1.yProperty().bind(yProperty);
 
-        p2.xProperty().bind(xProperty.subtract(HALF_CIRCLE_RADIUS));
+        p2.xProperty().bind(xProperty.subtract(CIRCLE_RADIUS));
         p2.yProperty().bind(yProperty);
-        p2.setRadiusX(HALF_CIRCLE_RADIUS);
-        p2.setRadiusY(HALF_CIRCLE_RADIUS);
+        p2.setRadiusX(CIRCLE_RADIUS);
+        p2.setRadiusY(CIRCLE_RADIUS);
 
         halfCircle.getElements().add(p1);
         halfCircle.getElements().add(p2);
     }
 
     private void initializeTriangle() {
+        triangle = new Path();
         MoveTo start = new MoveTo();
         LineTo l1 = new LineTo();
         LineTo l2 = new LineTo();
         LineTo l3 = new LineTo();
 
         start.xProperty().bind(xProperty);
-        start.yProperty().bind(yProperty.subtract(HALF_CIRCLE_RADIUS));
+        start.yProperty().bind(yProperty.subtract(CIRCLE_RADIUS));
 
         l1.xProperty().bind(start.xProperty().subtract(TRIANGLE_WIDTH / 2));
         l1.yProperty().bind(start.yProperty().subtract(TRIANGLE_LENGTH));
