@@ -20,17 +20,12 @@ public class ModelComponent extends ModelContainer {
     public final DoubleProperty widthProperty;
     public final DoubleProperty heightProperty;
 
-    // The lines of the component
-    private final Line intialLocationLine = new Line();
-    private final Line topLine = new Line();
-    private final Line rightLine = new Line();
-    private final Line finalLocationLine = new Line();
-    private final Line bottomLine = new Line();
-    private final Line leftLine = new Line();
-
     // The initial and final locations
     private final Location initialLocation;
     private final Location finalLocation;
+
+    // The frame of the component
+    private final Path frame = new Path();
 
     // The name of the component
     private final Label label;
@@ -38,8 +33,6 @@ public class ModelComponent extends ModelContainer {
     private final Polygon labelTriangle;
 
     private static final double CORNER_SIZE = 50;
-
-    private final Rectangle hiddenFrame = new Rectangle();
 
     public ModelComponent(final double x, final double y, final double width, final double height, final String name, final MouseTracker canvasMouseTracker) {
 
@@ -53,6 +46,9 @@ public class ModelComponent extends ModelContainer {
             return (mouseEvent.getX() < xProperty().get() + widthProperty.get()) &&
                     (mouseEvent.getY() < yProperty().get() + heightProperty.get());
         });
+
+        // Initialize the frame of the component
+        initializeFrame(frame);
 
         // Initialize locations
         initialLocation = new Location(
@@ -68,58 +64,6 @@ public class ModelComponent extends ModelContainer {
                 canvasMouseTracker,
                 Location.Type.FINAL
         );
-
-        // Bind the hidden frame
-        hiddenFrame.xProperty().bind(xProperty);
-        hiddenFrame.yProperty().bind(yProperty);
-        hiddenFrame.widthProperty().bind(widthProperty);
-        hiddenFrame.heightProperty().bind(heightProperty);
-
-        // Style the hidden frame
-        hiddenFrame.setStroke(Color.TRANSPARENT);
-        hiddenFrame.setFill(Color.TRANSPARENT);
-
-        // Bind the line where the initial location is placed
-        intialLocationLine.startXProperty().bind(xProperty);
-        intialLocationLine.startYProperty().bind(yProperty.add(CORNER_SIZE));
-        intialLocationLine.endXProperty().bind(xProperty.add(CORNER_SIZE));
-        intialLocationLine.endYProperty().bind(yProperty);
-        intialLocationLine.setStrokeWidth(2d);
-
-        // Bind the top line
-        topLine.startXProperty().bind(xProperty.add(CORNER_SIZE));
-        topLine.startYProperty().bind(yProperty);
-        topLine.endXProperty().bind(xProperty.add(widthProperty));
-        topLine.endYProperty().bind(yProperty);
-        topLine.setStrokeWidth(2d);
-
-        // Bind the right line
-        rightLine.startXProperty().bind(xProperty.add(widthProperty));
-        rightLine.startYProperty().bind(yProperty);
-        rightLine.endXProperty().bind(xProperty.add(widthProperty));
-        rightLine.endYProperty().bind(yProperty.add(heightProperty).subtract(CORNER_SIZE));
-        rightLine.setStrokeWidth(2d);
-
-        // Bind the line where the final location is placed
-        finalLocationLine.startXProperty().bind(xProperty.add(widthProperty));
-        finalLocationLine.startYProperty().bind(yProperty.add(heightProperty).subtract(CORNER_SIZE));
-        finalLocationLine.endXProperty().bind(xProperty.add(widthProperty).subtract(CORNER_SIZE));
-        finalLocationLine.endYProperty().bind(yProperty.add(heightProperty));
-        finalLocationLine.setStrokeWidth(2d);
-
-        // Bind the bottom line
-        bottomLine.startXProperty().bind(xProperty.add(widthProperty).subtract(CORNER_SIZE));
-        bottomLine.startYProperty().bind(yProperty.add(heightProperty));
-        bottomLine.endXProperty().bind(xProperty);
-        bottomLine.endYProperty().bind(yProperty.add(heightProperty));
-        bottomLine.setStrokeWidth(2d);
-
-        // Bind the left line
-        leftLine.startXProperty().bind(xProperty);
-        leftLine.startYProperty().bind(yProperty.add(heightProperty));
-        leftLine.endXProperty().bind(xProperty);
-        leftLine.endYProperty().bind(yProperty.add(CORNER_SIZE));
-        leftLine.setStrokeWidth(2d);
 
         // Initialize properties for the name of the component
         labelContainer = new Rectangle();
@@ -161,13 +105,7 @@ public class ModelComponent extends ModelContainer {
         labelTriangle.layoutYProperty().bind(yProperty.subtract(y));
 
         addChildren(
-                hiddenFrame,
-                intialLocationLine,
-                topLine,
-                rightLine,
-                finalLocationLine,
-                bottomLine,
-                leftLine,
+                frame,
                 labelTriangle,
                 labelContainer,
                 label,
@@ -176,6 +114,43 @@ public class ModelComponent extends ModelContainer {
         );
     }
 
+
+    private void initializeFrame(final Path frame) {
+        MoveTo p1 = new MoveTo();
+        LineTo p2 = new LineTo();
+        LineTo p3 = new LineTo();
+        LineTo p4 = new LineTo();
+        LineTo p5 = new LineTo();
+        LineTo p6 = new LineTo();
+        LineTo p7 = new LineTo();
+
+        p1.xProperty().bind(xProperty);
+        p1.yProperty().bind(yProperty.add(CORNER_SIZE));
+
+        p2.xProperty().bind(xProperty.add(CORNER_SIZE));
+        p2.yProperty().bind(yProperty);
+
+        p3.xProperty().bind(xProperty.add(widthProperty));
+        p3.yProperty().bind(yProperty);
+
+        p4.xProperty().bind(xProperty.add(widthProperty));
+        p4.yProperty().bind(yProperty.add(heightProperty).subtract(CORNER_SIZE));
+
+        p5.xProperty().bind(xProperty.add(widthProperty).subtract(CORNER_SIZE));
+        p5.yProperty().bind(yProperty.add(heightProperty));
+
+        p6.xProperty().bind(xProperty);
+        p6.yProperty().bind(yProperty.add(heightProperty));
+
+        p7.xProperty().bind(p1.xProperty());
+        p7.yProperty().bind(p1.yProperty());
+
+        frame.getElements().addAll(p1, p2, p3, p4, p5, p6, p7);
+
+        frame.setStroke(Color.BLACK);
+        frame.setStrokeWidth(2d);
+        frame.setFill(Color.TRANSPARENT);
+    }
 
     @Override
     public MouseTracker getMouseTracker() {
