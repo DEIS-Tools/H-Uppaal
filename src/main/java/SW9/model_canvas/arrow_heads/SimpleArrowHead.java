@@ -1,9 +1,6 @@
 package SW9.model_canvas.arrow_heads;
 
-import javafx.scene.paint.Color;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
+import javafx.scene.shape.Line;
 
 public class SimpleArrowHead extends ArrowHead {
 
@@ -13,33 +10,27 @@ public class SimpleArrowHead extends ArrowHead {
     public SimpleArrowHead() {
         super();
 
-        addChild(initializeTriangle());
+        addChildren(initializeLeftArrow(), initializeRightArrow());
     }
 
-    private Path initializeTriangle() {
-        final Path simpleArrow = new Path();
+    private Line initializeLeftArrow() {
+        final Line leftArrow = new Line();
+        leftArrow.startXProperty().bind(xProperty);
+        leftArrow.startYProperty().bind(yProperty);
+        leftArrow.endXProperty().bind(xProperty.subtract(TRIANGLE_WIDTH / 2));
+        leftArrow.endYProperty().bind(yProperty.subtract(TRIANGLE_LENGTH));
 
-        MoveTo start = new MoveTo();
-        LineTo l1 = new LineTo();
-        MoveTo l2 = new MoveTo();
-        LineTo l3 = new LineTo();
+        return leftArrow;
+    }
 
-        start.xProperty().bind(xProperty);
-        start.yProperty().bind(yProperty);
+    private Line initializeRightArrow() {
+        final Line rightArrow = new Line();
+        rightArrow.startXProperty().bind(xProperty);
+        rightArrow.startYProperty().bind(yProperty);
+        rightArrow.endXProperty().bind(xProperty.add(TRIANGLE_WIDTH / 2));
+        rightArrow.endYProperty().bind(yProperty.subtract(TRIANGLE_LENGTH));
 
-        l1.xProperty().bind(start.xProperty().subtract(TRIANGLE_WIDTH / 2));
-        l1.yProperty().bind(start.yProperty().subtract(TRIANGLE_LENGTH));
-
-        l2.xProperty().bind(start.xProperty().add(TRIANGLE_WIDTH / 2));
-        l2.yProperty().bind(start.yProperty().subtract(TRIANGLE_LENGTH));
-
-        l3.xProperty().bind(start.xProperty());
-        l3.yProperty().bind(start.yProperty());
-
-        simpleArrow.setStroke(Color.BLACK);
-        simpleArrow.getElements().addAll(start, l1, l2, l3);
-
-        return simpleArrow;
+        return rightArrow;
     }
 
     @Override
