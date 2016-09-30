@@ -93,8 +93,14 @@ public class BindingHelper {
                 return Math.toDegrees(angle) + 90;
             }
         };
-        tail.endXProperty().bind(tailX);
-        tail.endYProperty().bind(tailY);
+        if(head.shouldBindToTip()) {
+            tail.endXProperty().bind(endX);
+            tail.endYProperty().bind(endY);
+        } else {
+            tail.endXProperty().bind(tailX);
+            tail.endYProperty().bind(tailY);
+        }
+
         subject.getHead().rotateProperty().bind(rotationBinding);
     }
 

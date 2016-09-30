@@ -23,7 +23,6 @@ public class SimpleArrowHead extends ArrowHead {
         LineTo l1 = new LineTo();
         MoveTo l2 = new MoveTo();
         LineTo l3 = new LineTo();
-        LineTo l4 = new LineTo();
 
         start.xProperty().bind(xProperty);
         start.yProperty().bind(yProperty);
@@ -31,17 +30,14 @@ public class SimpleArrowHead extends ArrowHead {
         l1.xProperty().bind(start.xProperty().subtract(TRIANGLE_WIDTH / 2));
         l1.yProperty().bind(start.yProperty().subtract(TRIANGLE_LENGTH));
 
-        l2.xProperty().bind(start.xProperty());
+        l2.xProperty().bind(start.xProperty().add(TRIANGLE_WIDTH / 2));
         l2.yProperty().bind(start.yProperty().subtract(TRIANGLE_LENGTH));
 
         l3.xProperty().bind(start.xProperty());
         l3.yProperty().bind(start.yProperty());
 
-        l4.xProperty().bind(start.xProperty().add(TRIANGLE_WIDTH / 2));
-        l4.yProperty().bind(start.yProperty().subtract(TRIANGLE_LENGTH));
-
         simpleArrow.setStroke(Color.BLACK);
-        simpleArrow.getElements().addAll(start, l1, l2, l3, l4);
+        simpleArrow.getElements().addAll(start, l1, l2, l3);
 
         return simpleArrow;
     }
@@ -54,6 +50,11 @@ public class SimpleArrowHead extends ArrowHead {
     @Override
     public double getHeadWidth() {
         return TRIANGLE_WIDTH;
+    }
+
+    @Override
+    public boolean shouldBindToTip() {
+        return true;
     }
 
 }
