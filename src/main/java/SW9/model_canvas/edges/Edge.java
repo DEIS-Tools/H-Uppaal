@@ -5,7 +5,7 @@ import SW9.KeyboardTracker;
 import SW9.MouseTracker;
 import SW9.model_canvas.IParent;
 import SW9.model_canvas.ModelCanvas;
-import SW9.model_canvas.arrow_heads.Arrow;
+import SW9.model_canvas.arrow_heads.BroadcastArrowHead;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.BindingHelper;
@@ -24,7 +24,7 @@ public class Edge extends Parent {
     private final Location sourceLocation;
     private Location targetLocation = null;
 
-    private final Arrow simpleArrow = new Arrow(new SimpleArrowHead(), new Line());
+    private final BroadcastArrowHead arrowHead = new BroadcastArrowHead();
 
     private Line lineCue = new Line();
 
@@ -70,14 +70,14 @@ public class Edge extends Parent {
 
         // Bind the lineCue from the source location to the mouse (will be rebound when nails are created)
         BindingHelper.bind(lineCue, sourceLocation.circle, canvasMouseTracker);
+        // Bind arrowhead to the mouse
+        BindingHelper.bind(arrowHead, sourceLocation.circle, canvasMouseTracker);
+        // Bind the lineCue to the arrowhead
+        BindingHelper.bind(lineCue, arrowHead);
 
         // Add the lineCue to the canvas
         getChildren().add(lineCue);
-
-        getChildren().add(simpleArrow);
-
-        // Bind arrowhead to the line cue
-        BindingHelper.bind(simpleArrow, lineCue);
+        getChildren().add(arrowHead);
 
         this.canvasMouseTracker.registerOnMousePressedEventHandler(drawEdgeStepWhenCanvasPressed);
 
@@ -145,6 +145,8 @@ public class Edge extends Parent {
                 final Nail previousNail = nails.get(nails.size() - 1);
 
                 BindingHelper.bind(link.line, previousNail, targetLocation.circle);
+                BindingHelper.bind(arrowHead, previousNail, targetLocation.circle);
+                BindingHelper.bind(link.line, arrowHead);
             }
 
             // We have no nails, i.e. we are creating an edge directly from a source location to a target location
@@ -177,6 +179,8 @@ public class Edge extends Parent {
 
                 } else {
                     BindingHelper.bind(link.line, sourceLocation.circle, targetLocation.circle);
+                    BindingHelper.bind(arrowHead, sourceLocation.circle, targetLocation.circle);
+                    BindingHelper.bind(link.line, arrowHead);
                 }
             }
 
@@ -185,10 +189,9 @@ public class Edge extends Parent {
                 Edge.this.getChildren().add(nail);
                 nails.add(nail);
             }
-            // We did finish the edge, remove the cue and move the arrow head
+            // We did finish the edge, remove the cue and bind thee last link and arrow head accordingly
             else {
                 Edge.this.getChildren().remove(lineCue);
-                BindingHelper.bind(simpleArrow, link.line);
 
                 // We no longer wish to discard the edge when pressing the esc button
                 KeyboardTracker.unregisterKeybind(KeyboardTracker.DISCARD_NEW_EDGE);
@@ -200,7 +203,13 @@ public class Edge extends Parent {
                 ModelCanvas.setEdgeBeingDrawn(null);
             }
 
-            BindingHelper.bind(lineCue, nail, canvasMouseTracker);
+            // If the line cue is present rebind it and line cue to start from newest nail
+            if (getChildren().contains(lineCue)) {
+
+                BindingHelper.bind(lineCue, nail, canvasMouseTracker);
+                BindingHelper.bind(arrowHead, nail, canvasMouseTracker);
+                BindingHelper.bind(lineCue, arrowHead);
+            }
 
             // Add the link and nail to the canvas
             Edge.this.getChildren().add(0, link);

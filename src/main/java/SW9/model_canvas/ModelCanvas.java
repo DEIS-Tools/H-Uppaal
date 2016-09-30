@@ -3,10 +3,7 @@ package SW9.model_canvas;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
-import SW9.model_canvas.arrow_heads.Arrow;
-import SW9.model_canvas.arrow_heads.BroadcastArrowHead;
-import SW9.model_canvas.arrow_heads.HandshakeArrowHead;
-import SW9.model_canvas.arrow_heads.SimpleArrowHead;
+import SW9.model_canvas.arrow_heads.*;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.BindingHelper;
@@ -35,10 +32,6 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
     private static Edge edgeBeingDrawn = null;
     private static ModelContainer hoveredModelContainer = null;
 
-    // TODO - remove me eventually
-    private static Line testLine = new Line();
-    private Node testArrow = null;
-    private int testCounter = 0;
 
     private final MouseTracker mouseTracker = new MouseTracker(this);
 
@@ -61,13 +54,6 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
 
     @FXML
     public void initialize() {
-        // TODO Remove this binding eventually
-        // Bind the test line
-        testLine.setStartX(200);
-        testLine.setStartY(200);
-        testLine.endXProperty().bind(mouseTracker.getXProperty());
-        testLine.endYProperty().bind(mouseTracker.getYProperty());
-
         KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
             if (!mouseHasLocation()) {
                 final Location newLocation = new Location(mouseTracker);
@@ -85,43 +71,21 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
 
         // TODO remove me when testing of heads is done
         KeyboardTracker.registerKeybind(KeyboardTracker.TEST_ARROW_ONE, new Keybind(new KeyCodeCombination(KeyCode.T, KeyCombination.SHIFT_ANY), () -> {
+            ArrowHead arrowHead = new BroadcastArrowHead();
+            Line tail = new Line();
+            Circle testCircle = new Circle();
 
-            if(!getChildren().contains(testLine)) {
-                addChild(testLine);
-            }
+            addChildren(arrowHead, tail, testCircle);
 
-            if(testArrow != null) {
-                removeChild(testArrow);
-            }
+            testCircle.setCenterX(200);
+            testCircle.setCenterY(200);
+            testCircle.setRadius(40);
 
-            testCounter++;
+            BindingHelper.bind(arrowHead, testCircle, mouseTracker);
 
-            if(testCounter == 1) {
-                final HandshakeArrowHead head = new HandshakeArrowHead();
-                final Arrow handShakeArrow = new Arrow(head, new Line());
-                testArrow = handShakeArrow;
+            BindingHelper.bind(tail, testCircle, mouseTracker);
+            BindingHelper.bind(tail, arrowHead);
 
-                addChild(handShakeArrow);
-                BindingHelper.bind(handShakeArrow, testLine);
-            } else if(testCounter == 2) {
-                final BroadcastArrowHead head = new BroadcastArrowHead();
-                final Arrow broadcastArrow = new Arrow(head, new Line());
-                testArrow = broadcastArrow;
-
-                addChild(broadcastArrow);
-                BindingHelper.bind(broadcastArrow, testLine);
-            } else if(testCounter == 3) {
-                SimpleArrowHead head = new SimpleArrowHead();
-                final Arrow simpleArrow = new Arrow(head, new Line());
-                testArrow = simpleArrow;
-
-                addChild(simpleArrow);
-                BindingHelper.bind(simpleArrow, testLine);
-            }
-            else {
-                removeChild(testLine);
-                testCounter = 0;
-            }
         }));
     }
 
