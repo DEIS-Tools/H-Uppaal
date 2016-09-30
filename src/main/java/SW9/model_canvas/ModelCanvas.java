@@ -3,9 +3,10 @@ package SW9.model_canvas;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
-import SW9.model_canvas.arrow_heads.ChannelBroadcast;
-import SW9.model_canvas.arrow_heads.ChannelHandshake;
-import SW9.model_canvas.arrow_heads.SimpleArrow;
+import SW9.model_canvas.arrow_heads.Arrow;
+import SW9.model_canvas.arrow_heads.BroadcastArrowHead;
+import SW9.model_canvas.arrow_heads.HandshakeArrowHead;
+import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.BindingHelper;
@@ -36,7 +37,7 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
 
     // TODO - remove me eventually
     private static Line testLine = new Line();
-    private Node testHead = null;
+    private Node testArrow = null;
     private int testCounter = 0;
 
     private final MouseTracker mouseTracker = new MouseTracker(this);
@@ -89,27 +90,33 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
                 addChild(testLine);
             }
 
-            if(testHead != null) {
-                removeChild(testHead);
+            if(testArrow != null) {
+                removeChild(testArrow);
             }
 
             testCounter++;
 
             if(testCounter == 1) {
-                ChannelHandshake head = new ChannelHandshake();
-                testHead = head;
-                addChild(head);
-                BindingHelper.bind(head, testLine);
+                final HandshakeArrowHead head = new HandshakeArrowHead();
+                final Arrow handShakeArrow = new Arrow(head, new Line());
+                testArrow = handShakeArrow;
+
+                addChild(handShakeArrow);
+                BindingHelper.bind(handShakeArrow, testLine);
             } else if(testCounter == 2) {
-                ChannelBroadcast head = new ChannelBroadcast();
-                testHead = head;
-                addChild(head);
-                BindingHelper.bind(head, testLine);
+                final BroadcastArrowHead head = new BroadcastArrowHead();
+                final Arrow broadcastArrow = new Arrow(head, new Line());
+                testArrow = broadcastArrow;
+
+                addChild(broadcastArrow);
+                BindingHelper.bind(broadcastArrow, testLine);
             } else if(testCounter == 3) {
-                SimpleArrow head = new SimpleArrow();
-                testHead = head;
-                addChild(head);
-                BindingHelper.bind(head, testLine);
+                SimpleArrowHead head = new SimpleArrowHead();
+                final Arrow simpleArrow = new Arrow(head, new Line());
+                testArrow = simpleArrow;
+
+                addChild(simpleArrow);
+                BindingHelper.bind(simpleArrow, testLine);
             }
             else {
                 removeChild(testLine);

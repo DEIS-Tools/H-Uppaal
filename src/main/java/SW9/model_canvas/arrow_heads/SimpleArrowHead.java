@@ -1,32 +1,24 @@
 package SW9.model_canvas.arrow_heads;
 
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 
-public class SimpleArrow extends Arrow {
+public class SimpleArrowHead extends ArrowHead {
 
-    private Path simpleArrow;
     private static final double TRIANGLE_LENGTH = 20d;
     private static final double TRIANGLE_WIDTH = 15d;
 
-    @Override
-    public double getHeadHeight() {
-        return TRIANGLE_LENGTH;
+    public SimpleArrowHead() {
+        super();
+
+        addChild(initializeTriangle());
     }
 
-    @Override
-    public double getHeadWidth() {
-        return TRIANGLE_WIDTH;
-    }
+    private Path initializeTriangle() {
+        final Path simpleArrow = new Path();
 
-    @Override
-    protected void initializeHead(SW9.model_canvas.Parent head) {
-        initializeTriangle();
-        head.addChildren(simpleArrow);
-    }
-
-    private void initializeTriangle() {
-        simpleArrow = new Path();
         MoveTo start = new MoveTo();
         LineTo l1 = new LineTo();
         MoveTo l2 = new MoveTo();
@@ -49,6 +41,19 @@ public class SimpleArrow extends Arrow {
         l4.yProperty().bind(start.yProperty().subtract(TRIANGLE_LENGTH));
 
         simpleArrow.setStroke(Color.BLACK);
-        simpleArrow.getElements().addAll(start, l1, l2, l3, l4 );
+        simpleArrow.getElements().addAll(start, l1, l2, l3, l4);
+
+        return simpleArrow;
     }
+
+    @Override
+    public double getHeadHeight() {
+        return TRIANGLE_LENGTH;
+    }
+
+    @Override
+    public double getHeadWidth() {
+        return TRIANGLE_WIDTH;
+    }
+
 }

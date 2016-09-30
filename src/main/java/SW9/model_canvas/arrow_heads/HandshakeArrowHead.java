@@ -1,36 +1,26 @@
 package SW9.model_canvas.arrow_heads;
 
-import SW9.model_canvas.Parent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.ArcTo;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 
-public class ChannelHandshake extends Arrow {
-    private Path halfCircle;
-    private Path triangle;
+public class HandshakeArrowHead extends ArrowHead {
 
     private static final double CIRCLE_RADIUS = 15d;
     private static final double TRIANGLE_LENGTH = 15d;
     private static final double TRIANGLE_WIDTH = 15d;
 
-    @Override
-    protected void initializeHead(Parent head) {
-        initializeHalfCircle();
-        initializeTriangle();
-        head.addChildren(halfCircle, triangle);
+    public HandshakeArrowHead() {
+        super();
+
+        addChildren(initializeHalfCircle(), initializeTriangle());
     }
 
-    @Override
-    public double getHeadHeight() {
-        return CIRCLE_RADIUS + TRIANGLE_LENGTH;
-    }
+    private Path initializeHalfCircle() {
+        final Path halfCircle = new Path();
 
-    @Override
-    public double getHeadWidth() {
-        return Math.max(TRIANGLE_WIDTH, CIRCLE_RADIUS * 2);
-    }
-
-    private void initializeHalfCircle() {
-        halfCircle = new Path();
         halfCircle.setStroke(Color.BLACK);
         MoveTo p1 = new MoveTo();
         ArcTo p2 = new ArcTo();
@@ -45,10 +35,13 @@ public class ChannelHandshake extends Arrow {
 
         halfCircle.getElements().add(p1);
         halfCircle.getElements().add(p2);
+
+        return halfCircle;
     }
 
-    private void initializeTriangle() {
-        triangle = new Path();
+    private Path initializeTriangle() {
+        final Path triangle = new Path();
+
         MoveTo start = new MoveTo();
         LineTo l1 = new LineTo();
         LineTo l2 = new LineTo();
@@ -68,6 +61,18 @@ public class ChannelHandshake extends Arrow {
 
         triangle.setFill(Color.BLACK);
         triangle.getElements().addAll(start, l1, l2, l3);
+
+        return triangle;
+    }
+
+    @Override
+    public double getHeadHeight() {
+        return CIRCLE_RADIUS + TRIANGLE_LENGTH;
+    }
+
+    @Override
+    public double getHeadWidth() {
+        return Math.max(TRIANGLE_WIDTH, CIRCLE_RADIUS * 2);
     }
 
 }

@@ -5,7 +5,8 @@ import SW9.KeyboardTracker;
 import SW9.MouseTracker;
 import SW9.model_canvas.IParent;
 import SW9.model_canvas.ModelCanvas;
-import SW9.model_canvas.arrow_heads.SimpleArrow;
+import SW9.model_canvas.arrow_heads.Arrow;
+import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.BindingHelper;
 import javafx.beans.binding.BooleanBinding;
@@ -23,7 +24,7 @@ public class Edge extends Parent {
     private final Location sourceLocation;
     private Location targetLocation = null;
 
-    private final SimpleArrow simpleArrow = new SimpleArrow();
+    private final Arrow simpleArrow = new Arrow(new SimpleArrowHead(), new Line());
 
     private Line lineCue = new Line();
 
@@ -65,7 +66,7 @@ public class Edge extends Parent {
         // Make the edge click-through until it is placed
         this.setMouseTransparent(true);
 
-        getChildren().add(new SimpleArrow());
+        getChildren().add(new SimpleArrowHead());
 
         // Bind the lineCue from the source location to the mouse (will be rebound when nails are created)
         BindingHelper.bind(lineCue, sourceLocation.circle, canvasMouseTracker);

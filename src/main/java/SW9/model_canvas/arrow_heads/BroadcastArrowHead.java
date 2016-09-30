@@ -1,17 +1,12 @@
 package SW9.model_canvas.arrow_heads;
 
-import SW9.model_canvas.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 
-public class ChannelBroadcast extends Arrow {
-    private Path largeCircle;
-    private Path mediumCircle;
-    private Path smallCircle;
-    private Path triangle;
+public class BroadcastArrowHead extends ArrowHead {
 
     private static final double LARGE_CIRCLE_RADIUS = 15d;
     private static final double MEDIUM_CIRCLE_RADIUS = 10d;
@@ -19,29 +14,20 @@ public class ChannelBroadcast extends Arrow {
     private static final double TRIANGLE_LENGTH = 15d;
     private static final double TRIANGLE_WIDTH = 15d;
 
-    @Override
-    protected void initializeHead(Parent head) {
-        initializeLargeCircle();
-        initializeMediumCircle();
-        initializeSmallCircle();
-        initializeTriangle();
+    public BroadcastArrowHead() {
+        super();
 
-        head.addChildren(largeCircle, mediumCircle, smallCircle, triangle);
+        addChildren(
+                initializeLargeCircle(),
+                initializeMediumCircle(),
+                initializeSmallCircle(),
+                initializeTriangle()
+        );
     }
 
-    @Override
-    public double getHeadHeight() {
-        return LARGE_CIRCLE_RADIUS + TRIANGLE_LENGTH;
-    }
+    private Path initializeLargeCircle() {
+        final Path largeCircle = new Path();
 
-    @Override
-    public double getHeadWidth() {
-        return Math.max(TRIANGLE_WIDTH, LARGE_CIRCLE_RADIUS * 2);
-    }
-
-
-    private void initializeLargeCircle() {
-        largeCircle = new Path();
         largeCircle.setStroke(Color.BLACK);
         MoveTo p1 = new MoveTo();
         ArcTo p2 = new ArcTo();
@@ -56,10 +42,14 @@ public class ChannelBroadcast extends Arrow {
 
         largeCircle.getElements().add(p1);
         largeCircle.getElements().add(p2);
+
+        return largeCircle;
     }
 
-    private void initializeMediumCircle() {
-        mediumCircle = new Path();
+
+    private Path initializeMediumCircle() {
+        final Path mediumCircle = new Path();
+
         mediumCircle.setStroke(Color.BLACK);
         MoveTo p1 = new MoveTo();
         ArcTo p2 = new ArcTo();
@@ -74,10 +64,13 @@ public class ChannelBroadcast extends Arrow {
 
         mediumCircle.getElements().add(p1);
         mediumCircle.getElements().add(p2);
+
+        return mediumCircle;
     }
 
-    private void initializeSmallCircle() {
-        smallCircle = new Path();
+    private Path initializeSmallCircle() {
+        final Path smallCircle = new Path();
+
         smallCircle.setStroke(Color.BLACK);
         MoveTo p1 = new MoveTo();
         ArcTo p2 = new ArcTo();
@@ -92,10 +85,13 @@ public class ChannelBroadcast extends Arrow {
 
         smallCircle.getElements().add(p1);
         smallCircle.getElements().add(p2);
+
+        return smallCircle;
     }
 
-    private void initializeTriangle() {
-        triangle = new Path();
+    private Path initializeTriangle() {
+        final Path triangle = new Path();
+
         MoveTo start = new MoveTo();
         LineTo l1 = new LineTo();
         LineTo l2 = new LineTo();
@@ -115,5 +111,17 @@ public class ChannelBroadcast extends Arrow {
 
         triangle.setFill(Color.BLACK);
         triangle.getElements().addAll(start, l1, l2, l3);
+
+        return triangle;
+    }
+
+    @Override
+    public double getHeadHeight() {
+        return LARGE_CIRCLE_RADIUS + TRIANGLE_LENGTH;
+    }
+
+    @Override
+    public double getHeadWidth() {
+        return Math.max(TRIANGLE_WIDTH, LARGE_CIRCLE_RADIUS * 2);
     }
 }

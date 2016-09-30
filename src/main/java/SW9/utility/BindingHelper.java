@@ -1,16 +1,14 @@
 package SW9.utility;
 
 import SW9.MouseTracker;
-import SW9.model_canvas.IParent;
 import SW9.model_canvas.arrow_heads.Arrow;
-import SW9.model_canvas.arrow_heads.SimpleArrow;
+import SW9.model_canvas.arrow_heads.ArrowHead;
 import SW9.model_canvas.locations.Location;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
@@ -56,8 +54,9 @@ public class BindingHelper {
 
         source.setOpacity(0);
 
-        subject.xProperty.bind(endX);
-        subject.yProperty.bind(endY);
+        final ArrowHead head = subject.getHead();
+        head.xProperty.bind(endX);
+        head.yProperty.bind(endY);
 
         DoubleBinding tailX = new DoubleBinding() {
             {
@@ -67,7 +66,7 @@ public class BindingHelper {
             @Override
             protected double computeValue() {
                 double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
-                return endX.get() + Math.cos(angle) * subject.getHeadHeight();
+                return endX.get() + Math.cos(angle) * subject.getHead().getHeadHeight();
             }
         };
 
@@ -79,7 +78,7 @@ public class BindingHelper {
             @Override
             protected double computeValue() {
                 double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
-                return endY.get() + Math.sin(angle) * subject.getHeadHeight();
+                return endY.get() + Math.sin(angle) * subject.getHead().getHeadHeight();
             }
         };
 
