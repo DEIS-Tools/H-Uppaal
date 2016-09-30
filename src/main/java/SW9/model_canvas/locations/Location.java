@@ -48,7 +48,12 @@ public class Location extends Parent implements DragHelper.Draggable {
 
     public Location(MouseTracker canvasMouseTracker) {
         this(canvasMouseTracker.getXProperty(), canvasMouseTracker.getYProperty(), canvasMouseTracker, Type.NORMAL);
+
+        // It is initialize with the mouse, hence it is on the mouse
         isOnMouse.set(true);
+
+        // Only locations following on the mouse is discardable (until placed)
+        KeyboardTracker.registerKeybind(KeyboardTracker.DISCARD_NEW_LOCATION, removeOnEscape);
     }
 
     public Location(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY, final MouseTracker canvasMouseTracker, Type type) {
@@ -181,9 +186,6 @@ public class Location extends Parent implements DragHelper.Draggable {
                 addChildToParent(edge);
             }
         });
-
-        // Add keybind to discard the location if ESC is pressed
-        KeyboardTracker.registerKeybind(KeyboardTracker.DISCARD_NEW_LOCATION, removeOnEscape);
 
         // Register toggle urgent and committed keybinds when the locations is hovered, and unregister them when we are not
         localMouseTracker.registerOnMouseEnteredEventHandler(event -> {
