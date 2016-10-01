@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import jiconfont.javafx.IconNode;
 
 public class BindingHelper {
 
@@ -64,6 +65,11 @@ public class BindingHelper {
                 return target.circle.getCenterY() - Location.RADIUS;
             }
         });
+    }
+
+    public static void bind(final IconNode icon, final Location location) {
+        icon.xProperty().bind(location.xProperty().add(Location.RADIUS));
+        icon.yProperty().bind(location.yProperty().add(Location.RADIUS));
     }
 
     private static class LineBinding {

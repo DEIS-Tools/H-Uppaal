@@ -3,6 +3,7 @@ package SW9.model_canvas.locations;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
+import SW9.issues.Warning;
 import SW9.model_canvas.IParent;
 import SW9.model_canvas.ModelCanvas;
 import SW9.model_canvas.ModelContainer;
@@ -13,6 +14,7 @@ import SW9.utility.DragHelper;
 import SW9.utility.DropShadowHelper;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -22,8 +24,11 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import jiconfont.icons.GoogleMaterialDesignIcons;
+import jiconfont.javafx.IconNode;
 
 public class Location extends Parent implements DragHelper.Draggable {
 
@@ -45,6 +50,25 @@ public class Location extends Parent implements DragHelper.Draggable {
     }
 
     public Type type;
+
+    private void initializeWarnings() {
+        // Warn the user when the location is initial
+        final Warning isInitialLocation = new Warning<>(location -> location.type.equals(Type.INITIAL), this);
+        final IconNode isInitialLocationIcon = isInitialLocation.generateIconNode();
+        BindingHelper.bind(isInitialLocationIcon, this);
+
+        addChildren(isInitialLocationIcon);
+    }
+
+    private void initializeErrors() {
+        // Warn the user when the location is initial
+        final SW9.issues.Error isExitLocation = new SW9.issues.Error<>(location -> location.type.equals(Type.FINAL), this);
+        final IconNode isExitLocationIcon = isExitLocation.generateIconNode();
+        BindingHelper.bind(isExitLocationIcon, this);
+
+        addChildren(isExitLocationIcon);
+    }
+
 
     public Location(MouseTracker canvasMouseTracker) {
         this(canvasMouseTracker.getXProperty(), canvasMouseTracker.getYProperty(), canvasMouseTracker, Type.NORMAL);
@@ -196,6 +220,10 @@ public class Location extends Parent implements DragHelper.Draggable {
             KeyboardTracker.unregisterKeybind(KeyboardTracker.MAKE_LOCATION_URGENT);
             KeyboardTracker.unregisterKeybind(KeyboardTracker.MAKE_LOCATION_COMMITTED);
         });
+
+        // Initialize errors and warnings (must happen after the rest of the initializations)
+        initializeErrors();
+        initializeWarnings();
     }
 
     private final Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
