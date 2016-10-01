@@ -1,4 +1,4 @@
 package SW9.issues;
 
-public class Warning {
+public class Warning extends Issue {
 }

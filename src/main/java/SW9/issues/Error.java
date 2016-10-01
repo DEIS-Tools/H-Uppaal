@@ -1,4 +1,5 @@
 package SW9.issues;
 
-public class Error {
+public class Error extends Issue {
+
 }
