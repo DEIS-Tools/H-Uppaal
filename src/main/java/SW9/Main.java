@@ -1,7 +1,5 @@
 package SW9;
 
-import SW9.model_canvas.ModelCanvas;
-import SW9.utility.DragHelper;
 import SW9.utility.ResizeHelper;
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Application;
@@ -14,15 +12,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -59,7 +53,10 @@ public class Main extends Application {
 
         stage.setTitle("Kick-ass Modelchecker");
 
-        final Scene scene = new Scene(root, 500, 500);
+        // Find the primary screen (will be used to set initial width and height of the program)
+        final Screen screen = Screen.getPrimary();
+
+        final Scene scene = new Scene(root, screen.getVisualBounds().getWidth() * 0.8, screen.getVisualBounds().getHeight() * 0.8);
         scene.setOnKeyPressed(KeyboardTracker.handleKeyPress);
         scene.getStylesheets().add("SW9/main.css");
         scene.getStylesheets().add("SW9/colors.css");
