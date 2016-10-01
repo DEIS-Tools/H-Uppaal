@@ -59,7 +59,10 @@ public class Main extends Application {
 
         stage.setTitle("Kick-ass Modelchecker");
 
-        final Scene scene = new Scene(root, 500, 500);
+        // Find the primary screen (will be used to set initial width and height of the program)
+        final Screen screen = Screen.getPrimary();
+
+        final Scene scene = new Scene(root, screen.getVisualBounds().getWidth() * 0.8, screen.getVisualBounds().getHeight() * 0.8);
         scene.setOnKeyPressed(KeyboardTracker.handleKeyPress);
         scene.getStylesheets().add("SW9/main.css");
         scene.getStylesheets().add("SW9/colors.css");
