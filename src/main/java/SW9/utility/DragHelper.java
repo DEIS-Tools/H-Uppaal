@@ -42,7 +42,7 @@ public class DragHelper {
             event.consume();
 
             // Check if we are allowed to drag in the first place
-            if (!conditional.apply(event)) return;
+            if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn()) return;
 
             hasDragged[0] = true;
 
@@ -83,7 +83,7 @@ public class DragHelper {
         // Register the onMouseDragged event listener if the provided conditional returns true
         mouseTracker.registerOnMousePressedEventHandler(event -> {
             // Check if we are allowed to drag in the first place
-            if (!conditional.apply(event)) return;
+            if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn()) return;
 
             hasDragged[0] = false;
 
@@ -108,7 +108,7 @@ public class DragHelper {
             event.consume();
 
             // Check if we are allowed to drag in the first place
-            if (!conditional.apply(event) || !hasDragged[0]) return;
+            if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn() || !hasDragged[0]) return;
 
             hasDragged[0] = false;
 
@@ -178,7 +178,7 @@ public class DragHelper {
         final double[] previousYTranslation = {0d};
 
         mouseTracker.registerOnMousePressedEventHandler(event -> {
-            if (!conditional.apply(event)) return;
+            if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn()) return;
 
             dragXOffset[0] = subject.xProperty().get() - event.getScreenX();
             dragYOffset[0] = subject.yProperty().get() - event.getScreenY();
@@ -192,7 +192,7 @@ public class DragHelper {
         });
 
         mouseTracker.registerOnMouseDraggedEventHandler(event -> {
-            if (!conditional.apply(event)) return;
+            if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn()) return;
 
             subject.translateXProperty().setValue(previousXTranslation[0] + event.getScreenX() + dragXOffset[0]);
             subject.translateYProperty().setValue(previousYTranslation[0] + event.getScreenY() + dragYOffset[0]);
