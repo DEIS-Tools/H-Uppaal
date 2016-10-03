@@ -66,8 +66,6 @@ public class Edge extends Parent {
         // Make the edge click-through until it is placed
         this.setMouseTransparent(true);
 
-        getChildren().add(new SimpleArrowHead());
-
         // Bind the lineCue from the source location to the mouse (will be rebound when nails are created)
         BindingHelper.bind(lineCue, sourceLocation.circle, canvasMouseTracker);
         // Bind arrowhead to the mouse
