@@ -15,6 +15,8 @@ public class KeyboardTracker {
     public static final String MAKE_LOCATION_URGENT = "MAKE_LOCATION_URGENT";
     public static final String MAKE_LOCATION_COMMITTED = "MAKE_LOCATION_COMMITTED";
     public static final String CREATE_COMPONENT = "CREATE_COMPONENT";
+    public static final String UNDO = "UNDO";
+    public static final String REDO = "REDO";
 
     public static final String TEST_ARROW_ONE = "TEST_ARROW_ONE";
 

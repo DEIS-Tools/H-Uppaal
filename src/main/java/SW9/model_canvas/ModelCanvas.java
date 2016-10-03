@@ -6,9 +6,7 @@ import SW9.MouseTracker;
 import SW9.model_canvas.arrow_heads.*;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
-import SW9.utility.BindingHelper;
-import SW9.utility.DragHelper;
-import SW9.utility.DropShadowHelper;
+import SW9.utility.*;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
@@ -54,6 +52,9 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
 
     @FXML
     public void initialize() {
+        KeyboardTracker.registerKeybind(KeyboardTracker.UNDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN), UndoRedoStack::undo));
+        KeyboardTracker.registerKeybind(KeyboardTracker.REDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN), UndoRedoStack::redo));
+
         KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
             if (!mouseHasLocation()) {
                 final Location newLocation = new Location(mouseTracker);
@@ -65,12 +66,15 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
         }));
 
         KeyboardTracker.registerKeybind(KeyboardTracker.CREATE_COMPONENT, new Keybind(new KeyCodeCombination(KeyCode.K), () -> {
-            ModelComponent mc = new ModelComponent(mouseTracker.getXProperty().get(), mouseTracker.getYProperty().get(), 400, 600, "Component", mouseTracker);
-            addChild(mc);
+            final ModelComponent mc = new ModelComponent(mouseTracker.getXProperty().get(), mouseTracker.getYProperty().get(), 400, 600, "Component", mouseTracker);
+
+            final Command addRemoveModelComponent = new Command(() -> addChild(mc), () -> removeChild(mc));
+
+            UndoRedoStack.push(addRemoveModelComponent);
         }));
 
         // TODO remove me when testing of heads is done
-        KeyboardTracker.registerKeybind(KeyboardTracker.TEST_ARROW_ONE, new Keybind(new KeyCodeCombination(KeyCode.T, KeyCombination.SHIFT_ANY), () -> {
+        KeyboardTracker.registerKeybind(KeyboardTracker.TEST_ARROW_ONE, new Keybind(new KeyCodeCombination(KeyCode.T, KeyCombination.SHIFT_DOWN), () -> {
             ArrowHead arrowHead = new BroadcastArrowHead();
             Line tail = new Line();
             Circle testCircle = new Circle();
