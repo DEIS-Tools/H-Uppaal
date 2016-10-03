@@ -210,7 +210,12 @@ public class Location extends Parent implements DragHelper.Draggable {
         localMouseTracker.registerOnMousePressedEventHandler(event -> {
             if (event.isShiftDown() && !ModelCanvas.edgeIsBeingDrawn()) {
                 final Edge edge = new Edge(this, canvasMouseTracker);
-                addChildToParent(edge);
+
+                UndoRedoStack.push(() -> { // Perform
+                    addChildToParent(edge);
+                }, () -> { // Undo
+                    removeChildFromParent(edge);
+                });
             }
         });
 
@@ -283,6 +288,15 @@ public class Location extends Parent implements DragHelper.Draggable {
         if (parent == null) return;
 
         parent.addChild(child);
+    }
+
+    private void removeChildFromParent(final Node child) {
+        // Get the parent from the source location
+        IParent parent = (IParent) this.getParent();
+
+        if (parent == null) return;
+
+        parent.removeChild(child);
     }
 
 
