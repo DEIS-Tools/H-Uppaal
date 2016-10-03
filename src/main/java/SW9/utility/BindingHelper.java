@@ -1,11 +1,9 @@
 package SW9.utility;
 
 import SW9.MouseTracker;
-import SW9.model_canvas.arrow_heads.Arrow;
 import SW9.model_canvas.arrow_heads.ArrowHead;
 import SW9.model_canvas.locations.Location;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;

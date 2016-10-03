@@ -235,6 +235,9 @@ public class Location extends Parent implements DragHelper.Draggable {
 
         // Notify the canvas that we are no longer placing a location
         ModelCanvas.setLocationOnMouse(null);
+
+        // Tell this instance that it is no longer on the mouse
+        isOnMouse.set(false);
     });
 
     private final Keybind makeLocationUrgent = new Keybind(new KeyCodeCombination(KeyCode.U), () -> {

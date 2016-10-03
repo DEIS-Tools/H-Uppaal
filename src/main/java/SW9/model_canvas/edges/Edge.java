@@ -24,7 +24,7 @@ public class Edge extends Parent {
     private final Location sourceLocation;
     private Location targetLocation = null;
 
-    private final BroadcastArrowHead arrowHead = new BroadcastArrowHead();
+    private final SimpleArrowHead arrowHead = new SimpleArrowHead();
 
     private Line lineCue = new Line();
 
