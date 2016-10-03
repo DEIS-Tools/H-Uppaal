@@ -55,7 +55,7 @@ public class DragHelper {
 
             // If the subject has its x property bound have a parent where we can get the xProperty as well
             if (subject.xProperty().isBound()) {
-                final Draggable parent = (Draggable) subject.getParent();
+                final Draggable parent = getDraggableAncestor(subject);
                 // Bind the x property of the subject to the value of the mouse event relative to the x property of the parent
                 newXBinding[0] = parent.xProperty().add(x - parent.xProperty().get());
                 subject.xProperty().bind(newXBinding[0]);
@@ -66,7 +66,7 @@ public class DragHelper {
             }
             // If the subject has its y property bound have a parent where we can get the yProperty as well
             if (subject.yProperty().isBound()) {
-                final Draggable parent = (Draggable) subject.getParent();
+                final Draggable parent = getDraggableAncestor(subject);
                 // Bind the y property of the subject to the value of the mouse event relative to the y property of the parent
                 newYBinding[0] = parent.yProperty().add(y - parent.yProperty().get());
                 subject.yProperty().bind(newYBinding[0]);
@@ -90,7 +90,7 @@ public class DragHelper {
             dragYOffset[0] = subject.yProperty().get() - event.getY();
 
             // For children of a draggable parent, update the offset from the parent
-            final Draggable parent = (Draggable) subject.getParent();
+            final Draggable parent = getDraggableAncestor(subject);
             if (parent != null) {
                 parentXOffset[0] = subject.xProperty().get() - parent.xProperty().get();
                 parentYOffset[0] = subject.yProperty().get() - parent.yProperty().get();
@@ -128,7 +128,7 @@ public class DragHelper {
                 }
 
             }, () -> { // Undo
-                final Draggable parent = (Draggable) subject.getParent();
+                final Draggable parent = getDraggableAncestor(subject);
 
                 // If the x property is bound bind it to the original parent offset, else update the value
                 if (subject.xProperty().isBound()) {
@@ -209,5 +209,20 @@ public class DragHelper {
         DoubleProperty xProperty();
 
         DoubleProperty yProperty();
+    }
+
+    // Finds the nearest ancestor which implements draggable
+    private static <T extends Node & Draggable> Draggable getDraggableAncestor(T subject) {
+        Draggable parent = null;
+
+        Node descendant = subject;
+        while(parent == null && descendant != null) {
+            if(descendant.getParent() instanceof Draggable) {
+                parent = (Draggable) descendant.getParent();
+            }
+            descendant = descendant.getParent();
+        }
+
+        return parent;
     }
 }
