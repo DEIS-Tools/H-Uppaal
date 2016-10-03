@@ -4,15 +4,9 @@ import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
 import SW9.issues.Warning;
-import SW9.model_canvas.IParent;
-import SW9.model_canvas.ModelCanvas;
-import SW9.model_canvas.ModelContainer;
-import SW9.model_canvas.Parent;
+import SW9.model_canvas.*;
 import SW9.model_canvas.edges.Edge;
-import SW9.utility.BindingHelper;
-import SW9.utility.DragHelper;
-import SW9.utility.DropShadowHelper;
-import SW9.utility.UndoRedoStack;
+import SW9.utility.*;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.binding.StringBinding;
@@ -22,13 +16,15 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import jiconfont.javafx.IconNode;
 
-public class Location extends Parent implements DragHelper.Draggable {
+public class Location extends Parent implements DragHelper.Draggable, Selectable, IChild {
 
     // Used to create the Location
     public final static double RADIUS = 25.0f;
@@ -44,11 +40,11 @@ public class Location extends Parent implements DragHelper.Draggable {
     public BooleanProperty isCommitted = new SimpleBooleanProperty(false);
 
     public enum Type {
-        NORMAL, INITIAL, FINAL
+        NORMAL, INITIAL, FINAL;
+
+
     }
-
     public Type type;
-
     private void initializeWarnings() {
         // Warn the user when the location is initial
         final Warning isInitialLocation = new Warning<>(location -> location.type.equals(Type.INITIAL), this);
@@ -66,7 +62,6 @@ public class Location extends Parent implements DragHelper.Draggable {
 
         addChildren(isExitLocationIcon);
     }
-
 
     public Location(MouseTracker canvasMouseTracker) {
         this(canvasMouseTracker.getXProperty(), canvasMouseTracker.getYProperty(), canvasMouseTracker, Type.NORMAL);
@@ -192,6 +187,7 @@ public class Location extends Parent implements DragHelper.Draggable {
 
         makeDraggable();
 
+        SelectHelper.makeSelectable(this);
 
         // Draw a new edge from the location
         localMouseTracker.registerOnMousePressedEventHandler(event -> {
@@ -220,6 +216,7 @@ public class Location extends Parent implements DragHelper.Draggable {
         initializeErrors();
         initializeWarnings();
     }
+
 
     private void makeDraggable() {
         // Make the location draggable (if shift is not pressed, and there is no edge currently being drawn)
@@ -303,7 +300,6 @@ public class Location extends Parent implements DragHelper.Draggable {
         parent.removeChild(child);
     }
 
-
     @Override
     public MouseTracker getMouseTracker() {
         return this.localMouseTracker;
@@ -314,8 +310,30 @@ public class Location extends Parent implements DragHelper.Draggable {
         return circle.centerXProperty();
     }
 
+
     @Override
     public DoubleProperty yProperty() {
         return circle.centerYProperty();
+    }
+
+    @Override
+    public IParent getIParent() {
+        return (IParent) getParent();
+    }
+
+    @Override
+    public void select() {
+        circle.setStroke(Color.BLANCHEDALMOND);
+    }
+
+    @Override
+    public void deselect() {
+        circle.setStroke(Color.BLACK);
+    }
+
+    @Override
+    public void remove() {
+        removeChildFromParent(this);
+        System.out.println("remove");
     }
 }

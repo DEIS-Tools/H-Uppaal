@@ -3,7 +3,8 @@ package SW9.model_canvas;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
-import SW9.model_canvas.arrow_heads.*;
+import SW9.model_canvas.arrow_heads.ArrowHead;
+import SW9.model_canvas.arrow_heads.BroadcastArrowHead;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.*;
@@ -19,6 +20,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
+import javafx.util.Pair;
+
+import java.util.ArrayList;
 
 public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
 
@@ -52,6 +56,27 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
 
     @FXML
     public void initialize() {
+        KeyboardTracker.registerKeybind(KeyboardTracker.DELETE_SELECTED, new Keybind(new KeyCodeCombination(KeyCode.DELETE), () -> {
+            ArrayList<Pair<IParent, Selectable>> copy = new ArrayList<>();
+
+            SelectHelper.getSelectedElements().forEach(selectable -> {
+                copy.add(new Pair<>(selectable.getIParent(), selectable));
+            });
+
+            SelectHelper.clearSelectedElements();
+
+            UndoRedoStack.push(() -> { // Perform
+                copy.forEach(iParentSelectablePair -> {
+                    iParentSelectablePair.getKey().removeChild((Node) iParentSelectablePair.getValue());
+                });
+            }, () -> { // Undo
+                copy.forEach(iParentSelectablePair -> {
+                    iParentSelectablePair.getKey().addChild((Node) iParentSelectablePair.getValue());
+                });
+            });
+
+        }));
+
         KeyboardTracker.registerKeybind(KeyboardTracker.UNDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN), UndoRedoStack::undo));
         KeyboardTracker.registerKeybind(KeyboardTracker.REDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), UndoRedoStack::redo));
 

@@ -84,6 +84,8 @@ public class DragHelper {
             // Check if we are allowed to drag in the first place
             if (!conditional.apply(event)) return;
 
+            hasDragged[0] = false;
+
             dragXOffset[0] = subject.xProperty().get() - event.getX();
             dragYOffset[0] = subject.yProperty().get() - event.getY();
 
@@ -105,6 +107,8 @@ public class DragHelper {
             if (!conditional.apply(event) || !hasDragged[0]) return;
             // Stop propagation of this event
             event.consume();
+
+            hasDragged[0] = false;
 
             mouseTracker.unregisterOnMouseDraggedEventHandler(onMouseDragged);
 
