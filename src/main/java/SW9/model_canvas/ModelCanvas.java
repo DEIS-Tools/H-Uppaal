@@ -59,18 +59,15 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
             if (!mouseHasLocation()) {
                 final Location newLocation = new Location(mouseTracker);
                 locationOnMouse = newLocation;
-
                 newLocation.setEffect(DropShadowHelper.generateElevationShadow(22));
-                ModelCanvas.this.addChild(newLocation);
+                addChild(newLocation);
             }
         }));
 
         KeyboardTracker.registerKeybind(KeyboardTracker.CREATE_COMPONENT, new Keybind(new KeyCodeCombination(KeyCode.K), () -> {
             final ModelComponent mc = new ModelComponent(mouseTracker.getXProperty().get(), mouseTracker.getYProperty().get(), 400, 600, "Component", mouseTracker);
 
-            final Command addRemoveModelComponent = new Command(() -> addChild(mc), () -> removeChild(mc));
-
-            UndoRedoStack.push(addRemoveModelComponent);
+            UndoRedoStack.push(() -> addChild(mc), () -> removeChild(mc));
         }));
 
         // TODO remove me when testing of heads is done

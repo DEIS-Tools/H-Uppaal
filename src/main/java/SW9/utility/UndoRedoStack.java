@@ -8,6 +8,12 @@ public class UndoRedoStack {
     private static Stack<Command> undoStack = new Stack<>();
     private static Stack<Command> redoStack = new Stack<>();
 
+    public static Command push(final Runnable perform, final Runnable undo) {
+        final Command item = new Command(perform, undo);
+
+        return push(item);
+    }
+
     public static Command push(final Command item) {
         // Empty the redo stack (new changes may be conflicting with redoing)
         while(!redoStack.isEmpty()) {
