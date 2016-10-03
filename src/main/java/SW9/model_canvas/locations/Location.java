@@ -12,6 +12,7 @@ import SW9.model_canvas.edges.Edge;
 import SW9.utility.BindingHelper;
 import SW9.utility.DragHelper;
 import SW9.utility.DropShadowHelper;
+import SW9.utility.UndoRedoStack;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.binding.Bindings;
@@ -241,19 +242,36 @@ public class Location extends Parent implements DragHelper.Draggable {
     });
 
     private final Keybind makeLocationUrgent = new Keybind(new KeyCodeCombination(KeyCode.U), () -> {
-        // The location cannot be committed
-        isCommitted.set(false);
+        final boolean wasUrgentBefore = isUrgent.get();
+        final boolean wasCommittedBefore = isCommitted.get();
 
-        // Toggle the urgent boolean
-        isUrgent.set(!isUrgent.get());
+        UndoRedoStack.push(() -> { // Perform
+            // The location cannot be committed
+            isCommitted.set(false);
+
+            // Toggle the urgent boolean
+            isUrgent.set(!isUrgent.get());
+        }, () -> { // Undo
+            isUrgent.set(wasUrgentBefore);
+            isCommitted.set(wasCommittedBefore);
+        });
+
     });
 
     private final Keybind makeLocationCommitted = new Keybind(new KeyCodeCombination(KeyCode.C), () -> {
-        // The location cannot be committed
-        isUrgent.set(false);
+        final boolean wasUrgentBefore = isUrgent.get();
+        final boolean wasCommittedBefore = isCommitted.get();
 
-        // Toggle the urgent boolean
-        isCommitted.set(!isCommitted.get());
+        UndoRedoStack.push(() -> { // Perform
+            // The location cannot be committed
+            isUrgent.set(false);
+
+            // Toggle the urgent boolean
+            isCommitted.set(!isCommitted.get());
+        }, () -> { // Undo
+            isCommitted.set(wasCommittedBefore);
+            isUrgent.set(wasUrgentBefore);
+        });
     });
 
     private void addChildToParent(final Node child) {
