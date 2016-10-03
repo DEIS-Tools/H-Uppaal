@@ -152,14 +152,17 @@ public class Location extends Parent implements DragHelper.Draggable {
         });
 
         // Place the new location when the mouse is pressed (i.e. stop moving it)
-        canvasMouseTracker.registerOnMousePressedEventHandler(mouseClickedEvent -> {
+        canvasMouseTracker.registerOnMousePressedEventHandler(event -> {
             if (isOnMouse.get() && ModelCanvas.mouseIsHoveringModelContainer()) {
+                // Consume the event
+                event.consume();
+
                 // Find the component that the location should be created inside
                 ModelContainer modelContainer = ModelCanvas.getHoveredModelContainer();
 
                 // Bind the circle
-                circle.centerXProperty().bind(modelContainer.xProperty().add(mouseClickedEvent.getX() - (modelContainer.xProperty().get())));
-                circle.centerYProperty().bind(modelContainer.yProperty().add(mouseClickedEvent.getY() - (modelContainer.yProperty().get())));
+                circle.centerXProperty().bind(modelContainer.xProperty().add(event.getX() - (modelContainer.xProperty().get())));
+                circle.centerYProperty().bind(modelContainer.yProperty().add(event.getY() - (modelContainer.yProperty().get())));
 
                 // Tell the canvas that the mouse is no longer occupied
                 ModelCanvas.setLocationOnMouse(null);
@@ -179,7 +182,7 @@ public class Location extends Parent implements DragHelper.Draggable {
                 };
 
                 // When the animation is done ensure that we note that we are no longer on the mouse
-                locationPlaceAnimation.setOnFinished(event -> isOnMouse.set(false));
+                locationPlaceAnimation.setOnFinished(e -> isOnMouse.set(false));
                 locationPlaceAnimation.play();
 
                 UndoRedoStack.push(() -> { // Perform
@@ -190,21 +193,9 @@ public class Location extends Parent implements DragHelper.Draggable {
             }
         });
 
-        // Make the location draggable (if shift is not pressed, and there is no edge currently being drawn)
-        DragHelper.makeDraggable(this, (event) -> {
-
-            ModelContainer parent = (ModelContainer) getParent();
-            boolean allowX = event.getX() - RADIUS >= parent.xProperty().get() && event.getX() < parent.xProperty().get() + parent.getXLimit().get() - RADIUS;
-            boolean allowY = event.getY() - RADIUS >= parent.yProperty().get() && event.getY() < parent.yProperty().get() + parent.getYLimit().get() - RADIUS;
+        makeDraggable();
 
 
-            return !event.isShiftDown() &&
-                    !ModelCanvas.edgeIsBeingDrawn() &&
-                    !this.equals(ModelCanvas.getLocationOnMouse()) &&
-                    type.equals(Type.NORMAL) &&
-                    allowX &&
-                    allowY;
-        });
 
         // Draw a new edge from the location
         localMouseTracker.registerOnMousePressedEventHandler(event -> {
@@ -232,6 +223,23 @@ public class Location extends Parent implements DragHelper.Draggable {
         // Initialize errors and warnings (must happen after the rest of the initializations)
         initializeErrors();
         initializeWarnings();
+    }
+
+    private void makeDraggable() {
+        // Make the location draggable (if shift is not pressed, and there is no edge currently being drawn)
+        DragHelper.makeDraggable(this, (event) -> {
+
+            ModelContainer parent = (ModelContainer) getParent();
+            boolean allowX = event.getX() - RADIUS >= parent.xProperty().get() && event.getX() < parent.xProperty().get() + parent.getXLimit().get() - RADIUS;
+            boolean allowY = event.getY() - RADIUS >= parent.yProperty().get() && event.getY() < parent.yProperty().get() + parent.getYLimit().get() - RADIUS;
+
+            return !event.isShiftDown() &&
+                    !ModelCanvas.edgeIsBeingDrawn() &&
+                    !this.equals(ModelCanvas.getLocationOnMouse()) &&
+                    type.equals(Type.NORMAL) &&
+                    allowX &&
+                    allowY;
+        });
     }
 
     private final Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {

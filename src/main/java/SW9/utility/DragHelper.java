@@ -35,11 +35,16 @@ public class DragHelper {
         final double[] newXValue = {0d};
         final double[] newYValue = {0d};
 
+        final boolean[] hasDragged = {false};
+
         final EventHandler<MouseEvent> onMouseDragged = event -> {
+            // Check if we are allowed to drag in the first place
+            if (!conditional.apply(event)) return;
             // Stop propagation of this event
             event.consume();
 
-            if (!conditional.apply(event)) return;
+            hasDragged[0] = true;
+
             // The location of the mouse (added with the relative to the subject)
             double x = event.getX() + dragXOffset[0];
             double y = event.getY() + dragYOffset[0];
@@ -76,12 +81,11 @@ public class DragHelper {
 
         // Register the onMouseDragged event listener if the provided conditional returns true
         mouseTracker.registerOnMousePressedEventHandler(event -> {
-            // Check if we should enable dragging based on the initial conditional
+            // Check if we are allowed to drag in the first place
             if (!conditional.apply(event)) return;
 
             dragXOffset[0] = subject.xProperty().get() - event.getX();
             dragYOffset[0] = subject.yProperty().get() - event.getY();
-
 
             // For children of a draggable parent, update the offset from the parent
             final Draggable parent = (Draggable) subject.getParent();
@@ -97,7 +101,11 @@ public class DragHelper {
 
         // Un-register the onMouseDragged event listener when we stop dragging
         mouseTracker.registerOnMouseReleasedEventHandler(event -> {
+            // Check if we are allowed to drag in the first place
+            if (!conditional.apply(event) || !hasDragged[0]) return;
+            // Stop propagation of this event
             event.consume();
+
             mouseTracker.unregisterOnMouseDraggedEventHandler(onMouseDragged);
 
             UndoRedoStack.push(() -> { // Perform
