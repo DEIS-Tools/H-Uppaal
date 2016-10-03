@@ -20,18 +20,6 @@ public class ModelComponent extends ModelContainer {
     public final DoubleProperty widthProperty;
     public final DoubleProperty heightProperty;
 
-    // The initial and final locations
-    private final Location initialLocation;
-    private final Location finalLocation;
-
-    // The frame of the component
-    private final Path frame = new Path();
-
-    // The name of the component
-    private final Label label;
-    private final Rectangle labelContainer;
-    private final Polygon labelTriangle;
-
     private static final double CORNER_SIZE = 50;
 
     public ModelComponent(final double x, final double y, final double width, final double height, final String name, final MouseTracker canvasMouseTracker) {
@@ -48,17 +36,18 @@ public class ModelComponent extends ModelContainer {
         });
 
         // Initialize the frame of the component
+        Path frame = new Path();
         initializeFrame(frame);
 
         // Initialize locations
-        initialLocation = new Location(
+        Location initialLocation = new Location(
                 xProperty.add(CORNER_SIZE / 2d),
                 yProperty.add(CORNER_SIZE / 2d),
                 canvasMouseTracker,
                 Location.Type.INITIAL
         );
 
-        finalLocation = new Location(
+        Location finalLocation = new Location(
                 xProperty.add(widthProperty.subtract(CORNER_SIZE / 2d)),
                 yProperty.add(heightProperty.subtract(CORNER_SIZE / 2d)),
                 canvasMouseTracker,
@@ -66,9 +55,9 @@ public class ModelComponent extends ModelContainer {
         );
 
         // Initialize properties for the name of the component
-        labelContainer = new Rectangle();
-        label = new Label(name);
-        labelTriangle = new Polygon(
+        Rectangle labelContainer = new Rectangle();
+        Label label = new Label(name);
+        Polygon labelTriangle = new Polygon(
                 xProperty.get() + CORNER_SIZE / 2, yProperty.get() + CORNER_SIZE / 2,
                 xProperty.get() + CORNER_SIZE, yProperty.get(),
                 xProperty.get() + CORNER_SIZE, yProperty.get() + CORNER_SIZE / 2
@@ -76,39 +65,36 @@ public class ModelComponent extends ModelContainer {
 
         // Bind the properties for the name of the component
         labelContainer.xProperty().bind(xProperty.add(CORNER_SIZE));
-        labelContainer.yProperty().bind(yProperty);
-        labelContainer.widthProperty().bind(widthProperty.subtract(CORNER_SIZE));
+        labelContainer.yProperty().bind(yProperty.add(1));
+        labelContainer.widthProperty().bind(widthProperty.subtract(CORNER_SIZE).subtract(1));
         labelContainer.heightProperty().set(CORNER_SIZE / 2);
 
         label.layoutXProperty().bind(labelContainer.xProperty());
-        label.layoutYProperty().bind(labelContainer.yProperty());
+        label.layoutYProperty().bind(labelContainer.yProperty().subtract(2));
 
+        // Styling below
 
-        // Style the name of the component
-        Color redColor = Color.web("#D50000");
-        labelContainer.fillProperty().set(redColor);
-        labelContainer.setStrokeWidth(1d);
-        labelContainer.setStroke(redColor);
-        labelContainer.setStrokeType(StrokeType.OUTSIDE);
+        labelContainer.getStyleClass().add("component-label-container");
+        labelContainer.setStrokeType(StrokeType.INSIDE);
         labelContainer.setStrokeLineJoin(StrokeLineJoin.ROUND);
-        label.textFillProperty().set(Color.WHITE);
+
+        label.getStyleClass().add("component-label");
+        label.getStyleClass().add("subhead");
         label.alignmentProperty().set(Pos.CENTER);
         label.setPrefHeight(CORNER_SIZE / 2);
         label.paddingProperty().set(new Insets(0, 0, 0, 10));
-        label.getStyleClass().add("subhead");
-        labelTriangle.setFill(redColor);
-        labelTriangle.setStrokeWidth(1d);
-        labelTriangle.setStroke(redColor);
-        labelTriangle.setStrokeType(StrokeType.OUTSIDE);
+
+        labelTriangle.getStyleClass().add("component-label-container");
+        labelTriangle.setStrokeType(StrokeType.INSIDE);
         labelTriangle.setStrokeLineJoin(StrokeLineJoin.ROUND);
-        labelTriangle.layoutXProperty().bind(xProperty.subtract(x));
-        labelTriangle.layoutYProperty().bind(yProperty.subtract(y));
+        labelTriangle.layoutXProperty().bind(xProperty.subtract(x).add(0));
+        labelTriangle.layoutYProperty().bind(yProperty.subtract(y).add(1));
 
         addChildren(
-                frame,
                 labelTriangle,
                 labelContainer,
                 label,
+                frame,
                 initialLocation,
                 finalLocation
         );
@@ -147,9 +133,7 @@ public class ModelComponent extends ModelContainer {
 
         frame.getElements().addAll(p1, p2, p3, p4, p5, p6, p7);
 
-        frame.setStroke(Color.BLACK);
-        frame.setStrokeWidth(2d);
-        frame.setFill(Color.TRANSPARENT);
+        frame.getStyleClass().add("component-stroke");
     }
 
     @Override

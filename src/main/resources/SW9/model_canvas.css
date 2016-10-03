@@ -26,3 +26,18 @@
 .grid-line {
     -fx-stroke: -grey-300;
 }
+
+.component-label-container {
+    -fx-fill: -primary-color;
+    -fx-stroke: -primary-color;
+    -fx-stroke-width: 2;
+}
+
+.component-label {
+    -fx-text-fill: #ffffff;
+}
+
+.component-stroke {
+    -fx-stroke: -primary-color-darker;
+    -fx-stroke-width: 2;
+}
