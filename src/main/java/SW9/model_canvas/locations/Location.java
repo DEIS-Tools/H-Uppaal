@@ -15,7 +15,6 @@ import SW9.utility.DropShadowHelper;
 import SW9.utility.UndoRedoStack;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -25,10 +24,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
-import jiconfont.icons.GoogleMaterialDesignIcons;
 import jiconfont.javafx.IconNode;
 
 public class Location extends Parent implements DragHelper.Draggable {
@@ -194,7 +191,6 @@ public class Location extends Parent implements DragHelper.Draggable {
         });
 
         makeDraggable();
-
 
 
         // Draw a new edge from the location
