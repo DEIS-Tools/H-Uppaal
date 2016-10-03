@@ -154,13 +154,12 @@ public class Location extends Parent implements DragHelper.Draggable {
         // Place the new location when the mouse is pressed (i.e. stop moving it)
         canvasMouseTracker.registerOnMousePressedEventHandler(mouseClickedEvent -> {
             if (isOnMouse.get() && ModelCanvas.mouseIsHoveringModelContainer()) {
-
+                // Find the component that the location should be created inside
                 ModelContainer modelContainer = ModelCanvas.getHoveredModelContainer();
 
+                // Bind the circle
                 circle.centerXProperty().bind(modelContainer.xProperty().add(mouseClickedEvent.getX() - (modelContainer.xProperty().get())));
                 circle.centerYProperty().bind(modelContainer.yProperty().add(mouseClickedEvent.getY() - (modelContainer.yProperty().get())));
-
-                modelContainer.addLocation(this);
 
                 // Tell the canvas that the mouse is no longer occupied
                 ModelCanvas.setLocationOnMouse(null);
@@ -180,11 +179,14 @@ public class Location extends Parent implements DragHelper.Draggable {
                 };
 
                 // When the animation is done ensure that we note that we are no longer on the mouse
-                locationPlaceAnimation.setOnFinished(event -> {
-                    isOnMouse.set(false);
-                });
-
+                locationPlaceAnimation.setOnFinished(event -> isOnMouse.set(false));
                 locationPlaceAnimation.play();
+
+                UndoRedoStack.push(() -> { // Perform
+                    modelContainer.addLocation(this);
+                }, () -> { // Undo
+                    modelContainer.removeChild(this);
+                });
             }
         });
 
