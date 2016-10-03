@@ -38,10 +38,11 @@ public class DragHelper {
         final boolean[] hasDragged = {false};
 
         final EventHandler<MouseEvent> onMouseDragged = event -> {
-            // Check if we are allowed to drag in the first place
-            if (!conditional.apply(event)) return;
             // Stop propagation of this event
             event.consume();
+
+            // Check if we are allowed to drag in the first place
+            if (!conditional.apply(event)) return;
 
             hasDragged[0] = true;
 
@@ -103,10 +104,11 @@ public class DragHelper {
 
         // Un-register the onMouseDragged event listener when we stop dragging
         mouseTracker.registerOnMouseReleasedEventHandler(event -> {
-            // Check if we are allowed to drag in the first place
-            if (!conditional.apply(event) || !hasDragged[0]) return;
             // Stop propagation of this event
             event.consume();
+
+            // Check if we are allowed to drag in the first place
+            if (!conditional.apply(event) || !hasDragged[0]) return;
 
             hasDragged[0] = false;
 

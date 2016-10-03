@@ -3,12 +3,14 @@ package SW9.model_canvas.edges;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
+import SW9.model_canvas.IChild;
 import SW9.model_canvas.IParent;
 import SW9.model_canvas.ModelCanvas;
 import SW9.model_canvas.arrow_heads.BroadcastArrowHead;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.BindingHelper;
+import SW9.utility.DragHelper;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -117,7 +119,9 @@ public class Edge extends Parent {
             }
 
             // Create a new nail and a link that will connect to it
-            final Nail nail = new Nail(canvasMouseTracker.getXProperty().get(), canvasMouseTracker.getYProperty().get());
+            final DragHelper.Draggable parent = (DragHelper.Draggable) getParent();
+
+            final Nail nail = new Nail(parent.xProperty().add(canvasMouseTracker.getXProperty().get() - parent.xProperty().get()), parent.yProperty().add(canvasMouseTracker.getYProperty().get() - parent.yProperty().get()));
             final Link link = new Link();
 
             // If we are creating the first nail and link
@@ -156,8 +160,8 @@ public class Edge extends Parent {
 
                     targetLocation = sourceLocation;
                     // Create two nails outside the source locations
-                    Nail firstNail = new Nail(sourceLocation.circle.getCenterX() + Location.RADIUS * 3, sourceLocation.circle.getCenterY());
-                    Nail secondNail = new Nail(sourceLocation.circle.getCenterX(), sourceLocation.circle.getCenterY() + Location.RADIUS * 3);
+                    Nail firstNail = new Nail(sourceLocation.circle.centerXProperty().add(Location.RADIUS * 3), sourceLocation.circle.centerYProperty());
+                    Nail secondNail = new Nail(sourceLocation.circle.centerXProperty(), sourceLocation.circle.centerYProperty().add(Location.RADIUS * 3));
 
                     // Create two links for connecting the edge (the link created before is the third link in the chain)
                     Link firstLink = new Link();
@@ -174,6 +178,8 @@ public class Edge extends Parent {
                     BindingHelper.bind(firstLink.line, sourceLocation.circle, firstNail);
                     BindingHelper.bind(secondLink.line, firstNail, secondNail);
                     BindingHelper.bind(link.line, secondNail, targetLocation.circle);
+                    BindingHelper.bind(arrowHead, secondNail, targetLocation.circle);
+                    BindingHelper.bind(link.line, arrowHead);
 
                 } else {
                     BindingHelper.bind(link.line, sourceLocation.circle, targetLocation.circle);

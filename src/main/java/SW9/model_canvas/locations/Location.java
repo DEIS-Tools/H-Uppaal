@@ -41,9 +41,8 @@ public class Location extends Parent implements DragHelper.Draggable, Selectable
 
     public enum Type {
         NORMAL, INITIAL, FINAL;
-
-
     }
+
     public Type type;
     private void initializeWarnings() {
         // Warn the user when the location is initial

@@ -1,9 +1,14 @@
 package SW9.model_canvas.edges;
 
 import SW9.MouseTracker;
+import SW9.model_canvas.IChild;
+import SW9.model_canvas.IParent;
+import SW9.model_canvas.Parent;
 import SW9.utility.DragHelper;
 import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.shape.Circle;
 
 public class Nail extends Circle implements DragHelper.Draggable {
@@ -14,8 +19,11 @@ public class Nail extends Circle implements DragHelper.Draggable {
 
     public boolean isBeingDragged = false;
 
-    public Nail(final double centerX, final double centerY) {
-        super(centerX, centerY, HIDDEN_RADIUS);
+    public Nail(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY) {
+        super(centerX.get(), centerY.get(), HIDDEN_RADIUS);
+
+        xProperty().bind(centerX);
+        yProperty().bind(centerY);
 
         // Style the nail
         getStyleClass().add("nail");
