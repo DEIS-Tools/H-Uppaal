@@ -134,6 +134,7 @@ public class ModelComponent extends ModelContainer {
         frame.getElements().addAll(p1, p2, p3, p4, p5, p6, p7);
 
         frame.getStyleClass().add("component-stroke");
+        frame.setFill(Color.TRANSPARENT);
     }
 
     @Override
