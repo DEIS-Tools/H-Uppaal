@@ -22,6 +22,7 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
@@ -253,18 +254,19 @@ public class Edge extends Parent implements Removable {
 
     public void remove(final Nail nail) {
         final int indexOfNail = nails.indexOf(nail);
+        nail.restoreIndex = indexOfNail;
         final Link a = links.get(indexOfNail);
         final Link b = links.get(indexOfNail + 1);
         final Circle startCircle;
         final Circle endCircle;
 
-        if(indexOfNail == 0) {
+        if (indexOfNail == 0) {
             startCircle = sourceLocation.circle;
         } else {
-            startCircle = nails.get(indexOfNail -1);
+            startCircle = nails.get(indexOfNail - 1);
         }
 
-        if(indexOfNail == nails.size() -1) {
+        if (indexOfNail == nails.size() - 1) {
             endCircle = targetLocation.circle;
         } else {
             endCircle = nails.get(indexOfNail + 1);
@@ -277,14 +279,42 @@ public class Edge extends Parent implements Removable {
         removeChild(a);
         links.remove(a);
 
-        if(nails.size() == 0) {
+        if (nails.size() == 0) {
             // TODO lave en snub
             BindingHelper.bind(arrowHead, sourceLocation.circle, targetLocation.circle);
             BindingHelper.bind(links.get(0).line, arrowHead);
         } else {
-            BindingHelper.bind(arrowHead, nails.get(nails.size() -1), targetLocation.circle);
-            BindingHelper.bind(links.get(links.size() -1).line, arrowHead);
+            BindingHelper.bind(arrowHead, nails.get(nails.size() - 1), targetLocation.circle);
+            BindingHelper.bind(links.get(links.size() - 1).line, arrowHead);
         }
+    }
+
+    public void add(final Nail nail, final int position) {
+        nails.add(position, nail);
+
+        final Link newLink = new Link();
+        links.add(position, newLink);
+
+        final Circle startCircle;
+        final Circle endCircle;
+
+        if (position == 0) {
+            startCircle = sourceLocation.circle;
+        } else {
+            startCircle = nails.get(position - 1);
+        }
+
+        if (position == nails.size() - 1) {
+            endCircle = targetLocation.circle;
+        } else {
+            endCircle = nails.get(position + 1);
+        }
+
+        newLink.line.setStroke(Color.AQUA);
+        addChildren(nail, newLink);
+
+        BindingHelper.bind(newLink.line, startCircle, nail);
+        BindingHelper.bind(links.get(position + 1).line, nail, endCircle);
     }
 
     @Override

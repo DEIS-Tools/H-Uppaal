@@ -8,13 +8,15 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.Parent;
 import javafx.scene.shape.Circle;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Nail extends Circle implements Removable {
 
     private final static double HIDDEN_RADIUS = 0d;
     private final static double VISIBLE_RADIUS = 5d;
     private final MouseTracker mouseTracker = new MouseTracker(this);
+
+    private Edge detachedParent;
+    int restoreIndex;
 
     public boolean isBeingDragged = false;
 
@@ -56,7 +58,8 @@ public class Nail extends Circle implements Removable {
 
     @Override
     public boolean select() {
-        getEdgeParent().nailWasSelected = true;
+        detachedParent = getEdgeParent();
+        detachedParent.nailWasSelected = true;
         System.out.println("nail select");
         getStyleClass().add("selected");
         return true;
@@ -64,7 +67,7 @@ public class Nail extends Circle implements Removable {
 
     @Override
     public void deselect() {
-        getEdgeParent().nailWasSelected = false;
+        detachedParent.nailWasSelected = false;
         System.out.println("nail deselect");
         getStyleClass().remove("selected");
     }
@@ -76,7 +79,7 @@ public class Nail extends Circle implements Removable {
 
     @Override
     public void reAdd() {
-        throw new NotImplementedException();
+        detachedParent.add(this, restoreIndex);
     }
 
     private Edge getEdgeParent() {
