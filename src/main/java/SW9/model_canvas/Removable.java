@@ -2,7 +2,7 @@ package SW9.model_canvas;
 
 import SW9.utility.DragHelper;
 
-public interface Removable extends DragHelper.Draggable, IChild {
+public interface Removable extends DragHelper.Draggable {
 
     public boolean select();
 

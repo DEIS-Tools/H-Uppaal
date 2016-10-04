@@ -5,6 +5,7 @@ import SW9.KeyboardTracker;
 import SW9.MouseTracker;
 import SW9.model_canvas.IParent;
 import SW9.model_canvas.ModelCanvas;
+import SW9.model_canvas.Parent;
 import SW9.model_canvas.Removable;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.model_canvas.locations.Location;
@@ -18,10 +19,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
 public class Edge extends Parent implements Removable {
@@ -59,6 +60,8 @@ public class Edge extends Parent implements Removable {
             return nails.isEmpty();
         }
     };
+
+    public boolean nailWasSelected = false;
 
     // Mouse trackers
     private MouseTracker canvasMouseTracker = null;
@@ -108,7 +111,7 @@ public class Edge extends Parent implements Removable {
         // If no nail is being dragged and we are not hovering the edge, make the nails invisible
         localMouseTracker.registerOnMouseExitedEventHandler(event -> {
             // Do not turn the nails invisible if we are selected
-            if(SelectHelper.isSelected(this)) return;
+            if (SelectHelper.isSelected(this)) return;
 
             for (Nail nail : nails) {
                 if (nail.isBeingDragged) return;
@@ -239,21 +242,57 @@ public class Edge extends Parent implements Removable {
     }
 
     public void setTargetLocation(final Location targetLocation) {
+        if (this.targetLocation == null) {
+            SelectHelper.makeSelectable(this);
+            nails.forEach(SelectHelper::makeSelectable);
+        }
+
         this.targetLocation = targetLocation;
-
-        SelectHelper.makeSelectable(this);
-
         targetLocationIsSet.setValue(targetLocation != null);
     }
 
-    @Override
-    public IParent getIParent() {
-        return sourceLocation.getIParent();
+    public void remove(final Nail nail) {
+        final int indexOfNail = nails.indexOf(nail);
+        final Link a = links.get(indexOfNail);
+        final Link b = links.get(indexOfNail + 1);
+        final Circle startCircle;
+        final Circle endCircle;
+
+        if(indexOfNail == 0) {
+            startCircle = sourceLocation.circle;
+        } else {
+            startCircle = nails.get(indexOfNail -1);
+        }
+
+        if(indexOfNail == nails.size() -1) {
+            endCircle = targetLocation.circle;
+        } else {
+            endCircle = nails.get(indexOfNail + 1);
+        }
+
+        BindingHelper.bind(b.line, startCircle, endCircle);
+
+        removeChild(nail);
+        nails.remove(nail);
+        removeChild(a);
+        links.remove(a);
+
+        if(nails.size() == 0) {
+            // TODO lave en snub
+            BindingHelper.bind(arrowHead, sourceLocation.circle, targetLocation.circle);
+            BindingHelper.bind(links.get(0).line, arrowHead);
+        } else {
+            BindingHelper.bind(arrowHead, nails.get(nails.size() -1), targetLocation.circle);
+            BindingHelper.bind(links.get(links.size() -1).line, arrowHead);
+        }
     }
 
     @Override
     public boolean select() {
-        if(!targetLocationIsSet.get()) return false;
+
+        if (!targetLocationIsSet.get() || nailWasSelected) return false;
+
+        System.out.println("edge select");
 
         nails.forEach(nail -> nail.getStyleClass().add("selected"));
         links.forEach(link -> link.line.getStyleClass().add("selected"));
@@ -268,6 +307,8 @@ public class Edge extends Parent implements Removable {
 
     @Override
     public void deselect() {
+        System.out.println("edge deselect");
+
         nails.forEach(nail -> nail.getStyleClass().remove("selected"));
         links.forEach(link -> link.line.getStyleClass().remove("selected"));
         lineCue.getStyleClass().remove("selected");

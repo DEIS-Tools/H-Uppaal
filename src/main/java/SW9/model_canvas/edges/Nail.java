@@ -1,17 +1,16 @@
 package SW9.model_canvas.edges;
 
 import SW9.MouseTracker;
-import SW9.model_canvas.IChild;
-import SW9.model_canvas.IParent;
-import SW9.model_canvas.Parent;
+import SW9.model_canvas.Removable;
 import SW9.utility.DragHelper;
 import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
+import javafx.scene.Parent;
 import javafx.scene.shape.Circle;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class Nail extends Circle implements DragHelper.Draggable {
+public class Nail extends Circle implements Removable {
 
     private final static double HIDDEN_RADIUS = 0d;
     private final static double VISIBLE_RADIUS = 5d;
@@ -34,10 +33,10 @@ public class Nail extends Circle implements DragHelper.Draggable {
         // Bind the radius to the visibility property (so that we do not get space between links)
         radiusProperty().bind(new When(visibleProperty()).then(VISIBLE_RADIUS).otherwise(HIDDEN_RADIUS));
 
-        DragHelper.makeDraggable(this);
-
         mouseTracker.registerOnMousePressedEventHandler(event -> isBeingDragged = true);
         mouseTracker.registerOnMouseReleasedEventHandler(event -> isBeingDragged = false);
+
+        DragHelper.makeDraggable(this);
     }
 
     @Override
@@ -53,5 +52,42 @@ public class Nail extends Circle implements DragHelper.Draggable {
     @Override
     public DoubleProperty yProperty() {
         return centerYProperty();
+    }
+
+    @Override
+    public boolean select() {
+        getEdgeParent().nailWasSelected = true;
+        System.out.println("nail select");
+        getStyleClass().add("selected");
+        return true;
+    }
+
+    @Override
+    public void deselect() {
+        getEdgeParent().nailWasSelected = false;
+        System.out.println("nail deselect");
+        getStyleClass().remove("selected");
+    }
+
+    @Override
+    public void remove() {
+        getEdgeParent().remove(this);
+    }
+
+    @Override
+    public void reAdd() {
+        throw new NotImplementedException();
+    }
+
+    private Edge getEdgeParent() {
+        Parent parent = getParent();
+        while (parent != null) {
+            if (parent instanceof Edge) {
+                return ((Edge) parent);
+
+            }
+            parent = parent.getParent();
+        }
+        return null;
     }
 }

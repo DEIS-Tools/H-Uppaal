@@ -3,6 +3,7 @@ package SW9.utility;
 import SW9.model_canvas.Removable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SelectHelper {
 
@@ -10,14 +11,14 @@ public class SelectHelper {
 
     public static void makeSelectable(final Removable removable) {
         removable.getMouseTracker().registerOnMousePressedEventHandler(event -> {
-            while (!selectedElements.isEmpty()) {
-                final Removable element = selectedElements.get(0);
-                element.deselect();
-                selectedElements.remove(element);
-            }
-
-            // Check if the select went well, if so add it to the selected list
             if (removable.select()) {
+                while (!selectedElements.isEmpty()) {
+                    final Removable element = selectedElements.get(0);
+                    element.deselect();
+                    selectedElements.remove(element);
+                }
+
+                // Check if the select went well, if so add it to the selected list
                 selectedElements.add(removable);
             }
         });
@@ -29,12 +30,23 @@ public class SelectHelper {
 
     public static void clearSelectedElements() {
         while (!selectedElements.isEmpty()) {
+            selectedElements.get(0).deselect();
             selectedElements.remove(0);
         }
     }
 
-    public static boolean isSelected(final Removable needle) {
-        return selectedElements.contains(needle);
+    public static boolean isSelected(final Removable... needles) {
+        for (Removable needle : needles) {
+            if (selectedElements.contains(needle)) return true;
+        }
+        return false;
+    }
+
+    public static boolean isSelected(final List<? extends Removable> needles) {
+        for (Removable needle : needles) {
+            if (selectedElements.contains(needle)) return true;
+        }
+        return false;
     }
 
 }

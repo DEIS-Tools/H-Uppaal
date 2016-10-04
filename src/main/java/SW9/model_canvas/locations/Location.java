@@ -25,7 +25,7 @@ import jiconfont.javafx.IconNode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Location extends Parent implements DragHelper.Draggable, Removable, IChild {
+public class Location extends Parent implements DragHelper.Draggable, Removable {
 
     // Used to create the Location
     public final static double RADIUS = 25.0f;
@@ -320,11 +320,6 @@ public class Location extends Parent implements DragHelper.Draggable, Removable,
     @Override
     public DoubleProperty yProperty() {
         return circle.centerYProperty();
-    }
-
-    @Override
-    public IParent getIParent() {
-        return (IParent) getParent();
     }
 
     @Override
