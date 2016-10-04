@@ -10,6 +10,8 @@ import SW9.model_canvas.locations.Location;
 import SW9.utility.BindingHelper;
 import SW9.utility.DragHelper;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -23,6 +25,7 @@ public class Edge extends Parent {
 
     private final Location sourceLocation;
     private Location targetLocation = null;
+    public BooleanProperty targetLocationIsSet = new SimpleBooleanProperty(false);
 
     private final SimpleArrowHead arrowHead = new SimpleArrowHead();
 
@@ -110,17 +113,13 @@ public class Edge extends Parent {
         return sourceLocation;
     }
 
-    public Location getTargetLocation() {
-        return targetLocation;
-    }
-
     private final EventHandler<MouseEvent> drawEdgeStepWhenCanvasPressed = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
             if (skipLine) {
                 skipLine = false;
                 return;
-            } else if (Edge.this.targetLocation != null) {
+            } else if (getTargetLocation() != null) {
                 return;
             }
 
@@ -149,22 +148,22 @@ public class Edge extends Parent {
             // We have at least one nail and one link, and are now finishing the edge by pressing a location
             // Bind the link from the last nail, to the target location
             else if (ModelCanvas.mouseIsHoveringLocation() && !nailsIsEmpty.get()) {
-                Edge.this.targetLocation = ModelCanvas.getHoveredLocation();
+                setTargetLocation(ModelCanvas.getHoveredLocation());
                 final Nail previousNail = nails.get(nails.size() - 1);
 
-                BindingHelper.bind(link.line, previousNail, targetLocation.circle);
-                BindingHelper.bind(arrowHead, previousNail, targetLocation.circle);
+                BindingHelper.bind(link.line, previousNail, getTargetLocation().circle);
+                BindingHelper.bind(arrowHead, previousNail, getTargetLocation().circle);
                 BindingHelper.bind(link.line, arrowHead);
             }
 
             // We have no nails, i.e. we are creating an edge directly from a source location to a target location
             else if (ModelCanvas.mouseIsHoveringLocation() && nailsIsEmpty.get()) {
-                Edge.this.targetLocation = ModelCanvas.getHoveredLocation();
+                setTargetLocation(ModelCanvas.getHoveredLocation());
 
                 // If the target location is the same as the source, add some nails to make the view readable
-                if (sourceLocation.equals(targetLocation)) {
+                if (sourceLocation.equals(getTargetLocation())) {
 
-                    targetLocation = sourceLocation;
+                    setTargetLocation(sourceLocation);
                     // Create two nails outside the source locations
                     Nail firstNail = new Nail(sourceLocation.circle.centerXProperty().add(Location.RADIUS * 3), sourceLocation.circle.centerYProperty());
                     Nail secondNail = new Nail(sourceLocation.circle.centerXProperty(), sourceLocation.circle.centerYProperty().add(Location.RADIUS * 3));
@@ -183,19 +182,19 @@ public class Edge extends Parent {
                     // Bind the links between the nails and source locations
                     BindingHelper.bind(firstLink.line, sourceLocation.circle, firstNail);
                     BindingHelper.bind(secondLink.line, firstNail, secondNail);
-                    BindingHelper.bind(link.line, secondNail, targetLocation.circle);
-                    BindingHelper.bind(arrowHead, secondNail, targetLocation.circle);
+                    BindingHelper.bind(link.line, secondNail, getTargetLocation().circle);
+                    BindingHelper.bind(arrowHead, secondNail, getTargetLocation().circle);
                     BindingHelper.bind(link.line, arrowHead);
 
                 } else {
-                    BindingHelper.bind(link.line, sourceLocation.circle, targetLocation.circle);
-                    BindingHelper.bind(arrowHead, sourceLocation.circle, targetLocation.circle);
+                    BindingHelper.bind(link.line, sourceLocation.circle, getTargetLocation().circle);
+                    BindingHelper.bind(arrowHead, sourceLocation.circle, getTargetLocation().circle);
                     BindingHelper.bind(link.line, arrowHead);
                 }
             }
 
             // We did finish the edge by pressing a location, add the new nail
-            if (Edge.this.targetLocation == null) {
+            if (getTargetLocation() == null) {
                 Edge.this.getChildren().add(nail);
                 nails.add(nail);
             }
@@ -227,4 +226,13 @@ public class Edge extends Parent {
         }
     };
 
+    public Location getTargetLocation() {
+        return targetLocation;
+    }
+
+    public void setTargetLocation(final Location targetLocation) {
+        this.targetLocation = targetLocation;
+
+        targetLocationIsSet.setValue(targetLocation != null);
+    }
 }

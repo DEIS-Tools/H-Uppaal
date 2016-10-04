@@ -4,7 +4,9 @@ import SW9.MouseTracker;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.DragHelper;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,13 +64,30 @@ public abstract class ModelContainer extends Parent implements DragHelper.Dragga
 
     public boolean add(final Edge edge) {
         addChild(edge);
+
         locationEdgeMap.get(edge.getSourceLocation()).add(edge);
+
+        if(!edge.targetLocationIsSet.get()) {
+            edge.targetLocationIsSet.addListener((observable, oldValue, newValue) -> {
+                // The new value of the boolean is true, hence the target location is set
+                if (!oldValue && newValue && !edge.getSourceLocation().equals(edge.getTargetLocation())) {
+                    locationEdgeMap.get(edge.getTargetLocation()).add(edge);
+                }
+            });
+        }
+        else if(!edge.getSourceLocation().equals(edge.getTargetLocation())) {
+            locationEdgeMap.get(edge.getTargetLocation()).add(edge);
+        }
+
         return edges.add(edge);
     }
 
     public boolean remove(final Edge edge) {
         removeChild(edge);
         locationEdgeMap.get(edge.getSourceLocation()).remove(edge);
+        if(edge.targetLocationIsSet.get()) {
+            locationEdgeMap.get(edge.getTargetLocation()).remove(edge);
+        }
         return edges.remove(edge);
     }
 
