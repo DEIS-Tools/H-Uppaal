@@ -64,6 +64,7 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
             UndoRedoStack.push(() -> { // Perform
                 copy.forEach(Removable::remove);
             }, () -> { // Undo
+                copy.forEach(Removable::deselect);
                 copy.forEach(Removable::reAdd);
             });
         }));
