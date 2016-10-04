@@ -16,7 +16,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.paint.Color;
@@ -44,6 +43,7 @@ public class Location extends Parent implements DragHelper.Draggable, Selectable
     }
 
     public Type type;
+
     private void initializeWarnings() {
         // Warn the user when the location is initial
         final Warning isInitialLocation = new Warning<>(location -> location.type.equals(Type.INITIAL), this);
@@ -321,18 +321,21 @@ public class Location extends Parent implements DragHelper.Draggable, Selectable
     }
 
     @Override
-    public void select() {
-        circle.setStroke(Color.BLANCHEDALMOND);
+    public boolean select() {
+        if (this.type.equals(Type.NORMAL)) {
+            circle.getStyleClass().add("selected");
+            locationLabel.getStyleClass().add("selected");
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public void deselect() {
-        circle.setStroke(Color.BLACK);
+        circle.getStyleClass().remove("selected");
+        locationLabel.getStyleClass().remove("selected");
     }
 
-    @Override
-    public void remove() {
-        removeChildFromParent(this);
-        System.out.println("remove");
-    }
+
 }

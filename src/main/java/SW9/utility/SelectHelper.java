@@ -16,8 +16,10 @@ public class SelectHelper {
                 selectedElements.remove(element);
             }
 
-            selectedElements.add(selectable);
-            selectable.select();
+            // Check if the select went well, if so add it to the selected list
+            if (selectable.select()) {
+                selectedElements.add(selectable);
+            }
         });
     }
 
@@ -26,7 +28,7 @@ public class SelectHelper {
     }
 
     public static void clearSelectedElements() {
-        while(!selectedElements.isEmpty()) {
+        while (!selectedElements.isEmpty()) {
             selectedElements.remove(0);
         }
     }

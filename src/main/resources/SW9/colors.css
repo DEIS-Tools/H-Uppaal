@@ -289,6 +289,8 @@
     -secondary-text-color : -grey-600;
     -divider-color : -grey-400;
     -icon-color : #ffffff;
+    -white : #ffffff;
+    -black : #000000;
 }
 
 .red-50{ -fx-background-color: #ffebee; -fx-text-fill: rgba(0, 0, 0, 0.87); }
