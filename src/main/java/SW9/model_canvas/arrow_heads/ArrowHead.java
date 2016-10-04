@@ -33,5 +33,9 @@ public abstract class ArrowHead extends Parent {
         return false;
     }
 
+    public abstract void mark();
+
+    public abstract void unmark();
+
 
 }

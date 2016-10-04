@@ -75,4 +75,14 @@ public class HandshakeArrowHead extends ArrowHead {
         return Math.max(TRIANGLE_WIDTH, CIRCLE_RADIUS * 2);
     }
 
+    @Override
+    public void mark() {
+        // TODO: Not implemented yet
+    }
+
+    @Override
+    public void unmark() {
+        // TODO: Not implemented yet
+    }
+
 }

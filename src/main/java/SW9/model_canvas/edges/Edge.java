@@ -5,12 +5,15 @@ import SW9.KeyboardTracker;
 import SW9.MouseTracker;
 import SW9.model_canvas.IParent;
 import SW9.model_canvas.ModelCanvas;
+import SW9.model_canvas.Removable;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.BindingHelper;
 import SW9.utility.DragHelper;
+import SW9.utility.SelectHelper;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,7 +24,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Line;
 
-public class Edge extends Parent {
+public class Edge extends Parent implements Removable {
 
     private final Location sourceLocation;
     private Location targetLocation = null;
@@ -69,6 +72,8 @@ public class Edge extends Parent {
         // Make the edge click-through until it is placed
         this.setMouseTransparent(true);
 
+        lineCue.getStyleClass().add("link");
+
         // Bind the lineCue from the source location to the mouse (will be rebound when nails are created)
         BindingHelper.bind(lineCue, sourceLocation.circle, canvasMouseTracker);
         // Bind arrowhead to the mouse
@@ -102,6 +107,9 @@ public class Edge extends Parent {
 
         // If no nail is being dragged and we are not hovering the edge, make the nails invisible
         localMouseTracker.registerOnMouseExitedEventHandler(event -> {
+            // Do not turn the nails invisible if we are selected
+            if(SelectHelper.isSelected(this)) return;
+
             for (Nail nail : nails) {
                 if (nail.isBeingDragged) return;
             }
@@ -233,6 +241,64 @@ public class Edge extends Parent {
     public void setTargetLocation(final Location targetLocation) {
         this.targetLocation = targetLocation;
 
+        SelectHelper.makeSelectable(this);
+
         targetLocationIsSet.setValue(targetLocation != null);
+    }
+
+    @Override
+    public IParent getIParent() {
+        return sourceLocation.getIParent();
+    }
+
+    @Override
+    public boolean select() {
+        if(!targetLocationIsSet.get()) return false;
+
+        nails.forEach(nail -> nail.getStyleClass().add("selected"));
+        links.forEach(link -> link.line.getStyleClass().add("selected"));
+        lineCue.getStyleClass().add("selected");
+        arrowHead.mark();
+
+        // Make nails visible
+        nails.forEach(nail -> nail.setVisible(true));
+
+        return true;
+    }
+
+    @Override
+    public void deselect() {
+        nails.forEach(nail -> nail.getStyleClass().remove("selected"));
+        links.forEach(link -> link.line.getStyleClass().remove("selected"));
+        lineCue.getStyleClass().remove("selected");
+        arrowHead.unmark();
+
+        // Make nails invisible
+        nails.forEach(nail -> nail.setVisible(false));
+    }
+
+    @Override
+    public void remove() {
+        sourceLocation.getModelContainer().remove(this);
+    }
+
+    @Override
+    public void reAdd() {
+        sourceLocation.getModelContainer().add(this);
+    }
+
+    @Override
+    public MouseTracker getMouseTracker() {
+        return localMouseTracker;
+    }
+
+    @Override
+    public DoubleProperty xProperty() {
+        return sourceLocation.getModelContainer().xProperty();
+    }
+
+    @Override
+    public DoubleProperty yProperty() {
+        return sourceLocation.getModelContainer().yProperty();
     }
 }

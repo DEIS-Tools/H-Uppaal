@@ -33,4 +33,8 @@ public class SelectHelper {
         }
     }
 
+    public static boolean isSelected(final Removable needle) {
+        return selectedElements.contains(needle);
+    }
+
 }

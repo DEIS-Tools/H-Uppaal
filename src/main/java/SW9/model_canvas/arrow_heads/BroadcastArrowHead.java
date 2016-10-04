@@ -124,4 +124,14 @@ public class BroadcastArrowHead extends ArrowHead {
     public double getHeadWidth() {
         return Math.max(TRIANGLE_WIDTH, LARGE_CIRCLE_RADIUS * 2);
     }
+
+    @Override
+    public void mark() {
+        // TODO: Not implemented yet
+    }
+
+    @Override
+    public void unmark() {
+        // TODO: Not implemented yet
+    }
 }

@@ -2,6 +2,7 @@
     -fx-fill: -blue-grey-300;
     -fx-stroke: -blue-grey-600;
     -fx-stroke-width: 2;
+    -fx-stroke-type: inside;
 }
 
 .location.selected {
@@ -26,10 +27,24 @@
     -fx-text-fill: -white;
 }
 
+.link {
+    -fx-stroke: -primary-color-darkest;
+    -fx-stroke-width: 2;
+}
+
+.link.selected {
+    -fx-stroke: -accent-color-darker;
+}
+
 .nail {
     -fx-fill: -blue-grey-300;
     -fx-stroke: -blue-grey-600;
     -fx-stroke-width: 2;
+}
+
+.nail.selected {
+    -fx-fill: -accent-color;
+    -fx-stroke: -accent-color-darkest;
 }
 
 .grid-line {

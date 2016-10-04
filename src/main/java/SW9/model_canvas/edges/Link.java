@@ -13,6 +13,7 @@ public class Link extends Parent {
     public Link() {
         // Create the visible line
         line = new Line();
+        line.getStyleClass().add("link");
 
         // Create the draggable line
         draggableLine = new Line();

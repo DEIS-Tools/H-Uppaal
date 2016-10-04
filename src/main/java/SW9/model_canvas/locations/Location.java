@@ -303,6 +303,10 @@ public class Location extends Parent implements DragHelper.Draggable, Removable,
         parent.removeChild(child);
     }
 
+    public ModelContainer getModelContainer() {
+        return modelContainer;
+    }
+
     @Override
     public MouseTracker getMouseTracker() {
         return this.localMouseTracker;
