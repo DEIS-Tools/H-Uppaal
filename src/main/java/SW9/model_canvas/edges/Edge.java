@@ -3,10 +3,8 @@ package SW9.model_canvas.edges;
 import SW9.Keybind;
 import SW9.KeyboardTracker;
 import SW9.MouseTracker;
-import SW9.model_canvas.IChild;
 import SW9.model_canvas.IParent;
 import SW9.model_canvas.ModelCanvas;
-import SW9.model_canvas.arrow_heads.BroadcastArrowHead;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.BindingHelper;
@@ -106,6 +104,14 @@ public class Edge extends Parent {
             }
             nails.forEach(nail -> nail.setVisible(false));
         });
+    }
+
+    public Location getSourceLocation() {
+        return sourceLocation;
+    }
+
+    public Location getTargetLocation() {
+        return targetLocation;
     }
 
     private final EventHandler<MouseEvent> drawEdgeStepWhenCanvasPressed = new EventHandler<MouseEvent>() {

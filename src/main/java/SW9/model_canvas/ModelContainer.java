@@ -4,17 +4,18 @@ import SW9.MouseTracker;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.DragHelper;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
-import javafx.scene.input.MouseEvent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class ModelContainer extends Parent implements DragHelper.Draggable {
 
     private final List<Location> locations = new ArrayList<>();
+    private final Map<Location, List<Edge>> locationEdgeMap = new HashMap<>();
+
     private final List<Edge> edges = new ArrayList<>();
     protected final MouseTracker mouseTracker = new MouseTracker(this);
 
@@ -36,11 +37,14 @@ public abstract class ModelContainer extends Parent implements DragHelper.Dragga
 
     public boolean addLocation(final Location location) {
         addChild(location);
+        locationEdgeMap.put(location, new ArrayList<>());
         return locations.add(location);
     }
 
     public boolean removeLocation(final Location location) {
         removeChild(location);
+        locationEdgeMap.get(location).forEach(this::removeEdge);
+        locationEdgeMap.remove(location);
         return locations.remove(location);
     }
 
@@ -50,14 +54,17 @@ public abstract class ModelContainer extends Parent implements DragHelper.Dragga
 
     public boolean addEdge(final Edge edge) {
         addChild(edge);
+        locationEdgeMap.get(edge.getSourceLocation()).add(edge);
         return edges.add(edge);
     }
 
     public boolean removeEdge(final Edge edge) {
         removeChild(edge);
+        locationEdgeMap.get(edge.getSourceLocation()).remove(edge);
         return edges.remove(edge);
     }
 
     public abstract ObservableDoubleValue getXLimit();
+
     public abstract ObservableDoubleValue getYLimit();
 }

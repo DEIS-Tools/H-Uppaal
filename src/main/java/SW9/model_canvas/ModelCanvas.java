@@ -34,7 +34,6 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
     private static Edge edgeBeingDrawn = null;
     private static ModelContainer hoveredModelContainer = null;
 
-
     private final MouseTracker mouseTracker = new MouseTracker(this);
 
     public ModelCanvas() {

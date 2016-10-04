@@ -18,7 +18,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import jiconfont.javafx.IconNode;
@@ -37,6 +36,8 @@ public class Location extends Parent implements DragHelper.Draggable, Selectable
 
     public BooleanProperty isUrgent = new SimpleBooleanProperty(false);
     public BooleanProperty isCommitted = new SimpleBooleanProperty(false);
+
+    private ModelContainer modelContainer;
 
     public enum Type {
         NORMAL, INITIAL, FINAL;
@@ -149,7 +150,7 @@ public class Location extends Parent implements DragHelper.Draggable, Selectable
                 event.consume();
 
                 // Find the component that the location should be created inside
-                ModelContainer modelContainer = ModelCanvas.getHoveredModelContainer();
+                modelContainer = ModelCanvas.getHoveredModelContainer();
 
                 // Bind the circle
                 circle.centerXProperty().bind(modelContainer.xProperty().add(event.getX() - (modelContainer.xProperty().get())));
@@ -179,7 +180,7 @@ public class Location extends Parent implements DragHelper.Draggable, Selectable
                 UndoRedoStack.push(() -> { // Perform
                     modelContainer.addLocation(this);
                 }, () -> { // Undo
-                    modelContainer.removeChild(this);
+                    modelContainer.removeLocation(this);
                 });
             }
         });
@@ -194,9 +195,9 @@ public class Location extends Parent implements DragHelper.Draggable, Selectable
                 final Edge edge = new Edge(this, canvasMouseTracker);
 
                 UndoRedoStack.push(() -> { // Perform
-                    addChildToParent(edge);
+                    modelContainer.addEdge(edge);
                 }, () -> { // Undo
-                    removeChildFromParent(edge);
+                    modelContainer.removeEdge(edge);
                 });
             }
         });
@@ -215,7 +216,6 @@ public class Location extends Parent implements DragHelper.Draggable, Selectable
         initializeErrors();
         initializeWarnings();
     }
-
 
     private void makeDraggable() {
         // Make the location draggable (if shift is not pressed, and there is no edge currently being drawn)
