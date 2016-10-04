@@ -20,7 +20,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 
@@ -56,24 +55,17 @@ public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
     @FXML
     public void initialize() {
         KeyboardTracker.registerKeybind(KeyboardTracker.DELETE_SELECTED, new Keybind(new KeyCodeCombination(KeyCode.DELETE), () -> {
-            ArrayList<Pair<IParent, Selectable>> copy = new ArrayList<>();
+            ArrayList<Removable> copy = new ArrayList<>();
 
-            SelectHelper.getSelectedElements().forEach(selectable -> {
-                copy.add(new Pair<>(selectable.getIParent(), selectable));
-            });
+            SelectHelper.getSelectedElements().forEach(copy::add);
 
             SelectHelper.clearSelectedElements();
 
             UndoRedoStack.push(() -> { // Perform
-                copy.forEach(iParentSelectablePair -> {
-                    iParentSelectablePair.getKey().removeChild((Node) iParentSelectablePair.getValue());
-                });
+                copy.forEach(Removable::remove);
             }, () -> { // Undo
-                copy.forEach(iParentSelectablePair -> {
-                    iParentSelectablePair.getKey().addChild((Node) iParentSelectablePair.getValue());
-                });
+                copy.forEach(Removable::reAdd);
             });
-
         }));
 
         KeyboardTracker.registerKeybind(KeyboardTracker.UNDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN), UndoRedoStack::undo));

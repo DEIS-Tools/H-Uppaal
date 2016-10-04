@@ -35,30 +35,38 @@ public abstract class ModelContainer extends Parent implements DragHelper.Dragga
         return locations;
     }
 
-    public boolean addLocation(final Location location) {
+    public List<Edge> getEdges() {
+        return edges;
+    }
+
+    public List<Edge> getEdges(final Location location) {
+        return locationEdgeMap.get(location);
+    }
+
+    public boolean add(final Location location) {
         addChild(location);
         locationEdgeMap.put(location, new ArrayList<>());
         return locations.add(location);
     }
 
-    public boolean removeLocation(final Location location) {
+    public boolean remove(final Location location) {
         removeChild(location);
-        locationEdgeMap.get(location).forEach(this::removeEdge);
+
+        while(!locationEdgeMap.get(location).isEmpty()) {
+            remove(locationEdgeMap.get(location).get(0));
+        }
+
         locationEdgeMap.remove(location);
         return locations.remove(location);
     }
 
-    public List<Edge> getEdges() {
-        return edges;
-    }
-
-    public boolean addEdge(final Edge edge) {
+    public boolean add(final Edge edge) {
         addChild(edge);
         locationEdgeMap.get(edge.getSourceLocation()).add(edge);
         return edges.add(edge);
     }
 
-    public boolean removeEdge(final Edge edge) {
+    public boolean remove(final Edge edge) {
         removeChild(edge);
         locationEdgeMap.get(edge.getSourceLocation()).remove(edge);
         return edges.remove(edge);

@@ -22,7 +22,10 @@ import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import jiconfont.javafx.IconNode;
 
-public class Location extends Parent implements DragHelper.Draggable, Selectable, IChild {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Location extends Parent implements DragHelper.Draggable, Removable, IChild {
 
     // Used to create the Location
     public final static double RADIUS = 25.0f;
@@ -38,6 +41,7 @@ public class Location extends Parent implements DragHelper.Draggable, Selectable
     public BooleanProperty isCommitted = new SimpleBooleanProperty(false);
 
     private ModelContainer modelContainer;
+    private List<Edge> deletedEdges = new ArrayList<>();
 
     public enum Type {
         NORMAL, INITIAL, FINAL;
@@ -178,9 +182,9 @@ public class Location extends Parent implements DragHelper.Draggable, Selectable
                 locationPlaceAnimation.play();
 
                 UndoRedoStack.push(() -> { // Perform
-                    modelContainer.addLocation(this);
+                    modelContainer.add(this);
                 }, () -> { // Undo
-                    modelContainer.removeLocation(this);
+                    modelContainer.remove(this);
                 });
             }
         });
@@ -195,9 +199,9 @@ public class Location extends Parent implements DragHelper.Draggable, Selectable
                 final Edge edge = new Edge(this, canvasMouseTracker);
 
                 UndoRedoStack.push(() -> { // Perform
-                    modelContainer.addEdge(edge);
+                    modelContainer.add(edge);
                 }, () -> { // Undo
-                    modelContainer.removeEdge(edge);
+                    modelContainer.remove(edge);
                 });
             }
         });
@@ -309,7 +313,6 @@ public class Location extends Parent implements DragHelper.Draggable, Selectable
         return circle.centerXProperty();
     }
 
-
     @Override
     public DoubleProperty yProperty() {
         return circle.centerYProperty();
@@ -335,6 +338,18 @@ public class Location extends Parent implements DragHelper.Draggable, Selectable
     public void deselect() {
         circle.getStyleClass().remove("selected");
         locationLabel.getStyleClass().remove("selected");
+    }
+
+    @Override
+    public void remove() {
+        deletedEdges = new ArrayList<>(modelContainer.getEdges(this));
+        modelContainer.remove(this);
+    }
+
+    @Override
+    public void reAdd() {
+        modelContainer.add(this);
+        deletedEdges.forEach(edge -> modelContainer.add(edge));
     }
 
 
