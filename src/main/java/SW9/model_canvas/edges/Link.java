@@ -1,7 +1,5 @@
 package SW9.model_canvas.edges;
 
-import SW9.MouseTracker;
-import SW9.utility.SelectHelper;
 import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -11,7 +9,6 @@ public class Link extends Parent {
     public Line line;
     private Line draggableLine;
     private static final double DRAGGABLE_LINE_STROKE_WIDTH = 13d;
-    private final MouseTracker mousetracker = new MouseTracker(this);
 
     public Link() {
         // Create the visible line
@@ -32,9 +29,5 @@ public class Link extends Parent {
 
         this.getChildren().add(line);
         this.getChildren().add(draggableLine);
-
-        mousetracker.registerOnMousePressedEventHandler(event -> {
-            SelectHelper.clearSelectedElements();
-        });
     }
 }

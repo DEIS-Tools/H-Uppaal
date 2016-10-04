@@ -38,6 +38,8 @@ public class Edge extends Parent implements Removable {
 
     private boolean skipLine = true;
 
+    private Nail hoveredNail;
+
     ObservableList<Link> links = FXCollections.observableArrayList();
     private BooleanBinding linesIsEmpty = new BooleanBinding() {
         {
@@ -61,8 +63,6 @@ public class Edge extends Parent implements Removable {
             return nails.isEmpty();
         }
     };
-
-    public boolean nailWasSelected = false;
 
     // Mouse trackers
     private MouseTracker canvasMouseTracker = null;
@@ -139,6 +139,12 @@ public class Edge extends Parent implements Removable {
             final DragHelper.Draggable parent = (DragHelper.Draggable) getParent();
 
             final Nail nail = new Nail(parent.xProperty().add(canvasMouseTracker.getXProperty().get() - parent.xProperty().get()), parent.yProperty().add(canvasMouseTracker.getYProperty().get() - parent.yProperty().get()));
+            nail.getMouseTracker().registerOnMouseEnteredEventHandler(e -> hoveredNail = nail);
+            nail.getMouseTracker().registerOnMouseExitedEventHandler(e -> {
+                if (nail.equals(hoveredNail)) {
+                    hoveredNail = null;
+                }
+            });
             final Link link = new Link();
 
             // If we are creating the first nail and link
@@ -245,7 +251,6 @@ public class Edge extends Parent implements Removable {
     public void setTargetLocation(final Location targetLocation) {
         if (this.targetLocation == null) {
             SelectHelper.makeSelectable(this);
-            nails.forEach(SelectHelper::makeSelectable);
         }
 
         this.targetLocation = targetLocation;
@@ -319,26 +324,30 @@ public class Edge extends Parent implements Removable {
 
     @Override
     public boolean select() {
+        if (!targetLocationIsSet.get()) return false;
 
-        if (!targetLocationIsSet.get() || nailWasSelected) return false;
+        if (hoveredNail != null) {
+            SelectHelper.select(hoveredNail);
 
-        System.out.println("edge select");
+            // Make nails visible
+            nails.forEach(nail -> nail.setVisible(true));
 
-        nails.forEach(nail -> nail.getStyleClass().add("selected"));
-        links.forEach(link -> link.line.getStyleClass().add("selected"));
-        lineCue.getStyleClass().add("selected");
-        arrowHead.mark();
+            return false; // Do not add us to the list of selected elements
+        } else {
+            nails.forEach(nail -> nail.getStyleClass().add("selected"));
+            links.forEach(link -> link.line.getStyleClass().add("selected"));
+            lineCue.getStyleClass().add("selected");
+            arrowHead.mark();
 
-        // Make nails visible
-        nails.forEach(nail -> nail.setVisible(true));
+            // Make nails visible
+            nails.forEach(nail -> nail.setVisible(true));
+        }
 
         return true;
     }
 
     @Override
     public void deselect() {
-        System.out.println("edge deselect");
-
         nails.forEach(nail -> nail.getStyleClass().remove("selected"));
         links.forEach(link -> link.line.getStyleClass().remove("selected"));
         lineCue.getStyleClass().remove("selected");

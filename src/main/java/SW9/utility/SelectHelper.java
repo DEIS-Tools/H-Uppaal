@@ -11,17 +11,17 @@ public class SelectHelper {
 
     public static void makeSelectable(final Removable removable) {
         removable.getMouseTracker().registerOnMousePressedEventHandler(event -> {
-            if (removable.select()) {
-                while (!selectedElements.isEmpty()) {
-                    final Removable element = selectedElements.get(0);
-                    element.deselect();
-                    selectedElements.remove(element);
-                }
-
-                // Check if the select went well, if so add it to the selected list
-                selectedElements.add(removable);
-            }
+            select(removable);
         });
+    }
+
+    public static void select(final Removable removable) {
+        clearSelectedElements();
+
+        // Check if the select went well, if so add it to the selected list
+        if (removable.select()) {
+            selectedElements.add(removable);
+        }
     }
 
     public static ArrayList<Removable> getSelectedElements() {

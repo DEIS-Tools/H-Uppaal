@@ -59,16 +59,12 @@ public class Nail extends Circle implements Removable {
     @Override
     public boolean select() {
         detachedParent = getEdgeParent();
-        detachedParent.nailWasSelected = true;
-        System.out.println("nail select");
         getStyleClass().add("selected");
         return true;
     }
 
     @Override
     public void deselect() {
-        detachedParent.nailWasSelected = false;
-        System.out.println("nail deselect");
         getStyleClass().remove("selected");
     }
 
