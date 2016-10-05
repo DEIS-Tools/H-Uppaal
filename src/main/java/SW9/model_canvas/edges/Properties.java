@@ -1,11 +1,11 @@
 package SW9.model_canvas.edges;
 
 import SW9.model_canvas.Parent;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleBinding;
+import com.jfoenix.controls.JFXTextField;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -30,10 +30,10 @@ public class Properties extends Parent {
 
         VBox propertiesBox = new VBox();
         propertiesBox.getChildren().addAll(
-                generatePropertyBox(":", ":idt\n[asidjha]"),
-                generatePropertyBox("<", ":idt[asidjha]"),
-                generatePropertyBox("!?", ":idt[as\nidjha]"),
-                generatePropertyBox("=", ":idt[asi\ndjha]")
+                generatePropertyBox(":", "id : id_t"),
+                generatePropertyBox("<", "guard < value"),
+                generatePropertyBox("!?", "channel!"),
+                generatePropertyBox("=", "var = 42")
 
         );
         propertiesBox.layoutXProperty().bind(xProperty);
@@ -42,39 +42,35 @@ public class Properties extends Parent {
         getChildren().add(propertiesBox);
     }
 
-    private StackPane generateValueStackPane(final String value, final DoubleProperty jens) {
-
-        // The label for the value of the given property
-        final Label label = new Label(value);
-        label.getStyleClass().addAll("subhead", "value-label");
-        label.setPrefWidth(VALUE_WIDTH);
+    private Parent generateValueBox(final String value, final DoubleProperty sharedHeightProperty) {
+        // The textField for the value of the given property
+        final JFXTextField textField = new JFXTextField(value);
+        textField.getStyleClass().addAll("body1", "value-text-field");
+        textField.setPrefWidth(VALUE_WIDTH);
 
         // Container for the stack pane containing the value
         final Rectangle box = new Rectangle(VALUE_WIDTH, 0);
         box.getStyleClass().add("value-background");
-        box.heightProperty().bind(label.heightProperty());
-        box.translateYProperty().bind(label.heightProperty().divide(-2));
-        jens.bind(box.heightProperty());
+        box.heightProperty().bind(textField.heightProperty());
 
-        // Add a stack-pane with both the container and the value label (will center label)
-        final StackPane stackPane = new StackPane();
-        stackPane.getStyleClass().add("value-container");
-        stackPane.getChildren().addAll(box, label);
+        // Bind the shared height to the height of the box
+        sharedHeightProperty.bind(box.heightProperty());
 
-        box.heightProperty().addListener((observable, oldValue, newValue) -> System.out.println("value box" + newValue));
+        // Add a parent that should contain both the container and the value textField
+        final Parent parent = new Parent();
+        parent.getStyleClass().add("value-container");
+        parent.addChildren(box, textField);
 
-        // Add the children to the view
-        return stackPane;
+        return parent;
     }
 
-    private StackPane generateIconStackPane(final String iconString, final ObservableDoubleValue height) {
-        // Container for the stack pane containing an icon
+    private StackPane generateIconBox(final String iconString, final DoubleProperty height) {
+        // Container for the background of the stack pane containing an icon
         final Rectangle box = new Rectangle(ICON_WIDTH, 0);
         box.getStyleClass().add("icon-background");
         box.heightProperty().bind(height);
-        box.translateYProperty().bind(box.heightProperty().divide(-2));
 
-        // The label for the icon string
+        // The label representing an icon
         final Label label = new Label(iconString);
         label.getStyleClass().addAll("subhead", "icon-label");
 
@@ -83,19 +79,24 @@ public class Properties extends Parent {
         stackPane.getStyleClass().add("icon-container");
         stackPane.getChildren().addAll(box, label);
 
-        box.heightProperty().addListener((observable, oldValue, newValue) -> System.out.println("icon box" + newValue));
+        // Align the box in the top left corner
+        StackPane.setAlignment(box, Pos.TOP_LEFT);
 
-        // Add the children to the view
         return stackPane;
     }
 
     private HBox generatePropertyBox(final String iconString, final String value) {
         final HBox propertyBox = new HBox();
 
-        final DoubleProperty jens = new SimpleDoubleProperty(2);
-        final StackPane valuePane = generateValueStackPane(value, jens);
-        final StackPane iconPane = generateIconStackPane(iconString, jens);
-        propertyBox.getChildren().addAll(iconPane, valuePane);
+        // A shared property to ensure that the icon box and the value box is consistent in height
+        final DoubleProperty sharedHeightProperty = new SimpleDoubleProperty();
+
+        // Generate the value and the icon for the property box
+        final Parent valueBox = generateValueBox(value, sharedHeightProperty);
+        final StackPane iconBox = generateIconBox(iconString, sharedHeightProperty);
+
+        // Add the boxes to this property box
+        propertyBox.getChildren().addAll(iconBox, valueBox);
 
         return propertyBox;
     }

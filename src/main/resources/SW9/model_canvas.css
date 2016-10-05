@@ -87,14 +87,20 @@
 
 .edge-properties .value-container .value-background {
     -fx-fill: -white;
-        -fx-stroke: -primary-color-darker;
-        -fx-stroke-type: centered;
-        -fx-stroke-width: 1;
+    -fx-stroke: -primary-color-darker;
+    -fx-stroke-type: centered;
+    -fx-stroke-width: 1;
 }
 
-.edge-properties .value-container .value-label {
+.edge-properties .value-container .value-text-field{
     -fx-text-alignment: left;
     -fx-alignment: center-left;
     -fx-text-fill: -primary-text-color;
-    -fx-padding: 5 10 5 10;
+    -fx-padding: 3 5 3 5;
+    -fx-background-color: white;
+    -fx-stroke-width: 0;
+    -fx-border-radius: 0 0 0 0;
+    -fx-background-radius: 0 0 0 0;
+    -fx-focus-color: -primary-color;
+    -fx-unfocus-color: transparent;
 }
