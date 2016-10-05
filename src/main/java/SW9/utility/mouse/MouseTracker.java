@@ -1,4 +1,4 @@
-package SW9;
+package SW9.utility.mouse;
 
 import SW9.model_canvas.ModelCanvas;
 import javafx.beans.binding.DoubleBinding;

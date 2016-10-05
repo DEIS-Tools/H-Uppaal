@@ -1,4 +1,4 @@
-package SW9;
+package SW9.utility.keyboard;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;

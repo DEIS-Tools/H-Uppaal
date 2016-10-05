@@ -1,6 +1,6 @@
 package SW9.model_canvas;
 
-import SW9.MouseTracker;
+import SW9.utility.mouse.MouseTracker;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.helpers.MouseTrackable;

@@ -11,10 +11,6 @@ public class UndoRedoStack {
     public static Command push(final Runnable perform, final Runnable undo) {
         final Command item = new Command(perform, undo);
 
-        return push(item);
-    }
-
-    public static Command push(final Command item) {
         // Empty the redo stack (new changes may be conflicting with redoing)
         while(!redoStack.isEmpty()) {
             redoStack.pop();
@@ -48,5 +44,24 @@ public class UndoRedoStack {
         }
 
         System.out.println("redo");
+    }
+
+    private static class Command {
+
+        private final Runnable perform;
+        private final Runnable undo;
+
+        public Command(final Runnable perform, final Runnable undo) {
+            this.perform = perform;
+            this.undo = undo;
+        }
+
+        public void perform() {
+            perform.run();
+        }
+
+        public void undo() {
+            undo.run();
+        }
     }
 }

@@ -1,8 +1,8 @@
 package SW9.model_canvas;
 
-import SW9.Keybind;
-import SW9.KeyboardTracker;
-import SW9.MouseTracker;
+import SW9.utility.keyboard.Keybind;
+import SW9.utility.keyboard.KeyboardTracker;
+import SW9.utility.mouse.MouseTracker;
 import SW9.model_canvas.arrow_heads.ArrowHead;
 import SW9.model_canvas.arrow_heads.BroadcastArrowHead;
 import SW9.model_canvas.edges.Edge;

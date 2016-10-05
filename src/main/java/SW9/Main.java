@@ -1,6 +1,7 @@
 package SW9;
 
 import SW9.utility.helpers.ResizeHelper;
+import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
