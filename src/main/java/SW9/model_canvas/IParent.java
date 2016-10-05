@@ -4,9 +4,9 @@ import javafx.scene.Node;
 
 public interface IParent {
 
-    public void addChild(final Node child);
+    void addChild(final Node child);
 
-    public void removeChild(final Node child);
+    void removeChild(final Node child);
 
-    public void addChildren(final Node... children);
+    void addChildren(final Node... children);
 }

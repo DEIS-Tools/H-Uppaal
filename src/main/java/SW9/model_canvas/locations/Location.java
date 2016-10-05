@@ -45,7 +45,7 @@ public class Location extends Parent implements MouseTrackable, Removable {
     private List<Edge> deletedEdges = new ArrayList<>();
 
     public enum Type {
-        NORMAL, INITIAL, FINAL;
+        NORMAL, INITIAL, FINAL
     }
 
     public Type type;

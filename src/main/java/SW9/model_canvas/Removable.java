@@ -4,11 +4,11 @@ import SW9.utility.helpers.MouseTrackable;
 
 public interface Removable extends MouseTrackable {
 
-    public boolean select();
+    boolean select();
 
-    public void deselect();
+    void deselect();
 
-    public void remove();
+    void remove();
 
-    public void reAdd();
+    void reAdd();
 }
