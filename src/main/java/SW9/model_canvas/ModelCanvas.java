@@ -1,14 +1,14 @@
 package SW9.model_canvas;
 
-import SW9.utility.keyboard.Keybind;
-import SW9.utility.keyboard.KeyboardTracker;
-import SW9.utility.mouse.MouseTracker;
 import SW9.model_canvas.arrow_heads.ArrowHead;
 import SW9.model_canvas.arrow_heads.BroadcastArrowHead;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
-import SW9.utility.*;
+import SW9.utility.UndoRedoStack;
 import SW9.utility.helpers.*;
+import SW9.utility.keyboard.Keybind;
+import SW9.utility.keyboard.KeyboardTracker;
+import SW9.utility.mouse.MouseTracker;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;

@@ -1,8 +1,8 @@
 package SW9.model_canvas.edges;
 
-import SW9.utility.mouse.MouseTracker;
 import SW9.model_canvas.Removable;
 import SW9.utility.helpers.DragHelper;
+import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;

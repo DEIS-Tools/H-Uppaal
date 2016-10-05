@@ -1,8 +1,5 @@
 package SW9.model_canvas.edges;
 
-import SW9.utility.keyboard.Keybind;
-import SW9.utility.keyboard.KeyboardTracker;
-import SW9.utility.mouse.MouseTracker;
 import SW9.model_canvas.IParent;
 import SW9.model_canvas.ModelCanvas;
 import SW9.model_canvas.Parent;
@@ -12,6 +9,9 @@ import SW9.model_canvas.locations.Location;
 import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.LocationAware;
 import SW9.utility.helpers.SelectHelper;
+import SW9.utility.keyboard.Keybind;
+import SW9.utility.keyboard.KeyboardTracker;
+import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;

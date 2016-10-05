@@ -1,8 +1,8 @@
 package SW9.utility.helpers;
 
-import SW9.utility.mouse.MouseTracker;
 import SW9.model_canvas.arrow_heads.ArrowHead;
 import SW9.model_canvas.locations.Location;
+import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.control.Label;
@@ -246,10 +246,10 @@ public class BindingHelper {
 
         final LineBinding lineBinding = LineBinding.getCircleBindings(arrowHeadPrelimiters, new Point(subject.startXProperty(), subject.startYProperty()));
 
-        if(target.shouldBindToTip()) {
+        if (target.shouldBindToTip()) {
             subject.endXProperty().bind(target.xProperty);
             subject.endYProperty().bind(target.yProperty);
-        } else  {
+        } else {
             subject.endXProperty().bind(lineBinding.startX);
             subject.endYProperty().bind(lineBinding.startY);
         }

@@ -12,7 +12,7 @@ public class UndoRedoStack {
         final Command item = new Command(perform, undo);
 
         // Empty the redo stack (new changes may be conflicting with redoing)
-        while(!redoStack.isEmpty()) {
+        while (!redoStack.isEmpty()) {
             redoStack.pop();
         }
 

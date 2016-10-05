@@ -7,7 +7,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public abstract class ArrowHead extends Parent {
-    
+
     public final DoubleProperty xProperty = new SimpleDoubleProperty(0d);
     public final DoubleProperty yProperty = new SimpleDoubleProperty(0d);
 
