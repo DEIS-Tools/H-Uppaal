@@ -1,6 +1,6 @@
 package SW9;
 
-import SW9.utility.ResizeHelper;
+import SW9.utility.helpers.ResizeHelper;
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;

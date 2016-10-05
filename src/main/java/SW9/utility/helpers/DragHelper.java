@@ -1,7 +1,8 @@
-package SW9.utility;
+package SW9.utility.helpers;
 
 import SW9.MouseTracker;
 import SW9.model_canvas.ModelCanvas;
+import SW9.utility.UndoRedoStack;
 import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.event.EventHandler;

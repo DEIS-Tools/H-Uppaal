@@ -1,4 +1,4 @@
-package SW9.utility;
+package SW9.utility.helpers;
 
 import SW9.MouseTracker;
 import SW9.model_canvas.arrow_heads.ArrowHead;

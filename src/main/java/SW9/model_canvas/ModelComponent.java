@@ -2,7 +2,7 @@ package SW9.model_canvas;
 
 import SW9.MouseTracker;
 import SW9.model_canvas.locations.Location;
-import SW9.utility.DragHelper;
+import SW9.utility.helpers.DragHelper;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;

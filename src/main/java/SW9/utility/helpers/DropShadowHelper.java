@@ -1,4 +1,4 @@
-package SW9.utility;
+package SW9.utility.helpers;
 
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;

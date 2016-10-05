@@ -1,6 +1,6 @@
 package SW9.model_canvas;
 
-import SW9.utility.DragHelper;
+import SW9.utility.helpers.DragHelper;
 
 public interface Removable extends DragHelper.Draggable {
 

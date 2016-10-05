@@ -3,10 +3,8 @@ package SW9.model_canvas;
 import SW9.MouseTracker;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
-import SW9.utility.DragHelper;
-import javafx.beans.value.ChangeListener;
+import SW9.utility.helpers.DragHelper;
 import javafx.beans.value.ObservableDoubleValue;
-import javafx.beans.value.ObservableValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
