@@ -4,6 +4,7 @@ import SW9.model_canvas.arrow_heads.ArrowHead;
 import SW9.model_canvas.arrow_heads.BroadcastArrowHead;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
+import SW9.model_canvas.synchronization.ChannelBox;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.helpers.*;
 import SW9.utility.keyboard.Keybind;
@@ -55,6 +56,16 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
 
     @FXML
     public void initialize() {
+        KeyboardTracker.registerKeybind(KeyboardTracker.ADD_CHANNEL_BOX, new Keybind(new KeyCodeCombination(KeyCode.B), () -> {
+            final ChannelBox channelBox = new ChannelBox();
+
+            UndoRedoStack.push(() -> { // Perform
+                addChild(channelBox);
+            }, () -> { // Undo
+                removeChild(channelBox);
+            });
+        }));
+
         KeyboardTracker.registerKeybind(KeyboardTracker.DELETE_SELECTED, new Keybind(new KeyCodeCombination(KeyCode.DELETE), () -> {
             ArrayList<Removable> copy = new ArrayList<>();
 

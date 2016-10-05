@@ -65,3 +65,9 @@
     -fx-stroke: -primary-color-darker;
     -fx-stroke-width: 2;
 }
+
+.channel-box {
+    -fx-fill: -primary-color;
+    -fx-stroke: -primary-color-darker;
+    -fx-stroke-width: 2;
+}

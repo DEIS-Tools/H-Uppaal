@@ -18,6 +18,7 @@ public class KeyboardTracker {
     public static final String UNDO = "UNDO";
     public static final String REDO = "REDO";
     public static final String DELETE_SELECTED = "DELETE_SELECTED";
+    public static final String ADD_CHANNEL_BOX = "ADD_CHANNEL_BOX";
 
     public static final String TEST_ARROW_ONE = "TEST_ARROW_ONE";
 
