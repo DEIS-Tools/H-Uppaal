@@ -3,6 +3,7 @@ package SW9.model_canvas;
 import SW9.model_canvas.arrow_heads.ArrowHead;
 import SW9.model_canvas.arrow_heads.BroadcastArrowHead;
 import SW9.model_canvas.edges.Edge;
+import SW9.model_canvas.edges.Properties;
 import SW9.model_canvas.locations.Location;
 import SW9.model_canvas.synchronization.ChannelBox;
 import SW9.utility.UndoRedoStack;
@@ -12,6 +13,7 @@ import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
@@ -100,7 +102,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
         }));
 
         // TODO remove me when testing of heads is done
-        KeyboardTracker.registerKeybind(KeyboardTracker.TEST_ARROW_ONE, new Keybind(new KeyCodeCombination(KeyCode.T, KeyCombination.SHIFT_DOWN), () -> {
+        KeyboardTracker.registerKeybind(KeyboardTracker.TESTING_BIND, new Keybind(new KeyCodeCombination(KeyCode.T), () -> {
             ArrowHead arrowHead = new BroadcastArrowHead();
             Line tail = new Line();
             Circle testCircle = new Circle();
@@ -116,7 +118,10 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             BindingHelper.bind(tail, testCircle, mouseTracker);
             BindingHelper.bind(tail, arrowHead);
 
+            Properties p = new Properties(new SimpleDoubleProperty(100), new SimpleDoubleProperty(100));
+            addChild(p);
         }));
+
     }
 
     /**

@@ -71,3 +71,30 @@
     -fx-stroke: -primary-color-darker;
     -fx-stroke-width: 2;
 }
+
+.edge-properties .icon-container .icon-background {
+    -fx-fill: -primary-color;
+    -fx-stroke: -primary-color-darker;
+    -fx-stroke-type: centered;
+    -fx-stroke-width: 1;
+}
+
+.edge-properties .icon-container .icon-label {
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+    -fx-text-fill: -white;
+}
+
+.edge-properties .value-container .value-background {
+    -fx-fill: -white;
+        -fx-stroke: -primary-color-darker;
+        -fx-stroke-type: centered;
+        -fx-stroke-width: 1;
+}
+
+.edge-properties .value-container .value-label {
+    -fx-text-alignment: left;
+    -fx-alignment: center-left;
+    -fx-text-fill: -primary-text-color;
+    -fx-padding: 5 10 5 10;
+}
