@@ -3,7 +3,7 @@ package SW9.model_canvas;
 import SW9.MouseTracker;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
-import SW9.utility.helpers.DragHelper;
+import SW9.utility.helpers.MouseTrackable;
 import javafx.beans.value.ObservableDoubleValue;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ModelContainer extends Parent implements DragHelper.Draggable {
+public abstract class ModelContainer extends Parent implements MouseTrackable {
 
     private final List<Location> locations = new ArrayList<>();
     private final Map<Location, List<Edge>> locationEdgeMap = new HashMap<>();

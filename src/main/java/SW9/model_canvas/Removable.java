@@ -1,8 +1,8 @@
 package SW9.model_canvas;
 
-import SW9.utility.helpers.DragHelper;
+import SW9.utility.helpers.MouseTrackable;
 
-public interface Removable extends DragHelper.Draggable {
+public interface Removable extends MouseTrackable {
 
     public boolean select();
 

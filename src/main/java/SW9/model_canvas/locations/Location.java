@@ -7,10 +7,7 @@ import SW9.issues.Warning;
 import SW9.model_canvas.*;
 import SW9.model_canvas.edges.Edge;
 import SW9.utility.*;
-import SW9.utility.helpers.BindingHelper;
-import SW9.utility.helpers.DragHelper;
-import SW9.utility.helpers.DropShadowHelper;
-import SW9.utility.helpers.SelectHelper;
+import SW9.utility.helpers.*;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.binding.StringBinding;
@@ -29,7 +26,7 @@ import jiconfont.javafx.IconNode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Location extends Parent implements DragHelper.Draggable, Removable {
+public class Location extends Parent implements MouseTrackable, Removable {
 
     // Used to create the Location
     public final static double RADIUS = 25.0f;

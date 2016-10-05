@@ -4,7 +4,6 @@ import SW9.MouseTracker;
 import SW9.model_canvas.ModelCanvas;
 import SW9.utility.UndoRedoStack;
 import javafx.beans.binding.NumberBinding;
-import javafx.beans.property.DoubleProperty;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -15,11 +14,11 @@ import java.util.function.Function;
 
 public class DragHelper {
 
-    public static <T extends Node & Draggable> void makeDraggable(final T subject) {
+    public static <T extends Node & MouseTrackable> void makeDraggable(final T subject) {
         makeDraggable(subject, mouseEvent -> true);
     }
 
-    public static <T extends Node & Draggable> void makeDraggable(final T subject, final Function<MouseEvent, Boolean> conditional) {
+    public static <T extends Node & MouseTrackable> void makeDraggable(final T subject, final Function<MouseEvent, Boolean> conditional) {
         final MouseTracker mouseTracker = subject.getMouseTracker();
 
         // The offset from the mouse
@@ -57,7 +56,7 @@ public class DragHelper {
 
             // If the subject has its x property bound have a parent where we can get the xProperty as well
             if (subject.xProperty().isBound()) {
-                final Draggable parent = getDraggableAncestor(subject);
+                final LocationAware parent = findAncestor(subject);
                 // Bind the x property of the subject to the value of the mouse event relative to the x property of the parent
                 newXBinding[0] = parent.xProperty().add(x - parent.xProperty().get());
                 subject.xProperty().bind(newXBinding[0]);
@@ -68,7 +67,7 @@ public class DragHelper {
             }
             // If the subject has its y property bound have a parent where we can get the yProperty as well
             if (subject.yProperty().isBound()) {
-                final Draggable parent = getDraggableAncestor(subject);
+                final LocationAware parent = findAncestor(subject);
                 // Bind the y property of the subject to the value of the mouse event relative to the y property of the parent
                 newYBinding[0] = parent.yProperty().add(y - parent.yProperty().get());
                 subject.yProperty().bind(newYBinding[0]);
@@ -92,7 +91,7 @@ public class DragHelper {
             dragYOffset[0] = subject.yProperty().get() - event.getY();
 
             // For children of a draggable parent, update the offset from the parent
-            final Draggable parent = getDraggableAncestor(subject);
+            final LocationAware parent = findAncestor(subject);
             if (parent != null) {
                 parentXOffset[0] = subject.xProperty().get() - parent.xProperty().get();
                 parentYOffset[0] = subject.yProperty().get() - parent.yProperty().get();
@@ -131,7 +130,7 @@ public class DragHelper {
                 }
 
             }, () -> { // Undo
-                final Draggable parent = getDraggableAncestor(subject);
+                final LocationAware parent = findAncestor(subject);
 
                 // If the x property is bound bind it to the original parent offset, else update the value
                 if (subject.xProperty().isBound()) {
@@ -165,11 +164,11 @@ public class DragHelper {
         mouseTracker.registerOnMouseExitedEventHandler(event -> subject.setCursor(Cursor.DEFAULT));
     }
 
-    public static <T extends Pane & Draggable> void makeDraggable(final T subject) {
+    public static <T extends Pane & MouseTrackable> void makeDraggable(final T subject) {
         makeDraggable(subject, mouseEvent -> true);
     }
 
-    public static <T extends Pane & Draggable> void makeDraggable(final T subject, final Function<MouseEvent, Boolean> conditional) {
+    public static <T extends Pane & MouseTrackable> void makeDraggable(final T subject, final Function<MouseEvent, Boolean> conditional) {
         final MouseTracker mouseTracker = subject.getMouseTracker();
 
         final double[] dragXOffset = {0d};
@@ -206,22 +205,14 @@ public class DragHelper {
         mouseTracker.registerOnMouseReleasedEventHandler(event -> subject.setCursor(Cursor.DEFAULT));
     }
 
-    public interface Draggable {
-        MouseTracker getMouseTracker();
-
-        DoubleProperty xProperty();
-
-        DoubleProperty yProperty();
-    }
-
-    // Finds the nearest ancestor which implements draggable
-    private static <T extends Node & Draggable> Draggable getDraggableAncestor(T subject) {
-        Draggable parent = null;
+    // Finds the nearest ancestor which implements location aware
+    private static <T extends Node & MouseTrackable> LocationAware findAncestor(T subject) {
+        LocationAware parent = null;
 
         Node descendant = subject;
         while(parent == null && descendant != null) {
-            if(descendant.getParent() instanceof Draggable) {
-                parent = (Draggable) descendant.getParent();
+            if(descendant.getParent() instanceof MouseTrackable) {
+                parent = (LocationAware) descendant.getParent();
             }
             descendant = descendant.getParent();
         }

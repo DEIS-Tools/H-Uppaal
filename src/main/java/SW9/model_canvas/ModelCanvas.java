@@ -8,10 +8,7 @@ import SW9.model_canvas.arrow_heads.BroadcastArrowHead;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.*;
-import SW9.utility.helpers.BindingHelper;
-import SW9.utility.helpers.DragHelper;
-import SW9.utility.helpers.DropShadowHelper;
-import SW9.utility.helpers.SelectHelper;
+import SW9.utility.helpers.*;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
@@ -27,7 +24,7 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 
-public class ModelCanvas extends Pane implements DragHelper.Draggable, IParent {
+public class ModelCanvas extends Pane implements MouseTrackable, IParent {
 
     public static int GRID_SIZE = 25;
 

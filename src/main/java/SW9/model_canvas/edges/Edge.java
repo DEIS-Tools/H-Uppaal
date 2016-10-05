@@ -10,7 +10,7 @@ import SW9.model_canvas.Removable;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.helpers.BindingHelper;
-import SW9.utility.helpers.DragHelper;
+import SW9.utility.helpers.LocationAware;
 import SW9.utility.helpers.SelectHelper;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
@@ -136,7 +136,7 @@ public class Edge extends Parent implements Removable {
             }
 
             // Create a new nail and a link that will connect to it
-            final DragHelper.Draggable parent = (DragHelper.Draggable) getParent();
+            final LocationAware parent = (LocationAware) getParent();
 
             final Nail nail = new Nail(parent.xProperty().add(canvasMouseTracker.getXProperty().get() - parent.xProperty().get()), parent.yProperty().add(canvasMouseTracker.getYProperty().get() - parent.yProperty().get()));
             nail.getMouseTracker().registerOnMouseEnteredEventHandler(e -> hoveredNail = nail);
