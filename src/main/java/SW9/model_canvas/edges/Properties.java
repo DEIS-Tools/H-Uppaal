@@ -1,8 +1,6 @@
 package SW9.model_canvas.edges;
 
 import SW9.model_canvas.Parent;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
@@ -42,7 +40,7 @@ public class Properties extends Parent {
         getChildren().add(propertiesBox);
     }
 
-    private StackPane generateValueStackPane(final String value, final DoubleProperty jens) {
+    private StackPane generateValueStackPane(final String value, final DoubleProperty sharedHeightProperty) {
 
         // The label for the value of the given property
         final Label label = new Label(value);
@@ -54,7 +52,7 @@ public class Properties extends Parent {
         box.getStyleClass().add("value-background");
         box.heightProperty().bind(label.heightProperty());
         box.translateYProperty().bind(label.heightProperty().divide(-2));
-        jens.bind(box.heightProperty());
+        sharedHeightProperty.bind(box.heightProperty());
 
         // Add a stack-pane with both the container and the value label (will center label)
         final StackPane stackPane = new StackPane();
@@ -67,11 +65,11 @@ public class Properties extends Parent {
         return stackPane;
     }
 
-    private StackPane generateIconStackPane(final String iconString, final ObservableDoubleValue height) {
+    private StackPane generateIconStackPane(final String iconString, final DoubleProperty sharedHeightProperty) {
         // Container for the stack pane containing an icon
         final Rectangle box = new Rectangle(ICON_WIDTH, 0);
         box.getStyleClass().add("icon-background");
-        box.heightProperty().bind(height);
+        box.heightProperty().bind(sharedHeightProperty);
         box.translateYProperty().bind(box.heightProperty().divide(-2));
 
         // The label for the icon string
@@ -92,9 +90,9 @@ public class Properties extends Parent {
     private HBox generatePropertyBox(final String iconString, final String value) {
         final HBox propertyBox = new HBox();
 
-        final DoubleProperty jens = new SimpleDoubleProperty(2);
-        final StackPane valuePane = generateValueStackPane(value, jens);
-        final StackPane iconPane = generateIconStackPane(iconString, jens);
+        final DoubleProperty sharedHeightProperty = new SimpleDoubleProperty(2);
+        final StackPane valuePane = generateValueStackPane(value, sharedHeightProperty);
+        final StackPane iconPane = generateIconStackPane(iconString, sharedHeightProperty);
         propertyBox.getChildren().addAll(iconPane, valuePane);
 
         return propertyBox;
