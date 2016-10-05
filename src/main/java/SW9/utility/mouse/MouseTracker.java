@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 public class MouseTracker {
 
-    private DoubleProperty x = new SimpleDoubleProperty(0);
-    private DoubleProperty y = new SimpleDoubleProperty(0);
+    private final DoubleProperty x = new SimpleDoubleProperty(0);
+    private final DoubleProperty y = new SimpleDoubleProperty(0);
     private boolean isActive = true;
 
     private final ArrayList<EventHandler<MouseEvent>> onMouseMovedEventHandlers = new ArrayList<>();

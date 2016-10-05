@@ -32,14 +32,14 @@ public class Location extends Parent implements MouseTrackable, Removable {
     public final static double RADIUS = 25.0f;
 
     // Used to update the interaction with the mouse
-    private BooleanProperty isOnMouse = new SimpleBooleanProperty(false);
+    private final BooleanProperty isOnMouse = new SimpleBooleanProperty(false);
     public final MouseTracker localMouseTracker;
 
-    public Circle circle;
-    public Label locationLabel;
+    public final Circle circle;
+    public final Label locationLabel;
 
-    public BooleanProperty isUrgent = new SimpleBooleanProperty(false);
-    public BooleanProperty isCommitted = new SimpleBooleanProperty(false);
+    public final BooleanProperty isUrgent = new SimpleBooleanProperty(false);
+    public final BooleanProperty isCommitted = new SimpleBooleanProperty(false);
 
     private ModelContainer modelContainer;
     private List<Edge> deletedEdges = new ArrayList<>();
@@ -48,7 +48,7 @@ public class Location extends Parent implements MouseTrackable, Removable {
         NORMAL, INITIAL, FINAL
     }
 
-    public Type type;
+    public final Type type;
 
     private void initializeWarnings() {
         // Warn the user when the location is initial

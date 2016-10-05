@@ -6,7 +6,7 @@ import javafx.scene.input.KeyEvent;
 public class Keybind {
 
     public final KeyCodeCombination keyCombo;
-    private Runnable action;
+    private final Runnable action;
 
     public Keybind(final KeyCodeCombination keyCombo, final Runnable action) {
 

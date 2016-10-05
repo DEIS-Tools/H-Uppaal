@@ -34,7 +34,7 @@ public class Main extends Application {
     private double xOffset;
     private double yOffset;
     private double previousX, previousY, previousWidth, previousHeight;
-    public static BooleanProperty isMaximized = new SimpleBooleanProperty(false);
+    public static final BooleanProperty isMaximized = new SimpleBooleanProperty(false);
 
     private final static DoubleProperty border = new SimpleDoubleProperty(3d);
 

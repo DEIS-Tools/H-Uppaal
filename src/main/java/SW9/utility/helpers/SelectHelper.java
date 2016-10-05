@@ -7,7 +7,7 @@ import java.util.List;
 
 public class SelectHelper {
 
-    private static ArrayList<Removable> selectedElements = new ArrayList<>();
+    private static final ArrayList<Removable> selectedElements = new ArrayList<>();
 
     public static void makeSelectable(final Removable removable) {
         removable.getMouseTracker().registerOnMousePressedEventHandler(event -> {

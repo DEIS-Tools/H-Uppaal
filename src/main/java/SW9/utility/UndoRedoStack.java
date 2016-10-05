@@ -5,8 +5,8 @@ import java.util.Stack;
 
 public class UndoRedoStack {
 
-    private static Stack<Command> undoStack = new Stack<>();
-    private static Stack<Command> redoStack = new Stack<>();
+    private static final Stack<Command> undoStack = new Stack<>();
+    private static final Stack<Command> redoStack = new Stack<>();
 
     public static Command push(final Runnable perform, final Runnable undo) {
         final Command item = new Command(perform, undo);

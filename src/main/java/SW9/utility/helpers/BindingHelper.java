@@ -151,7 +151,7 @@ public class BindingHelper {
     }
 
     private static class Point {
-        private ObservableDoubleValue x, y;
+        private final ObservableDoubleValue x, y;
 
         Point(final ObservableDoubleValue x, final ObservableDoubleValue y) {
             this.x = x;

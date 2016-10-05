@@ -20,14 +20,14 @@ public class ResizeHelper {
 
     private static Stage stage;
 
-    private static EventHandler<MouseEvent> updateOffsets = event -> {
+    private static final EventHandler<MouseEvent> updateOffsets = event -> {
         xOffset = event.getScreenX();
         yOffset = event.getScreenY();
         width = stage.getWidth();
         height = stage.getHeight();
     };
 
-    private static EventHandler<MouseEvent> resizeLeft = event -> {
+    private static final EventHandler<MouseEvent> resizeLeft = event -> {
         final double newWidth = width + (xOffset - event.getScreenX());
         if (newWidth < minWidth) return;
 
@@ -35,14 +35,14 @@ public class ResizeHelper {
         stage.setX(event.getScreenX());
     };
 
-    private static EventHandler<MouseEvent> resizeRight = event -> {
+    private static final EventHandler<MouseEvent> resizeRight = event -> {
         final double newWidth = width + (event.getScreenX() - xOffset);
         if (newWidth < minWidth) return;
 
         stage.setWidth(newWidth);
     };
 
-    private static EventHandler<MouseEvent> resizeUp = event -> {
+    private static final EventHandler<MouseEvent> resizeUp = event -> {
         final double newHeight = height + (yOffset - event.getScreenY());
         if (newHeight < minHeight) return;
 
@@ -50,7 +50,7 @@ public class ResizeHelper {
         stage.setY(event.getScreenY());
     };
 
-    private static EventHandler<MouseEvent> resizeDown = event -> {
+    private static final EventHandler<MouseEvent> resizeDown = event -> {
         final double newHeight = height - (yOffset - event.getScreenY());
         if (newHeight < minHeight) return;
 

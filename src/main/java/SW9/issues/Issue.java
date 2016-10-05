@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 public abstract class Issue<T> {
 
     private String message = null;
-    private BooleanBinding presentProperty;
+    private final BooleanBinding presentProperty;
 
     // Subclasses will override this, to provided us with the correct icon to use
     protected abstract GoogleMaterialDesignIcons getIcon();

@@ -30,18 +30,18 @@ public class Edge extends Parent implements Removable {
 
     private final Location sourceLocation;
     private Location targetLocation = null;
-    public BooleanProperty targetLocationIsSet = new SimpleBooleanProperty(false);
+    public final BooleanProperty targetLocationIsSet = new SimpleBooleanProperty(false);
 
     private final SimpleArrowHead arrowHead = new SimpleArrowHead();
 
-    private Line lineCue = new Line();
+    private final Line lineCue = new Line();
 
     private boolean skipLine = true;
 
     private Nail hoveredNail;
 
-    ObservableList<Link> links = FXCollections.observableArrayList();
-    private BooleanBinding linesIsEmpty = new BooleanBinding() {
+    final ObservableList<Link> links = FXCollections.observableArrayList();
+    private final BooleanBinding linesIsEmpty = new BooleanBinding() {
         {
             super.bind(links);
         }
@@ -52,8 +52,8 @@ public class Edge extends Parent implements Removable {
         }
     };
 
-    ObservableList<Nail> nails = FXCollections.observableArrayList();
-    private BooleanBinding nailsIsEmpty = new BooleanBinding() {
+    final ObservableList<Nail> nails = FXCollections.observableArrayList();
+    private final BooleanBinding nailsIsEmpty = new BooleanBinding() {
         {
             super.bind(nails);
         }

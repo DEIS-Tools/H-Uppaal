@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KeyboardTracker {
-    private static Map<String, Keybind> keyMap = new HashMap<>();
+    private static final Map<String, Keybind> keyMap = new HashMap<>();
 
     public static final String ADD_NEW_LOCATION = "ADD_NEW_LOCATION";
     public static final String DISCARD_NEW_LOCATION = "DISCARD_NEW_LOCATION";

@@ -6,8 +6,7 @@ import javafx.scene.shape.Line;
 
 public class Link extends Parent {
 
-    public Line line;
-    private Line draggableLine;
+    public final Line line;
     private static final double DRAGGABLE_LINE_STROKE_WIDTH = 13d;
 
     public Link() {
@@ -16,7 +15,7 @@ public class Link extends Parent {
         line.getStyleClass().add("link");
 
         // Create the draggable line
-        draggableLine = new Line();
+        Line draggableLine = new Line();
         draggableLine.setStrokeWidth(DRAGGABLE_LINE_STROKE_WIDTH);
         draggableLine.setStroke(Color.TRANSPARENT);
 
