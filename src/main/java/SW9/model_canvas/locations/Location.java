@@ -173,8 +173,8 @@ public class Location extends Parent implements MouseTrackable, Removable {
                         setCycleDuration(Duration.millis(50));
                     }
 
-                    protected void interpolate(double frac) {
-                        Location.this.setEffect(DropShadowHelper.generateElevationShadow(12 - 12 * frac));
+                    protected void interpolate(double fraction) {
+                        Location.this.setEffect(DropShadowHelper.generateElevationShadow(12 - 12 * fraction));
                     }
                 };
 

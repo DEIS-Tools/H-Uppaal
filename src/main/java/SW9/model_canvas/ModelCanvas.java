@@ -165,8 +165,8 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
                         setCycleDuration(Duration.millis(100));
                     }
 
-                    protected void interpolate(double frac) {
-                        prevHovered.setEffect(DropShadowHelper.generateElevationShadow(6 - 6 * frac));
+                    protected void interpolate(double fraction) {
+                        prevHovered.setEffect(DropShadowHelper.generateElevationShadow(6 - 6 * fraction));
                     }
                 }.play();
             }
@@ -191,7 +191,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
      * Checks if a Location is currently being hovered by the mouse on the canvas
      * This functionality is maintained by the Location themselves.
      *
-     * @return true if a Location is beging hovered bt the mouse, otherwise false
+     * @return true if a Location is being hovered bt the mouse, otherwise false
      */
     public static boolean mouseIsHoveringLocation() {
         return hoveredLocation != null;
@@ -211,7 +211,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
      * Gets the Edge that is currently being drawn on the canvas
      * This functionality is maintained by the Edge itself.
      *
-     * @return the Edge bewing drawn on the canvas
+     * @return the Edge being drawn on the canvas
      */
     public static Edge getEdgeBeingDrawn() {
         return edgeBeingDrawn;

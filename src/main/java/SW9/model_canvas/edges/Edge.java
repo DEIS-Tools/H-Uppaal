@@ -97,7 +97,7 @@ public class Edge extends Parent implements Removable {
             IParent parent = (IParent) this.getParent();
             if (parent == null) return;
 
-            // Remove this edge from the canvas and unregister its draw ednge handler
+            // Remove this edge from the canvas and unregister its draw edge handler
             parent.removeChild(this);
             this.canvasMouseTracker.unregisterOnMousePressedEventHandler(drawEdgeStepWhenCanvasPressed);
 

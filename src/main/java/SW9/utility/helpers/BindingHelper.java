@@ -239,12 +239,12 @@ public class BindingHelper {
     }
 
     public static void bind(final Line subject, final ArrowHead target) {
-        final Circle arrowHeadPrelimiters = new Circle();
-        arrowHeadPrelimiters.centerXProperty().bind(target.xProperty);
-        arrowHeadPrelimiters.centerYProperty().bind(target.yProperty);
-        arrowHeadPrelimiters.setRadius(target.getHeadHeight());
+        final Circle arrowHeadField = new Circle();
+        arrowHeadField.centerXProperty().bind(target.xProperty);
+        arrowHeadField.centerYProperty().bind(target.yProperty);
+        arrowHeadField.setRadius(target.getHeadHeight());
 
-        final LineBinding lineBinding = LineBinding.getCircleBindings(arrowHeadPrelimiters, new Point(subject.startXProperty(), subject.startYProperty()));
+        final LineBinding lineBinding = LineBinding.getCircleBindings(arrowHeadField, new Point(subject.startXProperty(), subject.startYProperty()));
 
         if (target.shouldBindToTip()) {
             subject.endXProperty().bind(target.xProperty);
