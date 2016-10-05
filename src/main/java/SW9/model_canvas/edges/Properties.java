@@ -40,6 +40,28 @@ public class Properties extends Parent {
         getChildren().add(propertiesBox);
     }
 
+    private StackPane generateIconStackPane(final String iconString, final DoubleProperty sharedHeightProperty) {
+        // Container for the stack pane containing an icon
+        final Rectangle box = new Rectangle(ICON_WIDTH, 0);
+        box.getStyleClass().add("icon-background");
+        box.heightProperty().bind(sharedHeightProperty);
+        box.translateYProperty().bind(box.heightProperty().divide(-2));
+
+        // The label for the icon string
+        final Label label = new Label(iconString);
+        label.getStyleClass().addAll("subhead", "icon-label");
+
+        // Add a stack-pane with both the container and the icon label (will center label)
+        final StackPane stackPane = new StackPane();
+        stackPane.getStyleClass().add("icon-container");
+        stackPane.getChildren().addAll(box, label);
+
+        box.heightProperty().addListener((observable, oldValue, newValue) -> System.out.println("icon box" + newValue));
+
+        // Add the children to the view
+        return stackPane;
+    }
+
     private StackPane generateValueStackPane(final String value, final DoubleProperty sharedHeightProperty) {
 
         // The label for the value of the given property
@@ -60,28 +82,6 @@ public class Properties extends Parent {
         stackPane.getChildren().addAll(box, label);
 
         box.heightProperty().addListener((observable, oldValue, newValue) -> System.out.println("value box" + newValue));
-
-        // Add the children to the view
-        return stackPane;
-    }
-
-    private StackPane generateIconStackPane(final String iconString, final DoubleProperty sharedHeightProperty) {
-        // Container for the stack pane containing an icon
-        final Rectangle box = new Rectangle(ICON_WIDTH, 0);
-        box.getStyleClass().add("icon-background");
-        box.heightProperty().bind(sharedHeightProperty);
-        box.translateYProperty().bind(box.heightProperty().divide(-2));
-
-        // The label for the icon string
-        final Label label = new Label(iconString);
-        label.getStyleClass().addAll("subhead", "icon-label");
-
-        // Add a stack-pane with both the container and the icon label (will center label)
-        final StackPane stackPane = new StackPane();
-        stackPane.getStyleClass().add("icon-container");
-        stackPane.getChildren().addAll(box, label);
-
-        box.heightProperty().addListener((observable, oldValue, newValue) -> System.out.println("icon box" + newValue));
 
         // Add the children to the view
         return stackPane;
