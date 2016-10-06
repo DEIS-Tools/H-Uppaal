@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 public class MouseTracker {
 
-    private final DoubleProperty x = new SimpleDoubleProperty(0);
-    private final DoubleProperty y = new SimpleDoubleProperty(0);
+    private final DoubleProperty xProperty = new SimpleDoubleProperty(0);
+    private final DoubleProperty yProperty = new SimpleDoubleProperty(0);
     private boolean isActive = true;
 
     private final ArrayList<EventHandler<MouseEvent>> onMouseMovedEventHandlers = new ArrayList<>();
@@ -90,17 +90,17 @@ public class MouseTracker {
 
         // Register our own event handler to register mouse placement at all times
         registerOnMouseMovedEventHandler(event -> {
-            x.set(event.getX() - (event.getX() % ModelCanvas.GRID_SIZE) + (ModelCanvas.GRID_SIZE / 2));
-            y.set(event.getY() - (event.getY() % ModelCanvas.GRID_SIZE) + (ModelCanvas.GRID_SIZE / 2));
+            xProperty.set(event.getX() - (event.getX() % ModelCanvas.GRID_SIZE) + (ModelCanvas.GRID_SIZE / 2));
+            yProperty.set(event.getY() - (event.getY() % ModelCanvas.GRID_SIZE) + (ModelCanvas.GRID_SIZE / 2));
         });
     }
 
-    public DoubleProperty getXProperty() {
-        return x;
+    public DoubleProperty xProperty() {
+        return xProperty;
     }
 
-    public DoubleProperty getYProperty() {
-        return y;
+    public DoubleProperty yProperty() {
+        return yProperty;
     }
 
     public boolean registerOnMouseMovedEventHandler(final EventHandler<MouseEvent> eventHandler) {

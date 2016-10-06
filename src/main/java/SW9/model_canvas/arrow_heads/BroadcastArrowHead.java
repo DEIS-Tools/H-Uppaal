@@ -32,11 +32,11 @@ public class BroadcastArrowHead extends ArrowHead {
         MoveTo p1 = new MoveTo();
         ArcTo p2 = new ArcTo();
 
-        p1.xProperty().bind(xProperty.add(LARGE_CIRCLE_RADIUS));
-        p1.yProperty().bind(yProperty);
+        p1.xProperty().bind(xProperty().add(LARGE_CIRCLE_RADIUS));
+        p1.yProperty().bind(yProperty());
 
-        p2.xProperty().bind(xProperty.subtract(LARGE_CIRCLE_RADIUS));
-        p2.yProperty().bind(yProperty);
+        p2.xProperty().bind(xProperty().subtract(LARGE_CIRCLE_RADIUS));
+        p2.yProperty().bind(yProperty());
         p2.setRadiusX(LARGE_CIRCLE_RADIUS);
         p2.setRadiusY(LARGE_CIRCLE_RADIUS);
 
@@ -54,11 +54,11 @@ public class BroadcastArrowHead extends ArrowHead {
         MoveTo p1 = new MoveTo();
         ArcTo p2 = new ArcTo();
 
-        p1.xProperty().bind(xProperty.add(MEDIUM_CIRCLE_RADIUS));
-        p1.yProperty().bind(yProperty);
+        p1.xProperty().bind(xProperty().add(MEDIUM_CIRCLE_RADIUS));
+        p1.yProperty().bind(yProperty());
 
-        p2.xProperty().bind(xProperty.subtract(MEDIUM_CIRCLE_RADIUS));
-        p2.yProperty().bind(yProperty);
+        p2.xProperty().bind(xProperty().subtract(MEDIUM_CIRCLE_RADIUS));
+        p2.yProperty().bind(yProperty());
         p2.setRadiusX(MEDIUM_CIRCLE_RADIUS);
         p2.setRadiusY(MEDIUM_CIRCLE_RADIUS);
 
@@ -75,11 +75,11 @@ public class BroadcastArrowHead extends ArrowHead {
         MoveTo p1 = new MoveTo();
         ArcTo p2 = new ArcTo();
 
-        p1.xProperty().bind(xProperty.add(SMALL_CIRCLE_RADIUS));
-        p1.yProperty().bind(yProperty);
+        p1.xProperty().bind(xProperty().add(SMALL_CIRCLE_RADIUS));
+        p1.yProperty().bind(yProperty());
 
-        p2.xProperty().bind(xProperty.subtract(SMALL_CIRCLE_RADIUS));
-        p2.yProperty().bind(yProperty);
+        p2.xProperty().bind(xProperty().subtract(SMALL_CIRCLE_RADIUS));
+        p2.yProperty().bind(yProperty());
         p2.setRadiusX(SMALL_CIRCLE_RADIUS);
         p2.setRadiusY(SMALL_CIRCLE_RADIUS);
 
@@ -97,8 +97,8 @@ public class BroadcastArrowHead extends ArrowHead {
         LineTo l2 = new LineTo();
         LineTo l3 = new LineTo();
 
-        start.xProperty().bind(xProperty);
-        start.yProperty().bind(yProperty.subtract(LARGE_CIRCLE_RADIUS));
+        start.xProperty().bind(xProperty());
+        start.yProperty().bind(yProperty().subtract(LARGE_CIRCLE_RADIUS));
 
         l1.xProperty().bind(start.xProperty().subtract(TRIANGLE_WIDTH / 2));
         l1.yProperty().bind(start.yProperty().subtract(TRIANGLE_LENGTH));

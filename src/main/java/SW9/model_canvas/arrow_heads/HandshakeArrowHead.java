@@ -25,11 +25,11 @@ public class HandshakeArrowHead extends ArrowHead {
         MoveTo p1 = new MoveTo();
         ArcTo p2 = new ArcTo();
 
-        p1.xProperty().bind(xProperty.add(CIRCLE_RADIUS));
-        p1.yProperty().bind(yProperty);
+        p1.xProperty().bind(xProperty().add(CIRCLE_RADIUS));
+        p1.yProperty().bind(yProperty());
 
-        p2.xProperty().bind(xProperty.subtract(CIRCLE_RADIUS));
-        p2.yProperty().bind(yProperty);
+        p2.xProperty().bind(xProperty().subtract(CIRCLE_RADIUS));
+        p2.yProperty().bind(yProperty());
         p2.setRadiusX(CIRCLE_RADIUS);
         p2.setRadiusY(CIRCLE_RADIUS);
 
@@ -47,8 +47,8 @@ public class HandshakeArrowHead extends ArrowHead {
         LineTo l2 = new LineTo();
         LineTo l3 = new LineTo();
 
-        start.xProperty().bind(xProperty);
-        start.yProperty().bind(yProperty.subtract(CIRCLE_RADIUS));
+        start.xProperty().bind(xProperty());
+        start.yProperty().bind(yProperty().subtract(CIRCLE_RADIUS));
 
         l1.xProperty().bind(start.xProperty().subtract(TRIANGLE_WIDTH / 2));
         l1.yProperty().bind(start.yProperty().subtract(TRIANGLE_LENGTH));

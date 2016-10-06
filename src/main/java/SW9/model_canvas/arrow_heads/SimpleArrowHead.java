@@ -18,10 +18,10 @@ public class SimpleArrowHead extends ArrowHead {
 
     private Line initializeLeftArrow() {
         leftArrow = new Line();
-        leftArrow.startXProperty().bind(xProperty);
-        leftArrow.startYProperty().bind(yProperty);
-        leftArrow.endXProperty().bind(xProperty.subtract(TRIANGLE_WIDTH / 2));
-        leftArrow.endYProperty().bind(yProperty.subtract(TRIANGLE_LENGTH));
+        leftArrow.startXProperty().bind(xProperty());
+        leftArrow.startYProperty().bind(yProperty());
+        leftArrow.endXProperty().bind(xProperty().subtract(TRIANGLE_WIDTH / 2));
+        leftArrow.endYProperty().bind(yProperty().subtract(TRIANGLE_LENGTH));
 
         leftArrow.getStyleClass().add("link");
 
@@ -30,10 +30,10 @@ public class SimpleArrowHead extends ArrowHead {
 
     private Line initializeRightArrow() {
         rightArrow = new Line();
-        rightArrow.startXProperty().bind(xProperty);
-        rightArrow.startYProperty().bind(yProperty);
-        rightArrow.endXProperty().bind(xProperty.add(TRIANGLE_WIDTH / 2));
-        rightArrow.endYProperty().bind(yProperty.subtract(TRIANGLE_LENGTH));
+        rightArrow.startXProperty().bind(xProperty());
+        rightArrow.startYProperty().bind(yProperty());
+        rightArrow.endXProperty().bind(xProperty().add(TRIANGLE_WIDTH / 2));
+        rightArrow.endYProperty().bind(yProperty().subtract(TRIANGLE_LENGTH));
 
         rightArrow.getStyleClass().add("link");
 

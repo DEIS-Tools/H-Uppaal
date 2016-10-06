@@ -1,5 +1,6 @@
 package SW9.model_canvas.edges;
 
+import javafx.beans.binding.DoubleBinding;
 import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;

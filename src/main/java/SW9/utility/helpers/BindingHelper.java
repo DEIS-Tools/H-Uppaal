@@ -103,8 +103,8 @@ public class BindingHelper {
             return new BindingHelper.LineBinding(
                     calculateXBinding(source, new Point(target)),
                     calculateYBinding(source, new Point(target)),
-                    target.getXProperty(),
-                    target.getYProperty()
+                    target.xProperty(),
+                    target.yProperty()
             );
         }
 
@@ -164,13 +164,13 @@ public class BindingHelper {
         }
 
         Point(final MouseTracker mouseTracker) {
-            this.x = mouseTracker.getXProperty();
-            this.y = mouseTracker.getYProperty();
+            this.x = mouseTracker.xProperty();
+            this.y = mouseTracker.yProperty();
         }
 
         Point(final ArrowHead arrowHead) {
-            this.x = arrowHead.xProperty;
-            this.y = arrowHead.yProperty;
+            this.x = arrowHead.xProperty();
+            this.y = arrowHead.yProperty();
         }
 
         private ObservableDoubleValue xProperty() {
@@ -191,8 +191,8 @@ public class BindingHelper {
         ObservableDoubleValue endX = lineBinding.endX;
         ObservableDoubleValue endY = lineBinding.endY;
 
-        subject.xProperty.bind(endX);
-        subject.yProperty.bind(endY);
+        subject.xProperty().bind(endX);
+        subject.yProperty().bind(endY);
 
         DoubleBinding rotationBinding = new DoubleBinding() {
             {
@@ -219,8 +219,8 @@ public class BindingHelper {
         ObservableDoubleValue endX = lineBinding.endX;
         ObservableDoubleValue endY = lineBinding.endY;
 
-        subject.xProperty.bind(endX);
-        subject.yProperty.bind(endY);
+        subject.xProperty().bind(endX);
+        subject.yProperty().bind(endY);
 
         DoubleBinding rotationBinding = new DoubleBinding() {
             {
@@ -240,15 +240,15 @@ public class BindingHelper {
 
     public static void bind(final Line subject, final ArrowHead target) {
         final Circle arrowHeadField = new Circle();
-        arrowHeadField.centerXProperty().bind(target.xProperty);
-        arrowHeadField.centerYProperty().bind(target.yProperty);
+        arrowHeadField.centerXProperty().bind(target.xProperty());
+        arrowHeadField.centerYProperty().bind(target.yProperty());
         arrowHeadField.setRadius(target.getHeadHeight());
 
         final LineBinding lineBinding = LineBinding.getCircleBindings(arrowHeadField, new Point(subject.startXProperty(), subject.startYProperty()));
 
         if (target.shouldBindToTip()) {
-            subject.endXProperty().bind(target.xProperty);
-            subject.endYProperty().bind(target.yProperty);
+            subject.endXProperty().bind(target.xProperty());
+            subject.endYProperty().bind(target.yProperty());
         } else {
             subject.endXProperty().bind(lineBinding.startX);
             subject.endYProperty().bind(lineBinding.startY);

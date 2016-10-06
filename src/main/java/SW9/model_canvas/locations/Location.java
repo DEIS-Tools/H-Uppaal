@@ -69,7 +69,7 @@ public class Location extends Parent implements MouseTrackable, Removable {
     }
 
     public Location(MouseTracker canvasMouseTracker) {
-        this(canvasMouseTracker.getXProperty(), canvasMouseTracker.getYProperty(), canvasMouseTracker, Type.NORMAL, null);
+        this(canvasMouseTracker.xProperty(), canvasMouseTracker.yProperty(), canvasMouseTracker, Type.NORMAL, null);
 
         // It is initialize with the mouse, hence it is on the mouse
         isOnMouse.set(true);

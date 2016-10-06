@@ -138,7 +138,7 @@ public class Edge extends Parent implements Removable {
             // Create a new nail and a link that will connect to it
             final LocationAware parent = (LocationAware) getParent();
 
-            final Nail nail = new Nail(parent.xProperty().add(canvasMouseTracker.getXProperty().get() - parent.xProperty().get()), parent.yProperty().add(canvasMouseTracker.getYProperty().get() - parent.yProperty().get()));
+            final Nail nail = new Nail(parent.xProperty().add(canvasMouseTracker.xProperty().get() - parent.xProperty().get()), parent.yProperty().add(canvasMouseTracker.yProperty().get() - parent.yProperty().get()));
             nail.getMouseTracker().registerOnMouseEnteredEventHandler(e -> hoveredNail = nail);
             nail.getMouseTracker().registerOnMouseExitedEventHandler(e -> {
                 if (nail.equals(hoveredNail)) {

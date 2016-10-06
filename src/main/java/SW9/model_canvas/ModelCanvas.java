@@ -97,7 +97,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
         }));
 
         KeyboardTracker.registerKeybind(KeyboardTracker.CREATE_COMPONENT, new Keybind(new KeyCodeCombination(KeyCode.K), () -> {
-            final ModelComponent mc = new ModelComponent(mouseTracker.getXProperty().get(), mouseTracker.getYProperty().get(), 400, 600, "Component", mouseTracker);
+            final ModelComponent mc = new ModelComponent(mouseTracker.xProperty().get(), mouseTracker.yProperty().get(), 400, 600, "Component", mouseTracker);
 
             UndoRedoStack.push(() -> addChild(mc), () -> removeChild(mc));
         }));

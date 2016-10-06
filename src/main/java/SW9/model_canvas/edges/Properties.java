@@ -1,6 +1,7 @@
 package SW9.model_canvas.edges;
 
 import SW9.model_canvas.Parent;
+import SW9.utility.helpers.LocationAware;
 import com.jfoenix.controls.JFXTextField;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -12,10 +13,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 
-public class Properties extends Parent {
+public class Properties extends Parent implements LocationAware {
 
-    public final DoubleProperty xProperty = new SimpleDoubleProperty(0d);
-    public final DoubleProperty yProperty = new SimpleDoubleProperty(0d);
+    private final DoubleProperty xProperty = new SimpleDoubleProperty(0d);
+    private final DoubleProperty yProperty = new SimpleDoubleProperty(0d);
 
     private static final double ICON_WIDTH = 20d;
     private static final double VALUE_WIDTH = 120d;
@@ -23,8 +24,8 @@ public class Properties extends Parent {
     public Properties(final ObservableDoubleValue x, final ObservableDoubleValue y) {
 
         // Bind the x and y properties
-        xProperty.bind(x);
-        yProperty.bind(y);
+        xProperty().bind(x);
+        yProperty().bind(y);
 
         this.getStyleClass().add("edge-properties");
 
@@ -36,8 +37,8 @@ public class Properties extends Parent {
                 generatePropertyBox("=", "var = 42")
 
         );
-        propertiesBox.layoutXProperty().bind(xProperty);
-        propertiesBox.layoutYProperty().bind(yProperty);
+        propertiesBox.layoutXProperty().bind(xProperty());
+        propertiesBox.layoutYProperty().bind(yProperty());
 
         getChildren().add(propertiesBox);
     }
@@ -102,4 +103,11 @@ public class Properties extends Parent {
     }
 
 
+    public DoubleProperty xProperty() {
+        return xProperty;
+    }
+
+    public DoubleProperty yProperty() {
+        return yProperty;
+    }
 }
