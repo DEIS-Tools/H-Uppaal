@@ -2,6 +2,7 @@ package SW9.model_canvas;
 
 import SW9.model_canvas.arrow_heads.ArrowHead;
 import SW9.model_canvas.arrow_heads.BroadcastArrowHead;
+import SW9.model_canvas.arrow_heads.HandshakeArrowHead;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.edges.Properties;
 import SW9.model_canvas.locations.Location;
@@ -103,23 +104,31 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
 
         // TODO remove me when testing of heads is done
         KeyboardTracker.registerKeybind(KeyboardTracker.TESTING_BIND, new Keybind(new KeyCodeCombination(KeyCode.T), () -> {
-            ArrowHead arrowHead = new BroadcastArrowHead();
-            Line tail = new Line();
-            Circle testCircle = new Circle();
+            final Circle oneStart = new Circle(100, 100, 0);
+            final Circle oneEnd = new Circle(200, 100, 0);
+            final Circle twoStart = new Circle(100, 200, 0);
+            final Circle twoEnd = new Circle(200, 200, 0);
+            final ArrowHead handshakeArrowHead = new HandshakeArrowHead();
+            final ArrowHead broadCastArrowHead = new BroadcastArrowHead();
 
-            addChildren(arrowHead, tail, testCircle);
+            final Line handshakeArrowLine = new Line();
+            final Line broadCastArrowLine = new Line();
 
-            testCircle.setCenterX(200);
-            testCircle.setCenterY(200);
-            testCircle.setRadius(40);
+            BindingHelper.bind(handshakeArrowLine, oneStart, oneEnd);
+            BindingHelper.bind(broadCastArrowLine, twoStart, twoEnd);
 
-            BindingHelper.bind(arrowHead, testCircle, mouseTracker);
+            BindingHelper.bind(handshakeArrowHead, oneStart, oneEnd);
+            BindingHelper.bind(broadCastArrowHead, twoStart, twoEnd);
 
-            BindingHelper.bind(tail, testCircle, mouseTracker);
-            BindingHelper.bind(tail, arrowHead);
+            BindingHelper.bind(handshakeArrowLine, handshakeArrowHead);
+            BindingHelper.bind(broadCastArrowLine, broadCastArrowHead);
 
-            Properties p = new Properties(new SimpleDoubleProperty(100), new SimpleDoubleProperty(100));
-            addChild(p);
+            Properties properties = new Properties(new SimpleDoubleProperty(100), new SimpleDoubleProperty(300));
+
+            UndoRedoStack.push(
+                    () -> addChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties),
+                    () -> removeChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties)
+            );
         }));
 
     }
@@ -276,12 +285,17 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
     }
 
     @Override
+    public void addChildren(Node... children) {
+        getChildren().addAll(children);
+    }
+
+    @Override
     public void removeChild(Node child) {
         getChildren().remove(child);
     }
 
     @Override
-    public void addChildren(Node... children) {
-        getChildren().addAll(children);
+    public void removeChildren(Node... children) {
+        getChildren().removeAll(children);
     }
 }

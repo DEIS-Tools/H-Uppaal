@@ -9,13 +9,18 @@ public class Parent extends javafx.scene.Parent implements IParent {
     }
 
     @Override
+    public void addChildren(Node... children) {
+        getChildren().addAll(children);
+    }
+
+    @Override
     public void removeChild(Node child) {
         getChildren().remove(child);
     }
 
     @Override
-    public void addChildren(Node... children) {
-        getChildren().addAll(children);
+    public void removeChildren(Node... children) {
+        getChildren().removeAll(children);
     }
 
 }

@@ -6,7 +6,9 @@ public interface IParent {
 
     void addChild(final Node child);
 
+    void addChildren(final Node... children);
+
     void removeChild(final Node child);
 
-    void addChildren(final Node... children);
+    void removeChildren(final Node ... children);
 }
