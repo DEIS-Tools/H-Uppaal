@@ -1,8 +1,8 @@
 package SW9.model_canvas;
 
 import SW9.model_canvas.arrow_heads.ArrowHead;
-import SW9.model_canvas.arrow_heads.BroadcastArrowHead;
-import SW9.model_canvas.arrow_heads.HandshakeArrowHead;
+import SW9.model_canvas.arrow_heads.BroadcastChannelSenderArrowHead;
+import SW9.model_canvas.arrow_heads.HandshakeChannelSenderArrowHead;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.edges.Properties;
 import SW9.model_canvas.locations.Location;
@@ -108,8 +108,8 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             final Circle oneEnd = new Circle(200, 100, 0);
             final Circle twoStart = new Circle(100, 200, 0);
             final Circle twoEnd = new Circle(200, 200, 0);
-            final ArrowHead handshakeArrowHead = new HandshakeArrowHead();
-            final ArrowHead broadCastArrowHead = new BroadcastArrowHead();
+            final ArrowHead handshakeArrowHead = new HandshakeChannelSenderArrowHead();
+            final ArrowHead broadCastArrowHead = new BroadcastChannelSenderArrowHead();
 
             final Line handshakeArrowLine = new Line();
             final Line broadCastArrowLine = new Line();

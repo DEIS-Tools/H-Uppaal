@@ -6,22 +6,19 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 
-public class BroadcastArrowHead extends ArrowHead {
+public class BroadcastChannelSenderArrowHead extends ChannelSenderArrowHead {
 
     private static final double LARGE_CIRCLE_RADIUS = 15d;
     private static final double MEDIUM_CIRCLE_RADIUS = 10d;
     private static final double SMALL_CIRCLE_RADIUS = 5d;
-    private static final double TRIANGLE_LENGTH = 15d;
-    private static final double TRIANGLE_WIDTH = 15d;
 
-    public BroadcastArrowHead() {
+    public BroadcastChannelSenderArrowHead() {
         super();
 
         addChildren(
                 initializeLargeCircle(),
                 initializeMediumCircle(),
-                initializeSmallCircle(),
-                initializeTriangle()
+                initializeSmallCircle()
         );
     }
 
@@ -89,40 +86,14 @@ public class BroadcastArrowHead extends ArrowHead {
         return smallCircle;
     }
 
-    private Path initializeTriangle() {
-        final Path triangle = new Path();
-
-        MoveTo start = new MoveTo();
-        LineTo l1 = new LineTo();
-        LineTo l2 = new LineTo();
-        LineTo l3 = new LineTo();
-
-        start.xProperty().bind(xProperty());
-        start.yProperty().bind(yProperty().subtract(LARGE_CIRCLE_RADIUS));
-
-        l1.xProperty().bind(start.xProperty().subtract(TRIANGLE_WIDTH / 2));
-        l1.yProperty().bind(start.yProperty().subtract(TRIANGLE_LENGTH));
-
-        l2.xProperty().bind(start.xProperty().add(TRIANGLE_WIDTH / 2));
-        l2.yProperty().bind(start.yProperty().subtract(TRIANGLE_LENGTH));
-
-        l3.xProperty().bind(start.xProperty());
-        l3.yProperty().bind(start.yProperty());
-
-        triangle.setFill(Color.BLACK);
-        triangle.getElements().addAll(start, l1, l2, l3);
-
-        return triangle;
-    }
-
     @Override
     public double getHeadHeight() {
-        return LARGE_CIRCLE_RADIUS + TRIANGLE_LENGTH;
+        return LARGE_CIRCLE_RADIUS + super.getHeadHeight();
     }
 
     @Override
     public double getHeadWidth() {
-        return Math.max(TRIANGLE_WIDTH, LARGE_CIRCLE_RADIUS * 2);
+        return Math.max(super.getHeadWidth(), LARGE_CIRCLE_RADIUS * 2);
     }
 
     @Override
