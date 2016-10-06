@@ -44,14 +44,16 @@ public class ModelComponent extends ModelContainer {
                 xProperty.add(CORNER_SIZE / 2d),
                 yProperty.add(CORNER_SIZE / 2d),
                 canvasMouseTracker,
-                Location.Type.INITIAL
+                Location.Type.INITIAL,
+                this
         );
 
         Location finalLocation = new Location(
                 xProperty.add(widthProperty.subtract(CORNER_SIZE / 2d)),
                 yProperty.add(heightProperty.subtract(CORNER_SIZE / 2d)),
                 canvasMouseTracker,
-                Location.Type.FINAL
+                Location.Type.FINAL,
+                this
         );
 
         // Initialize properties for the name of the component
@@ -94,10 +96,11 @@ public class ModelComponent extends ModelContainer {
                 labelTriangle,
                 labelContainer,
                 label,
-                frame,
-                initialLocation,
-                finalLocation
+                frame
         );
+
+        add(initialLocation);
+        add(finalLocation);
     }
 
 

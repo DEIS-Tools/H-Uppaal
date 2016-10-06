@@ -69,7 +69,7 @@ public class Location extends Parent implements MouseTrackable, Removable {
     }
 
     public Location(MouseTracker canvasMouseTracker) {
-        this(canvasMouseTracker.getXProperty(), canvasMouseTracker.getYProperty(), canvasMouseTracker, Type.NORMAL);
+        this(canvasMouseTracker.getXProperty(), canvasMouseTracker.getYProperty(), canvasMouseTracker, Type.NORMAL, null);
 
         // It is initialize with the mouse, hence it is on the mouse
         isOnMouse.set(true);
@@ -78,7 +78,10 @@ public class Location extends Parent implements MouseTrackable, Removable {
         KeyboardTracker.registerKeybind(KeyboardTracker.DISCARD_NEW_LOCATION, removeOnEscape);
     }
 
-    public Location(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY, final MouseTracker canvasMouseTracker, Type type) {
+    public Location(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY, final MouseTracker canvasMouseTracker, Type type, final ModelContainer modelContainer) {
+        // Initialize the model container property
+        this.modelContainer = modelContainer;
+
         // Initialize the type property
         this.type = type;
 
@@ -155,11 +158,11 @@ public class Location extends Parent implements MouseTrackable, Removable {
                 event.consume();
 
                 // Find the component that the location should be created inside
-                modelContainer = ModelCanvas.getHoveredModelContainer();
+                this.modelContainer = ModelCanvas.getHoveredModelContainer();
 
                 // Bind the circle
-                circle.centerXProperty().bind(modelContainer.xProperty().add(event.getX() - (modelContainer.xProperty().get())));
-                circle.centerYProperty().bind(modelContainer.yProperty().add(event.getY() - (modelContainer.yProperty().get())));
+                circle.centerXProperty().bind(this.modelContainer.xProperty().add(event.getX() - (this.modelContainer.xProperty().get())));
+                circle.centerYProperty().bind(this.modelContainer.yProperty().add(event.getY() - (this.modelContainer.yProperty().get())));
 
                 // Tell the canvas that the mouse is no longer occupied
                 ModelCanvas.setLocationOnMouse(null);
@@ -183,9 +186,9 @@ public class Location extends Parent implements MouseTrackable, Removable {
                 locationPlaceAnimation.play();
 
                 UndoRedoStack.push(() -> { // Perform
-                    modelContainer.add(this);
+                    this.modelContainer.add(this);
                 }, () -> { // Undo
-                    modelContainer.remove(this);
+                    this.modelContainer.remove(this);
                 });
             }
         });
@@ -200,9 +203,9 @@ public class Location extends Parent implements MouseTrackable, Removable {
                 final Edge edge = new Edge(this, canvasMouseTracker);
 
                 UndoRedoStack.push(() -> { // Perform
-                    modelContainer.add(edge);
+                    this.modelContainer.add(edge);
                 }, () -> { // Undo
-                    modelContainer.remove(edge);
+                    this.modelContainer.remove(edge);
                 });
             }
         });
