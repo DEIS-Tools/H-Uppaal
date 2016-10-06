@@ -43,49 +43,58 @@ public abstract class ModelContainer extends Parent implements MouseTrackable {
         return locationEdgeMap.get(location);
     }
 
-    public boolean add(final Location location) {
-        addChild(location);
-        locationEdgeMap.put(location, new ArrayList<>());
-        return locations.add(location);
+    public void add(final Location... locations) {
+        for (final Location location : locations) {
+            addChild(location);
+            locationEdgeMap.put(location, new ArrayList<>());
+            this.locations.add(location);
+        }
     }
 
-    public boolean remove(final Location location) {
-        removeChild(location);
+    public void remove(final Location... locations) {
 
-        while (!locationEdgeMap.get(location).isEmpty()) {
-            remove(locationEdgeMap.get(location).get(0));
+        for (final Location location : locations) {
+            removeChild(location);
+
+            while (!locationEdgeMap.get(location).isEmpty()) {
+                remove(locationEdgeMap.get(location).get(0));
+            }
+
+            locationEdgeMap.remove(location);
+            this.locations.remove(location);
         }
-
-        locationEdgeMap.remove(location);
-        return locations.remove(location);
     }
 
-    public boolean add(final Edge edge) {
-        addChild(edge);
+    public void add(final Edge... edges) {
+        for (final Edge edge : edges) {
+            addChild(edge);
 
-        locationEdgeMap.get(edge.getSourceLocation()).add(edge);
+            locationEdgeMap.get(edge.getSourceLocation()).add(edge);
 
-        if (!edge.targetLocationIsSet.get()) {
-            edge.targetLocationIsSet.addListener((observable, oldValue, newValue) -> {
-                // The new value of the boolean is true, hence the target location is set
-                if (!oldValue && newValue && !edge.getSourceLocation().equals(edge.getTargetLocation())) {
-                    locationEdgeMap.get(edge.getTargetLocation()).add(edge);
-                }
-            });
-        } else if (!edge.getSourceLocation().equals(edge.getTargetLocation())) {
-            locationEdgeMap.get(edge.getTargetLocation()).add(edge);
+            if (!edge.targetLocationIsSet.get()) {
+                edge.targetLocationIsSet.addListener((observable, oldValue, newValue) -> {
+                    // The new value of the boolean is true, hence the target location is set
+                    if (!oldValue && newValue && !edge.getSourceLocation().equals(edge.getTargetLocation())) {
+                        locationEdgeMap.get(edge.getTargetLocation()).add(edge);
+                    }
+                });
+            } else if (!edge.getSourceLocation().equals(edge.getTargetLocation())) {
+                locationEdgeMap.get(edge.getTargetLocation()).add(edge);
+            }
+
+            this.edges.add(edge);
         }
-
-        return edges.add(edge);
     }
 
-    public boolean remove(final Edge edge) {
-        removeChild(edge);
-        locationEdgeMap.get(edge.getSourceLocation()).remove(edge);
-        if (edge.targetLocationIsSet.get()) {
-            locationEdgeMap.get(edge.getTargetLocation()).remove(edge);
+    public void remove(final Edge... edges) {
+        for (final Edge edge : edges) {
+            removeChild(edge);
+            locationEdgeMap.get(edge.getSourceLocation()).remove(edge);
+            if (edge.targetLocationIsSet.get()) {
+                locationEdgeMap.get(edge.getTargetLocation()).remove(edge);
+            }
+            this.edges.remove(edge);
         }
-        return edges.remove(edge);
     }
 
     public abstract ObservableDoubleValue getXLimit();
