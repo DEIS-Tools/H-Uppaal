@@ -1,7 +1,10 @@
 package SW9.model_canvas.edges;
 
 import SW9.model_canvas.Parent;
+import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.LocationAware;
+import SW9.utility.helpers.MouseTrackable;
+import SW9.utility.mouse.MouseTracker;
 import com.jfoenix.controls.JFXTextField;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -13,13 +16,15 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 
-public class Properties extends Parent implements LocationAware {
+public class Properties extends Parent implements LocationAware, MouseTrackable {
 
     private final DoubleProperty xProperty = new SimpleDoubleProperty(0d);
     private final DoubleProperty yProperty = new SimpleDoubleProperty(0d);
 
     private static final double ICON_WIDTH = 20d;
     private static final double VALUE_WIDTH = 120d;
+
+    private MouseTracker localMouseTracker = new MouseTracker(this);
 
     public Properties(final ObservableDoubleValue x, final ObservableDoubleValue y) {
 
@@ -41,6 +46,8 @@ public class Properties extends Parent implements LocationAware {
         propertiesBox.layoutYProperty().bind(yProperty());
 
         getChildren().add(propertiesBox);
+
+        DragHelper.makeDraggable(this);
     }
 
     private Parent generateValueBox(final String value, final DoubleProperty sharedHeightProperty) {
@@ -102,6 +109,11 @@ public class Properties extends Parent implements LocationAware {
         return propertyBox;
     }
 
+
+    @Override
+    public MouseTracker getMouseTracker() {
+        return localMouseTracker;
+    }
 
     public DoubleProperty xProperty() {
         return xProperty;
