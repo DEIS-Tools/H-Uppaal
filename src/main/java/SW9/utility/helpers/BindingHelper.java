@@ -1,6 +1,10 @@
 package SW9.utility.helpers;
 
 import SW9.model_canvas.arrow_heads.ArrowHead;
+import SW9.model_canvas.arrow_heads.ChannelReceiverArrowHead;
+import SW9.model_canvas.arrow_heads.ChannelSenderArrowHead;
+import SW9.model_canvas.arrow_heads.HandshakeChannelSenderArrowHead;
+import SW9.model_canvas.lines.DashedLine;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.DoubleBinding;
@@ -68,6 +72,16 @@ public class BindingHelper {
     public static void bind(final IconNode icon, final Location location) {
         icon.xProperty().bind(location.xProperty().add(Location.RADIUS));
         icon.yProperty().bind(location.yProperty().add(Location.RADIUS));
+    }
+
+    public static <T extends ChannelSenderArrowHead> void bind(final Line handshakeLine, final T senderArrowHead, final ChannelReceiverArrowHead receiverArrowHead) {
+        final LineBinding bindings = LineBinding.getCircleBindings(receiverArrowHead.getCircle(), new Point(senderArrowHead));
+
+        handshakeLine.startXProperty().bind(bindings.startX);
+        handshakeLine.startYProperty().bind(bindings.startY);
+
+        handshakeLine.endXProperty().bind(bindings.endX);
+        handshakeLine.endYProperty().bind(bindings.endY);
     }
 
     private static class LineBinding {
