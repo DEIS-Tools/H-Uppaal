@@ -1,11 +1,9 @@
 package SW9.model_canvas;
 
-import SW9.model_canvas.arrow_heads.ArrowHead;
-import SW9.model_canvas.arrow_heads.BroadcastChannelSenderArrowHead;
-import SW9.model_canvas.arrow_heads.ChannelReceiverArrowHead;
-import SW9.model_canvas.arrow_heads.HandshakeChannelSenderArrowHead;
+import SW9.model_canvas.arrow_heads.*;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.edges.Properties;
+import SW9.model_canvas.lines.DashedLine;
 import SW9.model_canvas.locations.Location;
 import SW9.model_canvas.synchronization.ChannelBox;
 import SW9.utility.UndoRedoStack;
@@ -133,18 +131,28 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             final Circle incomingStart1 = new Circle(400, 100, 0);
 
             final Line channelReceiverLine = new Line();
-            final ArrowHead channelReceiverArrowHead = new ChannelReceiverArrowHead();
+            final ChannelReceiverArrowHead channelReceiverArrowHead = new ChannelReceiverArrowHead();
 
             BindingHelper.bind(channelReceiverLine, incomingStart1, incomingEnd1);
             BindingHelper.bind(channelReceiverArrowHead, incomingStart1, incomingEnd1);
             BindingHelper.bind(channelReceiverLine, channelReceiverArrowHead);
 
+            // Lines between outgoing and incoming arrows
+            final DashedLine handshakeSyncLine = new DashedLine();
+            final SimpleArrowHead handshakeSyncArrowHead = new SimpleArrowHead();
+
+            BindingHelper.bind(handshakeSyncLine, handshakeArrowHead, channelReceiverArrowHead);
+            BindingHelper.bind(handshakeSyncArrowHead, outgoingEnd1, channelReceiverArrowHead.getCircle());
+
+            handshakeSyncLine.setOpacity(0.5);
+            handshakeSyncArrowHead.setOpacity(0.5);
+
             // Properties
             Properties properties = new Properties(new SimpleDoubleProperty(100), new SimpleDoubleProperty(300));
 
             UndoRedoStack.push(
-                    () -> addChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine),
-                    () -> removeChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine)
+                    () -> addChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine, handshakeSyncLine, handshakeSyncArrowHead),
+                    () -> removeChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine, handshakeSyncLine, handshakeSyncArrowHead)
             );
         }));
 

@@ -109,4 +109,9 @@
     -fx-stroke-width: 2;
     -fx-stroke: -primary-color-darker;
     -fx-fill: -white;
+    -fx-stroke-type: inside;
+}
+
+.dashed {
+    -fx-stroke-dash-array: 3 6;
 }

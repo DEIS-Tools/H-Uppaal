@@ -5,11 +5,13 @@ import javafx.scene.shape.Circle;
 public class ChannelReceiverArrowHead extends ArrowHead {
 
     private static final double CIRCLE_RADIUS = 10d;
+    private final Circle circle;
 
     public ChannelReceiverArrowHead() {
         super();
 
-        addChild(initializeCircle());
+        circle = initializeCircle();
+        addChild(circle);
     }
 
     private Circle initializeCircle() {
@@ -19,6 +21,10 @@ public class ChannelReceiverArrowHead extends ArrowHead {
         circle.centerXProperty().bind(xProperty());
         circle.centerYProperty().bind(yProperty());
 
+        return circle;
+    }
+
+    public Circle getCircle() {
         return circle;
     }
 
