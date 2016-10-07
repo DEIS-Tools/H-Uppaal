@@ -17,16 +17,16 @@ import jiconfont.javafx.IconNode;
 
 public class BindingHelper {
 
-    public static void bind(final Line arg1, final ArrowHead arg2, final Circle source, final Circle target) {
-        BindingHelper.bind(arg1, source, target);
-        BindingHelper.bind(arg2, source, target);
-        BindingHelper.bind(arg1, arg2);
+    public static void bind(final Line lineSubject, final ArrowHead arrowHeadSubject, final Circle source, final Circle target) {
+        BindingHelper.bind(lineSubject, source, target);
+        BindingHelper.bind(arrowHeadSubject, source, target);
+        BindingHelper.bind(lineSubject, arrowHeadSubject);
     }
 
-    public static void bind(final Line arg1, final ArrowHead arg2, final Circle source, final MouseTracker target) {
-        BindingHelper.bind(arg1, source, target);
-        BindingHelper.bind(arg2, source, target);
-        BindingHelper.bind(arg1, arg2);
+    public static void bind(final Line lineSubject, final ArrowHead arrowHeadSubject, final Circle source, final MouseTracker target) {
+        BindingHelper.bind(lineSubject, source, target);
+        BindingHelper.bind(arrowHeadSubject, source, target);
+        BindingHelper.bind(lineSubject, arrowHeadSubject);
     }
 
     public static void bind(final Line subject, final Circle source, final Circle target) {
