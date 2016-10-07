@@ -12,7 +12,6 @@ import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
-import javafx.beans.binding.Binding;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -79,12 +78,8 @@ public class Edge extends Parent implements Removable {
 
         lineCue.getStyleClass().add("link");
 
-        // Bind the lineCue from the source location to the mouse (will be rebound when nails are created)
-        BindingHelper.bind(lineCue, sourceLocation.circle, canvasMouseTracker);
-        // Bind arrowhead to the mouse
-        BindingHelper.bind(arrowHead, sourceLocation.circle, canvasMouseTracker);
-        // Bind the lineCue to the arrowhead
-        BindingHelper.bind(lineCue, arrowHead);
+        // Bind the lineCue with arrow head from the source location to the mouse (will be rebound when nails are created)
+        BindingHelper.bind(lineCue, arrowHead, sourceLocation.circle, canvasMouseTracker);
 
         // Add the lineCue to the canvas
         getChildren().add(lineCue);
@@ -165,9 +160,7 @@ public class Edge extends Parent implements Removable {
                 setTargetLocation(ModelCanvas.getHoveredLocation());
                 final Nail previousNail = nails.get(nails.size() - 1);
 
-                BindingHelper.bind(link.line, previousNail, getTargetLocation().circle);
-                BindingHelper.bind(arrowHead, previousNail, getTargetLocation().circle);
-                BindingHelper.bind(link.line, arrowHead);
+                BindingHelper.bind(link.line, arrowHead, previousNail, getTargetLocation().circle);
             }
 
             // We have no nails, i.e. we are creating an edge directly from a source location to a target location
@@ -196,14 +189,10 @@ public class Edge extends Parent implements Removable {
                     // Bind the links between the nails and source locations
                     BindingHelper.bind(firstLink.line, sourceLocation.circle, firstNail);
                     BindingHelper.bind(secondLink.line, firstNail, secondNail);
-                    BindingHelper.bind(link.line, secondNail, getTargetLocation().circle);
-                    BindingHelper.bind(arrowHead, secondNail, getTargetLocation().circle);
-                    BindingHelper.bind(link.line, arrowHead);
+                    BindingHelper.bind(link.line, arrowHead, secondNail, getTargetLocation().circle);
 
                 } else {
-                    BindingHelper.bind(link.line, sourceLocation.circle, getTargetLocation().circle);
-                    BindingHelper.bind(arrowHead, sourceLocation.circle, getTargetLocation().circle);
-                    BindingHelper.bind(link.line, arrowHead);
+                    BindingHelper.bind(link.line, arrowHead, sourceLocation.circle, getTargetLocation().circle);
                 }
             }
 
@@ -228,10 +217,7 @@ public class Edge extends Parent implements Removable {
 
             // If the line cue is present rebind it and line cue to start from newest nail
             if (getChildren().contains(lineCue)) {
-
-                BindingHelper.bind(lineCue, nail, canvasMouseTracker);
-                BindingHelper.bind(arrowHead, nail, canvasMouseTracker);
-                BindingHelper.bind(lineCue, arrowHead);
+                BindingHelper.bind(lineCue, arrowHead, nail, canvasMouseTracker);
             }
 
             // Add the link and nail to the canvas
@@ -282,11 +268,9 @@ public class Edge extends Parent implements Removable {
 
         if (nails.size() == 0) {
             // TODO lave en snub
-            BindingHelper.bind(arrowHead, sourceLocation.circle, targetLocation.circle);
-            BindingHelper.bind(links.get(0).line, arrowHead);
+            BindingHelper.bind(links.get(0).line, arrowHead, sourceLocation.circle, targetLocation.circle);
         } else {
-            BindingHelper.bind(arrowHead, nails.get(nails.size() - 1), targetLocation.circle);
-            BindingHelper.bind(links.get(links.size() - 1).line, arrowHead);
+            BindingHelper.bind(links.get(links.size() - 1).line, arrowHead, nails.get(nails.size() - 1), targetLocation.circle);
         }
     }
 
@@ -310,16 +294,14 @@ public class Edge extends Parent implements Removable {
         } else {
             endCircle = nails.get(position + 1);
         }
-
-        newLink.line.setStroke(Color.AQUA);
+        
         addChildren(nail, newLink);
 
         BindingHelper.bind(newLink.line, startCircle, nail);
         BindingHelper.bind(links.get(position + 1).line, nail, endCircle);
 
         if (position == nails.size() - 1) {
-            BindingHelper.bind(arrowHead, nail, endCircle);
-            BindingHelper.bind(links.get(position + 1).line, arrowHead);
+            BindingHelper.bind(links.get(position + 1).line, arrowHead, nail, endCircle);
         }
     }
 
