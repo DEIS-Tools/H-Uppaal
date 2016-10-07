@@ -161,8 +161,8 @@ public class Location extends Parent implements MouseTrackable, Removable {
                 this.modelContainer = ModelCanvas.getHoveredModelContainer();
 
                 // Bind the circle
-                circle.centerXProperty().bind(this.modelContainer.xProperty().add(event.getX() - (this.modelContainer.xProperty().get())));
-                circle.centerYProperty().bind(this.modelContainer.yProperty().add(event.getY() - (this.modelContainer.yProperty().get())));
+                circle.centerXProperty().bind(this.modelContainer.xProperty().add(canvasMouseTracker.xProperty().get() - (this.modelContainer.xProperty().get())));
+                circle.centerYProperty().bind(this.modelContainer.yProperty().add(canvasMouseTracker.yProperty().get() - (this.modelContainer.yProperty().get())));
 
                 // Tell the canvas that the mouse is no longer occupied
                 ModelCanvas.setLocationOnMouse(null);
