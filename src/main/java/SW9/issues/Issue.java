@@ -3,13 +3,15 @@ package SW9.issues;
 import javafx.beans.Observable;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.scene.Node;
+import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import jiconfont.icons.GoogleMaterialDesignIcons;
 import jiconfont.javafx.IconNode;
 
 import java.util.function.Predicate;
 
-public abstract class Issue<T> {
+public abstract class Issue<T extends Node> {
 
     private String message = null;
     private final BooleanBinding presentProperty;
@@ -49,6 +51,9 @@ public abstract class Issue<T> {
 
     public IconNode generateIconNode() {
         final IconNode iconNode = new IconNode();
+
+        final Tooltip tooltip = new Tooltip(message);
+        Tooltip.install(iconNode, tooltip);
 
         // Set the style of the icon
         iconNode.setFill(Color.GRAY);

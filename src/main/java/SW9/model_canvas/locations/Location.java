@@ -53,6 +53,7 @@ public class Location extends Parent implements MouseTrackable, Removable {
     private void initializeWarnings() {
         // Warn the user when the location is initial
         final Warning isInitialLocation = new Warning<>(location -> location.type.equals(Type.INITIAL), this);
+        isInitialLocation.setMessage("Location is initial");
         final IconNode isInitialLocationIcon = isInitialLocation.generateIconNode();
         BindingHelper.bind(isInitialLocationIcon, this);
 
@@ -62,6 +63,7 @@ public class Location extends Parent implements MouseTrackable, Removable {
     private void initializeErrors() {
         // Warn the user when the location is initial
         final SW9.issues.Error isExitLocation = new SW9.issues.Error<>(location -> location.type.equals(Type.FINAL), this);
+        isExitLocation.setMessage("Location is exit");
         final IconNode isExitLocationIcon = isExitLocation.generateIconNode();
         BindingHelper.bind(isExitLocationIcon, this);
 
