@@ -1,5 +1,9 @@
 package SW9.model_canvas.arrow_heads;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.value.ObservableDoubleValue;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -7,13 +11,24 @@ import javafx.scene.shape.Path;
 
 public abstract class ChannelSenderArrowHead extends ArrowHead {
 
-    private static final double TRIANGLE_LENGTH = 15d;
-    private static final double TRIANGLE_WIDTH = 15d;
+    private static final double TRIANGLE_LENGTH = 25d;
+    private static final double TRIANGLE_WIDTH = 25d;
+
+    private ObservableDoubleValue ax = xProperty();
+    private ObservableDoubleValue ay = yProperty().subtract(getHeadHeight() - TRIANGLE_LENGTH);
+
+    private ObservableDoubleValue bx = Bindings.subtract(ax, TRIANGLE_WIDTH / 2);
+    private ObservableDoubleValue by = Bindings.subtract(ay, TRIANGLE_LENGTH);
+
+    private ObservableDoubleValue cx = Bindings.add(ax, TRIANGLE_WIDTH / 2);
+    private ObservableDoubleValue cy = Bindings.subtract(ay, TRIANGLE_LENGTH);
+
 
     public ChannelSenderArrowHead() {
         super();
-        addChild(initializeTriangle());
+        addChildren(initializeTriangle(), initializeLabel());
     }
+
     private Path initializeTriangle() {
         final Path triangle = new Path();
 
@@ -22,22 +37,57 @@ public abstract class ChannelSenderArrowHead extends ArrowHead {
         LineTo l2 = new LineTo();
         LineTo l3 = new LineTo();
 
-        start.xProperty().bind(xProperty());
-        start.yProperty().bind(yProperty().subtract(getHeadHeight() - TRIANGLE_LENGTH));
+        start.xProperty().bind(ax);
+        start.yProperty().bind(ay);
 
-        l1.xProperty().bind(start.xProperty().subtract(TRIANGLE_WIDTH / 2));
-        l1.yProperty().bind(start.yProperty().subtract(TRIANGLE_LENGTH));
+        l1.xProperty().bind(bx);
+        l1.yProperty().bind(by);
 
-        l2.xProperty().bind(start.xProperty().add(TRIANGLE_WIDTH / 2));
-        l2.yProperty().bind(start.yProperty().subtract(TRIANGLE_LENGTH));
+        l2.xProperty().bind(cx);
+        l2.yProperty().bind(cy);
 
-        l3.xProperty().bind(start.xProperty());
-        l3.yProperty().bind(start.yProperty());
+        l3.xProperty().bind(ax);
+        l3.yProperty().bind(ay);
 
         triangle.setFill(Color.BLACK);
         triangle.getElements().addAll(start, l1, l2, l3);
 
         return triangle;
+    }
+
+
+    private Label initializeLabel() {
+        final Label label = new Label();
+
+        DoubleBinding lx = new DoubleBinding() {
+            {
+                super.bind(ax, bx, cx, label.widthProperty());
+            }
+
+            @Override
+            protected double computeValue() {
+                return (ax.get() + bx.get() + cx.get()) / 3 - label.widthProperty().get() / 2;
+            }
+        };
+
+        DoubleBinding ly = new DoubleBinding() {
+            {
+                super.bind(ay, by, cy, label.heightProperty());
+            }
+
+            @Override
+            protected double computeValue() {
+                return (ay.get() + by.get() + cy.get()) / 3 - label.heightProperty().get() / 2;
+            }
+        };
+
+        label.layoutXProperty().bind(lx);
+        label.layoutYProperty().bind(ly);
+        label.setText("U");
+        label.getStyleClass().addAll("caption", "white-text");
+        label.rotateProperty().bind(this.rotateProperty().multiply(-1));
+
+        return label;
     }
 
     @Override
