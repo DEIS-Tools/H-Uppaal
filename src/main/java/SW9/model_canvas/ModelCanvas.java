@@ -114,6 +114,8 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
 
             final ArrowHead handshakeArrowHead = new HandshakeChannelSenderArrowHead();
             final ArrowHead broadCastArrowHead = new BroadcastChannelSenderArrowHead();
+            handshakeArrowHead.isUrgentProperty().setValue(true);
+
 
             final Line handshakeArrowLine = new Line();
             final Line broadCastArrowLine = new Line();
