@@ -61,7 +61,7 @@ public class Location extends Parent implements MouseTrackable, Removable {
     }
 
     private void initializeErrors() {
-        // Warn the user when the location is initial
+        // Warn the user when the location is exit
         final SW9.issues.Error isExitLocation = new SW9.issues.Error<>(location -> location.type.equals(Type.FINAL), this);
         isExitLocation.setMessage("Location is exit");
         final IconNode isExitLocationIcon = isExitLocation.generateIconNode();
