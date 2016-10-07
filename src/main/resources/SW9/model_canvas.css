@@ -113,5 +113,8 @@
 }
 
 .dashed {
-    -fx-stroke-dash-array: 3 6;
+    -fx-stroke-width: 2;
+    -fx-stroke-dash-array: 5 5;
+    -fx-stroke-dash-offset: -10;
+    -fx-stroke-line-cap: butt;
 }

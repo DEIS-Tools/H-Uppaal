@@ -144,9 +144,6 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             BindingHelper.bind(handshakeSyncLine, handshakeArrowHead, channelReceiverArrowHead);
             BindingHelper.bind(handshakeSyncArrowHead, outgoingEnd1, channelReceiverArrowHead.getCircle());
 
-            handshakeSyncLine.setOpacity(0.5);
-            handshakeSyncArrowHead.setOpacity(0.5);
-
             // Properties
             Properties properties = new Properties(new SimpleDoubleProperty(100), new SimpleDoubleProperty(300));
 
