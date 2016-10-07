@@ -2,6 +2,7 @@ package SW9.model_canvas;
 
 import SW9.model_canvas.arrow_heads.ArrowHead;
 import SW9.model_canvas.arrow_heads.BroadcastChannelSenderArrowHead;
+import SW9.model_canvas.arrow_heads.ChannelReceiverArrowHead;
 import SW9.model_canvas.arrow_heads.HandshakeChannelSenderArrowHead;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.edges.Properties;
@@ -104,30 +105,45 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
 
         // TODO remove me when testing of heads is done
         KeyboardTracker.registerKeybind(KeyboardTracker.TESTING_BIND, new Keybind(new KeyCodeCombination(KeyCode.T), () -> {
-            final Circle oneStart = new Circle(100, 100, 0);
-            final Circle oneEnd = new Circle(200, 100, 0);
-            final Circle twoStart = new Circle(100, 200, 0);
-            final Circle twoEnd = new Circle(200, 200, 0);
+            // Outgoing arrows
+            final Circle outgoingStart1 = new Circle(100, 100, 0);
+            final Circle outgoingEnd1 = new Circle(200, 100, 0);
+
+            final Circle outgoingStart2 = new Circle(100, 200, 0);
+            final Circle outgoingEnd2 = new Circle(200, 200, 0);
+
             final ArrowHead handshakeArrowHead = new HandshakeChannelSenderArrowHead();
             final ArrowHead broadCastArrowHead = new BroadcastChannelSenderArrowHead();
 
             final Line handshakeArrowLine = new Line();
             final Line broadCastArrowLine = new Line();
 
-            BindingHelper.bind(handshakeArrowLine, oneStart, oneEnd);
-            BindingHelper.bind(broadCastArrowLine, twoStart, twoEnd);
+            BindingHelper.bind(handshakeArrowLine, outgoingStart1, outgoingEnd1);
+            BindingHelper.bind(broadCastArrowLine, outgoingStart2, outgoingEnd2);
 
-            BindingHelper.bind(handshakeArrowHead, oneStart, oneEnd);
-            BindingHelper.bind(broadCastArrowHead, twoStart, twoEnd);
+            BindingHelper.bind(handshakeArrowHead, outgoingStart1, outgoingEnd1);
+            BindingHelper.bind(broadCastArrowHead, outgoingStart2, outgoingEnd2);
 
             BindingHelper.bind(handshakeArrowLine, handshakeArrowHead);
             BindingHelper.bind(broadCastArrowLine, broadCastArrowHead);
 
+            // Incoming arrows
+            final Circle incomingEnd1 = new Circle(300, 100, 0);
+            final Circle incomingStart1 = new Circle(400, 100, 0);
+
+            final Line channelReceiverLine = new Line();
+            final ArrowHead channelReceiverArrowHead = new ChannelReceiverArrowHead();
+
+            BindingHelper.bind(channelReceiverLine, incomingStart1, incomingEnd1);
+            BindingHelper.bind(channelReceiverArrowHead, incomingStart1, incomingEnd1);
+            BindingHelper.bind(channelReceiverLine, channelReceiverArrowHead);
+
+            // Properties
             Properties properties = new Properties(new SimpleDoubleProperty(100), new SimpleDoubleProperty(300));
 
             UndoRedoStack.push(
-                    () -> addChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties),
-                    () -> removeChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties)
+                    () -> addChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine),
+                    () -> removeChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine)
             );
         }));
 
