@@ -12,7 +12,7 @@ import javafx.scene.shape.Circle;
 public class Nail extends Circle implements Removable {
 
     private final static double HIDDEN_RADIUS = 0d;
-    private final static double VISIBLE_RADIUS = 10d;
+    private final static double VISIBLE_RADIUS = 7d;
     private final MouseTracker mouseTracker = new MouseTracker(this);
 
     private Edge detachedParent;
