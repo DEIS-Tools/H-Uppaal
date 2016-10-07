@@ -2,6 +2,9 @@ package SW9.model_canvas.arrow_heads;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.binding.When;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
@@ -14,16 +17,16 @@ public abstract class ChannelSenderArrowHead extends ArrowHead {
     private static final double TRIANGLE_LENGTH = 25d;
     private static final double TRIANGLE_WIDTH = 25d;
 
+    // Properties for drawing the triangle and binding the label in the centroid of it
     private ObservableDoubleValue ax = xProperty();
     private ObservableDoubleValue ay = yProperty().subtract(getHeadHeight() - TRIANGLE_LENGTH);
-
     private ObservableDoubleValue bx = Bindings.subtract(ax, TRIANGLE_WIDTH / 2);
     private ObservableDoubleValue by = Bindings.subtract(ay, TRIANGLE_LENGTH);
-
     private ObservableDoubleValue cx = Bindings.add(ax, TRIANGLE_WIDTH / 2);
     private ObservableDoubleValue cy = Bindings.subtract(ay, TRIANGLE_LENGTH);
 
-
+    private BooleanProperty isUrgent = new SimpleBooleanProperty();
+    
     public ChannelSenderArrowHead() {
         super();
         addChildren(initializeTriangle(), initializeLabel());
@@ -59,6 +62,9 @@ public abstract class ChannelSenderArrowHead extends ArrowHead {
     private Label initializeLabel() {
         final Label label = new Label();
 
+        // Add the caption text-size class, and make the text white
+        label.getStyleClass().addAll("caption", "white-text");
+
         DoubleBinding lx = new DoubleBinding() {
             {
                 super.bind(ax, bx, cx, label.widthProperty());
@@ -81,10 +87,17 @@ public abstract class ChannelSenderArrowHead extends ArrowHead {
             }
         };
 
+        // Bind the label to the centroid of the triangle
         label.layoutXProperty().bind(lx);
         label.layoutYProperty().bind(ly);
+
+        // Display the label U - for urgent
         label.setText("U");
-        label.getStyleClass().addAll("caption", "white-text");
+
+        // Bind the isUrgent property to hide and show the label
+        label.opacityProperty().bind(new When(isUrgent).then(1d).otherwise(0d));
+
+        // Rotate the label back so that it is always displayed as U
         label.rotateProperty().bind(this.rotateProperty().multiply(-1));
 
         return label;
@@ -99,4 +112,9 @@ public abstract class ChannelSenderArrowHead extends ArrowHead {
     public double getHeadWidth() {
         return TRIANGLE_WIDTH;
     }
+
+    public BooleanProperty isUrgentProperty() {
+        return isUrgent;
+    }
+
 }
