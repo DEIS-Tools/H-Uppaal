@@ -104,3 +104,9 @@
     -fx-focus-color: -primary-color;
     -fx-unfocus-color: transparent;
 }
+
+.channel-receiver {
+    -fx-stroke-width: 2;
+    -fx-stroke: -primary-color-darker;
+    -fx-fill: -white;
+}
