@@ -42,8 +42,6 @@ public class UndoRedoStack {
         } catch (EmptyStackException e) {
             // The stack is empty, nothing left to redo. Ignore.
         }
-
-        System.out.println("redo");
     }
 
     private static class Command {

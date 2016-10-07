@@ -17,6 +17,18 @@ import jiconfont.javafx.IconNode;
 
 public class BindingHelper {
 
+    public static void bind(final Line lineSubject, final ArrowHead arrowHeadSubject, final Circle source, final Circle target) {
+        BindingHelper.bind(lineSubject, source, target);
+        BindingHelper.bind(arrowHeadSubject, source, target);
+        BindingHelper.bind(lineSubject, arrowHeadSubject);
+    }
+
+    public static void bind(final Line lineSubject, final ArrowHead arrowHeadSubject, final Circle source, final MouseTracker target) {
+        BindingHelper.bind(lineSubject, source, target);
+        BindingHelper.bind(arrowHeadSubject, source, target);
+        BindingHelper.bind(lineSubject, arrowHeadSubject);
+    }
+
     public static void bind(final Line subject, final Circle source, final Circle target) {
         // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
         final LineBinding lineBinding = LineBinding.getCircleBindings(source, target);

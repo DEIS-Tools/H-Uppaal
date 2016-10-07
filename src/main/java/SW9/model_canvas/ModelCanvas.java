@@ -117,14 +117,9 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             final Line handshakeArrowLine = new Line();
             final Line broadCastArrowLine = new Line();
 
-            BindingHelper.bind(handshakeArrowLine, outgoingStart1, outgoingEnd1);
-            BindingHelper.bind(broadCastArrowLine, outgoingStart2, outgoingEnd2);
+            BindingHelper.bind(handshakeArrowLine, handshakeArrowHead,  outgoingStart1, outgoingEnd1);
+            BindingHelper.bind(broadCastArrowLine, broadCastArrowHead, outgoingStart2, outgoingEnd2);
 
-            BindingHelper.bind(handshakeArrowHead, outgoingStart1, outgoingEnd1);
-            BindingHelper.bind(broadCastArrowHead, outgoingStart2, outgoingEnd2);
-
-            BindingHelper.bind(handshakeArrowLine, handshakeArrowHead);
-            BindingHelper.bind(broadCastArrowLine, broadCastArrowHead);
 
             // Incoming arrows
             final Circle incomingEnd1 = new Circle(300, 100, 0);
@@ -133,9 +128,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             final Line channelReceiverLine = new Line();
             final ChannelReceiverArrowHead channelReceiverArrowHead = new ChannelReceiverArrowHead();
 
-            BindingHelper.bind(channelReceiverLine, incomingStart1, incomingEnd1);
-            BindingHelper.bind(channelReceiverArrowHead, incomingStart1, incomingEnd1);
-            BindingHelper.bind(channelReceiverLine, channelReceiverArrowHead);
+            BindingHelper.bind(channelReceiverLine, channelReceiverArrowHead, incomingStart1, incomingEnd1);
 
             // Lines between outgoing and incoming arrows
             final DashedLine handshakeSyncLine = new DashedLine();
