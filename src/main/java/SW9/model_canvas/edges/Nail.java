@@ -12,7 +12,7 @@ import javafx.scene.shape.Circle;
 public class Nail extends Circle implements Removable {
 
     private final static double HIDDEN_RADIUS = 0d;
-    private final static double VISIBLE_RADIUS = 5d;
+    private final static double VISIBLE_RADIUS = 10d;
     private final MouseTracker mouseTracker = new MouseTracker(this);
 
     private Edge detachedParent;
@@ -37,6 +37,14 @@ public class Nail extends Circle implements Removable {
 
         mouseTracker.registerOnMousePressedEventHandler(event -> isBeingDragged = true);
         mouseTracker.registerOnMouseReleasedEventHandler(event -> isBeingDragged = false);
+
+        // Update the hovered nail of the edge that this nail belong to
+        mouseTracker.registerOnMouseEnteredEventHandler(e -> getEdgeParent().setHoveredNail(this));
+        mouseTracker.registerOnMouseExitedEventHandler(e -> {
+            if (this.equals(getEdgeParent().getHoveredNail())) {
+                getEdgeParent().setHoveredNail(null);
+            }
+        });
 
         DragHelper.makeDraggable(this);
     }

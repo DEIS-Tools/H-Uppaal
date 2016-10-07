@@ -12,6 +12,7 @@ import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
+import javafx.beans.binding.Binding;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -139,12 +140,7 @@ public class Edge extends Parent implements Removable {
             final LocationAware parent = (LocationAware) getParent();
 
             final Nail nail = new Nail(parent.xProperty().add(canvasMouseTracker.xProperty().get() - parent.xProperty().get()), parent.yProperty().add(canvasMouseTracker.yProperty().get() - parent.yProperty().get()));
-            nail.getMouseTracker().registerOnMouseEnteredEventHandler(e -> hoveredNail = nail);
-            nail.getMouseTracker().registerOnMouseExitedEventHandler(e -> {
-                if (nail.equals(hoveredNail)) {
-                    hoveredNail = null;
-                }
-            });
+
             final Link link = new Link();
 
             // If we are creating the first nail and link
@@ -320,14 +316,19 @@ public class Edge extends Parent implements Removable {
 
         BindingHelper.bind(newLink.line, startCircle, nail);
         BindingHelper.bind(links.get(position + 1).line, nail, endCircle);
+
+        if (position == nails.size() - 1) {
+            BindingHelper.bind(arrowHead, nail, endCircle);
+            BindingHelper.bind(links.get(position + 1).line, arrowHead);
+        }
     }
 
     @Override
     public boolean select() {
         if (!targetLocationIsSet.get()) return false;
 
-        if (hoveredNail != null) {
-            SelectHelper.select(hoveredNail);
+        if (getHoveredNail() != null) {
+            SelectHelper.select(getHoveredNail());
 
             // Make nails visible
             nails.forEach(nail -> nail.setVisible(true));
@@ -380,5 +381,13 @@ public class Edge extends Parent implements Removable {
     @Override
     public DoubleProperty yProperty() {
         return sourceLocation.getModelContainer().yProperty();
+    }
+
+    public Nail getHoveredNail() {
+        return hoveredNail;
+    }
+
+    public void setHoveredNail(Nail hoveredNail) {
+        this.hoveredNail = hoveredNail;
     }
 }
