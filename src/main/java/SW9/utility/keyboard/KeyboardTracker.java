@@ -20,6 +20,8 @@ public class KeyboardTracker {
     public static final String DELETE_SELECTED = "DELETE_SELECTED";
     public static final String ADD_CHANNEL_BOX = "ADD_CHANNEL_BOX";
 
+    public static final String COMPONENT_HAS_DEADLOCK = "COMPONENT_HAS_DEADLOCK";
+
     public static final String TESTING_BIND = "TESTING_BIND";
 
     public static final EventHandler<KeyEvent> handleKeyPress = event -> {
@@ -33,6 +35,7 @@ public class KeyboardTracker {
             }
         }
     };
+
 
     public synchronized static void registerKeybind(final String id, final Keybind keybind) {
         keyMap.put(id, keybind);

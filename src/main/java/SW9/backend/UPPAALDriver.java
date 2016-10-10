@@ -1,10 +1,10 @@
 package SW9.backend;
 
-import com.uppaal.engine.CannotEvaluateException;
-import com.uppaal.engine.Engine;
-import com.uppaal.engine.EngineException;
-import com.uppaal.engine.Problem;
+import SW9.model_canvas.ModelContainer;
+import SW9.model_canvas.locations.*;
+import com.uppaal.engine.*;
 import com.uppaal.model.core2.*;
+import com.uppaal.model.core2.Location;
 import com.uppaal.model.system.SystemEdge;
 import com.uppaal.model.system.SystemLocation;
 import com.uppaal.model.system.UppaalSystem;
@@ -16,9 +16,147 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UPPAALDriver {
+
+
+    public static char hasDeadLock(ModelContainer modelContainer) {
+
+        final String deadLockQueryString = "E<> deadlock";
+
+        Map<String, Location> locationMap = new HashMap<>();
+
+        Document doc = new Document(new PrototypeDocument());
+
+        // add a TA template:
+        Template t = doc.createTemplate();
+        doc.insert(t, null);
+        t.setProperty("name", "Test");
+
+        for(SW9.model_canvas.locations.Location location : modelContainer.getLocations()) {
+
+            String name = "L" + location.hashCode();
+            Location l = addLocation(t, name, 0, 0);
+            locationMap.put(name, l);
+
+            if(location.type == SW9.model_canvas.locations.Location.Type.INITIAL) {
+                l.setProperty("init", true);
+            }
+
+        }
+
+        for(SW9.model_canvas.edges.Edge egde : modelContainer.getEdges()) {
+            Location sourceLocation = locationMap.get("L" + egde.getSourceLocation().hashCode());
+            Location targetLocation = locationMap.get("L" + egde.getTargetLocation().hashCode());
+            addEdge(t, sourceLocation, targetLocation, null, null, null);
+        }
+
+        // add system declaration:
+        doc.setProperty("system",
+                        "T=Test();\n" +
+                        "system T;");
+
+
+        try {
+
+            File resultFile = new File("result.xml");
+            // save the model into a file:
+            doc.save(resultFile);
+
+            // create a link to a local Uppaal process:
+            Engine engine = new Engine();
+            engine.setServerPath(getEnginePath());
+            engine.connect();
+
+            // compile the model into system:
+            ArrayList<Problem> problems = new ArrayList<Problem>();
+            UppaalSystem system = engine.getSystem(doc, problems);
+            if (!problems.isEmpty()) {
+                boolean fatal = false;
+                System.out.println("There are problems with the document:");
+                for (Problem p : problems) {
+                    System.out.println(p.toString());
+                    if (!"warning".equals(p.getType())) { // ignore warnings
+                        fatal = true;
+                    }
+                }
+                if (fatal) {
+                    System.exit(1);
+                }
+            }
+
+            engine.getInitialState(system);
+            QueryVerificationResult result = engine.query(system, "", deadLockQueryString, emptyQueryFeedback());
+
+            engine.disconnect(); // terminate the engine process
+            return result.result;
+
+        } catch (EngineException ex) {
+            ex.printStackTrace(System.err);
+            System.exit(1);
+        } catch (IOException ex) {
+            ex.printStackTrace(System.err);
+            System.exit(1);
+        }
+
+        return 'E';
+    }
+
+    private static QueryFeedback emptyQueryFeedback() {
+        return new QueryFeedback() {
+            @Override
+            public void setProgressAvail(boolean b) {
+
+            }
+
+            @Override
+            public void setProgress(int i, long l, long l1, long l2, long l3, long l4, long l5, long l6, long l7, long l8) {
+
+            }
+
+            @Override
+            public void setSystemInfo(long l, long l1, long l2) {
+
+            }
+
+            @Override
+            public void setLength(int i) {
+
+            }
+
+            @Override
+            public void setCurrent(int i) {
+
+            }
+
+            @Override
+            public void setTrace(char c, String s, ArrayList<SymbolicTransition> arrayList, int i, QueryVerificationResult queryVerificationResult) {
+
+            }
+
+            @Override
+            public void setFeedback(String s) {
+
+            }
+
+            @Override
+            public void appendText(String s) {
+
+            }
+
+            @Override
+            public void setResultText(String s) {
+
+            }
+        };
+    }
+
+
+    // From the Demo.Java file
+
     /**
      * Valid kinds of labels on locations.
      */
@@ -170,7 +308,7 @@ public class UPPAALDriver {
             // create a new Uppaal model with default properties:
             doc = new Document(new PrototypeDocument());
             // add global variables:
-            doc.setProperty("declaration", "int v;\n\nclock x,y,z;");
+
             // add a TA template:
             Template t = doc.createTemplate();
             doc.insert(t, null);
@@ -180,42 +318,14 @@ public class UPPAALDriver {
             l0.setProperty("init", true);
             // add another location to the right:
             Location l1 = addLocation(t, "L1", 150, 0);
-            setLabel(l1, LKind.invariant, "x<=10", l1.getX() - 7, l1.getY() + 10);
-            // add another location below to the right:
-            Location l2 = addLocation(t, "L2", 150, 150);
-            setLabel(l2, LKind.invariant, "y<=20", l2.getX() - 7, l2.getY() + 10);
-            // add another location below:
-            Location l3 = addLocation(t, "L3", 0, 150);
-            // add another location below:
-            Location lf = addLocation(t, "Final", -150, 150);
-            // create an edge L0->L1 with an update
-            Edge e = addEdge(t, l0, l1, null, null, "v=1,\nx=0");
-            e.setProperty(EKind.comments.name(), "Execute L0->L1 with v=1");
-            // create some more edges:
-            addEdge(t, l1, l2, "x>=5", null, "v=2,\ny=0");
-            addEdge(t, l2, l3, "y>=10", null, "v=3,\nz=0");
-            addEdge(t, l3, l0, null, null, "v=4");
-            addEdge(t, l3, lf, null, null, "v=5");
+
+            Edge e = addEdge(t, l0, l1, null, null, null);
+
             // add system declaration:
             doc.setProperty("system",
                     "Exp1=Experiment();\n" +
                             "Exp2=Experiment();\n\n" +
                             "system Exp1, Exp2;");
-        } else {
-            // load an external model:
-            try {
-                try {
-                    // try URL scheme (useful to fetch from Internet):
-                    doc = new PrototypeDocument().load(new URL(args[0]));
-                } catch (MalformedURLException ex) {
-                    // not URL, retry as it were a local filepath:
-                    doc = new PrototypeDocument().load(new URL("file", null, args[0]));
-                }
-            } catch (IOException ex) {
-                System.err.println(ex.getMessage());
-                ex.printStackTrace(System.err);
-                System.exit(1);
-            }
         }
         // Some operations with the created model:
         try {
@@ -226,6 +336,7 @@ public class UPPAALDriver {
             Engine engine = new Engine();
             engine.setServerPath(getEnginePath());
             engine.connect();
+
             // compile the model into system:
             ArrayList<Problem> problems = new ArrayList<Problem>();
             UppaalSystem system = engine.getSystem(doc, problems);
@@ -242,33 +353,13 @@ public class UPPAALDriver {
                     System.exit(1);
                 }
             }
-            // compute the initial state:
-            SymbolicState state = engine.getInitialState(system);
-            while (state != null) {
-                print(system, state);
-                // compute the outgoing transitions with successors (including "deadlock"):
-                ArrayList<SymbolicTransition> trans = engine.getTransitions(system, state);
-                // select a random transition:
-                SymbolicTransition tr = trans.get((int) Math.floor(Math.random() * trans.size()));
-                if (tr.getSize() == 0) { // transition without edges, something special:
-                    System.out.println(tr.getEdgeDescription());
-                    break;
-                } else { // one or more edges involved:
-                    System.out.print("(");
-                    for (SystemEdge e : tr.getEdges()) {
-                        System.out.print(e.getProcessName() + ": "
-                                + e.getEdge().getSource().getPropertyValue("name")
-                                + " -> "
-                                + e.getEdge().getTarget().getPropertyValue("name") + ", ");
-                    }
-                    System.out.println(")");
-                }
-                state = tr.getTarget();
-            }
+
+            // Det hårde adder fix
+            engine.getInitialState(system);
+            QueryVerificationResult result = engine.query(system, "", "A[]Exp1.L0", emptyQueryFeedback());
+            System.out.println((result.result ==  'T') ? "ja" : "nej");
+
             engine.disconnect(); // terminate the engine process
-        } catch (CannotEvaluateException ex) {
-            ex.printStackTrace(System.err);
-            System.exit(1);
         } catch (EngineException ex) {
             ex.printStackTrace(System.err);
             System.exit(1);

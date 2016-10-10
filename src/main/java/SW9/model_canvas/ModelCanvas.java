@@ -1,5 +1,6 @@
 package SW9.model_canvas;
 
+import SW9.backend.UPPAALDriver;
 import SW9.model_canvas.arrow_heads.*;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.edges.Properties;
@@ -144,6 +145,17 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
                     () -> addChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine, handshakeSyncLine, handshakeSyncArrowHead),
                     () -> removeChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine, handshakeSyncLine, handshakeSyncArrowHead)
             );
+        }));
+
+        // Gets the first model container and checks for deadlock
+        KeyboardTracker.registerKeybind(KeyboardTracker.COMPONENT_HAS_DEADLOCK, new Keybind(new KeyCodeCombination(KeyCode.D), () -> {
+            for(Node child : getChildren()) {
+                if(child instanceof ModelContainer) {
+                    System.out.println(UPPAALDriver.hasDeadLock((ModelContainer) child));
+                    return;
+                }
+            }
+
         }));
 
     }
