@@ -154,25 +154,25 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
         // Color keybinds below
         KeyboardTracker.registerKeybind(KeyboardTracker.COLOR_0, new Keybind(new KeyCodeCombination(KeyCode.DIGIT0), () -> {
             final ModelContainer hoveredModelContainer = getHoveredModelContainer();
+            final Location hoveredLocation = getHoveredLocation();
 
             // Not hovering anything interesting
             if (hoveredModelContainer == null) return;
 
-            // The hovered model container must be colorable for us to color it
-            if (hoveredModelContainer instanceof Colorable) {
-                final Colorable colorable = (Colorable) hoveredModelContainer;
+            final Colorable[] hoveredElement = {null};
+            if (hoveredModelContainer != null) hoveredElement[0] = (Colorable) hoveredModelContainer;
+            if (hoveredLocation != null) hoveredElement[0] = hoveredLocation;
 
-                // Only reset the color, if the element is actually colored (do avoid redundant undo-elements on the stack
-                if (colorable.isColored()) {
-                    final Color previousColor = colorable.getColor();
-                    final Color.Intensity previousIntensity = colorable.getIntensity();
+            // Only reset the color, if the element is actually colored (do avoid redundant undo-elements on the stack
+            if (hoveredElement[0].isColored()) {
+                final Color previousColor = hoveredElement[0].getColor();
+                final Color.Intensity previousIntensity = hoveredElement[0].getIntensity();
 
-                    UndoRedoStack.push(() -> { // Perform
-                        colorable.resetColor();
-                    }, () -> { // Undo
-                        colorable.color(previousColor, previousIntensity);
-                    });
-                }
+                UndoRedoStack.push(() -> { // Perform
+                    hoveredElement[0].resetColor();
+                }, () -> { // Undo
+                    hoveredElement[0].color(previousColor, previousIntensity);
+                });
             }
         }));
 
@@ -190,28 +190,28 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
     private void registerKeyBoardColorKeyBind(final String id, final KeyCode keyCode, final Color color, final Color.Intensity intensity) {
         KeyboardTracker.registerKeybind(id, new Keybind(new KeyCodeCombination(keyCode), () -> {
             final ModelContainer hoveredModelContainer = getHoveredModelContainer();
+            final Location hoveredLocation = getHoveredLocation();
 
             // Not hovering anything interesting
-            if (hoveredModelContainer == null) return;
+            if (hoveredModelContainer == null && hoveredLocation == null) return;
 
-            // The hovered model container must be colorable for us to color it
-            if (hoveredModelContainer instanceof Colorable) {
-                final Colorable colorable = (Colorable) hoveredModelContainer;
+            final Colorable[] hoveredElement = {null};
+            if (hoveredModelContainer != null) hoveredElement[0] = (Colorable) hoveredModelContainer;
+            if (hoveredLocation != null) hoveredElement[0] = hoveredLocation;
 
-                final Color previousColor = colorable.getColor();
-                final Color.Intensity previousIntensity = colorable.getIntensity();
-                final boolean wasPreviouslyColors = colorable.isColored();
+            final Color previousColor = hoveredElement[0].getColor();
+            final Color.Intensity previousIntensity = hoveredElement[0].getIntensity();
+            final boolean wasPreviouslyColors = hoveredElement[0].isColored();
 
-                UndoRedoStack.push(() -> { // Perform
-                    colorable.color(color, intensity);
-                }, () -> { // Undo
-                    if(wasPreviouslyColors) {
-                        colorable.color(previousColor, previousIntensity);
-                    } else {
-                        colorable.resetColor();
-                    }
-                });
-            }
+            UndoRedoStack.push(() -> { // Perform
+                hoveredElement[0].color(color, intensity);
+            }, () -> { // Undo
+                if (wasPreviouslyColors) {
+                    hoveredElement[0].color(previousColor, previousIntensity);
+                } else {
+                    hoveredElement[0].resetColor();
+                }
+            });
         }));
     }
 
