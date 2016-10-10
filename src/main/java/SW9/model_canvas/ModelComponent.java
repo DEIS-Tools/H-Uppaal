@@ -18,6 +18,8 @@ public class ModelComponent extends ModelContainer implements Colorable {
 
     private static final double CORNER_SIZE = 50;
 
+    private Color color = null;
+    private Color.Intensity intensity = null;
     private boolean colorIsSet = false;
 
     private final Rectangle labelContainer;
@@ -182,8 +184,21 @@ public class ModelComponent extends ModelContainer implements Colorable {
     }
 
     @Override
+    public Color getColor() {
+        return color;
+    }
+
+    @Override
+    public Color.Intensity getIntensity() {
+        return intensity;
+    }
+
+    @Override
     public void color(final Color color, final Color.Intensity intensity) {
         colorIsSet = true;
+
+        this.color = color;
+        this.intensity = intensity;
 
         labelContainer.setFill(color.getColor(intensity));
         labelTriangle.setFill(color.getColor(intensity));

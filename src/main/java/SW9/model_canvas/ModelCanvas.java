@@ -1,12 +1,17 @@
 package SW9.model_canvas;
 
-import SW9.model_canvas.arrow_heads.*;
+import SW9.model_canvas.arrow_heads.BroadcastChannelSenderArrowHead;
+import SW9.model_canvas.arrow_heads.ChannelReceiverArrowHead;
+import SW9.model_canvas.arrow_heads.HandshakeChannelSenderArrowHead;
+import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.edges.Properties;
 import SW9.model_canvas.lines.DashedLine;
 import SW9.model_canvas.locations.Location;
 import SW9.model_canvas.synchronization.ChannelBox;
 import SW9.utility.UndoRedoStack;
+import SW9.utility.colors.Color;
+import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.*;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
@@ -117,7 +122,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             final Line handshakeArrowLine = new Line();
             final Line broadCastArrowLine = new Line();
 
-            BindingHelper.bind(handshakeArrowLine, handshakeArrowHead,  outgoingStart1, outgoingEnd1);
+            BindingHelper.bind(handshakeArrowLine, handshakeArrowHead, outgoingStart1, outgoingEnd1);
             BindingHelper.bind(broadCastArrowLine, broadCastArrowHead, outgoingStart2, outgoingEnd2);
 
 
@@ -146,6 +151,68 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             );
         }));
 
+        // Color keybinds below
+        KeyboardTracker.registerKeybind(KeyboardTracker.COLOR_0, new Keybind(new KeyCodeCombination(KeyCode.DIGIT0), () -> {
+            final ModelContainer hoveredModelContainer = getHoveredModelContainer();
+
+            // Not hovering anything interesting
+            if (hoveredModelContainer == null) return;
+
+            // The hovered model container must be colorable for us to color it
+            if (hoveredModelContainer instanceof Colorable) {
+                final Colorable colorable = (Colorable) hoveredModelContainer;
+
+                // Only reset the color, if the element is actually colored (do avoid redundant undo-elements on the stack
+                if (colorable.isColored()) {
+                    final Color previousColor = colorable.getColor();
+                    final Color.Intensity previousIntensity = colorable.getIntensity();
+
+                    UndoRedoStack.push(() -> { // Perform
+                        colorable.resetColor();
+                    }, () -> { // Undo
+                        colorable.color(previousColor, previousIntensity);
+                    });
+                }
+            }
+        }));
+
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_1, KeyCode.DIGIT1, Color.RED, Color.Intensity.I700);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_2, KeyCode.DIGIT2, Color.PURPLE, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_3, KeyCode.DIGIT3, Color.INDIGO, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_4, KeyCode.DIGIT4, Color.BLUE, Color.Intensity.I700);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_5, KeyCode.DIGIT5, Color.CYAN, Color.Intensity.I700);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_6, KeyCode.DIGIT6, Color.TEAL, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_7, KeyCode.DIGIT7, Color.GREEN, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_8, KeyCode.DIGIT8, Color.AMBER, Color.Intensity.I700);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_9, KeyCode.DIGIT9, Color.DEEP_ORANGE, Color.Intensity.I500);
+    }
+
+    private void registerKeyBoardColorKeyBind(final String id, final KeyCode keyCode, final Color color, final Color.Intensity intensity) {
+        KeyboardTracker.registerKeybind(id, new Keybind(new KeyCodeCombination(keyCode), () -> {
+            final ModelContainer hoveredModelContainer = getHoveredModelContainer();
+
+            // Not hovering anything interesting
+            if (hoveredModelContainer == null) return;
+
+            // The hovered model container must be colorable for us to color it
+            if (hoveredModelContainer instanceof Colorable) {
+                final Colorable colorable = (Colorable) hoveredModelContainer;
+
+                final Color previousColor = colorable.getColor();
+                final Color.Intensity previousIntensity = colorable.getIntensity();
+                final boolean wasPreviouslyColors = colorable.isColored();
+
+                UndoRedoStack.push(() -> { // Perform
+                    colorable.color(color, intensity);
+                }, () -> { // Undo
+                    if(wasPreviouslyColors) {
+                        colorable.color(previousColor, previousIntensity);
+                    } else {
+                        colorable.resetColor();
+                    }
+                });
+            }
+        }));
     }
 
     /**
