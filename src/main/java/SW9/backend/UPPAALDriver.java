@@ -39,7 +39,7 @@ public class UPPAALDriver {
         for(SW9.model_canvas.locations.Location location : modelContainer.getLocations()) {
 
             String name = "L" + location.hashCode();
-            Location l = addLocation(t, name, 0, 0);
+            Location l = addLocation(t, name, (int) location.xProperty().get(), (int) location.yProperty().get());
             locationMap.put(name, l);
 
             if(location.type == SW9.model_canvas.locations.Location.Type.INITIAL) {
