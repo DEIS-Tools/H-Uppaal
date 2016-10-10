@@ -1,18 +1,4 @@
 package SW9.backend;
-/**
- * A sample Java code demonstrating the use of lib/model.jar in Uppaal-4.1.19 distribution.
- * Use the following commands to compile and run:
- * <p>
- * javac -cp lib/model.jar ModelDemo.java
- * java -cp uppaal.jar:lib/model.jar:. ModelDemo hardcoded
- * <p>
- * ModelDemo will produce result.xml and generate a symbolic trace.
- * ModelDemo can also read an external model file (use Control+C to stop):
- * <p>
- * java -cp uppaal.jar:lib/model.jar:. ModelDemo demo/train-gate.xml
- *
- * @author Marius Mikucionis marius@cs.aau.dk
- */
 
 import com.uppaal.engine.CannotEvaluateException;
 import com.uppaal.engine.Engine;
@@ -32,7 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModelDemo {
+public class UPPAALDriver {
     /**
      * Valid kinds of labels on locations.
      */
@@ -40,16 +26,12 @@ public class ModelDemo {
         name, init, urgent, committed, invariant, exponentialrate, comments
     }
 
-    ;
-
     /**
      * Valid kinds of labels on edges.
      */
     public enum EKind {
         select, guard, synchronisation, assignment, comments
     }
-
-    ;
 
     /**
      * Sets a label on a location.
