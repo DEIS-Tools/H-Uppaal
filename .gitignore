@@ -114,7 +114,7 @@ $RECYCLE.BIN/
 .idea/workspace.xml
 .idea/tasks.xml
 .idea/dictionaries
-.idea/modules/*
+.idea/modules
 .idea/vcs.xml
 .idea/jsLibraryMappings.xml
 
