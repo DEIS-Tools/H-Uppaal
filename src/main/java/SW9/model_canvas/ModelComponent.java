@@ -1,6 +1,8 @@
 package SW9.model_canvas;
 
 import SW9.model_canvas.locations.Location;
+import SW9.utility.colors.Color;
+import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.DragHelper;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.property.DoubleProperty;
@@ -9,18 +11,24 @@ import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 
 
-public class ModelComponent extends ModelContainer {
+public class ModelComponent extends ModelContainer implements Colorable {
+
+    private static final double CORNER_SIZE = 50;
+
+    private boolean colorIsSet = false;
+
+    private final Rectangle labelContainer;
+    private final Polygon labelTriangle;
+    private final Label label;
+    private final Path frame;
 
     public final DoubleProperty xProperty;
     public final DoubleProperty yProperty;
     public final DoubleProperty widthProperty;
     public final DoubleProperty heightProperty;
-
-    private static final double CORNER_SIZE = 50;
 
     public ModelComponent(final double x, final double y, final double width, final double height, final String name, final MouseTracker canvasMouseTracker) {
 
@@ -36,7 +44,7 @@ public class ModelComponent extends ModelContainer {
         });
 
         // Initialize the frame of the component
-        Path frame = new Path();
+        frame = new Path();
         initializeFrame(frame);
 
         // Initialize locations
@@ -57,9 +65,9 @@ public class ModelComponent extends ModelContainer {
         );
 
         // Initialize properties for the name of the component
-        Rectangle labelContainer = new Rectangle();
-        Label label = new Label(name);
-        Polygon labelTriangle = new Polygon(
+        labelContainer = new Rectangle();
+        label = new Label(name);
+        labelTriangle = new Polygon(
                 xProperty.get() + CORNER_SIZE / 2, yProperty.get() + CORNER_SIZE / 2,
                 xProperty.get() + CORNER_SIZE, yProperty.get(),
                 xProperty.get() + CORNER_SIZE, yProperty.get() + CORNER_SIZE / 2
@@ -101,6 +109,9 @@ public class ModelComponent extends ModelContainer {
 
         add(initialLocation);
         add(finalLocation);
+
+        // Will add color to the different children depending on their classes
+        resetColor();
     }
 
 
@@ -137,7 +148,7 @@ public class ModelComponent extends ModelContainer {
         frame.getElements().addAll(p1, p2, p3, p4, p5, p6, p7);
 
         frame.getStyleClass().add("component-stroke");
-        frame.setFill(Color.TRANSPARENT);
+        frame.setFill(javafx.scene.paint.Color.TRANSPARENT);
     }
 
     @Override
@@ -163,5 +174,26 @@ public class ModelComponent extends ModelContainer {
     @Override
     public ObservableDoubleValue getYLimit() {
         return heightProperty;
+    }
+
+    @Override
+    public boolean isColored() {
+        return colorIsSet;
+    }
+
+    @Override
+    public void color(final Color color, final Color.Intensity intensity) {
+        colorIsSet = true;
+
+        labelContainer.setFill(color.getColor(intensity));
+        labelTriangle.setFill(color.getColor(intensity));
+        frame.setStroke(color.getColor(intensity.next(2)));
+        label.setTextFill(color.getTextColor(intensity));
+    }
+
+    @Override
+    public void resetColor() {
+        color(Color.GREY_BLUE, Color.Intensity.I500); // default color
+        colorIsSet = false;
     }
 }
