@@ -9,6 +9,24 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../src/libs/model-javadoc.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../src/libs/model.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Gradle: com.jfoenix:jfoenix:0.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: de.codecentric.centerdevice:javafxsvg:1.0.0" level="project" />
     <orderEntry type="library" name="Gradle: com.github.jiconfont:jiconfont-javafx:1.0.0" level="project" />

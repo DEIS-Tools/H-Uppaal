@@ -14,7 +14,8 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
-    compile 'com.jfoenix:jfoenix:0.0.0-SNAPSHOT', fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.jfoenix:jfoenix:0.0.0-SNAPSHOT'
+    compile fileTree(include: ['*.jar'], dir: 'src/libs/')
 }
 group 'SW9'
 version '1.0-SNAPSHOT'
