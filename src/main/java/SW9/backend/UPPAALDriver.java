@@ -1,11 +1,9 @@
 package SW9.backend;
 
 import SW9.model_canvas.ModelContainer;
-import SW9.model_canvas.locations.*;
+import SW9.utility.colors.Color;
 import com.uppaal.engine.*;
 import com.uppaal.model.core2.*;
-import com.uppaal.model.core2.Location;
-import com.uppaal.model.system.SystemEdge;
 import com.uppaal.model.system.SystemLocation;
 import com.uppaal.model.system.UppaalSystem;
 import com.uppaal.model.system.symbolic.SymbolicState;
@@ -36,19 +34,20 @@ public class UPPAALDriver {
         doc.insert(t, null);
         t.setProperty("name", "Test");
 
-        for(SW9.model_canvas.locations.Location location : modelContainer.getLocations()) {
+        for (SW9.model_canvas.locations.Location location : modelContainer.getLocations()) {
 
             String name = "L" + location.hashCode();
             Location l = addLocation(t, name, (int) location.xProperty().get(), (int) location.yProperty().get());
+            l.setProperty("color", location.getColor().toAwtColor(Color.Intensity.I500));
             locationMap.put(name, l);
 
-            if(location.type == SW9.model_canvas.locations.Location.Type.INITIAL) {
+            if (location.type == SW9.model_canvas.locations.Location.Type.INITIAL) {
                 l.setProperty("init", true);
             }
 
         }
 
-        for(SW9.model_canvas.edges.Edge egde : modelContainer.getEdges()) {
+        for (SW9.model_canvas.edges.Edge egde : modelContainer.getEdges()) {
             Location sourceLocation = locationMap.get("L" + egde.getSourceLocation().hashCode());
             Location targetLocation = locationMap.get("L" + egde.getTargetLocation().hashCode());
             addEdge(t, sourceLocation, targetLocation, null, null, null);
@@ -56,7 +55,7 @@ public class UPPAALDriver {
 
         // add system declaration:
         doc.setProperty("system",
-                        "T=Test();\n" +
+                "T=Test();\n" +
                         "system T;");
 
 
@@ -173,11 +172,12 @@ public class UPPAALDriver {
 
     /**
      * Sets a label on a location.
-     * @param l the location on which the label is going to be attached
-     * @param kind a kind of the label
+     *
+     * @param l     the location on which the label is going to be attached
+     * @param kind  a kind of the label
      * @param value the label value (either boolean or String)
-     * @param x the x coordinate of the label
-     * @param y the y coordinate of the label
+     * @param x     the x coordinate of the label
+     * @param y     the y coordinate of the label
      */
     public static void setLabel(Location l, LKind kind, Object value, int x, int y) {
         l.setProperty(kind.name(), value);
@@ -188,10 +188,11 @@ public class UPPAALDriver {
 
     /**
      * Adds a location to a template.
-     * @param t the template
+     *
+     * @param t    the template
      * @param name a name for the new location
-     * @param x the x coordinate of the location
-     * @param y the y coordinate of the location
+     * @param x    the x coordinate of the location
+     * @param y    the y coordinate of the location
      * @return the new location instance
      */
     public static Location addLocation(Template t, String name, int x, int y) {
@@ -205,11 +206,12 @@ public class UPPAALDriver {
 
     /**
      * Sets a label on an edge.
-     * @param e the edge
-     * @param kind the kind of the label
+     *
+     * @param e     the edge
+     * @param kind  the kind of the label
      * @param value the content of the label
-     * @param x the x coordinate of the label
-     * @param y the y coordinate of the label
+     * @param x     the x coordinate of the label
+     * @param y     the y coordinate of the label
      */
     public static void setLabel(Edge e, EKind kind, String value, int x, int y) {
         e.setProperty(kind.name(), value);
@@ -220,11 +222,12 @@ public class UPPAALDriver {
 
     /**
      * Adds an edge to the template
-     * @param t the template where the edge belongs
+     *
+     * @param t      the template where the edge belongs
      * @param source the source location
      * @param target the target location
-     * @param guard guard expression
-     * @param sync synchronization expression
+     * @param guard  guard expression
+     * @param sync   synchronization expression
      * @param update update expression
      * @return
      */
@@ -286,10 +289,9 @@ public class UPPAALDriver {
         }
         file = file.getParentFile(); // lib
         file = file.getParentFile(); // installation
-        if(os.contains("Mac")) {
+        if (os.contains("Mac")) {
             file = new File(new File(file, "/libs/servers/bin-MacOS"), "server");
-        }
-        else if (os.contains("Linux")) {
+        } else if (os.contains("Linux")) {
             file = new File(new File(file, "/libs/servers/bin-Linux"), "server");
         } else {
             file = new File(new File(file, "/libs/servers/bin-Win32"), "server.exe");
@@ -357,7 +359,7 @@ public class UPPAALDriver {
             // Det hårde adder fix
             engine.getInitialState(system);
             QueryVerificationResult result = engine.query(system, "", "A[]Exp1.L0", emptyQueryFeedback());
-            System.out.println((result.result ==  'T') ? "ja" : "nej");
+            System.out.println((result.result == 'T') ? "ja" : "nej");
 
             engine.disconnect(); // terminate the engine process
         } catch (EngineException ex) {

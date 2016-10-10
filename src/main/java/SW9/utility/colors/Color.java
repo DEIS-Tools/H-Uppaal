@@ -327,6 +327,12 @@ public enum Color {
         return colorMap.get(intensity).getTextColor();
     }
 
+    public java.awt.Color toAwtColor(final Intensity intensity) {
+        return new java.awt.Color((int) (getColor(intensity).getRed() * 255),
+                (int) (getColor(intensity).getGreen() * 255),
+                (int) (getColor(intensity).getBlue() * 255));
+    }
+
     public enum Intensity {
         I50,
         I100,
