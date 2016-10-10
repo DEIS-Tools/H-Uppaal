@@ -188,15 +188,15 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             }
         }));
 
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_1, KeyCode.DIGIT1, Color.RED, Color.Intensity.I700);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_2, KeyCode.DIGIT2, Color.PURPLE, Color.Intensity.I500);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_3, KeyCode.DIGIT3, Color.INDIGO, Color.Intensity.I500);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_4, KeyCode.DIGIT4, Color.BLUE, Color.Intensity.I700);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_5, KeyCode.DIGIT5, Color.CYAN, Color.Intensity.I700);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_1, KeyCode.DIGIT1, Color.RED, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_2, KeyCode.DIGIT2, Color.PINK, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_3, KeyCode.DIGIT3, Color.PURPLE, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_4, KeyCode.DIGIT4, Color.INDIGO, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_5, KeyCode.DIGIT5, Color.BLUE, Color.Intensity.I500);
         registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_6, KeyCode.DIGIT6, Color.TEAL, Color.Intensity.I500);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_7, KeyCode.DIGIT7, Color.GREEN, Color.Intensity.I500);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_8, KeyCode.DIGIT8, Color.AMBER, Color.Intensity.I700);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_9, KeyCode.DIGIT9, Color.DEEP_ORANGE, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_7, KeyCode.DIGIT7, Color.GREY, Color.Intensity.I600);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_8, KeyCode.DIGIT8, Color.GREEN, Color.Intensity.I700);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_9, KeyCode.DIGIT9, Color.BROWN, Color.Intensity.I500);
     }
 
     private void registerKeyBoardColorKeyBind(final String id, final KeyCode keyCode, final Color color, final Color.Intensity intensity) {

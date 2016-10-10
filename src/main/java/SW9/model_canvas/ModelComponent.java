@@ -208,7 +208,7 @@ public class ModelComponent extends ModelContainer implements Colorable {
 
     @Override
     public void resetColor() {
-        color(Color.GREY_BLUE, Color.Intensity.I600); // default color
+        color(Color.GREY_BLUE, Color.Intensity.I700); // default color
         colorIsSet = false;
     }
 }

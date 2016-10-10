@@ -407,7 +407,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
 
     @Override
     public void resetColor() {
-        color(Color.GREY_BLUE, Color.Intensity.I600); // default color
+        color(Color.GREY_BLUE, Color.Intensity.I700); // default color
         colorIsSet = false;
     }
 
