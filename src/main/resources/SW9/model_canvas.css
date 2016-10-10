@@ -1,6 +1,4 @@
 .location {
-    -fx-fill: -blue-grey-300;
-    -fx-stroke: -blue-grey-600;
     -fx-stroke-width: 2;
     -fx-stroke-type: inside;
 }
@@ -12,13 +10,10 @@
 
 .initial-location-inner-circle {
     -fx-fill: rgba(0,0,0,0);
-    -fx-stroke: -blue-grey-600;
     -fx-stroke-width: 2;
 }
 
 .location-label {
-    -fx-text-fill: -blue-grey-900;
-    -fx-fill: -primary-color-darkest;
     -fx-alignment: center;
     -fx-smooth: true;
 }

@@ -19,6 +19,16 @@ public class KeyboardTracker {
     public static final String REDO = "REDO";
     public static final String DELETE_SELECTED = "DELETE_SELECTED";
     public static final String ADD_CHANNEL_BOX = "ADD_CHANNEL_BOX";
+    public static final String COLOR_0 = "COLOR_0";
+    public static final String COLOR_1 = "COLOR_1";
+    public static final String COLOR_2 = "COLOR_2";
+    public static final String COLOR_3 = "COLOR_3";
+    public static final String COLOR_4 = "COLOR_4";
+    public static final String COLOR_5 = "COLOR_5";
+    public static final String COLOR_6 = "COLOR_6";
+    public static final String COLOR_7 = "COLOR_7";
+    public static final String COLOR_8 = "COLOR_8";
+    public static final String COLOR_9 = "COLOR_9";
 
     public static final String COMPONENT_HAS_DEADLOCK = "COMPONENT_HAS_DEADLOCK";
 

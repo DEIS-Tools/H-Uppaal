@@ -5,10 +5,11 @@ import javafx.scene.shape.Circle;
 
 public class InitialLocationCircle extends Parent {
 
-    public final static double CIRCLE_RATIO = 0.7;
+    public final static double CIRCLE_RATIO = 0.65;
+    private final Circle innerCircle;
 
     public InitialLocationCircle(final Location parentLocation) {
-        Circle innerCircle = new Circle();
+        innerCircle = new Circle();
 
         innerCircle.centerXProperty().bind(parentLocation.circle.centerXProperty());
         innerCircle.centerYProperty().bind(parentLocation.circle.centerYProperty());
@@ -16,5 +17,9 @@ public class InitialLocationCircle extends Parent {
         innerCircle.getStyleClass().add("initial-location-inner-circle");
 
         addChild(innerCircle);
+    }
+
+    Circle getInnerCircle() {
+        return innerCircle;
     }
 }

@@ -4,6 +4,8 @@ import SW9.issues.Warning;
 import SW9.model_canvas.*;
 import SW9.model_canvas.edges.Edge;
 import SW9.utility.UndoRedoStack;
+import SW9.utility.colors.Color;
+import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.*;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
@@ -26,7 +28,11 @@ import jiconfont.javafx.IconNode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Location extends Parent implements MouseTrackable, Removable {
+public class Location extends Parent implements MouseTrackable, Removable, Colorable {
+
+    private Color color = null;
+    private Color.Intensity intensity = null;
+    private boolean colorIsSet = false;
 
     // Used to create the Location
     public final static double RADIUS = 25.0f;
@@ -37,6 +43,8 @@ public class Location extends Parent implements MouseTrackable, Removable {
 
     public final Circle circle;
     public final Label locationLabel;
+    private InitialLocationCircle initialLocationCircle = null;
+    private FinalLocationCross finalLocationCross = null;
 
     public final BooleanProperty isUrgent = new SimpleBooleanProperty(false);
     public final BooleanProperty isCommitted = new SimpleBooleanProperty(false);
@@ -45,7 +53,7 @@ public class Location extends Parent implements MouseTrackable, Removable {
     private List<Edge> deletedEdges = new ArrayList<>();
 
     public enum Type {
-        NORMAL, INITIAL, FINAL
+        NORMAL, INITIAL, FINAL;
     }
 
     public final Type type;
@@ -96,9 +104,11 @@ public class Location extends Parent implements MouseTrackable, Removable {
 
         // If the location is not a normal locations draw the visual cues
         if (type == Type.INITIAL) {
-            addChild(new InitialLocationCircle(this));
+            initialLocationCircle = new InitialLocationCircle(this);
+            addChild(initialLocationCircle);
         } else if (type == Type.FINAL) {
-            addChild(new FinalLocationCross(this));
+            finalLocationCross = new FinalLocationCross(this);
+            addChild(finalLocationCross);
         }
 
         // Add a text which we will use as a label for urgent and committed locations
@@ -132,7 +142,6 @@ public class Location extends Parent implements MouseTrackable, Removable {
         circle.getStyleClass().add("location");
         locationLabel.getStyleClass().add("location-label");
         locationLabel.getStyleClass().add("headline");
-        locationLabel.getStyleClass().add("white-text");
 
         // Bind the Location to the property
         circle.centerXProperty().bind(centerX);
@@ -225,6 +234,9 @@ public class Location extends Parent implements MouseTrackable, Removable {
         // Initialize errors and warnings (must happen after the rest of the initializations)
         initializeErrors();
         initializeWarnings();
+
+        // Will add color to the different children depending on their classes
+        resetColor();
     }
 
     private void makeDraggable() {
@@ -357,5 +369,46 @@ public class Location extends Parent implements MouseTrackable, Removable {
         deletedEdges.forEach(edge -> modelContainer.add(edge));
     }
 
+    @Override
+    public boolean isColored() {
+        return colorIsSet;
+    }
+
+    @Override
+    public Color getColor() {
+        return color;
+    }
+
+    @Override
+    public Color.Intensity getIntensity() {
+        return intensity;
+    }
+
+    @Override
+    public void color(Color color, Color.Intensity intensity) {
+        colorIsSet = true;
+
+        this.color = color;
+        this.intensity = intensity;
+
+        circle.setFill(color.getColor(intensity));
+        circle.setStroke(color.getColor(intensity.next(2)));
+        locationLabel.setTextFill(color.getTextColor(intensity));
+
+        if (initialLocationCircle != null) {
+            initialLocationCircle.getInnerCircle().setStroke(color.getTextColor(intensity));
+        }
+
+        if (finalLocationCross != null) {
+            finalLocationCross.getFirstLine().setStroke(color.getTextColor(intensity));
+            finalLocationCross.getSecondLine().setStroke(color.getTextColor(intensity));
+        }
+    }
+
+    @Override
+    public void resetColor() {
+        color(Color.GREY_BLUE, Color.Intensity.I600); // default color
+        colorIsSet = false;
+    }
 
 }
