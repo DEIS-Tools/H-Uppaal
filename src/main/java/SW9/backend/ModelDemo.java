@@ -166,10 +166,10 @@ public class ModelDemo {
         }
         file = file.getParentFile(); // lib
         file = file.getParentFile(); // installation
-        if ("Linux".equals(os)) {
-            file = new File(new File(file, "bin-Linux"), "server");
+        if ("Linux".equals(os) || "Mac OS X".equals(os)) {
+            file = new File(new File(file, "/libs/servers/bin-Linux"), "server");
         } else {
-            file = new File(new File(file, "bin-Win32"), "server.exe");
+            file = new File(new File(file, "/libs/servers/bin-Win32"), "server.exe");
         }
         return file.getPath();
     }

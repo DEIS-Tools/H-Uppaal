@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>int v;
+
+clock x,y,z;</declaration>
+	<template>
+		<name>Experiment</name>
+		<location id="id0" x="-150" y="150">
+			<name x="-150" y="122">Final</name>
+		</location>
+		<location id="id1" x="0" y="150">
+			<name x="0" y="122">L3</name>
+		</location>
+		<location id="id2" x="150" y="150">
+			<name x="150" y="122">L2</name>
+			<label kind="invariant" x="143" y="160">y&lt;=20</label>
+		</location>
+		<location id="id3" x="150" y="0">
+			<name x="150" y="-28">L1</name>
+			<label kind="invariant" x="143" y="10">x&lt;=10</label>
+		</location>
+		<location id="id4" x="0" y="0">
+			<name x="0" y="-28">L0</name>
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="assignment" x="-90" y="150">v=5</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id4"/>
+			<label kind="assignment" x="-15" y="75">v=4</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="guard" x="60" y="122">y&gt;=10</label>
+			<label kind="assignment" x="60" y="150">v=3,
+z=0</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="guard" x="135" y="47">x&gt;=5</label>
+			<label kind="assignment" x="135" y="75">v=2,
+y=0</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id3"/>
+			<label kind="assignment" x="60" y="0">v=1,
+x=0</label>
+			<label kind="comments" x="0" y="0">Execute L0-&gt;L1 with v=1</label>
+		</transition>
+	</template>
+	<system>Exp1=Experiment();
+Exp2=Experiment();
+
+system Exp1, Exp2;</system>
+	<queries>
+	</queries>
+</nta>

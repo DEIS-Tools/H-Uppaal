@@ -13,15 +13,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../src/libs/model-javadoc.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../src/libs/model.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -59,6 +50,15 @@
     <orderEntry type="library" name="Gradle: xalan:xalan:2.6.0" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.xmlgraphics:batik-js:1.7" level="project" />
     <orderEntry type="library" name="Gradle: xml-apis:xml-apis:2.0.2" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../src/libs/uppaal.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
   <component name="TestModuleProperties" production-module="modelchecker_main" />
 </module>
