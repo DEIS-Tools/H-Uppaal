@@ -148,7 +148,9 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             BindingHelper.bind(handshakeSyncArrowHead, outgoingEnd1, channelReceiverArrowHead.getCircle());
 
             // Properties
-            Properties properties = new Properties(new SimpleDoubleProperty(100), new SimpleDoubleProperty(300));
+            final Properties properties = new Properties();
+            properties.xProperty().set(100);
+            properties.yProperty().set(300);
 
             UndoRedoStack.push(
                     () -> addChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine, handshakeSyncLine, handshakeSyncArrowHead),
@@ -193,7 +195,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             }
         }));
 
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_1, KeyCode.DIGIT1, Color.RED, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_1, KeyCode.DIGIT1, Color.RED, Color.Intensity.I700);
         registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_2, KeyCode.DIGIT2, Color.PINK, Color.Intensity.I500);
         registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_3, KeyCode.DIGIT3, Color.PURPLE, Color.Intensity.I500);
         registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_4, KeyCode.DIGIT4, Color.INDIGO, Color.Intensity.I500);

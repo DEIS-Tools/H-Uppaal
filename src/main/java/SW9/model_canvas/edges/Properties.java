@@ -24,17 +24,12 @@ public class Properties extends Parent implements LocationAware, MouseTrackable 
     private static final double ICON_WIDTH = 20d;
     private static final double VALUE_WIDTH = 120d;
 
-    private MouseTracker localMouseTracker = new MouseTracker(this);
+    private final MouseTracker localMouseTracker = new MouseTracker(this);
 
-    public Properties(final ObservableDoubleValue x, final ObservableDoubleValue y) {
-
-        // Bind the x and y properties
-        xProperty().bind(x);
-        yProperty().bind(y);
-
+    public Properties() {
         this.getStyleClass().add("edge-properties");
 
-        VBox propertiesBox = new VBox();
+        final VBox propertiesBox = new VBox();
         propertiesBox.getChildren().addAll(
                 generatePropertyBox(":", "id : id_t"),
                 generatePropertyBox("<", "guard < value"),
