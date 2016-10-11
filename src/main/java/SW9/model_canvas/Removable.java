@@ -8,7 +8,7 @@ public interface Removable extends MouseTrackable {
 
     void deselect();
 
-    void remove();
+    boolean remove();
 
     void reAdd();
 }

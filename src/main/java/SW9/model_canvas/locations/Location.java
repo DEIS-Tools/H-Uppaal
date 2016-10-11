@@ -360,9 +360,11 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     }
 
     @Override
-    public void remove() {
+    public boolean remove() {
         deletedEdges = new ArrayList<>(modelContainer.getEdges(this));
         modelContainer.remove(this);
+
+        return true;
     }
 
     @Override

@@ -1,19 +1,21 @@
 package SW9.model_canvas.edges;
 
+import SW9.model_canvas.Parent;
 import SW9.model_canvas.Removable;
 import SW9.utility.helpers.DragHelper;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
-import javafx.scene.Parent;
 import javafx.scene.shape.Circle;
 
-public class Nail extends Circle implements Removable {
+public class Nail extends Parent implements Removable {
 
     private final static double HIDDEN_RADIUS = 0d;
-    private final static double VISIBLE_RADIUS = 7d;
+    protected final static double VISIBLE_RADIUS = 7d;
     private final MouseTracker mouseTracker = new MouseTracker(this);
+
+    public final Circle circle = new Circle();
 
     private Edge detachedParent;
     int restoreIndex;
@@ -21,19 +23,17 @@ public class Nail extends Circle implements Removable {
     public boolean isBeingDragged = false;
 
     public Nail(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY) {
-        super(centerX.get(), centerY.get(), HIDDEN_RADIUS);
-
         xProperty().bind(centerX);
         yProperty().bind(centerY);
 
         // Style the nail
-        getStyleClass().add("nail");
+        circle.getStyleClass().add("nail");
 
         // Hide the nails so that they do not become rendered right away
-        visibleProperty().setValue(false);
+        circle.visibleProperty().setValue(false);
 
         // Bind the radius to the visibility property (so that we do not get space between links)
-        radiusProperty().bind(new When(visibleProperty()).then(VISIBLE_RADIUS).otherwise(HIDDEN_RADIUS));
+        circle.radiusProperty().bind(new When(circle.visibleProperty()).then(VISIBLE_RADIUS).otherwise(HIDDEN_RADIUS));
 
         mouseTracker.registerOnMousePressedEventHandler(event -> isBeingDragged = true);
         mouseTracker.registerOnMouseReleasedEventHandler(event -> isBeingDragged = false);
@@ -47,6 +47,8 @@ public class Nail extends Circle implements Removable {
         });
 
         DragHelper.makeDraggable(this);
+
+        addChild(circle);
     }
 
     @Override
@@ -56,29 +58,29 @@ public class Nail extends Circle implements Removable {
 
     @Override
     public DoubleProperty xProperty() {
-        return centerXProperty();
+        return circle.centerXProperty();
     }
 
     @Override
     public DoubleProperty yProperty() {
-        return centerYProperty();
+        return circle.centerYProperty();
     }
 
     @Override
     public boolean select() {
         detachedParent = getEdgeParent();
-        getStyleClass().add("selected");
+        circle.getStyleClass().add("selected");
         return true;
     }
 
     @Override
     public void deselect() {
-        getStyleClass().remove("selected");
+        circle.getStyleClass().remove("selected");
     }
 
     @Override
-    public void remove() {
-        getEdgeParent().remove(this);
+    public boolean remove() {
+        return getEdgeParent().remove(this);
     }
 
     @Override
@@ -87,7 +89,7 @@ public class Nail extends Circle implements Removable {
     }
 
     private Edge getEdgeParent() {
-        Parent parent = getParent();
+        javafx.scene.Parent parent = getParent();
         while (parent != null) {
             if (parent instanceof Edge) {
                 return ((Edge) parent);

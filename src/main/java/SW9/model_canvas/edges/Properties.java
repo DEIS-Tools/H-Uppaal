@@ -41,8 +41,6 @@ public class Properties extends Parent implements LocationAware, MouseTrackable 
         propertiesBox.layoutYProperty().bind(yProperty());
 
         getChildren().add(propertiesBox);
-
-        DragHelper.makeDraggable(this);
     }
 
     private Parent generateValueBox(final String value, final DoubleProperty sharedHeightProperty) {

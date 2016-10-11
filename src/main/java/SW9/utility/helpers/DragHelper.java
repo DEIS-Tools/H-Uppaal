@@ -205,6 +205,10 @@ public class DragHelper {
         mouseTracker.registerOnMouseReleasedEventHandler(event -> subject.setCursor(Cursor.DEFAULT));
     }
 
+    public static <T extends MouseTrackable> void makeUndraggable(final T subject) {
+        subject.getMouseTracker().unregisterMouseDraggedEventHandlers();
+    }
+
     // Finds the nearest ancestor which implements location aware
     private static <T extends Node & MouseTrackable> LocationAware findAncestor(T subject) {
         LocationAware parent = null;

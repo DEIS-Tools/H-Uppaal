@@ -113,6 +113,10 @@ public class MouseTracker {
         return true;
     }
 
+    public void unregisterMouseMovedEventHandlers() {
+        onMouseMovedEventHandlers.forEach(this::unregisterOnMouseMovedEventHandler);
+    }
+
     public boolean registerOnMouseClickedEventHandler(final EventHandler<MouseEvent> eventHandler) {
         return onMouseClickedEventHandlers.add(eventHandler);
     }
@@ -121,6 +125,10 @@ public class MouseTracker {
         if (!onMouseClickedEventHandlers.contains(eventHandler)) return false;
         onMouseClickedEventHandlers.set(onMouseClickedEventHandlers.indexOf(eventHandler), null);
         return true;
+    }
+
+    public void unregisterMouseClickedEventHandlers() {
+        onMouseClickedEventHandlers.forEach(this::unregisterOnMouseClickedEventHandler);
     }
 
     public boolean registerOnMouseEnteredEventHandler(final EventHandler<MouseEvent> eventHandler) {
@@ -133,6 +141,10 @@ public class MouseTracker {
         return true;
     }
 
+    public void unregisterMouseEnteredEventHandlers() {
+        onMouseEnteredEventHandlers.forEach(this::unregisterOnMouseEnteredEventHandler);
+    }
+
     public boolean registerOnMouseExitedEventHandler(final EventHandler<MouseEvent> eventHandler) {
         return onMouseExitedEventHandlers.add(eventHandler);
     }
@@ -141,6 +153,10 @@ public class MouseTracker {
         if (!onMouseExitedEventHandlers.contains(eventHandler)) return false;
         onMouseExitedEventHandlers.set(onMouseExitedEventHandlers.indexOf(eventHandler), null);
         return true;
+    }
+
+    public void unregisterMouseExitedEventHandlers() {
+        onMouseExitedEventHandlers.forEach(this::unregisterOnMouseExitedEventHandler);
     }
 
     public boolean registerOnMouseDraggedEventHandler(final EventHandler<MouseEvent> eventHandler) {
@@ -153,6 +169,10 @@ public class MouseTracker {
         return true;
     }
 
+    public void unregisterMouseDraggedEventHandlers() {
+        onMouseDraggedEventHandlers.forEach(this::unregisterOnMouseDraggedEventHandler);
+    }
+
     public boolean registerOnMousePressedEventHandler(final EventHandler<MouseEvent> eventHandler) {
         return onMousePressedEventHandlers.add(eventHandler);
     }
@@ -163,6 +183,10 @@ public class MouseTracker {
         return true;
     }
 
+    public void unregisterMousePressedEventHandlers() {
+        onMousePressedEventHandlers.forEach(this::unregisterOnMousePressedEventHandler);
+    }
+
     public boolean registerOnMouseReleasedEventHandler(final EventHandler<MouseEvent> eventHandler) {
         return onMouseReleasedEventHandlers.add(eventHandler);
     }
@@ -171,6 +195,10 @@ public class MouseTracker {
         if (!onMouseReleasedEventHandlers.contains(eventHandler)) return false;
         onMouseReleasedEventHandlers.set(onMouseReleasedEventHandlers.indexOf(eventHandler), null);
         return true;
+    }
+
+    public void unregisterMouseReleasedEventHandlers() {
+        onMouseReleasedEventHandlers.forEach(this::unregisterOnMouseReleasedEventHandler);
     }
 
     /**

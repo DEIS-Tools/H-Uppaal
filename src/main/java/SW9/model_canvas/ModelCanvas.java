@@ -76,14 +76,32 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
         }));
 
         KeyboardTracker.registerKeybind(KeyboardTracker.DELETE_SELECTED, new Keybind(new KeyCodeCombination(KeyCode.DELETE), () -> {
-            ArrayList<Removable> copy = new ArrayList<>();
+            final ArrayList<Removable> copy = new ArrayList<>();
 
             SelectHelper.getSelectedElements().forEach(copy::add);
 
             SelectHelper.clearSelectedElements();
 
             UndoRedoStack.push(() -> { // Perform
-                copy.forEach(Removable::remove);
+                for (int i = 0; i < copy.size(); i++) {
+                    Removable removable = copy.get(i);
+
+                    // Check if we successfully removed the element
+                    final boolean result = removable.remove();
+
+                    // If we did not successfully removed the element, re-add the already deleted ones
+                    if (!result) {
+                        // Re-add elements
+                        for(int j = i - 1; j >= 0; j--) {
+                            removable = copy.get(j);
+                            removable.reAdd();
+                        }
+
+                        // Rollback this perform (clear the history of this perform action)
+                        UndoRedoStack.forget();
+                    }
+                }
+
             }, () -> { // Undo
                 copy.forEach(Removable::deselect);
                 copy.forEach(Removable::reAdd);

@@ -44,6 +44,14 @@ public class UndoRedoStack {
         }
     }
 
+    public static void forget() {
+        try {
+            undoStack.pop();
+        } catch (EmptyStackException e) {
+            // The stack is empty, nothing left to undo. Ignore.
+        }
+    }
+
     private static class Command {
 
         private final Runnable perform;
