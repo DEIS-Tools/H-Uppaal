@@ -12,4 +12,6 @@ public interface Colorable {
 
     void resetColor();
 
+    void resetColor(final Color color, final Color.Intensity intensity);
+
 }

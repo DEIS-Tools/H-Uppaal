@@ -204,11 +204,24 @@ public class ModelComponent extends ModelContainer implements Colorable {
         labelTriangle.setFill(color.getColor(intensity));
         frame.setStroke(color.getColor(intensity.next(2)));
         label.setTextFill(color.getTextColor(intensity));
+
+        // Color all of our children location, unless they are already colored
+        getLocations().forEach(location -> {
+            // If the location is not colored, of if the color is the same af us
+            if(!location.isColored() || (location.getColor().equals(color) && location.getIntensity().equals(intensity))) {
+                location.resetColor(color, intensity);
+            }
+        });
     }
 
     @Override
     public void resetColor() {
-        color(Color.GREY_BLUE, Color.Intensity.I700); // default color
+        resetColor(Color.GREY_BLUE, Color.Intensity.I700); // default color
+    }
+
+    @Override
+    public void resetColor(final Color color, final Color.Intensity intensity) {
+        color(color, intensity);
         colorIsSet = false;
     }
 }
