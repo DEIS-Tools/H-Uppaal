@@ -99,6 +99,10 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
                 locationOnMouse = newLocation;
                 newLocation.setEffect(DropShadowHelper.generateElevationShadow(22));
                 addChild(newLocation);
+
+                if(mouseIsHoveringModelContainer()) {
+                    newLocation.resetColor(getHoveredModelContainer().getColor(), getHoveredModelContainer().getColorIntensity());
+                }
             }
         }));
 
