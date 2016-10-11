@@ -481,10 +481,7 @@ public class Edge extends Parent implements Removable, Colorable {
         this.intensity = intensity;
 
         // Color all nails
-        nails.forEach(nail -> {
-            nail.circle.setFill(color.getColor(intensity));
-            nail.circle.setStroke(color.getColor(intensity.next(2)));
-        });
+        nails.forEach(nail -> nail.color(color, intensity));
 
         return true;
     }

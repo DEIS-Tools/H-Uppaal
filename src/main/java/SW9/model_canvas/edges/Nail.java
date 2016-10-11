@@ -2,6 +2,8 @@ package SW9.model_canvas.edges;
 
 import SW9.model_canvas.Parent;
 import SW9.model_canvas.Removable;
+import SW9.utility.colors.Color;
+import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.DragHelper;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.When;
@@ -9,7 +11,11 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.shape.Circle;
 
-public class Nail extends Parent implements Removable {
+public class Nail extends Parent implements Removable, Colorable {
+
+    private Color color = null;
+    private Color.Intensity intensity = null;
+    private boolean colorIsSet = false;
 
     private final static double HIDDEN_RADIUS = 0d;
     protected final static double VISIBLE_RADIUS = 7d;
@@ -98,5 +104,39 @@ public class Nail extends Parent implements Removable {
             parent = parent.getParent();
         }
         return null;
+    }
+
+    @Override
+    public boolean isColored() {
+        return colorIsSet;
+    }
+
+    @Override
+    public Color getColor() {
+        return color;
+    }
+
+    @Override
+    public Color.Intensity getColorIntensity() {
+        return intensity;
+    }
+
+    @Override
+    public boolean color(final Color color, final Color.Intensity intensity) {
+        circle.setFill(color.getColor(intensity));
+        circle.setStroke(color.getColor(intensity.next(2)));
+
+        return true;
+    }
+
+    @Override
+    public void resetColor() {
+        resetColor(Color.GREY_BLUE, Color.Intensity.I700); // default color
+    }
+
+    @Override
+    public void resetColor(final Color color, final Color.Intensity intensity) {
+        color(color, intensity);
+        colorIsSet = false;
     }
 }

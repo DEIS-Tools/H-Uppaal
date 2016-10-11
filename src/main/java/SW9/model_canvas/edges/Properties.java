@@ -2,6 +2,8 @@ package SW9.model_canvas.edges;
 
 import SW9.model_canvas.ModelCanvas;
 import SW9.model_canvas.Parent;
+import SW9.utility.colors.Color;
+import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.LocationAware;
 import SW9.utility.helpers.MouseTrackable;
@@ -17,10 +19,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 
 import java.util.ArrayList;
 
-public class Properties extends Parent implements LocationAware, MouseTrackable {
+public class Properties extends Parent implements LocationAware, MouseTrackable, Colorable {
+
+    private Color color = null;
+    private Color.Intensity intensity = null;
+    private boolean colorIsSet = false;
 
     private final DoubleProperty xProperty = new SimpleDoubleProperty(0d);
     private final DoubleProperty yProperty = new SimpleDoubleProperty(0d);
@@ -31,6 +38,7 @@ public class Properties extends Parent implements LocationAware, MouseTrackable 
     private final MouseTracker localMouseTracker = new MouseTracker(this);
 
     private final ArrayList<Node> hiddenElements = new ArrayList<>();
+    private final ArrayList<Shape> iconBoxes = new ArrayList<>();
 
     public Properties() {
         this.getStyleClass().add("edge-properties");
@@ -91,6 +99,8 @@ public class Properties extends Parent implements LocationAware, MouseTrackable 
         box.getStyleClass().add("icon-background");
         box.heightProperty().bind(height);
 
+        iconBoxes.add(box);
+
         // The label representing an icon
         final Label label = new Label(iconString);
         label.getStyleClass().addAll("subhead", "icon-label");
@@ -134,5 +144,41 @@ public class Properties extends Parent implements LocationAware, MouseTrackable 
 
     public DoubleProperty yProperty() {
         return yProperty;
+    }
+
+    @Override
+    public boolean isColored() {
+        return colorIsSet;
+    }
+
+    @Override
+    public Color getColor() {
+        return color;
+    }
+
+    @Override
+    public Color.Intensity getColorIntensity() {
+        return intensity;
+    }
+
+    @Override
+    public boolean color(final Color color, final Color.Intensity intensity) {
+        iconBoxes.forEach(node -> {
+            node.setFill(color.getColor(intensity));
+            node.setStroke(color.getColor(intensity.next(2)));
+        });
+
+        return true;
+    }
+
+    @Override
+    public void resetColor() {
+        resetColor(Color.GREY_BLUE, Color.Intensity.I700); // default color
+    }
+
+    @Override
+    public void resetColor(final Color color, final Color.Intensity intensity) {
+        color(color, intensity);
+        colorIsSet = false;
     }
 }
