@@ -1,11 +1,11 @@
 package SW9.model_canvas.querying;
 
+import SW9.backend.BadUPPAALQueryException;
 import SW9.backend.UPPAALDriver;
 import SW9.model_canvas.ModelContainer;
 import SW9.model_canvas.Parent;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.LocationAware;
-import com.uppaal.engine.EngineException;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
@@ -29,7 +29,7 @@ public class QueryField extends Parent implements LocationAware {
         textField.layoutXProperty().bind(xProperty());
         textField.layoutYProperty().bind(yProperty());
         textField.setPrefWidth(FIELD_WIDTH);
-        this.textField.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        textField.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
         addChild(textField);
         textField.setOnKeyPressed(event -> {
@@ -48,8 +48,9 @@ public class QueryField extends Parent implements LocationAware {
 
                 textField.setBackground(new Background(new BackgroundFill(color.getColor(Color.Intensity.I500), CornerRadii.EMPTY, Insets.EMPTY)));
                 textField.setStyle("-fx-text-fill: #ffffff;");
-            } catch (EngineException e) {
-                e.printStackTrace();
+            } catch (final BadUPPAALQueryException e) {
+                textField.setStyle("-fx-text-fill: #ff0000;");
+                textField.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
             }
         });
     }

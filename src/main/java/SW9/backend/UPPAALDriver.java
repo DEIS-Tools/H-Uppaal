@@ -26,7 +26,7 @@ public class UPPAALDriver {
     private final static Map<Location, com.uppaal.model.core2.Location> hToULocations = new HashMap<>();
     private final static Map<com.uppaal.model.core2.Location, Location> uToHLocations = new HashMap<>();
 
-    public static boolean verify(final String query, final ModelContainer modelContainer) throws EngineException {
+    public static boolean verify(final String query, final ModelContainer modelContainer) throws BadUPPAALQueryException {
         final Document uppaalDocument = new Document(new PrototypeDocument());
 
         // Give the model container a name based on its hascode
@@ -42,13 +42,18 @@ public class UPPAALDriver {
         // Set the system declaration
         uppaalDocument.setProperty("system", systemDclString);
 
-        storeUppaalFile(uppaalDocument, "debug.xml");
-
+        // Run the query
         final char result = runQuery(uppaalDocument, query).result;
+
+        // Store the document
+        storeUppaalFile(uppaalDocument, "debug.xml");
 
         if (result == 'T') return true;
         else if (result == 'F') return false;
-        else throw new EngineException("Query returned from engine was: " + result + " (E is Error, M is uncertain)");
+        else
+            throw new BadUPPAALQueryException("Query returned from engine was: " + result + " (E is Error, M is uncertain)");
+
+
     }
 
     private static Template generateTemplate(final Document uppaalDocument, final ModelContainer modelContainer) {
@@ -95,7 +100,7 @@ public class UPPAALDriver {
         return template;
     }
 
-    private static QueryVerificationResult runQuery(final Document uppaalDocument, final String query) throws EngineException {
+    private static QueryVerificationResult runQuery(final Document uppaalDocument, final String query) throws BadUPPAALQueryException {
 
         // Create the engine and set the correct server path
         final Engine engine = new Engine();
@@ -112,8 +117,7 @@ public class UPPAALDriver {
 
             // Check if there is any problems
             if (!problems.isEmpty()) {
-                problems.forEach(System.out::println);
-                // TODO handle them
+                problems.forEach(problem -> System.out.println("problem: " + problem));
             }
 
             // Update some internal state for the engine by getting the initial state
@@ -153,7 +157,6 @@ public class UPPAALDriver {
 
                 @Override
                 public void setFeedback(String s) {
-
                 }
 
                 @Override
@@ -171,11 +174,9 @@ public class UPPAALDriver {
 
 
         } catch (EngineException | IOException e) {
-            // TODO Handle exception
-            e.printStackTrace();
+            // Something went wrong
+            throw new BadUPPAALQueryException("Unable to run query", e);
         }
-
-        throw new EngineException("Could not connect to server");
     }
 
     private static String getOSDependentServerPath() {
