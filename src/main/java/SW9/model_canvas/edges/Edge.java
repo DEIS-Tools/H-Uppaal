@@ -214,15 +214,20 @@ public class Edge extends Parent implements Removable, Colorable {
                 }
             }
 
+            // Add the link and nail to the canvas
+            Edge.this.getChildren().add(0, link);
+            links.add(link);
+
             // We have a single nail, but we need at least 2 when source and target locations are the same
             if (ModelCanvas.mouseIsHoveringLocation() && nails.size() == 1 && sourceLocation.equals(targetLocation)) {
                 final Nail newNail = new Nail(sourceLocation.xProperty(), sourceLocation.yProperty().add(sourceLocation.circle.getRadius() * 2));
                 add(newNail, 0);
             }
-
-            // Add the link and nail to the canvas
-            Edge.this.getChildren().add(0, link);
-            links.add(link);
+            // We do not have a single nail, but we need at least 1 when source and target locations are different
+            else if(ModelCanvas.mouseIsHoveringLocation() && nails.size() == 0 && !sourceLocation.equals(targetLocation)) {
+                final Nail newNail = new Nail(sourceLocation.xProperty(), sourceLocation.yProperty().add(sourceLocation.circle.getRadius() * 2));
+                add(newNail, 0);
+            }
 
             // We did not finish the edge by pressing a location, add the new nail
             if (getTargetLocation() == null) {
