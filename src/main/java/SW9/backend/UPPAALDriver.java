@@ -21,6 +21,11 @@ import java.util.Map;
 
 public class UPPAALDriver {
 
+    // Maps to convert H-UPPAAL locations to UPPAAL locations
+    // TODO Either make UPAALDriver non-static or insert these into a map of templates or similar
+    private final static Map<Location, com.uppaal.model.core2.Location> hToULocations = new HashMap<>();
+    private final static Map<com.uppaal.model.core2.Location, Location> uToHLocations = new HashMap<>();
+
     public static boolean verify(final String query, final ModelContainer modelContainer) throws EngineException {
         final Document uppaalDocument = new Document(new PrototypeDocument());
 
@@ -35,7 +40,7 @@ public class UPPAALDriver {
                 "system " + modelContainerName + "instance;";
 
         // Set the system declaration
-        uppaalDocument.setProperty("system",systemDclString);
+        uppaalDocument.setProperty("system", systemDclString);
 
         storeUppaalFile(uppaalDocument, "debug.xml");
 
@@ -48,8 +53,9 @@ public class UPPAALDriver {
 
     private static Template generateTemplate(final Document uppaalDocument, final ModelContainer modelContainer) {
 
-        // Map to convert H-UPPAAL locations to UPPAAL locations
-        final Map<Location, com.uppaal.model.core2.Location> hToULocations = new HashMap<>();
+        // Clear the maps before generating a new template
+        hToULocations.clear();
+        uToHLocations.clear();
 
         // TODO remove this when names are updated
         int locationCounter = 0;
@@ -61,8 +67,13 @@ public class UPPAALDriver {
         // Add all locations from the model container to our conversion map and to the template
         for (final Location hLocation : modelContainer.getLocations()) {
 
-            // Add the location to the template and add it to the map
-            hToULocations.put(hLocation, addLocation(template, hLocation, "L" + locationCounter));
+            // Add the location to the template
+            final com.uppaal.model.core2.Location uLocation = addLocation(template, hLocation, "L" + locationCounter);
+
+            // Populate the maps
+            hToULocations.put(hLocation, uLocation);
+            uToHLocations.put(uLocation, hLocation);
+
             locationCounter++;
         }
 
@@ -138,7 +149,6 @@ public class UPPAALDriver {
 
                 @Override
                 public void setTrace(char c, String s, ArrayList<SymbolicTransition> arrayList, int i, QueryVerificationResult queryVerificationResult) {
-                    System.out.println("HEJSA");
                 }
 
                 @Override
@@ -156,8 +166,6 @@ public class UPPAALDriver {
 
                 }
             });
-
-            System.out.println(state.traceFormat());
 
             return result;
 
