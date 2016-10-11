@@ -18,10 +18,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class UPPAALDriver {
 
-    public static boolean verify(final String query, final ModelContainer modelContainer) throws BadUPPAALQueryException {
+    public static void verify(final String query, final ModelContainer modelContainer, final Consumer<Boolean> success, final Consumer<BackendException> failure) {
+        // Start a thread that on success calls the success callback otherwise calls failure
+        new Thread(() -> {
+            try {
+                success.accept(UPPAALDriver.verify(query, modelContainer));
+            } catch (BackendException e) {
+                failure.accept(e);
+            }
+        }).run();
+    }
+
+    private static synchronized boolean verify(final String query, final ModelContainer modelContainer) throws BackendException.BadUPPAALQueryException {
         final Document uppaalDocument = new Document(new PrototypeDocument());
 
         // Give the model container a name based on its hascode
@@ -46,7 +58,7 @@ public class UPPAALDriver {
         if (result == 'T') return true;
         else if (result == 'F') return false;
         else
-            throw new BadUPPAALQueryException("Query returned from engine was: " + result + " (E is Error, M is uncertain)");
+            throw new BackendException.BadUPPAALQueryException("Query returned from engine was: " + result + " (E is Error, M is uncertain)");
 
 
     }
@@ -99,7 +111,7 @@ public class UPPAALDriver {
         return template;
     }
 
-    private static QueryVerificationResult runQuery(final Document uppaalDocument, final String query) throws BadUPPAALQueryException {
+    private static QueryVerificationResult runQuery(final Document uppaalDocument, final String query) throws BackendException.BadUPPAALQueryException {
 
         // Create the engine and set the correct server path
         final Engine engine = new Engine();
@@ -174,7 +186,7 @@ public class UPPAALDriver {
 
         } catch (EngineException | IOException e) {
             // Something went wrong
-            throw new BadUPPAALQueryException("Unable to run query", e);
+            throw new BackendException.BadUPPAALQueryException("Unable to run query", e);
         }
     }
 
