@@ -196,6 +196,9 @@ public class ModelComponent extends ModelContainer implements Colorable {
                 location.resetColor(color, intensity);
             }
         });
+
+        // Color all of out children edges (their nails)
+        getEdges().forEach(edge -> edge.color(color, intensity));
     }
 
     @Override
