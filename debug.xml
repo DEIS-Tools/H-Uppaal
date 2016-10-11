@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<template>
+		<name>ModelContainer2130537116</name>
+		<location id="id0" x="997" y="997" color="#455a64">
+			<name x="997" y="967">L1</name>
+		</location>
+		<location id="id1" x="647" y="647" color="#455a64">
+			<name x="647" y="617">L0</name>
+		</location>
+		<init ref="id1"/>
+	</template>
+	<system>ModelContainer2130537116instance = ModelContainer2130537116();
+system ModelContainer2130537116instance;</system>
+	<queries>
+	</queries>
+</nta>
