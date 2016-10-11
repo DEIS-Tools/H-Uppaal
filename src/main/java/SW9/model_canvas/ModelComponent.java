@@ -8,6 +8,7 @@ import SW9.utility.mouse.MouseTracker;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -163,6 +164,20 @@ public class ModelComponent extends ModelContainer implements Colorable {
     @Override
     public DoubleProperty yProperty() {
         return yProperty;
+    }
+
+    private final Rectangle boundingRectangle = new Rectangle();
+
+    @Override
+    public Bounds getInternalBounds() {
+
+        boundingRectangle.xProperty().bind(xProperty().add(Location.RADIUS));
+        boundingRectangle.yProperty().bind(yProperty().add(Location.RADIUS * 2));
+
+        boundingRectangle.setWidth(widthProperty.subtract(Location.RADIUS * 2).get());
+        boundingRectangle.setHeight(heightProperty.subtract(Location.RADIUS * 3).get());
+
+        return boundingRectangle.getLayoutBounds();
     }
 
     @Override

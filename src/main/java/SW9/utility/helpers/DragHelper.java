@@ -5,6 +5,7 @@ import SW9.utility.UndoRedoStack;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.NumberBinding;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
@@ -19,6 +20,10 @@ public class DragHelper {
     }
 
     public static <T extends Node & MouseTrackable> void makeDraggable(final T subject, final Function<MouseEvent, Boolean> conditional) {
+        makeDraggable(subject, conditional, null);
+    }
+
+    public static <T extends Node & MouseTrackable> void makeDraggable(final T subject, final Function<MouseEvent, Boolean> conditional, final Bounds bounds) {
         final MouseTracker mouseTracker = subject.getMouseTracker();
 
         // The offset from the mouse
@@ -59,6 +64,13 @@ public class DragHelper {
                 final LocationAware parent = findAncestor(subject);
                 // Bind the x property of the subject to the value of the mouse event relative to the x property of the parent
                 newXBinding[0] = parent.xProperty().add(x - parent.xProperty().get());
+                if(bounds == null || !bounds.contains((Double) newXBinding[0].getValue(), bounds.getMinY())) {
+                    if((double) newXBinding[0].getValue() > bounds.getMaxX()) {
+                        newXBinding[0] = newXBinding[0].multiply(0).add(bounds.getMaxX());
+                    } else {
+                        newXBinding[0] = newXBinding[0].multiply(0).add(bounds.getMinX());
+                    }
+                }
                 subject.xProperty().bind(newXBinding[0]);
             } else {
                 // Update the x property value to the value of the mouse
@@ -70,6 +82,13 @@ public class DragHelper {
                 final LocationAware parent = findAncestor(subject);
                 // Bind the y property of the subject to the value of the mouse event relative to the y property of the parent
                 newYBinding[0] = parent.yProperty().add(y - parent.yProperty().get());
+                if(bounds == null || !bounds.contains(bounds.getMinX(), (Double) newYBinding[0].getValue())) {
+                    if((double) newYBinding[0].getValue() > bounds.getMaxY()) {
+                        newYBinding[0] = newYBinding[0].multiply(0).add(bounds.getMaxY());
+                    } else {
+                        newYBinding[0] = newYBinding[0].multiply(0).add(bounds.getMinY());
+                    }
+                }
                 subject.yProperty().bind(newYBinding[0]);
             } else {
                 // Update the y property value to the value of the mouse

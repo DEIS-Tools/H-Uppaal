@@ -242,19 +242,18 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     }
 
     private void makeDraggable() {
-        // Make the location draggable (if shift is not pressed, and there is no edge currently being drawn)
-        DragHelper.makeDraggable(this, (event) -> {
+        ModelContainer parent = (ModelContainer) getParent();
 
-            ModelContainer parent = (ModelContainer) getParent();
-            boolean allowX = event.getX() - RADIUS >= parent.xProperty().get() && event.getX() < parent.xProperty().get() + parent.getXLimit().get() - RADIUS;
-            boolean allowY = event.getY() - RADIUS >= parent.yProperty().get() && event.getY() < parent.yProperty().get() + parent.getYLimit().get() - RADIUS;
+        parentProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue == null || !(newValue instanceof ModelComponent)) return;
 
-            return !event.isShiftDown() &&
-                    !ModelCanvas.edgeIsBeingDrawn() &&
-                    !this.equals(ModelCanvas.getLocationOnMouse()) &&
-                    type.equals(Type.NORMAL) &&
-                    allowX &&
-                    allowY;
+            DragHelper.makeDraggable(this,
+                    (event) -> !event.isShiftDown() &&
+                            !ModelCanvas.edgeIsBeingDrawn() &&
+                            !this.equals(ModelCanvas.getLocationOnMouse()) &&
+                            type.equals(Type.NORMAL),
+                    ((ModelComponent) newValue).getInternalBounds()
+            );
         });
     }
 
@@ -391,7 +390,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     @Override
     public boolean color(final Color color, final Color.Intensity intensity) {
         // If the color should not be changed, do nothing
-        if(color.equals(getColor()) && intensity.equals(getColorIntensity())) {
+        if (color.equals(getColor()) && intensity.equals(getColorIntensity())) {
             return false;
         }
 

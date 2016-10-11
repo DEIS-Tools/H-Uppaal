@@ -7,6 +7,7 @@ import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.value.ObservableDoubleValue;
+import javafx.geometry.Bounds;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +61,8 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
     public List<Edge> getEdges(final Location location) {
         return locationEdgeMap.get(location);
     }
+
+    public abstract Bounds getInternalBounds();
 
     public void add(final Location... locations) {
         for (final Location location : locations) {
