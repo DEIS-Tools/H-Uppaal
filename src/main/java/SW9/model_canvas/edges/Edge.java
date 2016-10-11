@@ -9,7 +9,6 @@ import SW9.model_canvas.locations.Location;
 import SW9.utility.colors.Color;
 import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.BindingHelper;
-import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.LocationAware;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
@@ -19,7 +18,6 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableDoubleValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -190,7 +188,6 @@ public class Edge extends Parent implements Removable, Colorable {
 
                 // If the target location is the same as the source, add some nails to make the view readable
                 if (sourceLocation.equals(getTargetLocation())) {
-
                     setTargetLocation(sourceLocation);
                     // Create two nails outside the source locations
                     Nail firstNail = new Nail(sourceLocation.circle.centerXProperty().add(Location.RADIUS * 3), sourceLocation.circle.centerYProperty());
@@ -217,6 +214,12 @@ public class Edge extends Parent implements Removable, Colorable {
                 }
             }
 
+            // We have a single nail, but we need at least 2 when source and target locations are the same
+            if (ModelCanvas.mouseIsHoveringLocation() && nails.size() == 1 && sourceLocation.equals(targetLocation)) {
+                final Nail newNail = new Nail(sourceLocation.xProperty(), sourceLocation.yProperty().add(sourceLocation.circle.getRadius() * 2));
+                add(newNail, 0);
+            }
+
             // Add the link and nail to the canvas
             Edge.this.getChildren().add(0, link);
             links.add(link);
@@ -240,15 +243,6 @@ public class Edge extends Parent implements Removable, Colorable {
                 // Tell the canvas that this edge is no longer being drawn
                 ModelCanvas.setEdgeBeingDrawn(null);
 
-                // An edge should contain at least one nail, if not add one in the center of the edge
-                if (nails.size() == 0) {
-                    final ObservableDoubleValue x = getSourceLocation().xProperty().add(getTargetLocation().xProperty()).divide(2);
-                    final ObservableDoubleValue y = getSourceLocation().yProperty().add(getTargetLocation().yProperty()).divide(2);
-                    final Nail newNail = new Nail(x, y);
-                    add(newNail, 0);
-                }
-
-                // Add the properties table
                 findNewPropertiesNail();
             }
 
@@ -262,11 +256,12 @@ public class Edge extends Parent implements Removable, Colorable {
     private void findNewPropertiesNail() {
         // Pick the nail in the middle
         nailIndex = (int) Math.floor(nails.size() / 2);
-        Nail removeNail = nails.get(nailIndex);
-        remove(removeNail);
+        final Nail removeNail = nails.get(nailIndex);
 
         propertiesNail = new PropertyNail(removeNail.xProperty(), removeNail.yProperty());
         add(propertiesNail, nailIndex);
+
+        remove(removeNail);
     }
 
     public Location getTargetLocation() {
@@ -328,7 +323,6 @@ public class Edge extends Parent implements Removable, Colorable {
 
         // Rebind the link accordingly to the new links
         BindingHelper.bind(links.get(links.size() - 1).line, arrowHead, nails.get(nails.size() - 1).circle, targetLocation.circle);
-
 
         // If the nail deleted was the properties nail, bind the properties to another nail
         if (nail.equals(propertiesNail)) {
