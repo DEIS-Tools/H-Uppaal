@@ -197,7 +197,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             }
         }));
 
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_1, KeyCode.DIGIT1, Color.RED, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_1, KeyCode.DIGIT1, Color.RED, Color.Intensity.I700);
         registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_2, KeyCode.DIGIT2, Color.PINK, Color.Intensity.I500);
         registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_3, KeyCode.DIGIT3, Color.PURPLE, Color.Intensity.I500);
         registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_4, KeyCode.DIGIT4, Color.INDIGO, Color.Intensity.I500);
