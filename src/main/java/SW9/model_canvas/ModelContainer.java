@@ -33,7 +33,7 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
 
             // If we have a location on the mouse, color it accordingly to our color
             if(ModelCanvas.mouseHasLocation()) {
-                ModelCanvas.getLocationOnMouse().resetColor(getColor(), getIntensity());
+                ModelCanvas.getLocationOnMouse().resetColor(getColor(), getColorIntensity());
             }
         });
 
@@ -85,6 +85,8 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
 
     public void add(final Edge... edges) {
         for (final Edge edge : edges) {
+            edge.color(getColor(), getColorIntensity());
+
             addChild(edge);
 
             locationEdgeMap.get(edge.getSourceLocation()).add(edge);
@@ -130,7 +132,7 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
     }
 
     @Override
-    public Color.Intensity getIntensity() {
+    public Color.Intensity getColorIntensity() {
         return intensity;
     }
 
