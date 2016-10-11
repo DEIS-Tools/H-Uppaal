@@ -14,6 +14,7 @@ import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
+import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -279,17 +280,37 @@ public class Edge extends Parent implements Removable, Colorable {
     public boolean remove(final Nail nail) {
         // If the source and target locations are the same, you must have at least 2 nails
         if (getSourceLocation().equals(getTargetLocation()) && nails.size() == 2) {
-            final Tooltip tooltip = new Tooltip("Cannot delete nail: This edge must have at lease two nails");
-            final Bounds boundsInScreen = nail.localToScreen(nail.getBoundsInLocal());
-            tooltip.show(nail, boundsInScreen.getMaxX(), boundsInScreen.getMaxY());
+            new Thread(() -> {
+                try {
+                    final Tooltip tooltip = new Tooltip("Cannot delete nail: This edge must have at lease two nails");
+                    final Bounds boundsInScreen = nail.localToScreen(nail.getBoundsInLocal());
+                    Platform.runLater(() -> tooltip.show(nail, boundsInScreen.getMaxX(), boundsInScreen.getMaxY()));
+
+                    // Hide the tooltip after 5 seconds
+                    Thread.sleep(5000);
+                    Platform.runLater(tooltip::hide);
+                } catch (InterruptedException e) {
+                    // Do nothing
+                }
+            }).start();
 
             return false;
         }
         // You must have at lease one nail
         else if (nails.size() == 1) {
-            final Tooltip tooltip = new Tooltip("Cannot delete nail: This edge must have at lease one nail");
-            final Bounds boundsInScreen = nail.localToScreen(nail.getBoundsInLocal());
-            tooltip.show(nail, boundsInScreen.getMaxX(), boundsInScreen.getMaxY());
+            new Thread(() -> {
+                try {
+                    final Tooltip tooltip = new Tooltip("Cannot delete nail: This edge must have at lease one nail");
+                    final Bounds boundsInScreen = nail.localToScreen(nail.getBoundsInLocal());
+                    Platform.runLater(() -> tooltip.show(nail, boundsInScreen.getMaxX(), boundsInScreen.getMaxY()));
+
+                    // Hide the tooltip after 5 seconds
+                    Thread.sleep(5000);
+                    Platform.runLater(tooltip::hide);
+                } catch (InterruptedException e) {
+                    // Do nothing
+                }
+            }).start();
 
             return false;
         }
