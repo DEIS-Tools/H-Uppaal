@@ -199,7 +199,7 @@ public class UPPAALDriver {
 
         final int x = (int) hLocation.xProperty().get();
         final int y = (int) hLocation.xProperty().get();
-        final Color color = hLocation.getColor().toAwtColor(hLocation.getIntensity());
+        final Color color = hLocation.getColor().toAwtColor(hLocation.getColorIntensity());
 
 
         // Create new UPPAAL location and insert it into the template

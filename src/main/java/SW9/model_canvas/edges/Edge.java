@@ -128,7 +128,7 @@ public class Edge extends Parent implements Removable, Colorable {
         nails.addListener(new ListChangeListener<Nail>() {
             @Override
             public void onChanged(final Change<? extends Nail> c) {
-                resetColor(getColor(), getIntensity());
+                resetColor(getColor(), getColorIntensity());
             }
         });
     }
@@ -400,7 +400,7 @@ public class Edge extends Parent implements Removable, Colorable {
     }
 
     @Override
-    public Color.Intensity getIntensity() {
+    public Color.Intensity getColorIntensity() {
         return intensity;
     }
 

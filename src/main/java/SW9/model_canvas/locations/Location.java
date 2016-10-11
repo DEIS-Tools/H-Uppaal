@@ -197,7 +197,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
                 locationPlaceAnimation.play();
 
                 UndoRedoStack.push(() -> { // Perform
-                    resetColor(this.modelContainer.getColor(), this.modelContainer.getIntensity());
+                    resetColor(this.modelContainer.getColor(), this.modelContainer.getColorIntensity());
                     this.modelContainer.add(this);
                 }, () -> { // Undo
                     resetColor();
@@ -382,7 +382,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     }
 
     @Override
-    public Color.Intensity getIntensity() {
+    public Color.Intensity getColorIntensity() {
         return intensity;
     }
 

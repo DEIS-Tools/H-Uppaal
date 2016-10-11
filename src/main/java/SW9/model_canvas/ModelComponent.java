@@ -10,7 +10,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.shape.*;
@@ -192,7 +191,7 @@ public class ModelComponent extends ModelContainer implements Colorable {
         // Color all of our children location, unless they are already colored
         getLocations().forEach(location -> {
             // If the location is not colored, of if the color is the same af us
-            if(!location.isColored() || (location.getColor().equals(color) && location.getIntensity().equals(intensity))) {
+            if(!location.isColored() || (location.getColor().equals(color) && location.getColorIntensity().equals(intensity))) {
                 location.resetColor(color, intensity);
             }
         });

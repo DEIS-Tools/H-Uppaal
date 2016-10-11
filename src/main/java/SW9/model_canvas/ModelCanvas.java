@@ -183,7 +183,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             // Only reset the color, if the element is actually colored (do avoid redundant undo-elements on the stack
             if (hoveredElement[0].isColored()) {
                 final Color previousColor = hoveredElement[0].getColor();
-                final Color.Intensity previousIntensity = hoveredElement[0].getIntensity();
+                final Color.Intensity previousIntensity = hoveredElement[0].getColorIntensity();
 
                 UndoRedoStack.push(() -> { // Perform
                     hoveredElement[0].resetColor();
@@ -217,7 +217,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             if (hoveredLocation != null) hoveredElement[0] = hoveredLocation;
 
             final Color previousColor = hoveredElement[0].getColor();
-            final Color.Intensity previousIntensity = hoveredElement[0].getIntensity();
+            final Color.Intensity previousIntensity = hoveredElement[0].getColorIntensity();
             final boolean wasPreviouslyColors = hoveredElement[0].isColored();
 
             UndoRedoStack.push(() -> { // Perform

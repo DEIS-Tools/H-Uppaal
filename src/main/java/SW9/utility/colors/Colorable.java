@@ -6,7 +6,7 @@ public interface Colorable {
 
     Color getColor();
 
-    Color.Intensity getIntensity();
+    Color.Intensity getColorIntensity();
 
     void color(final Color color, final Color.Intensity intensity);
 
