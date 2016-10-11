@@ -6,6 +6,7 @@ import SW9.model_canvas.Parent;
 import SW9.model_canvas.Removable;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.model_canvas.locations.Location;
+import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.LocationAware;
 import SW9.utility.helpers.SelectHelper;
@@ -26,7 +27,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
-public class Edge extends Parent implements Removable {
+public class Edge extends Parent implements Removable, Colorable {
+
+    private SW9.utility.colors.Color color = null;
+    private SW9.utility.colors.Color.Intensity intensity = null;
+    private boolean colorIsSet = false;
 
     private final Location sourceLocation;
     private Location targetLocation = null;
@@ -371,5 +376,45 @@ public class Edge extends Parent implements Removable {
 
     public void setHoveredNail(Nail hoveredNail) {
         this.hoveredNail = hoveredNail;
+    }
+
+    @Override
+    public boolean isColored() {
+        return colorIsSet;
+    }
+
+    @Override
+    public SW9.utility.colors.Color getColor() {
+        return color;
+    }
+
+    @Override
+    public SW9.utility.colors.Color.Intensity getIntensity() {
+        return intensity;
+    }
+
+    @Override
+    public void color(final SW9.utility.colors.Color color, final SW9.utility.colors.Color.Intensity intensity) {
+        colorIsSet = true;
+
+        this.color = color;
+        this.intensity = intensity;
+
+        // Color all nails
+        nails.forEach(nail -> {
+            nail.setFill(color.getColor(intensity));
+            nail.setStroke(color.getColor(intensity.next(2)));
+        });
+    }
+
+    @Override
+    public void resetColor() {
+        resetColor(SW9.utility.colors.Color.GREY_BLUE, SW9.utility.colors.Color.Intensity.I700); // default color
+    }
+
+    @Override
+    public void resetColor(final SW9.utility.colors.Color color, final SW9.utility.colors.Color.Intensity intensity) {
+        color(color, intensity);
+        colorIsSet = false;
     }
 }

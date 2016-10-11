@@ -10,17 +10,15 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.shape.*;
 
 
 public class ModelComponent extends ModelContainer implements Colorable {
 
     private static final double CORNER_SIZE = 50;
-
-    private Color color = null;
-    private Color.Intensity intensity = null;
-    private boolean colorIsSet = false;
 
     private final Rectangle labelContainer;
     private final Polygon labelTriangle;
@@ -103,10 +101,10 @@ public class ModelComponent extends ModelContainer implements Colorable {
         labelTriangle.layoutYProperty().bind(yProperty.subtract(y).add(1));
 
         addChildren(
+                frame,
                 labelTriangle,
                 labelContainer,
-                label,
-                frame
+                label
         );
 
         add(initialLocation);
@@ -150,7 +148,7 @@ public class ModelComponent extends ModelContainer implements Colorable {
         frame.getElements().addAll(p1, p2, p3, p4, p5, p6, p7);
 
         frame.getStyleClass().add("component-stroke");
-        frame.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        frame.blendModeProperty().set(BlendMode.MULTIPLY);
     }
 
     @Override
@@ -179,21 +177,6 @@ public class ModelComponent extends ModelContainer implements Colorable {
     }
 
     @Override
-    public boolean isColored() {
-        return colorIsSet;
-    }
-
-    @Override
-    public Color getColor() {
-        return color;
-    }
-
-    @Override
-    public Color.Intensity getIntensity() {
-        return intensity;
-    }
-
-    @Override
     public void color(final Color color, final Color.Intensity intensity) {
         colorIsSet = true;
 
@@ -204,11 +187,22 @@ public class ModelComponent extends ModelContainer implements Colorable {
         labelTriangle.setFill(color.getColor(intensity));
         frame.setStroke(color.getColor(intensity.next(2)));
         label.setTextFill(color.getTextColor(intensity));
+        frame.setFill(color.getColor(intensity.next(-10).next(1)));
+
+        // Color all of our children location, unless they are already colored
+        getLocations().forEach(location -> {
+            // If the location is not colored, of if the color is the same af us
+            if(!location.isColored() || (location.getColor().equals(color) && location.getIntensity().equals(intensity))) {
+                location.resetColor(color, intensity);
+            }
+        });
+
+        // Color all of out children edges (their nails)
+        getEdges().forEach(edge -> edge.color(color, intensity));
     }
 
     @Override
     public void resetColor() {
-        color(Color.GREY_BLUE, Color.Intensity.I700); // default color
-        colorIsSet = false;
+        resetColor(Color.GREY_BLUE, Color.Intensity.I700); // default color
     }
 }
