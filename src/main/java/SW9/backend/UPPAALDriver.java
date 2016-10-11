@@ -11,6 +11,7 @@ import com.uppaal.model.core2.Template;
 import com.uppaal.model.system.SystemState;
 import com.uppaal.model.system.UppaalSystem;
 import com.uppaal.model.system.symbolic.SymbolicTransition;
+import javafx.concurrent.Task;
 
 import java.awt.*;
 import java.io.File;
@@ -18,15 +19,33 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class UPPAALDriver {
 
-    // Maps to convert H-UPPAAL locations to UPPAAL locations
-    // TODO Either make UPAALDriver non-static or insert these into a map of templates or similar
-    private final static Map<Location, com.uppaal.model.core2.Location> hToULocations = new HashMap<>();
-    private final static Map<com.uppaal.model.core2.Location, Location> uToHLocations = new HashMap<>();
+    public static void verify(final String query, final ModelContainer modelContainer, final Consumer<Boolean> success, final Consumer<BackendException> failure) {
+        // The task that should be executed on the background thread
+        // calls success if no exception happens with the result
+        // otherwise calls failure with the exception
+        final Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                {
+                    try {
+                        success.accept(UPPAALDriver.verify(query, modelContainer));
+                    } catch (final BackendException backendException) {
+                        failure.accept(backendException);
+                    }
+                }
+                return null;
+            }
+        };
 
-    public static boolean verify(final String query, final ModelContainer modelContainer) throws EngineException {
+        // Start a new thread
+        new Thread(task).start();
+    }
+
+    private static synchronized boolean verify(final String query, final ModelContainer modelContainer) throws BackendException.BadUPPAALQueryException {
         final Document uppaalDocument = new Document(new PrototypeDocument());
 
         // Give the model container a name based on its hascode
@@ -42,16 +61,23 @@ public class UPPAALDriver {
         // Set the system declaration
         uppaalDocument.setProperty("system", systemDclString);
 
-        storeUppaalFile(uppaalDocument, "debug.xml");
-
+        // Run the query
         final char result = runQuery(uppaalDocument, query).result;
+
+        // Store the document
+        storeUppaalFile(uppaalDocument, "debug.xml");
 
         if (result == 'T') return true;
         else if (result == 'F') return false;
-        else throw new EngineException("Query returned from engine was: " + result + " (E is Error, M is uncertain)");
+        else
+            throw new BackendException.BadUPPAALQueryException("Query returned from engine was: " + result + " (E is Error, M is uncertain)");
     }
 
     private static Template generateTemplate(final Document uppaalDocument, final ModelContainer modelContainer) {
+
+        // Maps to convert H-UPPAAL locations to UPPAAL locations
+        final Map<Location, com.uppaal.model.core2.Location> hToULocations = new HashMap<>();
+        final Map<com.uppaal.model.core2.Location, Location> uToHLocations = new HashMap<>();
 
         // Clear the maps before generating a new template
         hToULocations.clear();
@@ -73,7 +99,7 @@ public class UPPAALDriver {
             // Populate the maps
             hToULocations.put(hLocation, uLocation);
             uToHLocations.put(uLocation, hLocation);
-
+            
             locationCounter++;
         }
 
@@ -95,7 +121,7 @@ public class UPPAALDriver {
         return template;
     }
 
-    private static QueryVerificationResult runQuery(final Document uppaalDocument, final String query) throws EngineException {
+    private static QueryVerificationResult runQuery(final Document uppaalDocument, final String query) throws BackendException.BadUPPAALQueryException {
 
         // Create the engine and set the correct server path
         final Engine engine = new Engine();
@@ -112,8 +138,7 @@ public class UPPAALDriver {
 
             // Check if there is any problems
             if (!problems.isEmpty()) {
-                problems.forEach(System.out::println);
-                // TODO handle them
+                problems.forEach(problem -> System.out.println("problem: " + problem));
             }
 
             // Update some internal state for the engine by getting the initial state
@@ -153,7 +178,6 @@ public class UPPAALDriver {
 
                 @Override
                 public void setFeedback(String s) {
-
                 }
 
                 @Override
@@ -171,11 +195,9 @@ public class UPPAALDriver {
 
 
         } catch (EngineException | IOException e) {
-            // TODO Handle exception
-            e.printStackTrace();
+            // Something went wrong
+            throw new BackendException.BadUPPAALQueryException("Unable to run query", e);
         }
-
-        throw new EngineException("Could not connect to server");
     }
 
     private static String getOSDependentServerPath() {
