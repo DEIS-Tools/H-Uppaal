@@ -60,7 +60,7 @@ public class Edge extends Parent implements Removable, Colorable {
         }
     };
 
-    final ObservableList<Nail> nails = FXCollections.observableArrayList();
+    private final ObservableList<Nail> nails = FXCollections.observableArrayList();
     private final BooleanBinding nailsIsEmpty = new BooleanBinding() {
         {
             super.bind(nails);
@@ -75,7 +75,6 @@ public class Edge extends Parent implements Removable, Colorable {
     // Mouse trackers
     private MouseTracker canvasMouseTracker = null;
     private final MouseTracker localMouseTracker = new MouseTracker(this);
-    private int nailIndex;
 
     public Edge(final Location sourceLocation, final MouseTracker canvasMouseTracker) {
         this.sourceLocation = sourceLocation;
@@ -97,9 +96,9 @@ public class Edge extends Parent implements Removable, Colorable {
         this.canvasMouseTracker.registerOnMousePressedEventHandler(drawEdgeStepWhenCanvasPressed);
 
         // Add keybind to discard the nails and links if ESC is pressed
-        Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+        final Keybind removeOnEscape = new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
             // Get the parent from the source location
-            IParent parent = (IParent) this.getParent();
+            final IParent parent = (IParent) this.getParent();
             if (parent == null) return;
 
             // Remove this edge from the canvas and unregister its draw edge handler
@@ -119,7 +118,7 @@ public class Edge extends Parent implements Removable, Colorable {
             // Do not turn the nails invisible if we are selected
             if (SelectHelper.isSelected(this)) return;
 
-            for (Nail nail : nails) {
+            for (final Nail nail : nails) {
                 if (nail.isBeingDragged) return;
             }
             nails.forEach(nail -> nail.circle.setVisible(false));
@@ -142,7 +141,7 @@ public class Edge extends Parent implements Removable, Colorable {
 
     private final EventHandler<MouseEvent> drawEdgeStepWhenCanvasPressed = new EventHandler<MouseEvent>() {
         @Override
-        public void handle(MouseEvent event) {
+        public void handle(final MouseEvent event) {
             if (skipLine) {
                 skipLine = false;
                 return;
@@ -190,12 +189,12 @@ public class Edge extends Parent implements Removable, Colorable {
                 if (sourceLocation.equals(getTargetLocation())) {
                     setTargetLocation(sourceLocation);
                     // Create two nails outside the source locations
-                    Nail firstNail = new Nail(sourceLocation.circle.centerXProperty().add(Location.RADIUS * 3), sourceLocation.circle.centerYProperty());
-                    Nail secondNail = new Nail(sourceLocation.circle.centerXProperty(), sourceLocation.circle.centerYProperty().add(Location.RADIUS * 3));
+                    final Nail firstNail = new Nail(sourceLocation.circle.centerXProperty().add(Location.RADIUS * 3), sourceLocation.circle.centerYProperty());
+                    final Nail secondNail = new Nail(sourceLocation.circle.centerXProperty(), sourceLocation.circle.centerYProperty().add(Location.RADIUS * 3));
 
                     // Create two links for connecting the edge (the link created before is the third link in the chain)
-                    Link firstLink = new Link();
-                    Link secondLink = new Link();
+                    final Link firstLink = new Link();
+                    final Link secondLink = new Link();
 
                     // Add them to the view
                     Edge.this.getChildren().addAll(firstLink, secondLink, firstNail, secondNail);
@@ -255,7 +254,7 @@ public class Edge extends Parent implements Removable, Colorable {
 
     private void findNewPropertiesNail() {
         // Pick the nail in the middle
-        nailIndex = (int) Math.floor(nails.size() / 2);
+        final int nailIndex = (int) Math.floor(nails.size() / 2);
         final Nail removeNail = nails.get(nailIndex);
 
         propertiesNail = new PropertyNail(removeNail.xProperty(), removeNail.yProperty());
@@ -429,7 +428,7 @@ public class Edge extends Parent implements Removable, Colorable {
         return hoveredNail;
     }
 
-    public void setHoveredNail(Nail hoveredNail) {
+    public void setHoveredNail(final Nail hoveredNail) {
         this.hoveredNail = hoveredNail;
     }
 
