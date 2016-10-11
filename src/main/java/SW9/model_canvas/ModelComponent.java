@@ -10,7 +10,9 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.shape.*;
 
 
@@ -103,10 +105,10 @@ public class ModelComponent extends ModelContainer implements Colorable {
         labelTriangle.layoutYProperty().bind(yProperty.subtract(y).add(1));
 
         addChildren(
+                frame,
                 labelTriangle,
                 labelContainer,
-                label,
-                frame
+                label
         );
 
         add(initialLocation);
@@ -150,7 +152,7 @@ public class ModelComponent extends ModelContainer implements Colorable {
         frame.getElements().addAll(p1, p2, p3, p4, p5, p6, p7);
 
         frame.getStyleClass().add("component-stroke");
-        frame.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        frame.blendModeProperty().set(BlendMode.MULTIPLY);
     }
 
     @Override
@@ -204,6 +206,7 @@ public class ModelComponent extends ModelContainer implements Colorable {
         labelTriangle.setFill(color.getColor(intensity));
         frame.setStroke(color.getColor(intensity.next(2)));
         label.setTextFill(color.getTextColor(intensity));
+        frame.setFill(color.getColor(intensity.next(-10).next(1)));
 
         // Color all of our children location, unless they are already colored
         getLocations().forEach(location -> {
