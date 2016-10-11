@@ -158,7 +158,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             for (Node child : getChildren()) {
                 if (child instanceof ModelContainer) {
                     try {
-                        System.out.println(UPPAALDriver.verify("E<> deadlock", (ModelContainer) child));
+                        System.out.println(UPPAALDriver.verify("A[] deadlock", (ModelContainer) child));
                     } catch (EngineException e) {
                         e.printStackTrace();
                     }

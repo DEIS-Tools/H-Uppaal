@@ -5,11 +5,14 @@ import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
 import com.uppaal.engine.*;
 import com.uppaal.model.core2.Document;
+import com.uppaal.model.core2.Property;
 import com.uppaal.model.core2.PrototypeDocument;
 import com.uppaal.model.core2.Template;
+import com.uppaal.model.system.SystemState;
 import com.uppaal.model.system.UppaalSystem;
 import com.uppaal.model.system.symbolic.SymbolicTransition;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,6 +51,9 @@ public class UPPAALDriver {
         // Map to convert H-UPPAAL locations to UPPAAL locations
         final Map<Location, com.uppaal.model.core2.Location> hToULocations = new HashMap<>();
 
+        // TODO remove this when names are updated
+        int locationCounter = 0;
+
         // Create empty template and insert it into the uppaal document
         final Template template = uppaalDocument.createTemplate();
         uppaalDocument.insert(template, null);
@@ -55,24 +61,9 @@ public class UPPAALDriver {
         // Add all locations from the model container to our conversion map and to the template
         for (final Location hLocation : modelContainer.getLocations()) {
 
-            // Create new UPPAAL location and insert it into the template
-            final com.uppaal.model.core2.Location uLocation = template.createLocation();
-            template.insert(uLocation, null);
-
-            // If it was the initial location
-            if (hLocation.type == Location.Type.INITIAL) {
-                uLocation.setProperty("init", true);
-            }
-
-            // Set the x and y properties
-            uLocation.setProperty("x", (int) hLocation.xProperty().get());
-            uLocation.setProperty("y", (int) hLocation.yProperty().get());
-
-            // Set the color property
-            uLocation.setProperty("color", hLocation.getColor().toAwtColor(hLocation.getIntensity()));
-
-            // Map our location to a UPPAAL location
-            hToULocations.put(hLocation, uLocation);
+            // Add the location to the template and add it to the map
+            hToULocations.put(hLocation, addLocation(template, hLocation, "L" + locationCounter));
+            locationCounter++;
         }
 
         for (final Edge hEdge : modelContainer.getEdges()) {
@@ -115,11 +106,11 @@ public class UPPAALDriver {
             }
 
             // Update some internal state for the engine by getting the initial state
-            engine.getInitialState(system);
+            SystemState state = engine.getInitialState(system);
 
             // Return the query
             // TODO use the trace and progress from this method call
-            return engine.query(system, "", query, new QueryFeedback() {
+            final QueryVerificationResult result = engine.query(system, "", query, new QueryFeedback() {
                 @Override
                 public void setProgressAvail(boolean b) {
 
@@ -147,7 +138,7 @@ public class UPPAALDriver {
 
                 @Override
                 public void setTrace(char c, String s, ArrayList<SymbolicTransition> arrayList, int i, QueryVerificationResult queryVerificationResult) {
-
+                    System.out.println("HEJSA");
                 }
 
                 @Override
@@ -165,6 +156,11 @@ public class UPPAALDriver {
 
                 }
             });
+
+            System.out.println(state.traceFormat());
+
+            return result;
+
 
         } catch (EngineException | IOException e) {
             // TODO Handle exception
@@ -194,6 +190,43 @@ public class UPPAALDriver {
             // TODO Handle exception
             e.printStackTrace();
         }
+    }
+
+    private static com.uppaal.model.core2.Location addLocation(final Template template,
+                                                               final Location hLocation, final String name) {
+
+        // TODO get name of location instead of having a separate parameter for the name
+
+        final int x = (int) hLocation.xProperty().get();
+        final int y = (int) hLocation.xProperty().get();
+        final Color color = hLocation.getColor().toAwtColor(hLocation.getIntensity());
+
+
+        // Create new UPPAAL location and insert it into the template
+        final com.uppaal.model.core2.Location uLocation = template.createLocation();
+        template.insert(uLocation, null);
+
+        // Set name of the location
+        uLocation.setProperty("name", name);
+
+        // Update the placement of the name label
+        Property p = uLocation.getProperty("name");
+        p.setProperty("x", x);
+        p.setProperty("y", y - 30);
+
+        // If it was the initial location
+        if (hLocation.type == Location.Type.INITIAL) {
+            uLocation.setProperty("init", true);
+        }
+
+        // Set the color of the location
+        uLocation.setProperty("color", color);
+
+        // Set the x and y properties
+        uLocation.setProperty("x", x);
+        uLocation.setProperty("y", y);
+
+        return uLocation;
     }
 
 }
