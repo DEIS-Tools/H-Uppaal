@@ -20,10 +20,6 @@ public class ModelComponent extends ModelContainer implements Colorable {
 
     private static final double CORNER_SIZE = 50;
 
-    private Color color = null;
-    private Color.Intensity intensity = null;
-    private boolean colorIsSet = false;
-
     private final Rectangle labelContainer;
     private final Polygon labelTriangle;
     private final Label label;
@@ -181,21 +177,6 @@ public class ModelComponent extends ModelContainer implements Colorable {
     }
 
     @Override
-    public boolean isColored() {
-        return colorIsSet;
-    }
-
-    @Override
-    public Color getColor() {
-        return color;
-    }
-
-    @Override
-    public Color.Intensity getIntensity() {
-        return intensity;
-    }
-
-    @Override
     public void color(final Color color, final Color.Intensity intensity) {
         colorIsSet = true;
 
@@ -220,11 +201,5 @@ public class ModelComponent extends ModelContainer implements Colorable {
     @Override
     public void resetColor() {
         resetColor(Color.GREY_BLUE, Color.Intensity.I700); // default color
-    }
-
-    @Override
-    public void resetColor(final Color color, final Color.Intensity intensity) {
-        color(color, intensity);
-        colorIsSet = false;
     }
 }

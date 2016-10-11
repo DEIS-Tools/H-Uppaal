@@ -2,6 +2,8 @@ package SW9.model_canvas;
 
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
+import SW9.utility.colors.Color;
+import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.value.ObservableDoubleValue;
@@ -11,7 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ModelContainer extends Parent implements MouseTrackable {
+public abstract class ModelContainer extends Parent implements MouseTrackable, Colorable {
+
+    protected Color color = null;
+    protected Color.Intensity intensity = null;
+    protected boolean colorIsSet = false;
 
     private final List<Location> locations = new ArrayList<>();
     private final Map<Location, List<Edge>> locationEdgeMap = new HashMap<>();
@@ -24,10 +30,22 @@ public abstract class ModelContainer extends Parent implements MouseTrackable {
 
         mouseTracker.registerOnMouseEnteredEventHandler(event -> {
             ModelCanvas.setHoveredModelContainer(this);
+
+            // If we have a location on the mouse, color it accordingly to our color
+            if(ModelCanvas.mouseHasLocation()) {
+                ModelCanvas.getLocationOnMouse().resetColor(getColor(), getIntensity());
+            }
         });
 
         mouseTracker.registerOnMouseExitedEventHandler(event -> {
-            if (this.equals(ModelCanvas.getHoveredModelContainer())) ModelCanvas.setHoveredModelContainer(null);
+            if (this.equals(ModelCanvas.getHoveredModelContainer())) {
+                ModelCanvas.setHoveredModelContainer(null);
+            }
+
+            // If we have a location on the mouse, reset its color (to "undo" our coloring when the mouse entered us)
+            if(ModelCanvas.mouseHasLocation()) {
+                ModelCanvas.getLocationOnMouse().resetColor();
+            }
         });
     }
 
@@ -100,4 +118,25 @@ public abstract class ModelContainer extends Parent implements MouseTrackable {
     public abstract ObservableDoubleValue getXLimit();
 
     public abstract ObservableDoubleValue getYLimit();
+
+    @Override
+    public boolean isColored() {
+        return colorIsSet;
+    }
+
+    @Override
+    public Color getColor() {
+        return color;
+    }
+
+    @Override
+    public Color.Intensity getIntensity() {
+        return intensity;
+    }
+
+    @Override
+    public void resetColor(final Color color, final Color.Intensity intensity) {
+        color(color, intensity);
+        colorIsSet = false;
+    }
 }
