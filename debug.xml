@@ -2,17 +2,32 @@
 <!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
 <nta>
 	<template>
-		<name>ModelContainer701625516</name>
-		<location id="id0" x="375" y="375" color="#455a64">
-			<name x="375" y="345">L1</name>
+		<name>ModelContainer822762603</name>
+		<location id="id0" x="637" y="637" color="#455a64">
+			<name x="637" y="607">L2</name>
 		</location>
-		<location id="id1" x="25" y="25" color="#455a64">
-			<name x="25" y="-5">L0</name>
+		<location id="id1" x="937" y="937" color="#455a64">
+			<name x="937" y="907">L1</name>
 		</location>
-		<init ref="id1"/>
+		<location id="id2" x="587" y="587" color="#455a64">
+			<name x="587" y="557">L0</name>
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id2"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id0"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+		</transition>
 	</template>
-	<system>ModelContainer701625516instance = ModelContainer701625516();
-system ModelContainer701625516instance;</system>
+	<system>ModelContainer822762603instance = ModelContainer822762603();
+system ModelContainer822762603instance;</system>
 	<queries>
 	</queries>
 </nta>

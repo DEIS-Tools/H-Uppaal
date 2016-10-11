@@ -21,11 +21,6 @@ import java.util.Map;
 
 public class UPPAALDriver {
 
-    // Maps to convert H-UPPAAL locations to UPPAAL locations
-    // TODO Either make UPAALDriver non-static or insert these into a map of templates or similar
-    private final static Map<Location, com.uppaal.model.core2.Location> hToULocations = new HashMap<>();
-    private final static Map<com.uppaal.model.core2.Location, Location> uToHLocations = new HashMap<>();
-
     public static boolean verify(final String query, final ModelContainer modelContainer) throws BadUPPAALQueryException {
         final Document uppaalDocument = new Document(new PrototypeDocument());
 
@@ -57,6 +52,10 @@ public class UPPAALDriver {
     }
 
     private static Template generateTemplate(final Document uppaalDocument, final ModelContainer modelContainer) {
+
+        // Maps to convert H-UPPAAL locations to UPPAAL locations
+        final Map<Location, com.uppaal.model.core2.Location> hToULocations = new HashMap<>();
+        final Map<com.uppaal.model.core2.Location, Location> uToHLocations = new HashMap<>();
 
         // Clear the maps before generating a new template
         hToULocations.clear();

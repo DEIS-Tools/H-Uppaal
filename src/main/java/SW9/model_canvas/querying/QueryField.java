@@ -49,6 +49,7 @@ public class QueryField extends Parent implements LocationAware {
                 textField.setBackground(new Background(new BackgroundFill(color.getColor(Color.Intensity.I500), CornerRadii.EMPTY, Insets.EMPTY)));
                 textField.setStyle("-fx-text-fill: #ffffff;");
             } catch (final BadUPPAALQueryException e) {
+                e.printStackTrace();
                 textField.setStyle("-fx-text-fill: #ff0000;");
                 textField.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
             }
