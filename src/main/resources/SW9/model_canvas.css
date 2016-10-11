@@ -32,8 +32,6 @@
 }
 
 .nail {
-    -fx-fill: -blue-grey-300;
-    -fx-stroke: -blue-grey-600;
     -fx-stroke-width: 2;
 }
 

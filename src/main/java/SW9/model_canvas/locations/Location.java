@@ -237,7 +237,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         initializeErrors();
         initializeWarnings();
 
-        // Will add color to the different children depending on their classes
+        // Will color the location
         resetColor();
     }
 

@@ -6,6 +6,7 @@ import SW9.model_canvas.Parent;
 import SW9.model_canvas.Removable;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.model_canvas.locations.Location;
+import SW9.utility.colors.Color;
 import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.LocationAware;
@@ -18,19 +19,19 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
 public class Edge extends Parent implements Removable, Colorable {
 
-    private SW9.utility.colors.Color color = null;
-    private SW9.utility.colors.Color.Intensity intensity = null;
+    private Color color = null;
+    private Color.Intensity intensity = null;
     private boolean colorIsSet = false;
 
     private final Location sourceLocation;
@@ -119,6 +120,16 @@ public class Edge extends Parent implements Removable, Colorable {
                 if (nail.isBeingDragged) return;
             }
             nails.forEach(nail -> nail.setVisible(false));
+        });
+
+        // Will color the edge (and its nails)
+        resetColor();
+
+        nails.addListener(new ListChangeListener<Nail>() {
+            @Override
+            public void onChanged(final Change<? extends Nail> c) {
+                resetColor(getColor(), getIntensity());
+            }
         });
     }
 
@@ -299,7 +310,7 @@ public class Edge extends Parent implements Removable, Colorable {
         } else {
             endCircle = nails.get(position + 1);
         }
-        
+
         addChildren(nail, newLink);
 
         BindingHelper.bind(newLink.line, startCircle, nail);
@@ -384,17 +395,17 @@ public class Edge extends Parent implements Removable, Colorable {
     }
 
     @Override
-    public SW9.utility.colors.Color getColor() {
+    public Color getColor() {
         return color;
     }
 
     @Override
-    public SW9.utility.colors.Color.Intensity getIntensity() {
+    public Color.Intensity getIntensity() {
         return intensity;
     }
 
     @Override
-    public void color(final SW9.utility.colors.Color color, final SW9.utility.colors.Color.Intensity intensity) {
+    public void color(final Color color, final Color.Intensity intensity) {
         colorIsSet = true;
 
         this.color = color;
@@ -409,11 +420,11 @@ public class Edge extends Parent implements Removable, Colorable {
 
     @Override
     public void resetColor() {
-        resetColor(SW9.utility.colors.Color.GREY_BLUE, SW9.utility.colors.Color.Intensity.I700); // default color
+        resetColor(Color.GREY_BLUE, Color.Intensity.I700); // default color
     }
 
     @Override
-    public void resetColor(final SW9.utility.colors.Color color, final SW9.utility.colors.Color.Intensity intensity) {
+    public void resetColor(final Color color, final Color.Intensity intensity) {
         color(color, intensity);
         colorIsSet = false;
     }
