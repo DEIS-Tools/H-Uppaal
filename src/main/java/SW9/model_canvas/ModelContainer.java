@@ -85,6 +85,8 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
 
     public void add(final Edge... edges) {
         for (final Edge edge : edges) {
+            edge.color(getColor(), getColorIntensity());
+
             addChild(edge);
 
             locationEdgeMap.get(edge.getSourceLocation()).add(edge);
