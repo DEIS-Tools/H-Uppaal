@@ -8,7 +8,7 @@ public interface Colorable {
 
     Color.Intensity getColorIntensity();
 
-    void color(final Color color, final Color.Intensity intensity);
+    boolean color(final Color color, final Color.Intensity intensity);
 
     void resetColor();
 

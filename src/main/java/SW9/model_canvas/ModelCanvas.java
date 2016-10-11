@@ -213,7 +213,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             if (hoveredModelContainer == null && hoveredLocation == null) return;
 
             final Colorable[] hoveredElement = {null};
-            if (hoveredModelContainer != null) hoveredElement[0] = (Colorable) hoveredModelContainer;
+            if (hoveredModelContainer != null) hoveredElement[0] = hoveredModelContainer;
             if (hoveredLocation != null) hoveredElement[0] = hoveredLocation;
 
             final Color previousColor = hoveredElement[0].getColor();
@@ -221,12 +221,15 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             final boolean wasPreviouslyColors = hoveredElement[0].isColored();
 
             UndoRedoStack.push(() -> { // Perform
-                hoveredElement[0].color(color, intensity);
+                final boolean result = hoveredElement[0].color(color, intensity);
+                if(!result) {
+                    UndoRedoStack.undo(); // We did not color the element, undo the action immediately
+                }
             }, () -> { // Undo
                 if (wasPreviouslyColors) {
                     hoveredElement[0].color(previousColor, previousIntensity);
                 } else {
-                    hoveredElement[0].resetColor();
+                    hoveredElement[0].resetColor(previousColor, previousIntensity);
                 }
             });
         }));

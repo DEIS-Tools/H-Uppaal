@@ -405,7 +405,7 @@ public class Edge extends Parent implements Removable, Colorable {
     }
 
     @Override
-    public void color(final Color color, final Color.Intensity intensity) {
+    public boolean color(final Color color, final Color.Intensity intensity) {
         colorIsSet = true;
 
         this.color = color;
@@ -416,6 +416,8 @@ public class Edge extends Parent implements Removable, Colorable {
             nail.setFill(color.getColor(intensity));
             nail.setStroke(color.getColor(intensity.next(2)));
         });
+
+        return true;
     }
 
     @Override

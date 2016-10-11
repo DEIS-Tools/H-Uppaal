@@ -176,7 +176,12 @@ public class ModelComponent extends ModelContainer implements Colorable {
     }
 
     @Override
-    public void color(final Color color, final Color.Intensity intensity) {
+    public boolean color(final Color color, final Color.Intensity intensity) {
+        // If the color should not be changed, do nothing
+        if(color.equals(getColor()) && intensity.equals(getColorIntensity())) {
+            return false;
+        }
+
         colorIsSet = true;
 
         this.color = color;
@@ -198,6 +203,8 @@ public class ModelComponent extends ModelContainer implements Colorable {
 
         // Color all of out children edges (their nails)
         getEdges().forEach(edge -> edge.color(color, intensity));
+
+        return true;
     }
 
     @Override
