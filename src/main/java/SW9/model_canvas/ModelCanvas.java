@@ -149,7 +149,9 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             BindingHelper.bind(handshakeSyncArrowHead, outgoingEnd1, channelReceiverArrowHead.getCircle());
 
             // Properties
-            Properties properties = new Properties(new SimpleDoubleProperty(100), new SimpleDoubleProperty(300));
+            final Properties properties = new Properties();
+            properties.xProperty().set(100);
+            properties.yProperty().set(300);
 
             UndoRedoStack.push(
                     () -> addChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine, handshakeSyncLine, handshakeSyncArrowHead),
