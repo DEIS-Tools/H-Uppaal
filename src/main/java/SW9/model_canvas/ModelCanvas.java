@@ -1,6 +1,6 @@
 package SW9.model_canvas;
 
-import SW9.backend.ModelDemo;
+import SW9.backend.UPPAALDriver;
 import SW9.model_canvas.arrow_heads.BroadcastChannelSenderArrowHead;
 import SW9.model_canvas.arrow_heads.ChannelReceiverArrowHead;
 import SW9.model_canvas.arrow_heads.HandshakeChannelSenderArrowHead;
@@ -17,6 +17,7 @@ import SW9.utility.helpers.*;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
+import com.uppaal.engine.EngineException;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -156,7 +157,11 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
         KeyboardTracker.registerKeybind(KeyboardTracker.COMPONENT_HAS_DEADLOCK, new Keybind(new KeyCodeCombination(KeyCode.D), () -> {
             for (Node child : getChildren()) {
                 if (child instanceof ModelContainer) {
-                    System.out.println(ModelDemo.hasDeadLock((ModelContainer) child));
+                    try {
+                        System.out.println(UPPAALDriver.verify("E<> deadlock", (ModelContainer) child));
+                    } catch (EngineException e) {
+                        e.printStackTrace();
+                    }
                     return;
                 }
             }
