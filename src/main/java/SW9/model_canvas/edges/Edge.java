@@ -39,12 +39,10 @@ public class Edge extends Parent implements Removable, Colorable {
     public final BooleanProperty targetLocationIsSet = new SimpleBooleanProperty(false);
 
     private final SimpleArrowHead arrowHead = new SimpleArrowHead();
-
     private final Line lineCue = new Line();
+    private Nail hoveredNail;
 
     private boolean skipLine = true;
-
-    private Nail hoveredNail;
 
     final ObservableList<Link> links = FXCollections.observableArrayList();
     private final BooleanBinding linesIsEmpty = new BooleanBinding() {
