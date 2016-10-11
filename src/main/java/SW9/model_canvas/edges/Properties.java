@@ -1,5 +1,6 @@
 package SW9.model_canvas.edges;
 
+import SW9.model_canvas.ModelCanvas;
 import SW9.model_canvas.Parent;
 import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.LocationAware;
@@ -10,11 +11,14 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
+
+import java.util.ArrayList;
 
 public class Properties extends Parent implements LocationAware, MouseTrackable {
 
@@ -25,6 +29,8 @@ public class Properties extends Parent implements LocationAware, MouseTrackable 
     private static final double VALUE_WIDTH = 120d;
 
     private final MouseTracker localMouseTracker = new MouseTracker(this);
+
+    private final ArrayList<Node> hiddenElements = new ArrayList<>();
 
     public Properties() {
         this.getStyleClass().add("edge-properties");
@@ -41,6 +47,18 @@ public class Properties extends Parent implements LocationAware, MouseTrackable 
         propertiesBox.layoutYProperty().bind(yProperty());
 
         getChildren().add(propertiesBox);
+
+        // Hide the elements in hiddenElements (input fields) when we are not hovering the properties
+        localMouseTracker.registerOnMouseEnteredEventHandler(event -> {
+            // Do not snow if we have a location on the mouse
+            if(ModelCanvas.mouseHasLocation()) {
+                hiddenElements.forEach(node -> node.setVisible(false));
+            } else {
+                hiddenElements.forEach(node -> node.setVisible(true));
+            }
+        });
+        localMouseTracker.registerOnMouseExitedEventHandler(event -> hiddenElements.forEach(node -> node.setVisible(false)));
+        hiddenElements.forEach(node -> node.setVisible(false));
     }
 
     private Parent generateValueBox(final String value, final DoubleProperty sharedHeightProperty) {
@@ -61,6 +79,8 @@ public class Properties extends Parent implements LocationAware, MouseTrackable 
         final Parent parent = new Parent();
         parent.getStyleClass().add("value-container");
         parent.addChildren(box, textField);
+
+        hiddenElements.add(parent);
 
         return parent;
     }
