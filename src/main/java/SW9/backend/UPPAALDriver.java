@@ -11,6 +11,7 @@ import com.uppaal.model.core2.Template;
 import com.uppaal.model.system.SystemState;
 import com.uppaal.model.system.UppaalSystem;
 import com.uppaal.model.system.symbolic.SymbolicTransition;
+import javafx.concurrent.Task;
 
 import java.awt.*;
 import java.io.File;
@@ -23,14 +24,25 @@ import java.util.function.Consumer;
 public class UPPAALDriver {
 
     public static void verify(final String query, final ModelContainer modelContainer, final Consumer<Boolean> success, final Consumer<BackendException> failure) {
-        // Start a thread that on success calls the success callback otherwise calls failure
-        new Thread(() -> {
-            try {
-                success.accept(UPPAALDriver.verify(query, modelContainer));
-            } catch (BackendException e) {
-                failure.accept(e);
+        // The task that should be executed on the background thread
+        // calls success if no exception happens with the result
+        // otherwise calls failure with the exception
+        final Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                {
+                    try {
+                        success.accept(UPPAALDriver.verify(query, modelContainer));
+                    } catch (final BackendException backendException) {
+                        failure.accept(backendException);
+                    }
+                }
+                return null;
             }
-        }).run();
+        };
+
+        // Start a new thread
+        new Thread(task).start();
     }
 
     private static synchronized boolean verify(final String query, final ModelContainer modelContainer) throws BackendException.BadUPPAALQueryException {
@@ -59,8 +71,6 @@ public class UPPAALDriver {
         else if (result == 'F') return false;
         else
             throw new BackendException.BadUPPAALQueryException("Query returned from engine was: " + result + " (E is Error, M is uncertain)");
-
-
     }
 
     private static Template generateTemplate(final Document uppaalDocument, final ModelContainer modelContainer) {
@@ -89,7 +99,7 @@ public class UPPAALDriver {
             // Populate the maps
             hToULocations.put(hLocation, uLocation);
             uToHLocations.put(uLocation, hLocation);
-
+            
             locationCounter++;
         }
 

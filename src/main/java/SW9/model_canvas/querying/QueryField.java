@@ -41,18 +41,23 @@ public class QueryField extends Parent implements LocationAware {
 
             final String query = textField.getText();
 
-            final Consumer<Boolean> success = result -> {
-                final Color color = result ? Color.GREEN : Color.RED;
-                textField.setBackground(new Background(new BackgroundFill(color.getColor(Color.Intensity.I500), CornerRadii.EMPTY, Insets.EMPTY)));
-                textField.setStyle("-fx-text-fill: #ffffff;");
-            };
+            for(int i = 0; i < 50; i++ ) {
 
-            final Consumer<BackendException> failure = e -> {
-                textField.setStyle("-fx-text-fill: #ff0000;");
-                textField.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-            };
+                final int sager = i;
+                final Consumer<Boolean> success = result -> {
+                    final Color color = result ? Color.GREEN : Color.RED;
+                    textField.setBackground(new Background(new BackgroundFill(color.getColor(Color.Intensity.I500), CornerRadii.EMPTY, Insets.EMPTY)));
+                    textField.setStyle("-fx-text-fill: #ffffff;");
+                    System.out.println(sager);
+                };
 
-            UPPAALDriver.verify(query, modelContainer, success, failure);
+                final Consumer<BackendException> failure = e -> {
+                    textField.setStyle("-fx-text-fill: #ff0000;");
+                    textField.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+                };
+
+                UPPAALDriver.verify(query, modelContainer, success, failure);
+            }
         });
     }
 
