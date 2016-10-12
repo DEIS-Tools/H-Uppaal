@@ -31,6 +31,7 @@ import javafx.scene.shape.Line;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ModelCanvas extends Pane implements MouseTrackable, IParent {
 
@@ -43,6 +44,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
     private static ModelContainer hoveredModelContainer = null;
 
     private final MouseTracker mouseTracker = new MouseTracker(this);
+    private int componentCount = 0;
 
     public ModelCanvas() {
         initialize();
@@ -123,8 +125,8 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
         }));
 
         KeyboardTracker.registerKeybind(KeyboardTracker.CREATE_COMPONENT, new Keybind(new KeyCodeCombination(KeyCode.K), () -> {
-            final ModelComponent mc = new ModelComponent(mouseTracker.xProperty().get(), mouseTracker.yProperty().get(), 400, 600, "Component", mouseTracker);
-
+            final ModelComponent mc = new ModelComponent(mouseTracker.xProperty().get(), mouseTracker.yProperty().get(), 400, 600, "Component" + componentCount, mouseTracker);
+            componentCount++;
             // TODO remove me when adding of clocks, vars and channels can be done through the UI
             mc.addClock("t0");
             mc.addClock("t1");
@@ -193,11 +195,16 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
         // Gets the first model container and checks for deadlock
         KeyboardTracker.registerKeybind(KeyboardTracker.COMPONENT_HAS_DEADLOCK, new Keybind(new KeyCodeCombination(KeyCode.D), () -> {
 
+
+            List<ModelContainer> modelContainerList = new ArrayList<>();
             for (Node child : getChildren()) {
                 if (child instanceof ModelContainer) {
-                    addChild(new QueryField(200, 200, (ModelContainer) child));
-                    return;
+                    modelContainerList.add((ModelContainer) child);
                 }
+            }
+
+            if(!modelContainerList.isEmpty()) {
+                addChild(new QueryField(200, 200, modelContainerList));
             }
 
         }));

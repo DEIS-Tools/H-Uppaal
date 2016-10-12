@@ -15,6 +15,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class QueryField extends Parent implements LocationAware {
@@ -24,7 +25,7 @@ public class QueryField extends Parent implements LocationAware {
     private final TextField textField = new TextField();
     private static final double FIELD_WIDTH = 500;
 
-    public QueryField(final double x, final double y, final ModelContainer modelContainer) {
+    public QueryField(final double x, final double y, final List<ModelContainer> modelContainers ) {
         xProperty().setValue(x);
         yProperty().setValue(y);
 
@@ -51,7 +52,7 @@ public class QueryField extends Parent implements LocationAware {
                 textField.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
             };
 
-            UPPAALDriver.verify(query, modelContainer, success, failure);
+            UPPAALDriver.verify(query, success, failure, modelContainers);
         });
     }
 

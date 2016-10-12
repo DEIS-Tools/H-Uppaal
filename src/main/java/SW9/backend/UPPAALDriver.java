@@ -18,12 +18,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 public class UPPAALDriver {
 
-    public static void verify(final String query, final ModelContainer modelContainer, final Consumer<Boolean> success, final Consumer<BackendException> failure) {
+    public static void verify(final String query , final Consumer<Boolean> success, final Consumer<BackendException> failure, final List<ModelContainer> modelContainers) {
         // The task that should be executed on the background thread
         // calls success if no exception happens with the result
         // otherwise calls failure with the exception
@@ -32,7 +33,7 @@ public class UPPAALDriver {
             protected Void call() throws Exception {
                 {
                     try {
-                        success.accept(UPPAALDriver.verify(query, modelContainer));
+                        success.accept(UPPAALDriver.verify(query, modelContainers));
                     } catch (final BackendException backendException) {
                         failure.accept(backendException);
                     }
@@ -45,17 +46,29 @@ public class UPPAALDriver {
         new Thread(task).start();
     }
 
-    private static synchronized boolean verify(final String query, final ModelContainer modelContainer) throws BackendException.BadUPPAALQueryException {
+    private static synchronized boolean verify(final String query, final List<ModelContainer> modelContainers) throws BackendException.BadUPPAALQueryException {
         final Document uppaalDocument = new Document(new PrototypeDocument());
 
-        // Set the name of the underlying UPPAAL template and instance
-        final String modelContainerInstanceName = modelContainer.getName();
-        final String modelContainerTemplateName = modelContainerInstanceName + "Template";
+        for(final ModelContainer modelContainer : modelContainers) {
+            // Set create a template for each model container
+            final Template template = generateTemplate(uppaalDocument, modelContainer);
+            template.setProperty("name", modelContainer.getName() + "Template");
+        }
 
-        final Template template = generateTemplate(uppaalDocument, modelContainer);
-        template.setProperty("name", modelContainerTemplateName);
-        String systemDclString = modelContainerInstanceName + "=" + modelContainerTemplateName + "();\n";
-        systemDclString += "system " + modelContainerInstanceName + ";";
+        String systemDclString = "\n";
+        for(final ModelContainer modelContainer : modelContainers) {
+            systemDclString += modelContainer.getName() + " = " + modelContainer.getName() + "Template();\n";
+        }
+
+        systemDclString += "system ";
+        for(int i = 0; i < modelContainers.size(); i ++) {
+            if(i != 0 ) {
+                systemDclString += ", ";
+            }
+            systemDclString += modelContainers.get(i).getName();
+        }
+
+        systemDclString += ";";
 
         // Set the system declaration
         uppaalDocument.setProperty("system", systemDclString);
