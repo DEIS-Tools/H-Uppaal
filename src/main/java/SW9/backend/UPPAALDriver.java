@@ -100,21 +100,108 @@ public class UPPAALDriver {
         }
 
         for (final Edge hEdge : modelContainer.getEdges()) {
-
-            // Create new UPPAAL edge and insert it into the template
-            final com.uppaal.model.core2.Edge uEdge = template.createEdge();
-            template.insert(uEdge, null);
-
-            // Find the source and target locations from the map
-            final com.uppaal.model.core2.Location sourceULocation = hToULocations.get(hEdge.getSourceLocation());
-            final com.uppaal.model.core2.Location targetULocation = hToULocations.get(hEdge.getTargetLocation());
-
-            // Add the to the edge
-            uEdge.setSource(sourceULocation);
-            uEdge.setTarget(targetULocation);
+            addEdge(template, hEdge, hToULocations);
         }
 
         return template;
+    }
+
+    private static String generateTemplateDeclaration(final ModelContainer modelContainer) {
+
+        // TODO update the types of variables (int, byte etc) and channels (urgent) when added to the model
+        String declStr = "";
+
+        // Add the clocks
+        for(final String clock : modelContainer.getClocks()) {
+            declStr += "clock " + clock + ";\n";
+        }
+
+        // Add variables
+        for(final String var : modelContainer.getVariables()) {
+            declStr += "int " + var + ";\n";
+        }
+
+        // Add channels
+        for(final String chan : modelContainer.getChannels()) {
+            declStr += "chan " + chan + ";\n";
+        }
+
+        return  declStr;
+    }
+
+    private static com.uppaal.model.core2.Location addLocation(final Template template, final Location hLocation, final String name) {
+
+        // TODO get name of location instead of having a separate parameter for the name
+
+        final int x = (int) hLocation.xProperty().get();
+        final int y = (int) hLocation.xProperty().get();
+        final Color color = hLocation.getColor().toAwtColor(hLocation.getColorIntensity());
+
+
+        // Create new UPPAAL location and insert it into the template
+        final com.uppaal.model.core2.Location uLocation = template.createLocation();
+        template.insert(uLocation, null);
+
+        // Set name of the location
+        uLocation.setProperty("name", name);
+
+        // Update the placement of the name label
+        Property p = uLocation.getProperty("name");
+        p.setProperty("x", x);
+        p.setProperty("y", y - 30);
+
+        // If it was the initial location
+        if (hLocation.type == Location.Type.INITIAL) {
+            uLocation.setProperty("init", true);
+        }
+
+        // Set the color of the location
+        uLocation.setProperty("color", color);
+
+        // Set the x and y properties
+        uLocation.setProperty("x", x);
+        uLocation.setProperty("y", y);
+
+        return uLocation;
+    }
+
+    private static void addEdge(final Template template, final Edge hEdge, final Map<Location, com.uppaal.model.core2.Location> hToULocations) {
+        // Create new UPPAAL edge and insert it into the template
+        final com.uppaal.model.core2.Edge uEdge = template.createEdge();
+        template.insert(uEdge, null);
+
+        // Find the source and target locations from the map
+        final com.uppaal.model.core2.Location sourceULocation = hToULocations.get(hEdge.getSourceLocation());
+        final com.uppaal.model.core2.Location targetULocation = hToULocations.get(hEdge.getTargetLocation());
+
+        // Add the to the edge
+        uEdge.setSource(sourceULocation);
+        uEdge.setTarget(targetULocation);
+
+        final int x = (sourceULocation.getX()+targetULocation.getX())/2;
+        final int y = (sourceULocation.getY()+targetULocation.getY())/2;
+
+
+        if (hEdge.getGuard() != null) {
+            uEdge.setProperty("guard", hEdge.getGuard());
+            final Property p = uEdge.getProperty("guard");
+            p.setProperty("x", x-15);
+            p.setProperty("y", y-28);
+        }
+
+        if (hEdge.getSync() != null) {
+            uEdge.setProperty("synchronisation", hEdge.getSync());
+            final Property p = uEdge.getProperty("synchronisation");
+            p.setProperty("x", x-15);
+            p.setProperty("y", y-14);
+        }
+
+        if (hEdge.getUpdate() != null) {
+            uEdge.setProperty("assignment", hEdge.getUpdate());
+            final Property p = uEdge.getProperty("assignment");
+            p.setProperty("x", x-15);
+            p.setProperty("y", y);
+        }
     }
 
     private static QueryVerificationResult runQuery(final Document uppaalDocument, final String query) throws BackendException.BadUPPAALQueryException {
@@ -218,63 +305,6 @@ public class UPPAALDriver {
         }
     }
 
-    private static com.uppaal.model.core2.Location addLocation(final Template template, final Location hLocation, final String name) {
 
-        // TODO get name of location instead of having a separate parameter for the name
-
-        final int x = (int) hLocation.xProperty().get();
-        final int y = (int) hLocation.xProperty().get();
-        final Color color = hLocation.getColor().toAwtColor(hLocation.getColorIntensity());
-
-
-        // Create new UPPAAL location and insert it into the template
-        final com.uppaal.model.core2.Location uLocation = template.createLocation();
-        template.insert(uLocation, null);
-
-        // Set name of the location
-        uLocation.setProperty("name", name);
-
-        // Update the placement of the name label
-        Property p = uLocation.getProperty("name");
-        p.setProperty("x", x);
-        p.setProperty("y", y - 30);
-
-        // If it was the initial location
-        if (hLocation.type == Location.Type.INITIAL) {
-            uLocation.setProperty("init", true);
-        }
-
-        // Set the color of the location
-        uLocation.setProperty("color", color);
-
-        // Set the x and y properties
-        uLocation.setProperty("x", x);
-        uLocation.setProperty("y", y);
-
-        return uLocation;
-    }
-
-    private static String generateTemplateDeclaration(final ModelContainer modelContainer) {
-
-        // TODO update the types of variables (int, byte etc) and channels (urgent) when added to the model
-        String declStr = "";
-
-        // Add the clocks
-        for(final String clock : modelContainer.getClocks()) {
-            declStr += "clock " + clock + ";\n";
-        }
-
-        // Add variables
-        for(final String var : modelContainer.getVariables()) {
-            declStr += "int " + var + ";\n";
-        }
-
-        // Add channels
-        for(final String chan : modelContainer.getChannels()) {
-            declStr += "chan " + chan + ";\n";
-        }
-
-        return  declStr;
-    }
 
 }
