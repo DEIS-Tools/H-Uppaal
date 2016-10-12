@@ -513,7 +513,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         return invariantProperty().get();
     }
 
-    public Boolean isInitial() {
+    public boolean isInitial() {
         return type == Type.INITIAL;
     }
 
@@ -521,7 +521,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         return urgentProperty;
     }
 
-    public Boolean isUrgent() {
+    public boolean isUrgent() {
         return urgentProperty().get();
     }
 
@@ -529,7 +529,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         return committedProperty;
     }
 
-    public Boolean isCommitted() {
+    public boolean isCommitted() {
         return committedProperty().get();
     }
 }

@@ -8,7 +8,6 @@ import com.uppaal.model.core2.Document;
 import com.uppaal.model.core2.Property;
 import com.uppaal.model.core2.PrototypeDocument;
 import com.uppaal.model.core2.Template;
-import com.uppaal.model.system.SystemState;
 import com.uppaal.model.system.UppaalSystem;
 import com.uppaal.model.system.symbolic.SymbolicState;
 import com.uppaal.model.system.symbolic.SymbolicTransition;
@@ -50,23 +49,22 @@ public class UPPAALDriver {
         final Document uppaalDocument = new Document(new PrototypeDocument());
 
         // Give the model container a name based on its hascode
-        // TODO use the name of the component here instead (special case if it root element is being implemented)
-        final String modelContainerName = "ModelContainer" + modelContainer.hashCode();
+        final String modelContainerInstanceName = modelContainer.getName();
+        final String modelContainerTemplateName = modelContainerInstanceName + "Template";
 
         final Template template = generateTemplate(uppaalDocument, modelContainer);
-        template.setProperty("name", modelContainerName);
-
-        final String systemDclString = modelContainerName + "instance = " + modelContainerName + "();\n" +
-                "system " + modelContainerName + "instance;";
+        template.setProperty("name", modelContainerTemplateName);
+        String systemDclString = modelContainerInstanceName + "=" + modelContainerTemplateName + "();\n";
+        systemDclString += "system " + modelContainerInstanceName + ";";
 
         // Set the system declaration
         uppaalDocument.setProperty("system", systemDclString);
 
+        // Store the debug document
+        storeUppaalFile(uppaalDocument, "uppaal-debug/debug.xml");
+
         // Run the query
         final char result = runQuery(uppaalDocument, query).result;
-
-        // Store the document
-        storeUppaalFile(uppaalDocument, "debug.xml");
 
         if (result == 'T') return true;
         else if (result == 'F') return false;
@@ -79,9 +77,6 @@ public class UPPAALDriver {
         // Maps to convert H-UPPAAL locations to UPPAAL locations
         final Map<Location, com.uppaal.model.core2.Location> hToULocations = new HashMap<>();
 
-        // TODO remove this when names are updated
-        int locationCounter = 0;
-
         // Create empty template and insert it into the uppaal document
         final Template template = uppaalDocument.createTemplate();
         uppaalDocument.insert(template, null);
@@ -92,12 +87,10 @@ public class UPPAALDriver {
         for (final Location hLocation : modelContainer.getLocations()) {
 
             // Add the location to the template
-            final com.uppaal.model.core2.Location uLocation = addLocation(template, hLocation, "L" + locationCounter);
+            final com.uppaal.model.core2.Location uLocation = addLocation(template, hLocation, "L" + hToULocations.size());
 
             // Populate the map
             hToULocations.put(hLocation, uLocation);
-            
-            locationCounter++;
         }
 
         for (final Edge hEdge : modelContainer.getEdges()) {
@@ -113,21 +106,21 @@ public class UPPAALDriver {
         String declStr = "";
 
         // Add the clocks
-        for(final String clock : modelContainer.getClocks()) {
+        for (final String clock : modelContainer.getClocks()) {
             declStr += "clock " + clock + ";\n";
         }
 
         // Add variables
-        for(final String var : modelContainer.getVariables()) {
+        for (final String var : modelContainer.getVariables()) {
             declStr += "int " + var + ";\n";
         }
 
         // Add channels
-        for(final String chan : modelContainer.getChannels()) {
+        for (final String chan : modelContainer.getChannels()) {
             declStr += "chan " + chan + ";\n";
         }
 
-        return  declStr;
+        return declStr;
     }
 
     private static com.uppaal.model.core2.Location addLocation(final Template template, final Location hLocation, final String fallbackName) {
@@ -140,30 +133,30 @@ public class UPPAALDriver {
         template.insert(uLocation, null);
 
         // Set name of the location
-        if(hLocation.getName() != null) {
+        if (hLocation.getName() != null) {
             uLocation.setProperty("name", hLocation.getName());
         } else {
             uLocation.setProperty("name", fallbackName);
         }
 
         // Set the invariant if any
-        if(hLocation.getInvariant() != null) {
+        if (hLocation.getInvariant() != null) {
             uLocation.setProperty("invariant", hLocation.getInvariant());
         }
 
         // Add committed property if location is committed
-        if(hLocation.isCommitted()) {
+        if (hLocation.isCommitted()) {
             uLocation.setProperty("committed", true);
         }
 
         // Add urgent property if location is urgent
-        if(hLocation.isUrgent()) {
+        if (hLocation.isUrgent()) {
             uLocation.setProperty("urgent", true);
         }
 
         // Add initial property if location is initial
-        if(hLocation.isInitial()) {
-            uLocation.setProperty("initial", true);
+        if (hLocation.isInitial()) {
+            uLocation.setProperty("init", true);
         }
 
         // Update the placement of the name label
@@ -194,28 +187,28 @@ public class UPPAALDriver {
         uEdge.setSource(sourceULocation);
         uEdge.setTarget(targetULocation);
 
-        final int x = (sourceULocation.getX()+targetULocation.getX())/2;
-        final int y = (sourceULocation.getY()+targetULocation.getY())/2;
+        final int x = (sourceULocation.getX() + targetULocation.getX()) / 2;
+        final int y = (sourceULocation.getY() + targetULocation.getY()) / 2;
 
 
         if (hEdge.getGuard() != null) {
             uEdge.setProperty("guard", hEdge.getGuard());
             final Property p = uEdge.getProperty("guard");
-            p.setProperty("x", x-15);
-            p.setProperty("y", y-28);
+            p.setProperty("x", x - 15);
+            p.setProperty("y", y - 28);
         }
 
         if (hEdge.getSync() != null) {
             uEdge.setProperty("synchronisation", hEdge.getSync());
             final Property p = uEdge.getProperty("synchronisation");
-            p.setProperty("x", x-15);
-            p.setProperty("y", y-14);
+            p.setProperty("x", x - 15);
+            p.setProperty("y", y - 14);
         }
 
         if (hEdge.getUpdate() != null) {
             uEdge.setProperty("assignment", hEdge.getUpdate());
             final Property p = uEdge.getProperty("assignment");
-            p.setProperty("x", x-15);
+            p.setProperty("x", x - 15);
             p.setProperty("y", y);
         }
     }
@@ -319,7 +312,6 @@ public class UPPAALDriver {
             e.printStackTrace();
         }
     }
-
 
 
 }

@@ -34,6 +34,7 @@ public class ModelComponent extends ModelContainer implements Colorable {
     private boolean mouseIsHoveringTopBar = false;
 
     public ModelComponent(final double x, final double y, final double width, final double height, final String name, final MouseTracker canvasMouseTracker) {
+        super(name);
 
         // Initialize the spacial properties
         xProperty = new SimpleDoubleProperty(x);
@@ -70,6 +71,7 @@ public class ModelComponent extends ModelContainer implements Colorable {
         // Initialize properties for the name of the component
         labelContainer = new Rectangle();
         label = new Label(name);
+        label.textProperty().bind(nameProperty());
         labelTriangle = new Polygon(
                 xProperty.get() + CORNER_SIZE / 2, yProperty.get() + CORNER_SIZE / 2,
                 xProperty.get() + CORNER_SIZE, yProperty.get(),

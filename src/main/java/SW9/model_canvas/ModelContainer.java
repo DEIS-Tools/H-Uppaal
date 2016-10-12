@@ -6,6 +6,8 @@ import SW9.utility.colors.Color;
 import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.mouse.MouseTracker;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Bounds;
 
@@ -23,6 +25,7 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
     private final List<String> clocks = new ArrayList<>();
     private final List<String> variables = new ArrayList<>();
     private final List<String> channels = new ArrayList<>();
+    private final StringProperty name = new SimpleStringProperty();
 
     protected Color color = null;
     protected Color.Intensity intensity = null;
@@ -30,8 +33,10 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
 
     protected final MouseTracker mouseTracker = new MouseTracker(this);
 
-    public ModelContainer() {
+    public ModelContainer(final String name) {
         super();
+
+        this.name.set(name);
 
         mouseTracker.registerOnMouseEnteredEventHandler(event -> {
             ModelCanvas.setHoveredModelContainer(this);
@@ -201,5 +206,11 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
         }
     }
 
+    public StringProperty nameProperty() {
+        return name;
+    }
 
+    public String getName() {
+        return nameProperty().get();
+    }
 }
