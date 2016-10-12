@@ -126,6 +126,14 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
         KeyboardTracker.registerKeybind(KeyboardTracker.CREATE_COMPONENT, new Keybind(new KeyCodeCombination(KeyCode.K), () -> {
             final ModelComponent mc = new ModelComponent(mouseTracker.xProperty().get(), mouseTracker.yProperty().get(), 400, 600, "Component", mouseTracker);
 
+            // TODO remove me when adding of clocks, vars and channels can be done through the UI
+            mc.addClock("t0");
+            mc.addClock("t1");
+            mc.addClock("t2");
+            mc.addVariable("v0");
+            mc.addVariable("v1");
+            mc.addVariable("v2");
+
             UndoRedoStack.push(() -> addChild(mc), () -> removeChild(mc));
         }));
 

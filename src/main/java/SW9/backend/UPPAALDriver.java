@@ -77,11 +77,6 @@ public class UPPAALDriver {
 
         // Maps to convert H-UPPAAL locations to UPPAAL locations
         final Map<Location, com.uppaal.model.core2.Location> hToULocations = new HashMap<>();
-        final Map<com.uppaal.model.core2.Location, Location> uToHLocations = new HashMap<>();
-
-        // Clear the maps before generating a new template
-        hToULocations.clear();
-        uToHLocations.clear();
 
         // TODO remove this when names are updated
         int locationCounter = 0;
@@ -90,15 +85,16 @@ public class UPPAALDriver {
         final Template template = uppaalDocument.createTemplate();
         uppaalDocument.insert(template, null);
 
+        template.setProperty("declaration", generateTemplateDeclaration(modelContainer));
+
         // Add all locations from the model container to our conversion map and to the template
         for (final Location hLocation : modelContainer.getLocations()) {
 
             // Add the location to the template
             final com.uppaal.model.core2.Location uLocation = addLocation(template, hLocation, "L" + locationCounter);
 
-            // Populate the maps
+            // Populate the map
             hToULocations.put(hLocation, uLocation);
-            uToHLocations.put(uLocation, hLocation);
             
             locationCounter++;
         }
@@ -222,8 +218,7 @@ public class UPPAALDriver {
         }
     }
 
-    private static com.uppaal.model.core2.Location addLocation(final Template template,
-                                                               final Location hLocation, final String name) {
+    private static com.uppaal.model.core2.Location addLocation(final Template template, final Location hLocation, final String name) {
 
         // TODO get name of location instead of having a separate parameter for the name
 
@@ -257,6 +252,29 @@ public class UPPAALDriver {
         uLocation.setProperty("y", y);
 
         return uLocation;
+    }
+
+    private static String generateTemplateDeclaration(final ModelContainer modelContainer) {
+
+        // TODO update the types of variables (int, byte etc) and channels (urgent) when added to the model
+        String declStr = "";
+
+        // Add the clocks
+        for(final String clock : modelContainer.getClocks()) {
+            declStr += "clock " + clock + ";\n";
+        }
+
+        // Add variables
+        for(final String var : modelContainer.getVariables()) {
+            declStr += "int " + var + ";\n";
+        }
+
+        // Add channels
+        for(final String chan : modelContainer.getChannels()) {
+            declStr += "chan " + chan + ";\n";
+        }
+
+        return  declStr;
     }
 
 }
