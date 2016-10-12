@@ -3,6 +3,7 @@ package SW9.model_canvas.locations;
 import SW9.issues.Warning;
 import SW9.model_canvas.*;
 import SW9.model_canvas.edges.Edge;
+import SW9.model_canvas.edges.Properties;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.colors.Colorable;
@@ -41,6 +42,11 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     private final Label locationLabel;
     private InitialLocationCircle initialLocationCircle = null;
     private FinalLocationCross finalLocationCross = null;
+
+    private final Properties properties = new Properties(
+            new Properties.Entry(Properties.Type.LOCATION_NAME, nameProperty),
+            new Properties.Entry(Properties.Type.LOCATION_INVARIANT, invariantProperty)
+    );
 
 
     // Used to create the Location
@@ -122,6 +128,13 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
                 timeline.pause();
             }
         });
+    }
+
+    private void initializePropertiesBox() {
+        // Add the properties box, and bind it to the circle
+        properties.xProperty().bind(circle.centerXProperty().add(Location.RADIUS));
+        properties.yProperty().bind(circle.centerYProperty().add(Location.RADIUS));
+        addChild(properties);
     }
 
     public Location(final MouseTracker canvasMouseTracker) {
@@ -211,6 +224,9 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         // Place the new location when the mouse is pressed (i.e. stop moving it)
         canvasMouseTracker.registerOnMousePressedEventHandler(event -> {
             if (isOnMouse.get() && ModelCanvas.mouseIsHoveringModelContainer()) {
+                // Add properties box
+                initializePropertiesBox();
+
                 // Consume the event
                 event.consume();
 
@@ -288,6 +304,11 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
 
         // Will make the location marked whenever it is unreachable
         initializeReachabilityEffect();
+
+        // Add the properties box, if this location is either initial of exit
+        if (type.equals(Type.INITIAL) || type.equals(Type.FINAL)) {
+            initializePropertiesBox();
+        }
     }
 
     private void makeDraggable() {
