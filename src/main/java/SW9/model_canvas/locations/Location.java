@@ -40,6 +40,12 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     private Color.Intensity intensity = null;
     private boolean colorIsSet = false;
 
+    public final Circle circle;
+    private final Label locationLabel;
+    private InitialLocationCircle initialLocationCircle = null;
+    private FinalLocationCross finalLocationCross = null;
+    
+
     // Used to create the Location
     public final static double RADIUS = 25.0f;
 
@@ -47,10 +53,6 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     private final BooleanProperty isOnMouse = new SimpleBooleanProperty(false);
     private final MouseTracker localMouseTracker;
 
-    public final Circle circle;
-    private final Label locationLabel;
-    private InitialLocationCircle initialLocationCircle = null;
-    private FinalLocationCross finalLocationCross = null;
 
     private ModelContainer modelContainer;
     private List<Edge> deletedEdges = new ArrayList<>();
