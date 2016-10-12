@@ -138,6 +138,13 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
 
         // TODO remove me when testing of heads is done
         KeyboardTracker.registerKeybind(KeyboardTracker.TESTING_BIND, new Keybind(new KeyCodeCombination(KeyCode.T), () -> {
+            getChildren().stream().filter(child -> child instanceof ModelContainer).forEach(child -> {
+                ((ModelContainer) child).getLocations().forEach(location -> {
+                    location.reachabilityCertaintyProperty().set(100);
+                    location.isReachableProperty().set(false);
+                });
+            });
+
             // Outgoing arrows
             final Circle outgoingStart1 = new Circle(100, 100, 0);
             final Circle outgoingEnd1 = new Circle(200, 100, 0);

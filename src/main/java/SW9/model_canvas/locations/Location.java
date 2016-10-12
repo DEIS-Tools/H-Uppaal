@@ -10,12 +10,10 @@ import SW9.utility.helpers.*;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
-import javafx.animation.Animation;
-import javafx.animation.Transition;
+import javafx.animation.*;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableDoubleValue;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -44,7 +42,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     private final Label locationLabel;
     private InitialLocationCircle initialLocationCircle = null;
     private FinalLocationCross finalLocationCross = null;
-    
+
 
     // Used to create the Location
     public final static double RADIUS = 25.0f;
@@ -53,12 +51,15 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     private final BooleanProperty isOnMouse = new SimpleBooleanProperty(false);
     private final MouseTracker localMouseTracker;
 
+    // Used to define if the locations is reachable
+    private final BooleanProperty isReachable = new SimpleBooleanProperty(true);
+    private final DoubleProperty reachabilityCertainty = new SimpleDoubleProperty(-1);
 
     private ModelContainer modelContainer;
     private List<Edge> deletedEdges = new ArrayList<>();
 
     public enum Type {
-        NORMAL, INITIAL, FINAL
+        NORMAL, INITIAL, FINAL;
     }
 
     public final Type type;
@@ -81,6 +82,47 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         BindingHelper.bind(isExitLocationIcon, this);
 
         addChildren(isExitLocationIcon);
+    }
+
+    private void initializeReachabilityEffect() {
+        final Circle markCircle = new Circle();
+        markCircle.centerXProperty().bind(circle.centerXProperty());
+        markCircle.centerYProperty().bind(circle.centerYProperty());
+        markCircle.radiusProperty().set(circle.radiusProperty().multiply(1.2).get());
+        markCircle.setFill(Color.RED.getColor(Color.Intensity.I500));
+
+        final Timeline timeline = new Timeline();
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.setAutoReverse(true);
+
+        // Update the timeline whenever the certainty changes
+        reachabilityCertainty.addListener((observable, oldValue, newValue) -> {
+            timeline.getKeyFrames().clear();
+
+            markCircle.setOpacity(newValue.doubleValue() / 120);
+
+            final KeyValue setRadius0 = new KeyValue(markCircle.radiusProperty(), circle.radiusProperty().get() + (newValue.doubleValue() / 100) * 5);
+            final KeyValue setColor0 = new KeyValue(markCircle.fillProperty(), Color.AMBER.getColor(Color.Intensity.I500));
+            final KeyFrame keyFrame0 = new KeyFrame(Duration.millis(0), setRadius0, setColor0);
+            timeline.getKeyFrames().add(keyFrame0);
+
+            final KeyValue setRadius1 = new KeyValue(markCircle.radiusProperty(), circle.radiusProperty().get() + (newValue.doubleValue() / 100) * 10);
+            final KeyValue setColor1 = new KeyValue(markCircle.fillProperty(), Color.AMBER.getColor(Color.Intensity.I500));
+            final KeyFrame keyFrame1 = new KeyFrame(Duration.millis(1000 + newValue.doubleValue() * 5), setRadius1, setColor1);
+            timeline.getKeyFrames().add(keyFrame1);
+        });
+
+        // When the reachable property changes, show or hide the effect accordingly
+        isReachable.addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                addChild(markCircle);
+                markCircle.toBack();
+                timeline.play();
+            } else {
+                removeChild(markCircle);
+                timeline.pause();
+            }
+        });
     }
 
     public Location(final MouseTracker canvasMouseTracker) {
@@ -244,6 +286,9 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
 
         // Will color the location
         resetColor();
+
+        // Will make the location marked whenever it is unreachable
+        initializeReachabilityEffect();
     }
 
     private void makeDraggable() {
@@ -311,6 +356,14 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
 
     public ModelContainer getModelContainer() {
         return modelContainer;
+    }
+
+    public BooleanProperty isReachableProperty() {
+        return isReachable;
+    }
+
+    public DoubleProperty reachabilityCertaintyProperty() {
+        return reachabilityCertainty;
     }
 
     @Override
