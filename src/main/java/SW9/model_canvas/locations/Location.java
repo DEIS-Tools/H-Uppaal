@@ -450,7 +450,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         return initialProperty;
     }
 
-    public Boolean getInitialProperty() {
+    public Boolean isInitial() {
         return initialProperty().get();
     }
 
