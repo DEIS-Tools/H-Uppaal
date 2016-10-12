@@ -11,6 +11,8 @@ import SW9.utility.mouse.MouseTracker;
 import com.jfoenix.controls.JFXTextField;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -40,15 +42,22 @@ public class Properties extends Parent implements LocationAware, MouseTrackable,
     private final ArrayList<Node> hiddenElements = new ArrayList<>();
     private final ArrayList<Shape> iconBoxes = new ArrayList<>();
 
-    public Properties() {
+    public Properties()
+    {
+        this(new SimpleStringProperty(), new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
+    }
+    public Properties(final StringProperty selectProperty,
+                      final StringProperty guardProperty,
+                      final StringProperty updateProperty,
+                      final StringProperty syncProperty) {
         this.getStyleClass().add("edge-properties");
 
         final VBox propertiesBox = new VBox();
         propertiesBox.getChildren().addAll(
-                generatePropertyBox(":", "id : id_t"),
-                generatePropertyBox("<", "guard < value"),
-                generatePropertyBox("!?", "channel!"),
-                generatePropertyBox("=", "var = 42")
+                generatePropertyBox(":", "id : id_t", selectProperty),
+                generatePropertyBox("<", "guard < value", guardProperty),
+                generatePropertyBox("!?", "channel!", syncProperty),
+                generatePropertyBox("=", "var = 42", updateProperty)
 
         );
         propertiesBox.layoutXProperty().bind(xProperty());
@@ -69,7 +78,7 @@ public class Properties extends Parent implements LocationAware, MouseTrackable,
         hiddenElements.forEach(node -> node.setVisible(false));
     }
 
-    private Parent generateValueBox(final String value, final DoubleProperty sharedHeightProperty) {
+    private Parent generateValueBox(final String value, final DoubleProperty sharedHeightProperty, final StringProperty binder) {
         // The textField for the value of the given property
         final JFXTextField textField = new JFXTextField(value);
         textField.getStyleClass().addAll("body1", "value-text-field");
@@ -89,6 +98,8 @@ public class Properties extends Parent implements LocationAware, MouseTrackable,
         parent.addChildren(box, textField);
 
         hiddenElements.add(parent);
+
+        binder.bind(textField.textProperty());
 
         return parent;
     }
@@ -116,14 +127,14 @@ public class Properties extends Parent implements LocationAware, MouseTrackable,
         return stackPane;
     }
 
-    private HBox generatePropertyBox(final String iconString, final String value) {
+    private HBox generatePropertyBox(final String iconString, final String value, final StringProperty binder) {
         final HBox propertyBox = new HBox();
 
         // A shared property to ensure that the icon box and the value box is consistent in height
         final DoubleProperty sharedHeightProperty = new SimpleDoubleProperty();
 
         // Generate the value and the icon for the property box
-        final Parent valueBox = generateValueBox(value, sharedHeightProperty);
+        final Parent valueBox = generateValueBox(value, sharedHeightProperty, binder);
         final StackPane iconBox = generateIconBox(iconString, sharedHeightProperty);
 
         // Add the boxes to this property box

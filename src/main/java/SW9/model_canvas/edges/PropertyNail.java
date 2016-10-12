@@ -1,14 +1,23 @@
 package SW9.model_canvas.edges;
 
 import SW9.utility.colors.Color;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableDoubleValue;
 
 public class PropertyNail extends Nail {
 
-    private final Properties properties = new Properties();
+    private final Properties properties;
 
-    public PropertyNail(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY) {
+    public PropertyNail(final ObservableDoubleValue centerX,
+                        final ObservableDoubleValue centerY,
+                        final StringProperty selectProperty,
+                        final StringProperty guardProperty,
+                        final StringProperty updateProperty,
+                        final StringProperty syncProperty) {
         super(centerX, centerY);
+
+        // Create new properties and propagate binders from edge downwards
+        properties = new Properties(selectProperty, guardProperty, updateProperty, syncProperty);
 
         properties.xProperty().bind(xProperty());
         properties.yProperty().bind(yProperty());
@@ -22,4 +31,6 @@ public class PropertyNail extends Nail {
 
         return super.color(color, intensity);
     }
+
+
 }

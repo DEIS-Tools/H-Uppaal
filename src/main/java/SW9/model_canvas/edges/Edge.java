@@ -16,9 +16,7 @@ import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -33,12 +31,20 @@ import javafx.scene.shape.Line;
 
 public class Edge extends Parent implements Removable, Colorable {
 
+    // Modelling properties
+    private final Location sourceLocation;
+    private Location targetLocation = null;
+
+    private StringProperty selectProperty = new SimpleStringProperty();
+    private StringProperty guardProperty = new SimpleStringProperty();
+    private StringProperty updateProperty = new SimpleStringProperty();
+    private StringProperty syncProperty = new SimpleStringProperty();
+
+    // UI properties
     private Color color = null;
     private Color.Intensity intensity = null;
     private boolean colorIsSet = false;
 
-    private final Location sourceLocation;
-    private Location targetLocation = null;
     public final BooleanProperty targetLocationIsSet = new SimpleBooleanProperty(false);
 
     private final SimpleArrowHead arrowHead = new SimpleArrowHead();
@@ -134,10 +140,6 @@ public class Edge extends Parent implements Removable, Colorable {
                 resetColor(getColor(), getColorIntensity());
             }
         });
-    }
-
-    public Location getSourceLocation() {
-        return sourceLocation;
     }
 
     private final EventHandler<MouseEvent> drawEdgeStepWhenCanvasPressed = new EventHandler<MouseEvent>() {
@@ -263,17 +265,13 @@ public class Edge extends Parent implements Removable, Colorable {
         final int nailIndex = (int) Math.floor(nails.size() / 2);
         final Nail removeNail = nails.get(nailIndex);
 
-        propertiesNail = new PropertyNail(removeNail.xProperty(), removeNail.yProperty());
+        propertiesNail = new PropertyNail(removeNail.xProperty(), removeNail.yProperty(), selectProperty(), guardProperty(), updateProperty(), syncProperty());
         add(propertiesNail, nailIndex);
 
         remove(removeNail);
     }
 
-    public Location getTargetLocation() {
-        return targetLocation;
-    }
-
-    public void setTargetLocation(final Location targetLocation) {
+    private void setTargetLocation(final Location targetLocation) {
         if (this.targetLocation == null) {
             SelectHelper.makeSelectable(this);
         }
@@ -495,5 +493,46 @@ public class Edge extends Parent implements Removable, Colorable {
     public void resetColor(final Color color, final Color.Intensity intensity) {
         color(color, intensity);
         colorIsSet = false;
+    }
+
+    // Modelling accessors
+    public Location getSourceLocation() {
+        return sourceLocation;
+    }
+
+    public Location getTargetLocation() {
+        return targetLocation;
+    }
+
+    public StringProperty selectProperty() {
+        return selectProperty;
+    }
+
+    public StringProperty guardProperty() {
+        return guardProperty;
+    }
+
+    public StringProperty syncProperty() {
+        return syncProperty;
+    }
+
+    public StringProperty updateProperty() {
+        return updateProperty;
+    }
+
+    public String getSelect() {
+        return selectProperty.get();
+    }
+
+    public String getGuard() {
+        return guardProperty.get();
+    }
+
+    public String getSync() {
+        return syncProperty.get();
+    }
+
+    public String getUpdate() {
+        return updateProperty.get();
     }
 }
