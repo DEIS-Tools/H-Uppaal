@@ -12,6 +12,7 @@
                  minWidth="Infinity"
                  minHeight="Infinity"/>
 
+    <!-- TOP BAR -->
     <BorderPane id="status-bar"
                 styleClass="status-bar"
                 prefHeight="20"
@@ -29,6 +30,26 @@
         <right>
             <HBox id="status-bar-right"/>
         </right>
+    </BorderPane>
+
+    <!-- BOTTOM BAR -->
+    <BorderPane id="bottom-bar"
+                styleClass="bottom-bar"
+                prefHeight="25"
+                maxHeight="25">
+
+        <left>
+            <HBox id="bottom-bar-left"/>
+        </left>
+
+        <center>
+            <HBox id="bottom-bar-middle"/>
+        </center>
+
+        <right>
+            <HBox id="bottom-bar-right" />
+        </right>
+
     </BorderPane>
 
 </StackPane>

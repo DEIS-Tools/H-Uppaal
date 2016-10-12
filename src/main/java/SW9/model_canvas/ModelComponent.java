@@ -6,6 +6,8 @@ import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;

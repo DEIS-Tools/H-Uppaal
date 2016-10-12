@@ -17,6 +17,7 @@ import SW9.utility.helpers.*;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
+import com.hp.hpl.jena.rdf.model.ModelCon;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
@@ -139,7 +140,11 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
         // TODO remove me when testing of heads is done
         KeyboardTracker.registerKeybind(KeyboardTracker.TESTING_BIND, new Keybind(new KeyCodeCombination(KeyCode.T), () -> {
             getChildren().stream().filter(child -> child instanceof ModelContainer).forEach(child -> {
-                ((ModelContainer) child).getLocations().forEach(location -> {
+                final ModelContainer container = ((ModelContainer) child);
+
+                container.hasDeadlockProperty().set(!container.hasDeadlockProperty().get());
+
+                container.getLocations().forEach(location -> {
                     location.reachabilityCertaintyProperty().set(100);
                     location.isReachableProperty().set(false);
                 });
