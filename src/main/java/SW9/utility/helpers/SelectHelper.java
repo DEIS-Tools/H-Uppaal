@@ -15,12 +15,13 @@ public class SelectHelper {
         });
     }
 
-    public static void select(final Removable removable) {
-        clearSelectedElements();
-
+    public static boolean select(final Removable removable) {
         // Check if the select went well, if so add it to the selected list
         if (removable.select()) {
-            selectedElements.add(removable);
+            clearSelectedElements(removable);
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -33,6 +34,14 @@ public class SelectHelper {
             selectedElements.get(0).deselect();
             selectedElements.remove(0);
         }
+    }
+
+    public static void clearSelectedElements(final Removable exception) {
+        selectedElements.remove(exception);
+
+        clearSelectedElements();
+
+        selectedElements.add(exception);
     }
 
     public static boolean isSelected(final Removable... needles) {

@@ -140,8 +140,9 @@ public class DragHelper {
 
             mouseTracker.unregisterOnMouseDraggedEventHandler(onMouseDragged);
 
-            UndoRedoStack.push(() -> { // Perform
+            final LocationAware parent = findAncestor(subject);
 
+            UndoRedoStack.push(() -> { // Perform
                 // If the x property is bound bind the x property correctly, else update the value
                 if (subject.xProperty().isBound()) {
                     subject.xProperty().bind(newXBinding[0]);
@@ -156,8 +157,6 @@ public class DragHelper {
                 }
 
             }, () -> { // Undo
-                final LocationAware parent = findAncestor(subject);
-
                 // If the x property is bound bind it to the original parent offset, else update the value
                 if (subject.xProperty().isBound()) {
                     subject.xProperty().bind(parent.xProperty().add(parentXOffset[0]));

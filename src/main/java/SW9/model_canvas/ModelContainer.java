@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ModelContainer extends Parent implements MouseTrackable, Colorable {
+public abstract class ModelContainer extends Parent implements MouseTrackable, Colorable, Removable {
 
     protected Color color = null;
     protected Color.Intensity intensity = null;
@@ -33,7 +33,7 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
             ModelCanvas.setHoveredModelContainer(this);
 
             // If we have a location on the mouse, color it accordingly to our color
-            if(ModelCanvas.mouseHasLocation()) {
+            if (ModelCanvas.mouseHasLocation()) {
                 ModelCanvas.getLocationOnMouse().resetColor(getColor(), getColorIntensity());
             }
         });
@@ -44,7 +44,7 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
             }
 
             // If we have a location on the mouse, reset its color (to "undo" our coloring when the mouse entered us)
-            if(ModelCanvas.mouseHasLocation()) {
+            if (ModelCanvas.mouseHasLocation()) {
                 ModelCanvas.getLocationOnMouse().resetColor();
             }
         });

@@ -398,21 +398,31 @@ public class Edge extends Parent implements Removable, Colorable {
 
             return false; // Do not add us to the list of selected elements
         } else {
-            nails.forEach(nail -> nail.getStyleClass().add("selected"));
-            links.forEach(link -> link.line.getStyleClass().add("selected"));
-            lineCue.getStyleClass().add("selected");
-            arrowHead.mark();
-
-            // Make nails visible
-            nails.forEach(nail -> nail.circle.setVisible(true));
+            styleSelected();
         }
 
         return true;
     }
 
     @Override
+    public void styleSelected() {
+        nails.forEach(nail -> nail.circle.getStyleClass().add("selected"));
+        links.forEach(link -> link.line.getStyleClass().add("selected"));
+        lineCue.getStyleClass().add("selected");
+        arrowHead.mark();
+
+        // Make nails visible
+        nails.forEach(nail -> nail.circle.setVisible(true));
+    }
+
+    @Override
     public void deselect() {
-        nails.forEach(nail -> nail.getStyleClass().remove("selected"));
+        styleDeselected();
+    }
+
+    @Override
+    public void styleDeselected() {
+        nails.forEach(nail -> nail.circle.getStyleClass().remove("selected"));
         links.forEach(link -> link.line.getStyleClass().remove("selected"));
         lineCue.getStyleClass().remove("selected");
         arrowHead.unmark();

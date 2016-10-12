@@ -75,12 +75,22 @@ public class Nail extends Parent implements Removable, Colorable {
     @Override
     public boolean select() {
         detachedParent = getEdgeParent();
-        circle.getStyleClass().add("selected");
+        styleSelected();
         return true;
     }
 
     @Override
+    public void styleSelected() {
+        circle.getStyleClass().add("selected");
+    }
+
+    @Override
     public void deselect() {
+        styleDeselected();
+    }
+
+    @Override
+    public void styleDeselected() {
         circle.getStyleClass().remove("selected");
     }
 

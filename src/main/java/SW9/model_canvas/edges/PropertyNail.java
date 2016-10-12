@@ -32,5 +32,19 @@ public class PropertyNail extends Nail {
         return super.color(color, intensity);
     }
 
+    @Override
+    public void styleSelected() {
+        super.styleSelected();
+
+        // TODO: Add .selected to elements in the properties object
+    }
+
+    @Override
+    public void styleDeselected() {
+        super.styleDeselected();
+
+        // TODO: remove .selected from elements in the properties object
+    }
+
 
 }
