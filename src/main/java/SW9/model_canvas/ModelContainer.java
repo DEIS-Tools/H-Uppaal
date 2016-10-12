@@ -16,14 +16,18 @@ import java.util.Map;
 
 public abstract class ModelContainer extends Parent implements MouseTrackable, Colorable {
 
+    // Modelling properties
+    private final List<Location> locations = new ArrayList<>();
+    private final List<Edge> edges = new ArrayList<>();
+    private final Map<Location, List<Edge>> locationEdgeMap = new HashMap<>();
+    private final List<String> clocks = new ArrayList<>();
+    private final List<String> variables = new ArrayList<>();
+    private final List<String> channels = new ArrayList<>();
+
     protected Color color = null;
     protected Color.Intensity intensity = null;
     protected boolean colorIsSet = false;
 
-    private final List<Location> locations = new ArrayList<>();
-    private final Map<Location, List<Edge>> locationEdgeMap = new HashMap<>();
-
-    private final List<Edge> edges = new ArrayList<>();
     protected final MouseTracker mouseTracker = new MouseTracker(this);
 
     public ModelContainer() {
@@ -33,7 +37,7 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
             ModelCanvas.setHoveredModelContainer(this);
 
             // If we have a location on the mouse, color it accordingly to our color
-            if(ModelCanvas.mouseHasLocation()) {
+            if (ModelCanvas.mouseHasLocation()) {
                 ModelCanvas.getLocationOnMouse().resetColor(getColor(), getColorIntensity());
             }
         });
@@ -44,25 +48,43 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
             }
 
             // If we have a location on the mouse, reset its color (to "undo" our coloring when the mouse entered us)
-            if(ModelCanvas.mouseHasLocation()) {
+            if (ModelCanvas.mouseHasLocation()) {
                 ModelCanvas.getLocationOnMouse().resetColor();
             }
         });
     }
 
+    public abstract Bounds getInternalBounds();
+
+    public abstract ObservableDoubleValue getXLimit();
+
+    public abstract ObservableDoubleValue getYLimit();
+
+    @Override
+    public boolean isColored() {
+        return colorIsSet;
+    }
+
+    @Override
+    public Color getColor() {
+        return color;
+    }
+
+    @Override
+    public Color.Intensity getColorIntensity() {
+        return intensity;
+    }
+
+    @Override
+    public void resetColor(final Color color, final Color.Intensity intensity) {
+        color(color, intensity);
+        colorIsSet = false;
+    }
+
+    // Modelling accessors
     public List<Location> getLocations() {
         return locations;
     }
-
-    public List<Edge> getEdges() {
-        return edges;
-    }
-
-    public List<Edge> getEdges(final Location location) {
-        return locationEdgeMap.get(location);
-    }
-
-    public abstract Bounds getInternalBounds();
 
     public void add(final Location... locations) {
         for (final Location location : locations) {
@@ -84,6 +106,14 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
             locationEdgeMap.remove(location);
             this.locations.remove(location);
         }
+    }
+
+    public List<Edge> getEdges() {
+        return edges;
+    }
+
+    public List<Edge> getEdges(final Location location) {
+        return locationEdgeMap.get(location);
     }
 
     public void add(final Edge... edges) {
@@ -120,28 +150,56 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
         }
     }
 
-    public abstract ObservableDoubleValue getXLimit();
-
-    public abstract ObservableDoubleValue getYLimit();
-
-    @Override
-    public boolean isColored() {
-        return colorIsSet;
+    public List<String> getClocks() {
+        return clocks;
     }
 
-    @Override
-    public Color getColor() {
-        return color;
+    public void addClock(final String clock) {
+        clocks.add(clock);
     }
 
-    @Override
-    public Color.Intensity getColorIntensity() {
-        return intensity;
+    public void removeClock(final String clock) {
+        for (int i = 0; i < clocks.size(); i++) {
+            if (clock.equals(clocks.get(i))) {
+                clocks.remove(i);
+                return;
+            }
+        }
     }
 
-    @Override
-    public void resetColor(final Color color, final Color.Intensity intensity) {
-        color(color, intensity);
-        colorIsSet = false;
+    public List<String> getVariables() {
+        return variables;
     }
+
+    public void addVariable(final String var) {
+        variables.add(var);
+    }
+
+    public void removeVariable(final String var) {
+        for (int i = 0; i < variables.size(); i++) {
+            if (var.equals(variables.get(i))) {
+                variables.remove(i);
+                return;
+            }
+        }
+    }
+
+    public List<String> getChannels() {
+        return channels;
+    }
+
+    public void addChannel(final String chan) {
+        channels.add(chan);
+    }
+
+    public void removeChannels(final String chan) {
+        for (int i = 0; i < channels.size(); i++) {
+            if (chan.equals(channels.get(i))) {
+                channels.remove(i);
+                return;
+            }
+        }
+    }
+
+
 }
