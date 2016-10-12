@@ -54,10 +54,10 @@ public class Properties extends Parent implements LocationAware, MouseTrackable,
 
         final VBox propertiesBox = new VBox();
         propertiesBox.getChildren().addAll(
-                generatePropertyBox(":", "id : id_t", selectProperty),
-                generatePropertyBox("<", "guard < value", guardProperty),
-                generatePropertyBox("!?", "channel!", syncProperty),
-                generatePropertyBox("=", "var = 42", updateProperty)
+                generatePropertyBox(":", selectProperty),
+                generatePropertyBox("<", guardProperty),
+                generatePropertyBox("!?", syncProperty),
+                generatePropertyBox("=", updateProperty)
 
         );
         propertiesBox.layoutXProperty().bind(xProperty());
@@ -127,14 +127,14 @@ public class Properties extends Parent implements LocationAware, MouseTrackable,
         return stackPane;
     }
 
-    private HBox generatePropertyBox(final String iconString, final String value, final StringProperty binder) {
+    private HBox generatePropertyBox(final String iconString, final StringProperty binder) {
         final HBox propertyBox = new HBox();
 
         // A shared property to ensure that the icon box and the value box is consistent in height
         final DoubleProperty sharedHeightProperty = new SimpleDoubleProperty();
 
         // Generate the value and the icon for the property box
-        final Parent valueBox = generateValueBox(value, sharedHeightProperty, binder);
+        final Parent valueBox = generateValueBox(binder.get(), sharedHeightProperty, binder);
         final StackPane iconBox = generateIconBox(iconString, sharedHeightProperty);
 
         // Add the boxes to this property box
