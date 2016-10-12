@@ -1,6 +1,7 @@
 package SW9;
 
 import SW9.utility.helpers.ResizeHelper;
+import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Application;
@@ -16,6 +17,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -63,6 +65,9 @@ public class Main extends Application {
         scene.getStylesheets().add("SW9/colors.css");
         scene.getStylesheets().add("SW9/model_canvas.css");
         stage.setScene(scene);
+
+        // Clear any selected elements on any mouse event
+        scene.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> SelectHelper.clearSelectedElements());
 
         initializeStatusBar(stage);
 

@@ -256,7 +256,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
                             !ModelCanvas.edgeIsBeingDrawn() &&
                             !this.equals(ModelCanvas.getLocationOnMouse()) &&
                             type.equals(Type.NORMAL),
-                    ((ModelComponent) newValue).getInternalBounds()
+                    ((ModelComponent) newValue)::getInternalBounds
             );
         });
     }
