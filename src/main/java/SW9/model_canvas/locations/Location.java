@@ -36,7 +36,6 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     private final BooleanProperty committedProperty = new SimpleBooleanProperty();
 
     // UI properties
-
     private Color color = null;
     private Color.Intensity intensity = null;
     private boolean colorIsSet = false;
@@ -57,7 +56,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     private List<Edge> deletedEdges = new ArrayList<>();
 
     public enum Type {
-        NORMAL, INITIAL, FINAL;
+        NORMAL, INITIAL, FINAL
     }
 
     public final Type type;
@@ -249,7 +248,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         ModelContainer parent = (ModelContainer) getParent();
 
         parentProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue == null || !(newValue instanceof ModelComponent)) return;
+            if (newValue == null || !(newValue instanceof ModelComponent)) return;
 
             DragHelper.makeDraggable(this,
                     (event) -> !event.isShiftDown() &&
@@ -431,26 +430,43 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     }
 
     // Modelling accessors
+    public StringProperty nameProperty() {
+        return nameProperty;
+    }
 
-    public StringProperty nameProperty() {return nameProperty;}
+    public String getName() {
+        return nameProperty().get();
+    }
 
-    public String getName() {return nameProperty().get();}
+    public StringProperty invariantProperty() {
+        return invariantProperty;
+    }
 
-    public StringProperty invariantProperty() {return invariantProperty;}
+    public String getInvariant() {
+        return invariantProperty().get();
+    }
 
-    public String getInvariant() {return invariantProperty().get();}
+    public BooleanProperty initialProperty() {
+        return initialProperty;
+    }
 
-    public BooleanProperty initialProperty() {return initialProperty;}
+    public Boolean getInitialProperty() {
+        return initialProperty().get();
+    }
 
-    public Boolean getInitialProperty() {return initialProperty().get();}
+    public BooleanProperty urgentProperty() {
+        return urgentProperty;
+    }
 
-    public BooleanProperty urgentProperty() {return urgentProperty;}
+    public Boolean isUrgent() {
+        return urgentProperty().get();
+    }
 
-    public Boolean isUrgent() {return urgentProperty().get();}
+    public BooleanProperty committedProperty() {
+        return committedProperty;
+    }
 
-    public BooleanProperty committedProperty() {return committedProperty;}
-
-    public Boolean isCommitted() {return committedProperty().get();}
-
-
+    public Boolean isCommitted() {
+        return committedProperty().get();
+    }
 }
