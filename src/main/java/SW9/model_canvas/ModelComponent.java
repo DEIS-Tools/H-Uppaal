@@ -4,6 +4,7 @@ import SW9.model_canvas.locations.Location;
 import SW9.utility.colors.Color;
 import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.DragHelper;
+import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -29,6 +30,8 @@ public class ModelComponent extends ModelContainer implements Colorable {
     public final DoubleProperty yProperty;
     public final DoubleProperty widthProperty;
     public final DoubleProperty heightProperty;
+
+    private boolean mouseIsHoveringTopBar = false;
 
     public ModelComponent(final double x, final double y, final double width, final double height, final String name, final MouseTracker canvasMouseTracker) {
 
@@ -72,6 +75,9 @@ public class ModelComponent extends ModelContainer implements Colorable {
                 xProperty.get() + CORNER_SIZE, yProperty.get(),
                 xProperty.get() + CORNER_SIZE, yProperty.get() + CORNER_SIZE / 2
         );
+
+        labelContainer.setOnMouseEntered(event -> mouseIsHoveringTopBar = true);
+        labelContainer.setOnMouseExited(event -> mouseIsHoveringTopBar = false);
 
         // Bind the properties for the name of the component
         labelContainer.xProperty().bind(xProperty.add(CORNER_SIZE));
@@ -147,12 +153,15 @@ public class ModelComponent extends ModelContainer implements Colorable {
 
         frame.getElements().addAll(p1, p2, p3, p4, p5, p6, p7);
 
-        frame.getStyleClass().add("component-stroke");
+        frame.getStyleClass().add("component-frame");
         frame.blendModeProperty().set(BlendMode.MULTIPLY);
 
         // Our bounds are bound to our x and y properties
         boundingRectangle.xProperty().bind(xProperty().add(Location.RADIUS));
         boundingRectangle.yProperty().bind(yProperty().add(Location.RADIUS * 2));
+
+        // Make us selectable
+        SelectHelper.makeSelectable(this);
     }
 
     @Override
@@ -194,7 +203,7 @@ public class ModelComponent extends ModelContainer implements Colorable {
     @Override
     public boolean color(final Color color, final Color.Intensity intensity) {
         // If the color should not be changed, do nothing
-        if(color.equals(getColor()) && intensity.equals(getColorIntensity())) {
+        if (color.equals(getColor()) && intensity.equals(getColorIntensity())) {
             return false;
         }
 
@@ -212,7 +221,7 @@ public class ModelComponent extends ModelContainer implements Colorable {
         // Color all of our children location, unless they are already colored
         getLocations().forEach(location -> {
             // If the location is not colored, of if the color is the same af us
-            if(!location.isColored() || (location.getColor().equals(color) && location.getColorIntensity().equals(intensity))) {
+            if (!location.isColored() || (location.getColor().equals(color) && location.getColorIntensity().equals(intensity))) {
                 location.resetColor(color, intensity);
             }
         });
@@ -226,5 +235,61 @@ public class ModelComponent extends ModelContainer implements Colorable {
     @Override
     public void resetColor() {
         resetColor(Color.GREY_BLUE, Color.Intensity.I700); // default color
+    }
+
+    @Override
+    public boolean select() {
+        if (!mouseIsHoveringTopBar) return false;
+        styleSelected();
+        return true;
+    }
+
+    @Override
+    public void styleSelected() {
+        frame.getStyleClass().add("selected");
+        labelContainer.getStyleClass().add("selected");
+        labelTriangle.getStyleClass().add("selected");
+
+        getLocations().forEach((location) -> {
+            if (location.type.equals(Location.Type.INITIAL) || location.type.equals(Location.Type.FINAL)) {
+                location.styleSelected();
+            }
+        });
+    }
+
+    @Override
+    public void deselect() {
+        styleDeselected();
+    }
+
+    @Override
+    public void styleDeselected() {
+        frame.getStyleClass().remove("selected");
+        labelContainer.getStyleClass().remove("selected");
+        labelTriangle.getStyleClass().remove("selected");
+
+        getLocations().forEach((location) -> {
+            if (location.type.equals(Location.Type.INITIAL) || location.type.equals(Location.Type.FINAL)) {
+                location.styleDeselected();
+            }
+        });
+    }
+
+    private IParent previousParent = null;
+
+    @Override
+    public boolean remove() {
+        previousParent = (IParent) this.getParent();
+
+        if (previousParent == null) return false;
+        previousParent.removeChild(this);
+
+        return true;
+    }
+
+    @Override
+    public void reAdd() {
+        if (previousParent == null) return;
+        previousParent.addChild(this);
     }
 }

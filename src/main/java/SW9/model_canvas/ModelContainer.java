@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ModelContainer extends Parent implements MouseTrackable, Colorable {
+public abstract class ModelContainer extends Parent implements MouseTrackable, Colorable, Removable {
 
     // Modelling properties
     private final List<Location> locations = new ArrayList<>();

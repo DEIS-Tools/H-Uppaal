@@ -347,8 +347,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     @Override
     public boolean select() {
         if (this.type.equals(Type.NORMAL)) {
-            circle.getStyleClass().add("selected");
-            locationLabel.getStyleClass().add("selected");
+            styleSelected();
             return true;
         }
 
@@ -356,7 +355,18 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     }
 
     @Override
+    public void styleSelected() {
+        circle.getStyleClass().add("selected");
+        locationLabel.getStyleClass().add("selected");
+    }
+
+    @Override
     public void deselect() {
+        styleDeselected();
+    }
+
+    @Override
+    public void styleDeselected() {
         circle.getStyleClass().remove("selected");
         locationLabel.getStyleClass().remove("selected");
     }

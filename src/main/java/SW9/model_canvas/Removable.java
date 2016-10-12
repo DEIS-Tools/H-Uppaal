@@ -6,7 +6,11 @@ public interface Removable extends MouseTrackable {
 
     boolean select();
 
+    void styleSelected();
+
     void deselect();
+
+    void styleDeselected();
 
     boolean remove();
 

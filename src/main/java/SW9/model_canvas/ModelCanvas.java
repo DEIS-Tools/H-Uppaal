@@ -19,7 +19,6 @@ import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;

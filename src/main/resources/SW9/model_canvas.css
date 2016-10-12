@@ -1,3 +1,28 @@
+.component-frame {
+    -fx-stroke-width: 2;
+}
+
+.component-frame.selected {
+    -fx-fill: -accent-color-lightest;
+    -fx-stroke: -accent-color-darkest;
+}
+
+.component-label-container {
+
+}
+
+.component-label-container.selected {
+    -fx-fill: -accent-color;
+}
+
+.component-label-container {
+
+}
+
+.component-label-container.selected {
+    -fx-fill: -accent-color;
+}
+
 .location {
     -fx-stroke-width: 2;
     -fx-stroke-type: inside;
