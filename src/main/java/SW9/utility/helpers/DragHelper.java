@@ -52,7 +52,7 @@ public class DragHelper {
 
             // Get the bounds (must be inside the lambda, because bounds might have changed from since we last moved the subject)
             final Bounds[] bounds = {null};
-            if(boundsSupplier != null) {
+            if (boundsSupplier != null) {
                 bounds[0] = boundsSupplier.get();
             }
 
@@ -71,11 +71,11 @@ public class DragHelper {
                 final LocationAware parent = findAncestor(subject);
                 // Bind the x property of the subject to the value of the mouse event relative to the x property of the parent
                 newXBinding[0] = parent.xProperty().add(x - parent.xProperty().get());
-                if(bounds[0] != null && !bounds[0].contains((Double) newXBinding[0].getValue(), bounds[0].getMinY())) {
-                    if((double) newXBinding[0].getValue() > bounds[0].getMaxX()) {
-                        newXBinding[0] = newXBinding[0].multiply(0).add(bounds[0].getMaxX());
+                if (bounds[0] != null && !bounds[0].contains((Double) newXBinding[0].getValue(), bounds[0].getMinY())) {
+                    if ((double) newXBinding[0].getValue() > bounds[0].getMaxX()) {
+                        newXBinding[0] = newXBinding[0].subtract(x - bounds[0].getMaxX());
                     } else {
-                        newXBinding[0] = newXBinding[0].multiply(0).add(bounds[0].getMinX());
+                        newXBinding[0] = newXBinding[0].subtract(x - bounds[0].getMinX());
                     }
                 }
                 subject.xProperty().bind(newXBinding[0]);
@@ -89,11 +89,11 @@ public class DragHelper {
                 final LocationAware parent = findAncestor(subject);
                 // Bind the y property of the subject to the value of the mouse event relative to the y property of the parent
                 newYBinding[0] = parent.yProperty().add(y - parent.yProperty().get());
-                if(bounds[0] != null && !bounds[0].contains(bounds[0].getMinX(), (Double) newYBinding[0].getValue())) {
-                    if((double) newYBinding[0].getValue() > bounds[0].getMaxY()) {
-                        newYBinding[0] = newYBinding[0].multiply(0).add(bounds[0].getMaxY());
+                if (bounds[0] != null && !bounds[0].contains(bounds[0].getMinX(), (Double) newYBinding[0].getValue())) {
+                    if ((double) newYBinding[0].getValue() > bounds[0].getMaxY()) {
+                        newYBinding[0] = newYBinding[0].subtract(y - bounds[0].getMaxY());
                     } else {
-                        newYBinding[0] = newYBinding[0].multiply(0).add(bounds[0].getMinY());
+                        newYBinding[0] = newYBinding[0].subtract(y - bounds[0].getMinY());
                     }
                 }
                 subject.yProperty().bind(newYBinding[0]);
