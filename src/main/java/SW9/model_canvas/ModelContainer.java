@@ -6,6 +6,8 @@ import SW9.utility.colors.Color;
 import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.mouse.MouseTracker;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableDoubleValue;
@@ -64,6 +66,12 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
     public abstract ObservableDoubleValue getXLimit();
 
     public abstract ObservableDoubleValue getYLimit();
+
+    private final BooleanProperty hasDeadlock = new SimpleBooleanProperty(true);
+
+    public BooleanProperty hasDeadlockProperty() {
+        return hasDeadlock;
+    }
 
     @Override
     public boolean isColored() {

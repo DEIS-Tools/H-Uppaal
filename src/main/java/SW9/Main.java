@@ -1,5 +1,9 @@
 package SW9;
 
+import SW9.issues.Warning;
+import SW9.model_canvas.ModelCanvas;
+import SW9.model_canvas.ModelContainer;
+import SW9.utility.colors.Color;
 import SW9.utility.helpers.ResizeHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.KeyboardTracker;
@@ -10,18 +14,18 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -71,6 +75,8 @@ public class Main extends Application {
 
         initializeStatusBar(stage);
 
+        initializeBottomBar(stage);
+
         // Allows us to resize the window
         stage.resizableProperty().setValue(true);
         ResizeHelper.initialize(stage, border);
@@ -97,6 +103,90 @@ public class Main extends Application {
         Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-Regular.ttf"), 14);
         Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-Thin.ttf"), 14);
         Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-ThinItalic.ttf"), 14);
+    }
+
+    private void initializeBottomBar(final Stage stage) {
+        final Scene scene = stage.getScene();
+
+        // Find the bottom bar
+        final BorderPane bottomBar = (BorderPane) scene.lookup("#bottom-bar");
+
+        final Color bottomBarColor = Color.GREY_BLUE;
+        final Color.Intensity bottomBarColorIntensity = Color.Intensity.I200;
+
+        // Align the bottom bar to the bottom
+        StackPane.setAlignment(bottomBar, Pos.BOTTOM_LEFT);
+
+        // Set the background of the bottom bar
+        bottomBar.backgroundProperty().set(new Background(new BackgroundFill(
+                bottomBarColor.getColor(bottomBarColorIntensity),
+                CornerRadii.EMPTY,
+                Insets.EMPTY))
+        );
+
+        // Find the first model container
+        ((ModelCanvas) scene.lookup("#model-canvas")).getChildren().addListener(new ListChangeListener<Node>() {
+            @Override
+            public void onChanged(final Change<? extends Node> change) {
+                if (change.next()) {
+                    change.getAddedSubList().forEach(o -> {
+                        if (o instanceof ModelContainer) {
+                            // A new model container was added!
+                            final ModelContainer modelContainer = (ModelContainer) o;
+
+                            // Label for the warning
+                            final Label label = new Label(modelContainer.getName());
+                            label.setTextFill(bottomBarColor.getTextColor(bottomBarColorIntensity));
+                            label.getStyleClass().add("caption");
+
+                            // Generate warning and warning icon
+                            final Warning<ModelContainer> modelContainerHasDeadlockWarning = new Warning<>(
+                                    modelContainer1 -> modelContainer1.hasDeadlockProperty().get(),
+                                    modelContainer,
+                                    modelContainer.hasDeadlockProperty()
+                            );
+                            modelContainerHasDeadlockWarning.setMessage(modelContainer.getName() + " contains deadlock!");
+
+                            final IconNode warningIcon = modelContainerHasDeadlockWarning.generateIconNode();
+                            warningIcon.setFill(Color.GREY_BLUE.getColor(Color.Intensity.I700));
+                            warningIcon.setIconSize(20);
+                            warningIcon.xProperty().setValue(200);
+                            warningIcon.yProperty().setValue(200);
+
+                            modelContainer.hasDeadlockProperty().setValue(false);
+                            modelContainer.hasDeadlockProperty().setValue(true);
+
+                            // Add the warning icon to the label
+                            label.setGraphic(warningIcon);
+
+                            // The label will be invisible whenever the warning icon is
+                            label.visibleProperty().bind(warningIcon.visibleProperty());
+
+                            label.paddingProperty().set(new Insets(2));
+
+                            // Find the right element in the bottom bar
+                            final HBox rightHBox = (HBox) scene.lookup("#bottom-bar-right");
+                            rightHBox.getChildren().add(label);
+                        }
+                    });
+                }
+            }
+        });
+
+        /*
+        final Warning<ModelContainer> modelContainerHasDeadlockWarning = new Warning<>(
+                modelContainer1 -> modelContainer1.hasDeadlockProperty().get(),
+                modelContainer,
+                modelContainer.hasDeadlockProperty()
+        );
+
+        final IconNode warningIcon = modelContainerHasDeadlockWarning.generateIconNode();
+
+        // Find the right element in the bottom bar
+        final HBox rightHBox = (HBox) scene.lookup("#bottom-bar-right");
+        rightHBox.getChildren().add(label);
+        rightHBox.getChildren().add(warningIcon);
+        */
     }
 
     private void initializeStatusBar(final Stage stage) {
@@ -128,6 +218,8 @@ public class Main extends Application {
             }
         });
 
+        final javafx.scene.paint.Color fontAndRippleColor = Color.GREY_BLUE.getTextColor(Color.Intensity.I500);
+
         // Align the status bar to the top of the window
         final StackPane stackpane = (StackPane) scene.lookup("#stackpane");
         stackpane.setAlignment(Pos.TOP_LEFT);
@@ -139,23 +231,23 @@ public class Main extends Application {
 
         // Add the minimize window button to the status bar
         final IconNode minimizeIcon = new IconNode(GoogleMaterialDesignIcons.REMOVE);
-        minimizeIcon.setFill(Color.WHITE);
+        minimizeIcon.setFill(fontAndRippleColor);
         final JFXButton minimizeBtn = new JFXButton("", minimizeIcon);
         minimizeBtn.setButtonType(JFXButton.ButtonType.FLAT);
-        minimizeBtn.setRipplerFill(Color.WHITE);
+        minimizeBtn.setRipplerFill(fontAndRippleColor);
         minimizeBtn.setOnMouseClicked(event -> stage.setIconified(true));
         rightStatusBar.getChildren().add(minimizeBtn);
 
         // Add the resize window button to the status bar
         final IconNode resizeIcon = new IconNode();
-        resizeIcon.setFill(Color.WHITE);
+        resizeIcon.setFill(fontAndRippleColor);
         resizeIcon.iconCodeProperty().bind(Bindings.when(isMaximized)
                 .then(GoogleMaterialDesignIcons.FULLSCREEN_EXIT)
                 .otherwise(GoogleMaterialDesignIcons.FULLSCREEN));
 
         final JFXButton resizeBtn = new JFXButton("", resizeIcon);
         resizeBtn.setButtonType(JFXButton.ButtonType.FLAT);
-        resizeBtn.setRipplerFill(Color.WHITE);
+        resizeBtn.setRipplerFill(fontAndRippleColor);
         resizeBtn.setOnMouseClicked(event -> {
             if (isMaximized.get()) {
 
@@ -188,10 +280,10 @@ public class Main extends Application {
 
         // Add the close button to the status bar
         final IconNode closeIcon = new IconNode(GoogleMaterialDesignIcons.CLOSE);
-        closeIcon.setFill(Color.WHITE);
+        closeIcon.setFill(fontAndRippleColor);
         final JFXButton closeBtn = new JFXButton("", closeIcon);
         closeBtn.setButtonType(JFXButton.ButtonType.FLAT);
-        closeBtn.setRipplerFill(Color.WHITE);
+        closeBtn.setRipplerFill(fontAndRippleColor);
         closeBtn.setOnMouseClicked(event -> System.exit(0));
         rightStatusBar.getChildren().add(closeBtn);
     }
