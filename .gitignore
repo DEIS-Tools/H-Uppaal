@@ -195,5 +195,5 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 
-## UPPAAL stuff
-result.xml
+## UPPAAL Debug stuff
+/upaal-debug/
