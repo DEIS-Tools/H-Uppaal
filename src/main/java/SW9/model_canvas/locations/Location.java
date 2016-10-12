@@ -307,24 +307,6 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         });
     });
 
-    private void addChildToParent(final Node child) {
-        // Get the parent from the source location
-        IParent parent = (IParent) this.getParent();
-
-        if (parent == null) return;
-
-        parent.addChild(child);
-    }
-
-    private void removeChildFromParent(final Node child) {
-        // Get the parent from the source location
-        IParent parent = (IParent) this.getParent();
-
-        if (parent == null) return;
-
-        parent.removeChild(child);
-    }
-
     public ModelContainer getModelContainer() {
         return modelContainer;
     }
