@@ -138,9 +138,6 @@ public class DragHelper {
 
             hasDragged[0] = false;
 
-            // We are dragging the subject -> we cannot select it
-            SelectHelper.clearSelectedElements();
-
             mouseTracker.unregisterOnMouseDraggedEventHandler(onMouseDragged);
 
             UndoRedoStack.push(() -> { // Perform
