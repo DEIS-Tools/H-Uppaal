@@ -17,7 +17,8 @@ public class PropertyNail extends Nail {
         super(centerX, centerY);
 
         // Create new properties and propagate binders from edge downwards
-        properties = new Properties(new Properties.Entry(Properties.Type.EDGE_SELECT, selectProperty),
+        properties = new Properties(
+                new Properties.Entry(Properties.Type.EDGE_SELECT, selectProperty),
                 new Properties.Entry(Properties.Type.EDGE_GUARD, guardProperty),
                 new Properties.Entry(Properties.Type.EDGE_UPDATE, updateProperty),
                 new Properties.Entry(Properties.Type.EDGE_SYNC, syncProperty)
