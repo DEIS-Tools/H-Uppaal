@@ -225,11 +225,11 @@ public class UPPAALDriver {
             }
 
             // Update some internal state for the engine by getting the initial state
-            SystemState state = engine.getInitialState(system);
+            engine.getInitialState(system);
 
             // Return the query
             // TODO use the trace and progress from this method call
-            final QueryVerificationResult result = engine.query(system, "", query, new QueryFeedback() {
+            return engine.query(system, "", query, new QueryFeedback() {
                 @Override
                 public void setProgressAvail(boolean b) {
 
@@ -273,9 +273,6 @@ public class UPPAALDriver {
 
                 }
             });
-
-            return result;
-
 
         } catch (EngineException | IOException e) {
             // Something went wrong
