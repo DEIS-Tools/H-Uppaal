@@ -149,6 +149,10 @@ public class ModelComponent extends ModelContainer implements Colorable {
 
         frame.getStyleClass().add("component-stroke");
         frame.blendModeProperty().set(BlendMode.MULTIPLY);
+
+        // Our bounds are bound to our x and y properties
+        boundingRectangle.xProperty().bind(xProperty().add(Location.RADIUS));
+        boundingRectangle.yProperty().bind(yProperty().add(Location.RADIUS * 2));
     }
 
     @Override
@@ -170,10 +174,7 @@ public class ModelComponent extends ModelContainer implements Colorable {
 
     @Override
     public Bounds getInternalBounds() {
-
-        boundingRectangle.xProperty().bind(xProperty().add(Location.RADIUS));
-        boundingRectangle.yProperty().bind(yProperty().add(Location.RADIUS * 2));
-
+        // The width must be set every time we access these bounds, because the width of the container might have changed
         boundingRectangle.setWidth(widthProperty.subtract(Location.RADIUS * 2).get());
         boundingRectangle.setHeight(heightProperty.subtract(Location.RADIUS * 3).get());
 

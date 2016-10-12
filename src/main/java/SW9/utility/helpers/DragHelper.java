@@ -12,6 +12,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class DragHelper {
 
@@ -23,7 +24,7 @@ public class DragHelper {
         makeDraggable(subject, conditional, null);
     }
 
-    public static <T extends Node & MouseTrackable> void makeDraggable(final T subject, final Function<MouseEvent, Boolean> conditional, final Bounds bounds) {
+    public static <T extends Node & MouseTrackable> void makeDraggable(final T subject, final Function<MouseEvent, Boolean> conditional, final Supplier<Bounds> boundsSupplier) {
         final MouseTracker mouseTracker = subject.getMouseTracker();
 
         // The offset from the mouse
@@ -49,6 +50,12 @@ public class DragHelper {
             // Check if we are allowed to drag in the first place
             if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn()) return;
 
+            // Get the bounds (must be inside the lambda, because bounds might have changed from since we last moved the subject)
+            final Bounds[] bounds = {null};
+            if(boundsSupplier != null) {
+                bounds[0] = boundsSupplier.get();
+            }
+
             hasDragged[0] = true;
 
             // The location of the mouse (added with the relative to the subject)
@@ -64,11 +71,11 @@ public class DragHelper {
                 final LocationAware parent = findAncestor(subject);
                 // Bind the x property of the subject to the value of the mouse event relative to the x property of the parent
                 newXBinding[0] = parent.xProperty().add(x - parent.xProperty().get());
-                if(bounds != null && !bounds.contains((Double) newXBinding[0].getValue(), bounds.getMinY())) {
-                    if((double) newXBinding[0].getValue() > bounds.getMaxX()) {
-                        newXBinding[0] = newXBinding[0].multiply(0).add(bounds.getMaxX());
+                if(bounds[0] != null && !bounds[0].contains((Double) newXBinding[0].getValue(), bounds[0].getMinY())) {
+                    if((double) newXBinding[0].getValue() > bounds[0].getMaxX()) {
+                        newXBinding[0] = newXBinding[0].multiply(0).add(bounds[0].getMaxX());
                     } else {
-                        newXBinding[0] = newXBinding[0].multiply(0).add(bounds.getMinX());
+                        newXBinding[0] = newXBinding[0].multiply(0).add(bounds[0].getMinX());
                     }
                 }
                 subject.xProperty().bind(newXBinding[0]);
@@ -82,11 +89,11 @@ public class DragHelper {
                 final LocationAware parent = findAncestor(subject);
                 // Bind the y property of the subject to the value of the mouse event relative to the y property of the parent
                 newYBinding[0] = parent.yProperty().add(y - parent.yProperty().get());
-                if(bounds != null && !bounds.contains(bounds.getMinX(), (Double) newYBinding[0].getValue())) {
-                    if((double) newYBinding[0].getValue() > bounds.getMaxY()) {
-                        newYBinding[0] = newYBinding[0].multiply(0).add(bounds.getMaxY());
+                if(bounds[0] != null && !bounds[0].contains(bounds[0].getMinX(), (Double) newYBinding[0].getValue())) {
+                    if((double) newYBinding[0].getValue() > bounds[0].getMaxY()) {
+                        newYBinding[0] = newYBinding[0].multiply(0).add(bounds[0].getMaxY());
                     } else {
-                        newYBinding[0] = newYBinding[0].multiply(0).add(bounds.getMinY());
+                        newYBinding[0] = newYBinding[0].multiply(0).add(bounds[0].getMinY());
                     }
                 }
                 subject.yProperty().bind(newYBinding[0]);
@@ -130,6 +137,9 @@ public class DragHelper {
             if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn() || !hasDragged[0]) return;
 
             hasDragged[0] = false;
+
+            // We are dragging the subject -> we cannot select it
+            SelectHelper.clearSelectedElements();
 
             mouseTracker.unregisterOnMouseDraggedEventHandler(onMouseDragged);
 
