@@ -13,9 +13,7 @@ import SW9.utility.mouse.MouseTracker;
 import javafx.animation.Animation;
 import javafx.animation.Transition;
 import javafx.beans.binding.StringBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -30,6 +28,14 @@ import java.util.List;
 
 public class Location extends Parent implements MouseTrackable, Removable, Colorable {
 
+    // Modelling properties
+    private final StringProperty nameProperty = new SimpleStringProperty();
+    private final StringProperty invariantProperty = new SimpleStringProperty();
+    private final BooleanProperty initialProperty = new SimpleBooleanProperty();
+    private final BooleanProperty urgentProperty = new SimpleBooleanProperty();
+    private final BooleanProperty committedProperty = new SimpleBooleanProperty();
+
+    // UI properties
     private Color color = null;
     private Color.Intensity intensity = null;
     private boolean colorIsSet = false;
@@ -39,21 +45,18 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
 
     // Used to update the interaction with the mouse
     private final BooleanProperty isOnMouse = new SimpleBooleanProperty(false);
-    public final MouseTracker localMouseTracker;
+    private final MouseTracker localMouseTracker;
 
     public final Circle circle;
-    public final Label locationLabel;
+    private final Label locationLabel;
     private InitialLocationCircle initialLocationCircle = null;
     private FinalLocationCross finalLocationCross = null;
-
-    public final BooleanProperty isUrgent = new SimpleBooleanProperty(false);
-    public final BooleanProperty isCommitted = new SimpleBooleanProperty(false);
 
     private ModelContainer modelContainer;
     private List<Edge> deletedEdges = new ArrayList<>();
 
     public enum Type {
-        NORMAL, INITIAL, FINAL;
+        NORMAL, INITIAL, FINAL
     }
 
     public final Type type;
@@ -78,7 +81,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         addChildren(isExitLocationIcon);
     }
 
-    public Location(MouseTracker canvasMouseTracker) {
+    public Location(final MouseTracker canvasMouseTracker) {
         this(canvasMouseTracker.xProperty(), canvasMouseTracker.yProperty(), canvasMouseTracker, Type.NORMAL, null);
 
         // It is initialize with the mouse, hence it is on the mouse
@@ -115,14 +118,14 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         locationLabel = new Label();
         locationLabel.textProperty().bind(new StringBinding() {
             {
-                super.bind(isUrgent, isCommitted);
+                super.bind(urgentProperty, committedProperty);
             }
 
             @Override
             protected String computeValue() {
-                if (isUrgent.get()) {
+                if (urgentProperty.get()) {
                     return "U";
-                } else if (isCommitted.get()) {
+                } else if (committedProperty.get()) {
                     return "C";
                 } else {
                     return "";
@@ -272,35 +275,35 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     });
 
     private final Keybind makeLocationUrgent = new Keybind(new KeyCodeCombination(KeyCode.U), () -> {
-        final boolean wasUrgentBefore = isUrgent.get();
-        final boolean wasCommittedBefore = isCommitted.get();
+        final boolean wasUrgentBefore = urgentProperty.get();
+        final boolean wasCommittedBefore = committedProperty.get();
 
         UndoRedoStack.push(() -> { // Perform
             // The location cannot be committed
-            isCommitted.set(false);
+            committedProperty.set(false);
 
             // Toggle the urgent boolean
-            isUrgent.set(!isUrgent.get());
+            urgentProperty.set(!urgentProperty.get());
         }, () -> { // Undo
-            isUrgent.set(wasUrgentBefore);
-            isCommitted.set(wasCommittedBefore);
+            urgentProperty.set(wasUrgentBefore);
+            committedProperty.set(wasCommittedBefore);
         });
 
     });
 
     private final Keybind makeLocationCommitted = new Keybind(new KeyCodeCombination(KeyCode.C), () -> {
-        final boolean wasUrgentBefore = isUrgent.get();
-        final boolean wasCommittedBefore = isCommitted.get();
+        final boolean wasUrgentBefore = urgentProperty.get();
+        final boolean wasCommittedBefore = committedProperty.get();
 
         UndoRedoStack.push(() -> { // Perform
             // The location cannot be committed
-            isUrgent.set(false);
+            urgentProperty.set(false);
 
             // Toggle the urgent boolean
-            isCommitted.set(!isCommitted.get());
+            committedProperty.set(!committedProperty.get());
         }, () -> { // Undo
-            isCommitted.set(wasCommittedBefore);
-            isUrgent.set(wasUrgentBefore);
+            committedProperty.set(wasCommittedBefore);
+            urgentProperty.set(wasUrgentBefore);
         });
     });
 
@@ -436,4 +439,44 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         colorIsSet = false;
     }
 
+    // Modelling accessors
+    public StringProperty nameProperty() {
+        return nameProperty;
+    }
+
+    public String getName() {
+        return nameProperty().get();
+    }
+
+    public StringProperty invariantProperty() {
+        return invariantProperty;
+    }
+
+    public String getInvariant() {
+        return invariantProperty().get();
+    }
+
+    public BooleanProperty initialProperty() {
+        return initialProperty;
+    }
+
+    public Boolean isInitial() {
+        return initialProperty().get();
+    }
+
+    public BooleanProperty urgentProperty() {
+        return urgentProperty;
+    }
+
+    public Boolean isUrgent() {
+        return urgentProperty().get();
+    }
+
+    public BooleanProperty committedProperty() {
+        return committedProperty;
+    }
+
+    public Boolean isCommitted() {
+        return committedProperty().get();
+    }
 }

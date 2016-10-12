@@ -518,30 +518,30 @@ public class Edge extends Parent implements Removable, Colorable {
         return selectProperty;
     }
 
-    public StringProperty guardProperty() {
-        return guardProperty;
-    }
-
-    public StringProperty syncProperty() {
-        return syncProperty;
-    }
-
-    public StringProperty updateProperty() {
-        return updateProperty;
-    }
-
     public String getSelect() {
         return selectProperty.get();
+    }
+
+    public StringProperty guardProperty() {
+        return guardProperty;
     }
 
     public String getGuard() {
         return guardProperty.get();
     }
 
+    public StringProperty syncProperty() {
+        return syncProperty;
+    }
+
     public String getSync() {
         return syncProperty.get();
     }
 
+    public StringProperty updateProperty() {
+        return updateProperty;
+    }
+    
     public String getUpdate() {
         return updateProperty.get();
     }
