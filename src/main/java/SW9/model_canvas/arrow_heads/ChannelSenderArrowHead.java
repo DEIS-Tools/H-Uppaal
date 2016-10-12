@@ -94,7 +94,7 @@ public abstract class ChannelSenderArrowHead extends ArrowHead {
         // Display the label U - for urgent
         label.setText("U");
 
-        // Bind the isUrgent property to hide and show the label
+        // Bind the isUrgent stringBinder to hide and show the label
         label.opacityProperty().bind(new When(isUrgent).then(1d).otherwise(0d));
 
         // Rotate the label back so that it is always displayed as U

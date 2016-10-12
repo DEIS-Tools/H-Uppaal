@@ -38,7 +38,7 @@ public class Nail extends Parent implements Removable, Colorable {
         // Hide the nails so that they do not become rendered right away
         circle.visibleProperty().setValue(false);
 
-        // Bind the radius to the visibility property (so that we do not get space between links)
+        // Bind the radius to the visibility stringBinder (so that we do not get space between links)
         circle.radiusProperty().bind(new When(circle.visibleProperty()).then(VISIBLE_RADIUS).otherwise(HIDDEN_RADIUS));
 
         mouseTracker.registerOnMousePressedEventHandler(event -> isBeingDragged = true);

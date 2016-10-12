@@ -66,10 +66,10 @@ public class DragHelper {
             x -= x % ModelCanvas.GRID_SIZE - (ModelCanvas.GRID_SIZE / 2);
             y -= y % ModelCanvas.GRID_SIZE - (ModelCanvas.GRID_SIZE / 2);
 
-            // If the subject has its x property bound have a parent where we can get the xProperty as well
+            // If the subject has its x stringBinder bound have a parent where we can get the xProperty as well
             if (subject.xProperty().isBound()) {
                 final LocationAware parent = findAncestor(subject);
-                // Bind the x property of the subject to the value of the mouse event relative to the x property of the parent
+                // Bind the x stringBinder of the subject to the value of the mouse event relative to the x stringBinder of the parent
                 newXBinding[0] = parent.xProperty().add(x - parent.xProperty().get());
                 if (bounds[0] != null && !bounds[0].contains((Double) newXBinding[0].getValue(), bounds[0].getMinY())) {
                     if ((double) newXBinding[0].getValue() > bounds[0].getMaxX()) {
@@ -80,14 +80,14 @@ public class DragHelper {
                 }
                 subject.xProperty().bind(newXBinding[0]);
             } else {
-                // Update the x property value to the value of the mouse
+                // Update the x stringBinder value to the value of the mouse
                 newXValue[0] = x;
                 subject.xProperty().setValue(x);
             }
-            // If the subject has its y property bound have a parent where we can get the yProperty as well
+            // If the subject has its y stringBinder bound have a parent where we can get the yProperty as well
             if (subject.yProperty().isBound()) {
                 final LocationAware parent = findAncestor(subject);
-                // Bind the y property of the subject to the value of the mouse event relative to the y property of the parent
+                // Bind the y stringBinder of the subject to the value of the mouse event relative to the y stringBinder of the parent
                 newYBinding[0] = parent.yProperty().add(y - parent.yProperty().get());
                 if (bounds[0] != null && !bounds[0].contains(bounds[0].getMinX(), (Double) newYBinding[0].getValue())) {
                     if ((double) newYBinding[0].getValue() > bounds[0].getMaxY()) {
@@ -98,7 +98,7 @@ public class DragHelper {
                 }
                 subject.yProperty().bind(newYBinding[0]);
             } else {
-                // Update the y property value to the value of the mouse
+                // Update the y stringBinder value to the value of the mouse
                 newYValue[0] = y;
                 subject.yProperty().setValue(y);
             }
@@ -143,13 +143,13 @@ public class DragHelper {
             final LocationAware parent = findAncestor(subject);
 
             UndoRedoStack.push(() -> { // Perform
-                // If the x property is bound bind the x property correctly, else update the value
+                // If the x stringBinder is bound bind the x stringBinder correctly, else update the value
                 if (subject.xProperty().isBound()) {
                     subject.xProperty().bind(newXBinding[0]);
                 } else {
                     subject.xProperty().set(newXValue[0]);
                 }
-                // If the x property is bound bind the x property correctly, else update the value
+                // If the x stringBinder is bound bind the x stringBinder correctly, else update the value
                 if (subject.yProperty().isBound()) {
                     subject.yProperty().bind(newYBinding[0]);
                 } else {
@@ -157,14 +157,14 @@ public class DragHelper {
                 }
 
             }, () -> { // Undo
-                // If the x property is bound bind it to the original parent offset, else update the value
+                // If the x stringBinder is bound bind it to the original parent offset, else update the value
                 if (subject.xProperty().isBound()) {
                     subject.xProperty().bind(parent.xProperty().add(parentXOffset[0]));
                 } else {
                     subject.xProperty().set(parent.xProperty().get() + parentXOffset[0]);
                 }
 
-                // If the y property is bound bind it to the original parent offset, else update the value
+                // If the y stringBinder is bound bind it to the original parent offset, else update the value
                 if (subject.yProperty().isBound()) {
                     subject.yProperty().bind(parent.yProperty().add(parentYOffset[0]));
                 } else {

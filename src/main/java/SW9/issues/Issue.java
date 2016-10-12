@@ -22,7 +22,7 @@ public abstract class Issue<T extends Node> {
     public Issue(final Predicate<T> presentPredicate, final T subject, final Observable... observables) {
         presentProperty = new BooleanBinding() {
             {
-                // Bind to the provided observables (which may influence the "present" property
+                // Bind to the provided observables (which may influence the "present" stringBinder
                 super.bind(observables);
             }
 

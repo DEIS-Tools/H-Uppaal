@@ -4,7 +4,6 @@ import SW9.model_canvas.ModelCanvas;
 import SW9.model_canvas.Parent;
 import SW9.utility.colors.Color;
 import SW9.utility.colors.Colorable;
-import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.LocationAware;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.mouse.MouseTracker;
@@ -13,7 +12,6 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -42,24 +40,34 @@ public class Properties extends Parent implements LocationAware, MouseTrackable,
     private final ArrayList<Node> hiddenElements = new ArrayList<>();
     private final ArrayList<Shape> iconBoxes = new ArrayList<>();
 
-    public Properties()
-    {
-        this(new SimpleStringProperty(), new SimpleStringProperty(),new SimpleStringProperty(),new SimpleStringProperty());
+    public enum Type {
+        EDGE_SELECT(":"), EDGE_GUARD("<"), EDGE_UPDATE("="), EDGE_SYNC("!?"), LOCATION_NAME("@"), LOCATION_INVARIANT("I");
+
+        public final String icon;
+
+        Type (final String icon) {
+            this.icon = icon;
+        }
     }
-    public Properties(final StringProperty selectProperty,
-                      final StringProperty guardProperty,
-                      final StringProperty updateProperty,
-                      final StringProperty syncProperty) {
+
+    public static class Entry {
+        public Properties.Type type;
+        public StringProperty stringBinder;
+        public Entry(final Properties.Type type, final StringProperty stringBinder) {
+            this.type = type;
+            this.stringBinder = stringBinder;
+        }
+    }
+
+    public Properties(final Entry ... entries) {
         this.getStyleClass().add("edge-properties");
 
         final VBox propertiesBox = new VBox();
-        propertiesBox.getChildren().addAll(
-                generatePropertyBox(":", selectProperty),
-                generatePropertyBox("<", guardProperty),
-                generatePropertyBox("!?", syncProperty),
-                generatePropertyBox("=", updateProperty)
 
-        );
+        for(final Entry entry : entries) {
+            propertiesBox.getChildren().add(generatePropertyBox(entry));
+        }
+
         propertiesBox.layoutXProperty().bind(xProperty());
         propertiesBox.layoutYProperty().bind(yProperty());
 
@@ -79,7 +87,7 @@ public class Properties extends Parent implements LocationAware, MouseTrackable,
     }
 
     private Parent generateValueBox(final String value, final DoubleProperty sharedHeightProperty, final StringProperty binder) {
-        // The textField for the value of the given property
+        // The textField for the value of the given stringBinder
         final JFXTextField textField = new JFXTextField(value);
         textField.getStyleClass().addAll("body1", "value-text-field");
         textField.setPrefWidth(VALUE_WIDTH);
@@ -127,17 +135,17 @@ public class Properties extends Parent implements LocationAware, MouseTrackable,
         return stackPane;
     }
 
-    private HBox generatePropertyBox(final String iconString, final StringProperty binder) {
+    private HBox generatePropertyBox(final Entry propertyEntry) {
         final HBox propertyBox = new HBox();
 
-        // A shared property to ensure that the icon box and the value box is consistent in height
+        // A shared stringBinder to ensure that the icon box and the value box is consistent in height
         final DoubleProperty sharedHeightProperty = new SimpleDoubleProperty();
 
-        // Generate the value and the icon for the property box
-        final Parent valueBox = generateValueBox(binder.get(), sharedHeightProperty, binder);
-        final StackPane iconBox = generateIconBox(iconString, sharedHeightProperty);
+        // Generate the value and the icon for the stringBinder box
+        final Parent valueBox = generateValueBox(propertyEntry.stringBinder.get(), sharedHeightProperty, propertyEntry.stringBinder);
+        final StackPane iconBox = generateIconBox(propertyEntry.type.icon, sharedHeightProperty);
 
-        // Add the boxes to this property box
+        // Add the boxes to this stringBinder box
         propertyBox.getChildren().addAll(iconBox, valueBox);
 
         return propertyBox;

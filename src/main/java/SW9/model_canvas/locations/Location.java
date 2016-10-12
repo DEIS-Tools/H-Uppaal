@@ -136,10 +136,10 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     }
 
     public Location(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY, final MouseTracker canvasMouseTracker, Type type, final ModelContainer modelContainer) {
-        // Initialize the model container property
+        // Initialize the model container stringBinder
         this.modelContainer = modelContainer;
 
-        // Initialize the type property
+        // Initialize the type stringBinder
         this.type = type;
 
         // Bind the mouse transparency to the boolean telling if the location is on the mouse
@@ -190,7 +190,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         locationLabel.getStyleClass().add("location-label");
         locationLabel.getStyleClass().add("headline");
 
-        // Bind the Location to the property
+        // Bind the Location to the stringBinder
         circle.centerXProperty().bind(centerX);
         circle.centerYProperty().bind(centerY);
 
