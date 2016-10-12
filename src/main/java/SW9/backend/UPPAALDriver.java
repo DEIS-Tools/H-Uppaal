@@ -24,7 +24,15 @@ import java.util.function.Consumer;
 
 public class UPPAALDriver {
 
-    public static void verify(final String query , final Consumer<Boolean> success, final Consumer<BackendException> failure, final List<ModelContainer> modelContainers) {
+    public static void verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final ModelContainer... modelContainers) {
+        final List<ModelContainer> modelContainerList = new ArrayList<>();
+        for (final ModelContainer modelContainer : modelContainers) {
+            modelContainerList.add(modelContainer);
+        }
+        verify(query, success, failure, modelContainerList);
+    }
+
+    public static void verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final List<ModelContainer> modelContainers) {
         // The task that should be executed on the background thread
         // calls success if no exception happens with the result
         // otherwise calls failure with the exception
@@ -49,20 +57,20 @@ public class UPPAALDriver {
     private static synchronized boolean verify(final String query, final List<ModelContainer> modelContainers) throws BackendException.BadUPPAALQueryException {
         final Document uppaalDocument = new Document(new PrototypeDocument());
 
-        for(final ModelContainer modelContainer : modelContainers) {
+        for (final ModelContainer modelContainer : modelContainers) {
             // Set create a template for each model container
             final Template template = generateTemplate(uppaalDocument, modelContainer);
             template.setProperty("name", modelContainer.getName() + "Template");
         }
 
         String systemDclString = "\n";
-        for(final ModelContainer modelContainer : modelContainers) {
+        for (final ModelContainer modelContainer : modelContainers) {
             systemDclString += modelContainer.getName() + " = " + modelContainer.getName() + "Template();\n";
         }
 
         systemDclString += "system ";
-        for(int i = 0; i < modelContainers.size(); i ++) {
-            if(i != 0 ) {
+        for (int i = 0; i < modelContainers.size(); i++) {
+            if (i != 0) {
                 systemDclString += ", ";
             }
             systemDclString += modelContainers.get(i).getName();
@@ -202,7 +210,7 @@ public class UPPAALDriver {
 
         final int x = (sourceULocation.getX() + targetULocation.getX()) / 2;
         final int y = (sourceULocation.getY() + targetULocation.getY()) / 2;
-        
+
         if (hEdge.getSelect() != null) {
             uEdge.setProperty("select", hEdge.getSelect());
             final Property p = uEdge.getProperty("select");

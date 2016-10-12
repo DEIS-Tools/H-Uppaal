@@ -1,5 +1,6 @@
 package SW9.model_canvas;
 
+import SW9.backend.UPPAALDriver;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.colors.Color;
@@ -11,12 +12,11 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableDoubleValue;
+import javafx.concurrent.Task;
 import javafx.geometry.Bounds;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class ModelContainer extends Parent implements MouseTrackable, Colorable, Removable {
 
@@ -59,6 +59,18 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
                 ModelCanvas.getLocationOnMouse().resetColor();
             }
         });
+
+        new Timer().schedule(
+                new TimerTask() {
+
+                    @Override
+                    public void run() {
+                        UPPAALDriver.verify("E<> deadlock", hasDeadlock::set, e -> {
+                            System.out.println("Av av av exeption");
+                        }, ModelContainer.this);
+                        System.out.println("noget data");
+                    }
+                }, 0, 5000);
     }
 
     public abstract Bounds getInternalBounds();
