@@ -48,7 +48,7 @@ public class UPPAALDriver {
     private static synchronized boolean verify(final String query, final ModelContainer modelContainer) throws BackendException.BadUPPAALQueryException {
         final Document uppaalDocument = new Document(new PrototypeDocument());
 
-        // Give the model container a name based on its hascode
+        // Set the name of the underlying UPPAAL template and instance
         final String modelContainerInstanceName = modelContainer.getName();
         final String modelContainerTemplateName = modelContainerInstanceName + "Template";
 
@@ -189,7 +189,13 @@ public class UPPAALDriver {
 
         final int x = (sourceULocation.getX() + targetULocation.getX()) / 2;
         final int y = (sourceULocation.getY() + targetULocation.getY()) / 2;
-
+        
+        if (hEdge.getSelect() != null) {
+            uEdge.setProperty("select", hEdge.getSelect());
+            final Property p = uEdge.getProperty("select");
+            p.setProperty("x", x - 15);
+            p.setProperty("y", y - 42);
+        }
 
         if (hEdge.getGuard() != null) {
             uEdge.setProperty("guard", hEdge.getGuard());
@@ -221,7 +227,6 @@ public class UPPAALDriver {
 
         try {
             engine.connect();
-
 
             // Create a list to store the problems of the query
             final ArrayList<Problem> problems = new ArrayList<>();

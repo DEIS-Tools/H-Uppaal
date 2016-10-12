@@ -35,10 +35,10 @@ public class Edge extends Parent implements Removable, Colorable {
     private final Location sourceLocation;
     private Location targetLocation = null;
 
-    private StringProperty selectProperty = new SimpleStringProperty();
-    private StringProperty guardProperty = new SimpleStringProperty();
-    private StringProperty updateProperty = new SimpleStringProperty();
-    private StringProperty syncProperty = new SimpleStringProperty();
+    private final StringProperty selectProperty = new SimpleStringProperty();
+    private final StringProperty guardProperty = new SimpleStringProperty();
+    private final StringProperty updateProperty = new SimpleStringProperty();
+    private final StringProperty syncProperty = new SimpleStringProperty();
 
     // UI properties
     private Color color = null;
