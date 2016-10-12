@@ -29,9 +29,8 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     // Modelling properties
     private final StringProperty nameProperty = new SimpleStringProperty();
     private final StringProperty invariantProperty = new SimpleStringProperty();
-    private final BooleanProperty initialProperty = new SimpleBooleanProperty();
-    private final BooleanProperty urgentProperty = new SimpleBooleanProperty();
-    private final BooleanProperty committedProperty = new SimpleBooleanProperty();
+    private final BooleanProperty urgentProperty = new SimpleBooleanProperty(false);
+    private final BooleanProperty committedProperty = new SimpleBooleanProperty(false);
 
     // UI properties
     private Color color = null;
@@ -493,12 +492,8 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         return invariantProperty().get();
     }
 
-    public BooleanProperty initialProperty() {
-        return initialProperty;
-    }
-
     public Boolean isInitial() {
-        return initialProperty().get();
+        return type == Type.INITIAL;
     }
 
     public BooleanProperty urgentProperty() {

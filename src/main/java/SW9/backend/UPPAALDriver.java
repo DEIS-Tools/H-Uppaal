@@ -10,6 +10,7 @@ import com.uppaal.model.core2.PrototypeDocument;
 import com.uppaal.model.core2.Template;
 import com.uppaal.model.system.SystemState;
 import com.uppaal.model.system.UppaalSystem;
+import com.uppaal.model.system.symbolic.SymbolicState;
 import com.uppaal.model.system.symbolic.SymbolicTransition;
 import javafx.concurrent.Task;
 
@@ -129,31 +130,46 @@ public class UPPAALDriver {
         return  declStr;
     }
 
-    private static com.uppaal.model.core2.Location addLocation(final Template template, final Location hLocation, final String name) {
-
-        // TODO get name of location instead of having a separate parameter for the name
-
+    private static com.uppaal.model.core2.Location addLocation(final Template template, final Location hLocation, final String fallbackName) {
         final int x = (int) hLocation.xProperty().get();
         final int y = (int) hLocation.xProperty().get();
         final Color color = hLocation.getColor().toAwtColor(hLocation.getColorIntensity());
-
 
         // Create new UPPAAL location and insert it into the template
         final com.uppaal.model.core2.Location uLocation = template.createLocation();
         template.insert(uLocation, null);
 
         // Set name of the location
-        uLocation.setProperty("name", name);
+        if(hLocation.getName() != null) {
+            uLocation.setProperty("name", hLocation.getName());
+        } else {
+            uLocation.setProperty("name", fallbackName);
+        }
+
+        // Set the invariant if any
+        if(hLocation.getInvariant() != null) {
+            uLocation.setProperty("invariant", hLocation.getInvariant());
+        }
+
+        // Add committed property if location is committed
+        if(hLocation.isCommitted()) {
+            uLocation.setProperty("committed", true);
+        }
+
+        // Add urgent property if location is urgent
+        if(hLocation.isUrgent()) {
+            uLocation.setProperty("urgent", true);
+        }
+
+        // Add initial property if location is initial
+        if(hLocation.isInitial()) {
+            uLocation.setProperty("initial", true);
+        }
 
         // Update the placement of the name label
         Property p = uLocation.getProperty("name");
         p.setProperty("x", x);
         p.setProperty("y", y - 30);
-
-        // If it was the initial location
-        if (hLocation.type == Location.Type.INITIAL) {
-            uLocation.setProperty("init", true);
-        }
 
         // Set the color of the location
         uLocation.setProperty("color", color);
@@ -213,6 +229,7 @@ public class UPPAALDriver {
         try {
             engine.connect();
 
+
             // Create a list to store the problems of the query
             final ArrayList<Problem> problems = new ArrayList<>();
 
@@ -225,11 +242,11 @@ public class UPPAALDriver {
             }
 
             // Update some internal state for the engine by getting the initial state
-            engine.getInitialState(system);
+            SymbolicState sate = engine.getInitialState(system);
 
             // Return the query
             // TODO use the trace and progress from this method call
-            return engine.query(system, "", query, new QueryFeedback() {
+            QueryVerificationResult result = engine.query(system, "trace 1", query, new QueryFeedback() {
                 @Override
                 public void setProgressAvail(boolean b) {
 
@@ -273,6 +290,7 @@ public class UPPAALDriver {
 
                 }
             });
+            return result;
 
         } catch (EngineException | IOException e) {
             // Something went wrong
