@@ -66,9 +66,8 @@ public abstract class ModelContainer extends Parent implements MouseTrackable, C
                     @Override
                     public void run() {
                         UPPAALDriver.verify("E<> deadlock", hasDeadlock::set, e -> {
-                            System.out.println("Av av av exeption");
+                            System.out.println("Exception thrown from deadlock checker");
                         }, ModelContainer.this);
-                        System.out.println("noget data");
                     }
                 }, 0, 5000);
     }
