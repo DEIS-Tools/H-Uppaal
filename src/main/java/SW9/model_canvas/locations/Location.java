@@ -32,7 +32,7 @@ import java.util.TimerTask;
 public class Location extends Parent implements MouseTrackable, Removable, Colorable {
 
     // Modelling properties
-    private final StringProperty nameProperty = new SimpleStringProperty();
+    private final StringProperty nameProperty = new SimpleStringProperty("L" + getNextUnusedId());
     private final StringProperty invariantProperty = new SimpleStringProperty();
     private final BooleanProperty urgentProperty = new SimpleBooleanProperty(false);
     private final BooleanProperty committedProperty = new SimpleBooleanProperty(false);
@@ -52,6 +52,9 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
             new Properties.Entry(Properties.Type.LOCATION_INVARIANT, invariantProperty)
     );
 
+
+    // Used to give all locations a unique name
+    private static int NEXT_UNUSED_ID = -1;
 
     // Used to create the Location
     public final static double RADIUS = 25.0f;
@@ -198,10 +201,10 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     }
 
     public Location(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY, final MouseTracker canvasMouseTracker, Type type, final ModelContainer modelContainer) {
-        // Initialize the model container stringBinder
+        // Initialize the model container
         this.modelContainer = modelContainer;
 
-        // Initialize the type stringBinder
+        // Initialize the type
         this.type = type;
 
         // Bind the mouse transparency to the boolean telling if the location is on the mouse
@@ -252,7 +255,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         locationLabel.getStyleClass().add("location-label");
         locationLabel.getStyleClass().add("headline");
 
-        // Bind the Location to the stringBinder
+        // Bind the Location to the the coordinates provided
         circle.centerXProperty().bind(centerX);
         circle.centerYProperty().bind(centerY);
 
@@ -361,6 +364,11 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         }
 
         initializePeriodicReachabilityCheck();
+    }
+
+    private static synchronized int getNextUnusedId() {
+        NEXT_UNUSED_ID++;
+        return NEXT_UNUSED_ID;
     }
 
     private void makeDraggable() {
