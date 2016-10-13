@@ -1,10 +1,13 @@
 package SW9.backend;
 
+import SW9.model_canvas.locations.Location;
 import com.uppaal.engine.QueryFeedback;
 import com.uppaal.engine.QueryVerificationResult;
+import com.uppaal.model.system.SystemLocation;
 import com.uppaal.model.system.symbolic.SymbolicTransition;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class QueryListener implements QueryFeedback {
@@ -45,8 +48,17 @@ public class QueryListener implements QueryFeedback {
     @Override
     public void setTrace(char c, String s, ArrayList<SymbolicTransition> arrayList, int i, QueryVerificationResult queryVerificationResult) {
 
+
+        final List<Location> locationList = new ArrayList<>();
+
+        for(final SymbolicTransition symbolicTransition : arrayList) {
+            for (final SystemLocation systemLocation : symbolicTransition.getTarget().getLocations()) {
+                locationList.add(getHUPPAALDocument().getLocation(systemLocation.getLocation()));
+            }
+        }
+
         // TODO map the trace
-        traceCallback.accept(new Trace(null,null, c));
+        traceCallback.accept(new Trace(locationList ,null, c));
     }
 
     @Override

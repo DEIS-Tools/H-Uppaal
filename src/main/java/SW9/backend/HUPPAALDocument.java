@@ -19,6 +19,11 @@ public class HUPPAALDocument {
 
     // Maps to convert H-UPPAAL locations to UPPAAL locations
     private final Map<Location, com.uppaal.model.core2.Location> hToULocations = new HashMap<>();
+
+    // Maps to convert back from UPPAAL to H-UPPAAL items
+    private final Map<com.uppaal.model.core2.Location, Location> uToHLocations = new HashMap<>();
+    private final Map<com.uppaal.model.core2.Edge, Edge> uToHEdges = new HashMap<>();
+
     private final List<ModelContainer> modelContainers;
 
     public HUPPAALDocument(final List<ModelContainer> modelContainers) {
@@ -69,10 +74,11 @@ public class HUPPAALDocument {
 
             // Populate the map
             hToULocations.put(hLocation, uLocation);
+            uToHLocations.put(uLocation, hLocation);
         }
 
         for (final Edge hEdge : modelContainer.getEdges()) {
-            addEdge(template, hEdge, hToULocations);
+            uToHEdges.put(addEdge(template, hEdge, hToULocations), hEdge);
         }
 
         return template;
@@ -152,7 +158,7 @@ public class HUPPAALDocument {
         return uLocation;
     }
 
-    private void addEdge(final Template template, final Edge hEdge, final Map<Location, com.uppaal.model.core2.Location> hToULocations) {
+    private com.uppaal.model.core2.Edge addEdge(final Template template, final Edge hEdge, final Map<Location, com.uppaal.model.core2.Location> hToULocations) {
         // Create new UPPAAL edge and insert it into the template
         final com.uppaal.model.core2.Edge uEdge = template.createEdge();
         template.insert(uEdge, null);
@@ -195,9 +201,19 @@ public class HUPPAALDocument {
             p.setProperty("x", x - 15);
             p.setProperty("y", y);
         }
+
+        return uEdge;
     }
 
     public Document toUPPAALDocument() {
         return uppaalDocument;
+    }
+
+    public Location getLocation(final com.uppaal.model.core2.Location uLocation) {
+        return uToHLocations.get(uLocation);
+    }
+
+    public Edge getEdge(final com.uppaal.model.core2.Edge uEdge) {
+        return uToHEdges.get(uEdge);
     }
 }

@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 
 public class UPPAALDriver {
 
-    enum TraceType {
+    public enum TraceType {
         NONE, SOME, SHORTEST, FASTEST;
 
         @Override

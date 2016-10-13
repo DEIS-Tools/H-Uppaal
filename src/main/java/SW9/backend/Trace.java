@@ -7,18 +7,18 @@ import java.util.List;
 
 public class Trace {
 
-    private final Location location;
+    private final List<Location> locations;
     private final List<Edge> edges;
     private final char result;
 
-    public Trace(final List<Edge> edges, final Location location, final char result) {
+    public Trace(final List<Location> locations, final List<Edge> edges, final char result) {
+        this.locations = locations;
         this.edges = edges;
-        this.location = location;
         this.result = result;
     }
 
-    public Location getLocation() {
-        return location;
+    public List<Location> getLocation() {
+        return locations;
     }
 
     public List<Edge> getEdges() {
