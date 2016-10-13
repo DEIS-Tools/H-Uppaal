@@ -181,9 +181,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
                                         isReachable.set(aBoolean);
                                     });
                                 },
-                                e -> {
-                                    System.out.println("Av av av exception 2");
-                                },
+                                Throwable::printStackTrace,
                                 (ModelContainer) getParent());
                     }
                 }, 0, 5000);
