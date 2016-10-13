@@ -1,5 +1,6 @@
 package SW9.model_canvas.locations;
 
+import SW9.backend.UPPAALDriver;
 import SW9.issues.Warning;
 import SW9.model_canvas.*;
 import SW9.model_canvas.edges.Edge;
@@ -12,6 +13,7 @@ import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableDoubleValue;
@@ -24,6 +26,8 @@ import jiconfont.javafx.IconNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Location extends Parent implements MouseTrackable, Removable, Colorable {
 
@@ -93,8 +97,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         final Circle markCircle = new Circle();
         markCircle.centerXProperty().bind(circle.centerXProperty());
         markCircle.centerYProperty().bind(circle.centerYProperty());
-        markCircle.radiusProperty().set(circle.radiusProperty().multiply(1.2).get());
-        markCircle.setFill(Color.RED.getColor(Color.Intensity.I500));
+        markCircle.setFill(Color.AMBER.getColor(Color.Intensity.I500));
 
         final Timeline timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
@@ -120,12 +123,29 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         // When the reachable property changes, show or hide the effect accordingly
         isReachable.addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
+                // Initial animation
+                final Timeline initialAnimation = new Timeline();
+
+                final KeyValue setRadius0 = new KeyValue(markCircle.radiusProperty(), circle.radiusProperty().get());
+                final KeyValue setColor0 = new KeyValue(markCircle.fillProperty(), Color.RED.getColor(Color.Intensity.I700));
+                final KeyFrame keyFrame0 = new KeyFrame(Duration.millis(0), setRadius0, setColor0);
+                initialAnimation.getKeyFrames().add(keyFrame0);
+
+                final KeyValue setRadius1 = new KeyValue(markCircle.radiusProperty(), circle.radiusProperty().get() + (reachabilityCertainty.get() / 100) * 5);
+                final KeyValue setColor1 = new KeyValue(markCircle.fillProperty(), Color.AMBER.getColor(Color.Intensity.I500));
+                final KeyFrame keyFrame1 = new KeyFrame(Duration.millis(2000), setRadius1, setColor1);
+                initialAnimation.getKeyFrames().add(keyFrame1);
+
+                initialAnimation.play();
+
+                // When the initial animation is done, continue with the regular animation
+                initialAnimation.setOnFinished(event -> timeline.playFromStart());
+
                 addChild(markCircle);
                 markCircle.toBack();
-                timeline.play();
             } else {
                 removeChild(markCircle);
-                timeline.pause();
+                timeline.stop();
             }
         });
     }
@@ -135,6 +155,38 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         properties.xProperty().bind(circle.centerXProperty().add(Location.RADIUS));
         properties.yProperty().bind(circle.centerYProperty().add(Location.RADIUS));
         addChild(properties);
+    }
+
+    private void initializePeriodicReachabilityCheck() {
+        new Timer().schedule(
+                new TimerTask() {
+
+                    @Override
+                    public void run() {
+                        // Do nothing until we have a parent, and that parent is a ModelContainer (otherwise it might not be placed yet)
+                        if (getParent() == null || !(getParent() instanceof ModelContainer)) return;
+
+                        final String containerName = modelContainer.getName();
+                        final String locationName = getName();
+
+                        // If either the container of location are missing a name, do nothing
+                        if (containerName == null || locationName == null) return;
+
+                        // Run the verification query
+                        UPPAALDriver.verify(
+                                "E<> " + containerName + "." + locationName,
+                                aBoolean -> {
+                                    Platform.runLater(() -> {
+                                        reachabilityCertainty.set(100);
+                                        isReachable.set(aBoolean);
+                                    });
+                                },
+                                e -> {
+                                    System.out.println("Av av av exception 2");
+                                },
+                                (ModelContainer) getParent());
+                    }
+                }, 0, 5000);
     }
 
     public Location(final MouseTracker canvasMouseTracker) {
@@ -309,6 +361,8 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         if (type.equals(Type.INITIAL) || type.equals(Type.FINAL)) {
             initializePropertiesBox();
         }
+
+        initializePeriodicReachabilityCheck();
     }
 
     private void makeDraggable() {
