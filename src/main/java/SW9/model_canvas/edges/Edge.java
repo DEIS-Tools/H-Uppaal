@@ -1,9 +1,6 @@
 package SW9.model_canvas.edges;
 
-import SW9.model_canvas.IParent;
-import SW9.model_canvas.ModelCanvas;
-import SW9.model_canvas.Parent;
-import SW9.model_canvas.Removable;
+import SW9.model_canvas.*;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.colors.Color;
@@ -29,7 +26,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
-public class Edge extends Parent implements Removable, Colorable {
+public class Edge extends Parent implements Removable, Colorable, Traceable {
 
     // Modelling properties
     private final Location sourceLocation;
@@ -544,5 +541,12 @@ public class Edge extends Parent implements Removable, Colorable {
     
     public String getUpdate() {
         return updateProperty.get();
+    }
+
+    @Override
+    public void trace() {
+        links.forEach(link -> {
+            link.line.setStroke(Color.RED.getColor(Color.Intensity.I900));
+        });
     }
 }

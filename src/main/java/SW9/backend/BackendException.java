@@ -18,4 +18,25 @@ public class BackendException extends Exception {
             super(s, cause);
         }
     }
+
+    public static class QueryErrorException extends BackendException {
+
+        public QueryErrorException(final String message) {
+            super(message);
+        }
+
+        public QueryErrorException(final String message, final Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+    public class QueryUncertainException extends BackendException {
+        public QueryUncertainException(final String s) {
+            super(s);
+        }
+
+        public QueryUncertainException(final String s, final Exception cause) {
+            super(s, cause);
+        }
+    }
 }
