@@ -109,7 +109,7 @@ public class HUPPAALDocument {
 
     private com.uppaal.model.core2.Location addLocation(final Template template, final Location hLocation, final String fallbackName) {
         final int x = (int) hLocation.xProperty().get();
-        final int y = (int) hLocation.xProperty().get();
+        final int y = (int) hLocation.yProperty().get();
         final Color color = hLocation.getColor().toAwtColor(hLocation.getColorIntensity());
 
         // Create new UPPAAL location and insert it into the template
