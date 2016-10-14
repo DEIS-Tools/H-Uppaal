@@ -1,0 +1,7 @@
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
+}
+
+.query {
+    -fx-padding: 5;
+}

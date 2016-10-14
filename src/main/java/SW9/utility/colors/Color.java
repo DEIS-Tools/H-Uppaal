@@ -333,6 +333,10 @@ public enum Color {
                 (int) (getColor(intensity).getBlue() * 255));
     }
 
+    public String toHexColor(final Intensity intensity) {
+        return "#" + Integer.toHexString(toAwtColor(intensity).getRGB()).substring(2);
+    }
+
     public enum Intensity {
         I50,
         I100,

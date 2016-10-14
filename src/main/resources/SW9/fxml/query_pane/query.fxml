@@ -1,0 +1,15 @@
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<HBox xmlns="http://javafx.com/javafx/8.0.76-ea" styleClass="query">
+
+    <Circle fill="green"
+            radius="18"/>
+
+    <VBox HBox.hgrow="ALWAYS">
+        <JFXTextField id="query-text-field" styleClass="subhead"/>
+        <JFXTextField id="comment-text-field" styleClass="caption"/>
+    </VBox>
+
+</HBox>
