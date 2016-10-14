@@ -2,30 +2,69 @@ package SW9.backend;
 
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
+import com.uppaal.model.system.SystemEdge;
+import com.uppaal.model.system.SystemEdgeSelect;
+import com.uppaal.model.system.SystemLocation;
+import com.uppaal.model.system.SystemState;
+import com.uppaal.model.system.symbolic.SymbolicState;
+import com.uppaal.model.system.symbolic.SymbolicTransition;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Trace {
 
-    private final List<Location> locations;
-    private final List<Edge> edges;
-    private final char result;
+    public class Transition {
+        private final List<Location> sourceLocations = new ArrayList<>();
+        private final List<Location> targetLocations = new ArrayList<>();
+        private final List<Edge> edges = new ArrayList<>();
 
-    public Trace(final List<Location> locations, final List<Edge> edges, final char result) {
-        this.locations = locations;
-        this.edges = edges;
-        this.result = result;
+        private Transition(final SymbolicTransition symbolicTransition, final HUPPAALDocument huppaalDocument) {
+
+            final SymbolicState sourceState = symbolicTransition.getSource();
+            final SymbolicState targetState = symbolicTransition.getTarget();
+
+            final SystemEdgeSelect[] chosenEdges = symbolicTransition.getEdges();
+
+            if(sourceState != null) {
+                for (final SystemLocation sourceSystemLocation : sourceState.getLocations()) {
+                    sourceLocations.add(huppaalDocument.getLocation(sourceSystemLocation.getLocation()));
+                }
+            }
+
+            if(targetState != null) {
+                for (final SystemLocation targetSystemLocation : targetState.getLocations()) {
+                    targetLocations.add(huppaalDocument.getLocation(targetSystemLocation.getLocation()));
+                }
+            }
+
+            if(chosenEdges != null) {
+                for (final SystemEdgeSelect chosenEdge : chosenEdges) {
+                    edges.add(huppaalDocument.getEdge(chosenEdge.getEdge()));
+                }
+            }
+        }
+
+        public List<Location> getTargetLocations() {
+            return targetLocations;
+        }
+
+        public List<Location> getSourceLocation() {
+            return sourceLocations;
+        }
+
+        public List<Edge> getEdges() {
+            return edges;
+        }
     }
 
-    public List<Location> getLocation() {
-        return locations;
+    public List<Transition> getTransitions() {
+        return transitions;
     }
 
-    public List<Edge> getEdges() {
-        return edges;
-    }
+    private List<Transition> transitions = new ArrayList<>();
 
-    public char getResult() {
-        return result;
+    public Trace(final List<SymbolicTransition> symbolicTransitions, final HUPPAALDocument huppaalDocument) {
+        symbolicTransitions.forEach(symbolicTransition -> transitions.add(new Transition(symbolicTransition, huppaalDocument)));
     }
 }
