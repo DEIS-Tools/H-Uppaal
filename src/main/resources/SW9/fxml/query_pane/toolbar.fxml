@@ -1,0 +1,22 @@
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.layout.Region?>
+<HBox xmlns="http://javafx.com/javafx/8.0.76-ea">
+
+    <VBox>
+        <Label id="queries-headline" styleClass="title">Queries</Label>
+        <Label id="queries-headline-caption" styleClass="subhead">7 successful, 1 error</Label>
+    </VBox>
+
+    <!-- Will create just enough space between the two elements -->
+    <Region HBox.hgrow="ALWAYS" />
+
+    <!-- Container for the two buttons -->
+    <HBox alignment="BOTTOM_RIGHT">
+        <JFXButton id="clear-button">Clear</JFXButton>
+        <JFXButton id="run-all-button">Run all</JFXButton>
+    </HBox>
+
+</HBox>
