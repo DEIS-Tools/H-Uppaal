@@ -21,7 +21,7 @@ import javafx.scene.shape.*;
 
 public class ModelComponent extends ModelContainer implements Colorable {
 
-    private static final double CORNER_SIZE = 50;
+    private static final double CORNER_SIZE = ModelCanvas.GRID_SIZE * 2 + Location.RADIUS;
 
     private final Rectangle labelContainer;
     private final Polygon labelTriangle;

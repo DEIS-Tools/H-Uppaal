@@ -24,7 +24,7 @@
 }
 
 .location {
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 1;
     -fx-stroke-type: inside;
 }
 
@@ -49,7 +49,7 @@
 
 .link {
     -fx-stroke: -primary-color-darkest;
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 1;
 }
 
 .link.selected {
@@ -57,7 +57,7 @@
 }
 
 .nail {
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 1;
 }
 
 .nail.selected {
@@ -70,17 +70,17 @@
 }
 
 .component-label-container {
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 1;
 }
 
 .component-stroke {
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 1;
 }
 
 .channel-box {
     -fx-fill: -primary-color;
     -fx-stroke: -primary-color-darker;
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 1;
 }
 
 .edge-properties .icon-container .icon-background {
@@ -117,7 +117,7 @@
 }
 
 .channel-receiver {
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 1;
     -fx-stroke: -primary-color-darker;
     -fx-fill: -white;
     -fx-stroke-type: inside;

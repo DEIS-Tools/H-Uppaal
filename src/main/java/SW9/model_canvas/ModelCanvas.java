@@ -36,7 +36,7 @@ import java.util.List;
 
 public class ModelCanvas extends Pane implements MouseTrackable, IParent {
 
-    public static final int GRID_SIZE = 15;
+    public static final int GRID_SIZE = 10;
 
     // Variables describing the state of the canvas
     private static Location locationOnMouse = null;

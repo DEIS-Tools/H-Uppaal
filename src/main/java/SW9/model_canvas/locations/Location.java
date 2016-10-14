@@ -57,7 +57,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     private static int NEXT_UNUSED_ID = -1;
 
     // Used to create the Location
-    public final static double RADIUS = 25.0f;
+    public final static double RADIUS = ModelCanvas.GRID_SIZE * 2;
 
     // Used to update the interaction with the mouse
     private final BooleanProperty isOnMouse = new SimpleBooleanProperty(false);

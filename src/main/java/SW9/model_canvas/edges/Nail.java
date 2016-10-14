@@ -1,5 +1,6 @@
 package SW9.model_canvas.edges;
 
+import SW9.model_canvas.ModelCanvas;
 import SW9.model_canvas.Parent;
 import SW9.model_canvas.Removable;
 import SW9.utility.colors.Color;
@@ -18,7 +19,7 @@ public class Nail extends Parent implements Removable, Colorable {
     private boolean colorIsSet = false;
 
     private final static double HIDDEN_RADIUS = 0d;
-    protected final static double VISIBLE_RADIUS = 7d;
+    protected final static double VISIBLE_RADIUS = ModelCanvas.GRID_SIZE * 0.75;
     private final MouseTracker mouseTracker = new MouseTracker(this);
 
     public final Circle circle = new Circle();

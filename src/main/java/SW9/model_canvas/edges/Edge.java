@@ -374,6 +374,7 @@ public class Edge extends Parent implements Removable, Colorable, Traceable {
         }
 
         addChildren(nail, newLink);
+        nail.toFront();
 
         BindingHelper.bind(newLink.line, startCircle, nail.circle);
         BindingHelper.bind(links.get(position + 1).line, nail.circle, endCircle);
