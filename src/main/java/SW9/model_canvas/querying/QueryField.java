@@ -1,9 +1,11 @@
 package SW9.model_canvas.querying;
 
 import SW9.backend.BackendException;
+import SW9.backend.Trace;
 import SW9.backend.UPPAALDriver;
 import SW9.model_canvas.ModelContainer;
 import SW9.model_canvas.Parent;
+import SW9.model_canvas.locations.Location;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.LocationAware;
 import javafx.beans.property.DoubleProperty;
@@ -41,6 +43,10 @@ public class QueryField extends Parent implements LocationAware {
 
             final String query = textField.getText();
 
+            final Consumer<Trace> traceCallback = trace -> {
+                trace.getLocation().forEach(Location::trace);
+            };
+
             final Consumer<Boolean> success = result -> {
                 final Color color = result ? Color.GREEN : Color.RED;
                 textField.setBackground(new Background(new BackgroundFill(color.getColor(Color.Intensity.I500), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -52,7 +58,7 @@ public class QueryField extends Parent implements LocationAware {
                 textField.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
             };
 
-            UPPAALDriver.verify(query, success, failure, modelContainers);
+            UPPAALDriver.verify(query, success, failure, UPPAALDriver.TraceType.SOME, traceCallback, modelContainers);
         });
     }
 

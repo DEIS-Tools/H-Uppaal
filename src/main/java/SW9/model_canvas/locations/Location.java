@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Location extends Parent implements MouseTrackable, Removable, Colorable {
+public class Location extends Parent implements MouseTrackable, Removable, Colorable, Traceable {
 
     // Modelling properties
     private final StringProperty nameProperty = new SimpleStringProperty("L" + getNextUnusedId());
@@ -69,6 +69,11 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
 
     private ModelContainer modelContainer;
     private List<Edge> deletedEdges = new ArrayList<>();
+
+    @Override
+    public void trace() {
+        circle.setStroke(Color.RED.getColor(Color.Intensity.I900));
+    }
 
     public enum Type {
         NORMAL, INITIAL, FINAL;
