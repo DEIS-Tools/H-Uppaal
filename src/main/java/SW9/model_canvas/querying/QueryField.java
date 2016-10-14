@@ -5,6 +5,7 @@ import SW9.backend.Trace;
 import SW9.backend.UPPAALDriver;
 import SW9.model_canvas.ModelContainer;
 import SW9.model_canvas.Parent;
+import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.LocationAware;
@@ -45,6 +46,7 @@ public class QueryField extends Parent implements LocationAware {
 
             final Consumer<Trace> traceCallback = trace -> {
                 trace.getLocation().forEach(Location::trace);
+                trace.getEdges().forEach(Edge::trace);
             };
 
             final Consumer<Boolean> success = result -> {

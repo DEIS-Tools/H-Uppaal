@@ -72,7 +72,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
 
     @Override
     public void trace() {
-        circle.setStroke(Color.RED.getColor(Color.Intensity.I900));
+        this.color(Color.RED, Color.Intensity.I900);
     }
 
     public enum Type {
