@@ -3,11 +3,16 @@ package SW9;
 import SW9.issues.Warning;
 import SW9.model_canvas.ModelCanvas;
 import SW9.model_canvas.ModelContainer;
+import SW9.ui_elements.QueryPane;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.ResizeHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXButton;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -30,6 +35,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 import jiconfont.icons.GoogleMaterialDesignIcons;
 import jiconfont.javafx.IconFontFX;
 import jiconfont.javafx.IconNode;
@@ -73,15 +79,15 @@ public class Main extends Application {
         // Clear any selected elements on any mouse event
         scene.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> SelectHelper.clearSelectedElements());
 
-        initializeStatusBar(stage);
-
-        initializeBottomBar(stage);
-
         // Allows us to resize the window
         stage.resizableProperty().setValue(true);
         ResizeHelper.initialize(stage, border);
 
         stage.show();
+
+        initializeStatusBar(stage);
+
+        initializeBottomBar(stage);
     }
 
     private void loadFonts() {
@@ -125,7 +131,9 @@ public class Main extends Application {
         );
 
         // Find the first model container
-        ((ModelCanvas) scene.lookup("#model-canvas")).getChildren().addListener(new ListChangeListener<Node>() {
+        Node container = scene.lookup("#root");
+        container = container.lookup("#main-content");
+        ((ModelCanvas) container.lookup("#model-canvas")).getChildren().addListener(new ListChangeListener<Node>() {
             @Override
             public void onChanged(final Change<? extends Node> change) {
                 if (change.next()) {
@@ -229,6 +237,15 @@ public class Main extends Application {
 
         final HBox rightStatusBar = (HBox) scene.lookup("#status-bar-right");
 
+        // Add the "show query pane" button to the status bar
+        final IconNode queryIcon = new IconNode(GoogleMaterialDesignIcons.LIST);
+        queryIcon.setFill(fontAndRippleColor);
+        final JFXButton showQueryBtn = new JFXButton("", queryIcon);
+        showQueryBtn.setButtonType(JFXButton.ButtonType.FLAT);
+        showQueryBtn.setRipplerFill(fontAndRippleColor);
+        showQueryBtn.setOnMouseClicked(event -> toggleQueryPane(scene));
+        rightStatusBar.getChildren().add(showQueryBtn);
+
         // Add the minimize window button to the status bar
         final IconNode minimizeIcon = new IconNode(GoogleMaterialDesignIcons.REMOVE);
         minimizeIcon.setFill(fontAndRippleColor);
@@ -286,6 +303,40 @@ public class Main extends Application {
         closeBtn.setRipplerFill(fontAndRippleColor);
         closeBtn.setOnMouseClicked(event -> System.exit(0));
         rightStatusBar.getChildren().add(closeBtn);
+    }
+
+    private final BooleanProperty isQueryPaneShown = new SimpleBooleanProperty(false);
+
+    private void toggleQueryPane(final Scene scene) {
+        // Find the query pane
+        Node container = scene.lookup("#root");
+        container = container.lookup("#main-content");
+        final QueryPane queryPane = (QueryPane) container.lookup("#query-pane");
+
+        final Timeline animation = new Timeline();
+        final KeyValue hiddenTranslateX = new KeyValue(queryPane.translateXProperty(), queryPane.getWidth(), Interpolator.EASE_IN);
+        final KeyValue visibleTranslateX = new KeyValue(queryPane.translateXProperty(), 0, Interpolator.EASE_OUT);
+
+        // Initialize the animation accordingly to the property
+        if(isQueryPaneShown.get()) {
+            final KeyFrame visibleKeyFrame = new KeyFrame(Duration.millis(0), visibleTranslateX);
+            final KeyFrame hiddenKeyFrame = new KeyFrame(Duration.millis(250), hiddenTranslateX);
+
+            animation.getKeyFrames().add(visibleKeyFrame);
+            animation.getKeyFrames().add(hiddenKeyFrame);
+        } else {
+            final KeyFrame hiddenKeyFrame = new KeyFrame(Duration.millis(0), hiddenTranslateX);
+            final KeyFrame visibleKeyFrame = new KeyFrame(Duration.millis(250), visibleTranslateX);
+
+            animation.getKeyFrames().add(hiddenKeyFrame);
+            animation.getKeyFrames().add(visibleKeyFrame);
+        }
+
+        // Toggle the shown status
+        isQueryPaneShown.set(!isQueryPaneShown.get());
+
+        // Play the animation
+        animation.play();
     }
 
 }

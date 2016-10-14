@@ -3,52 +3,66 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <?import SW9.model_canvas.ModelCanvas?>
+<?import SW9.ui_elements.QueryPane?>
 <StackPane xmlns="http://javafx.com/javafx/8.0.76-ea"
            id="stackpane">
 
-    <ModelCanvas id="model-canvas"
-                 prefHeight="Infinity"
-                 prefWidth="Infinity"
-                 minWidth="Infinity"
-                 minHeight="Infinity"/>
+    <BorderPane id="root">
 
-    <!-- TOP BAR -->
-    <BorderPane id="status-bar"
-                styleClass="status-bar"
-                prefHeight="20"
-                maxHeight="20">
-        <left>
-            <StackPane id="status-bar-left">
-                <Label id="status-bar-title" styleClass="caption, white-text, window-title"/>
+        <center>
+            <StackPane id="main-content">
+                <!-- MODEL CANVAS -->
+                <ModelCanvas id="model-canvas"/>
+
+                <!-- QUERIES -->
+                <QueryPane
+                        id="query-pane"/>
             </StackPane>
-        </left>
-
-        <center>
-            <HBox id="status-bar-middle"/>
         </center>
 
-        <right>
-            <HBox id="status-bar-right"/>
-        </right>
-    </BorderPane>
+        <!-- Must be placed below content -->
+        <top>
+            <!-- TOP BAR -->
+            <BorderPane id="status-bar"
+                        styleClass="status-bar"
+                        prefHeight="20"
+                        maxHeight="20">
+                <left>
+                    <StackPane id="status-bar-left">
+                        <Label id="status-bar-title" styleClass="caption, white-text, window-title"/>
+                    </StackPane>
+                </left>
 
-    <!-- BOTTOM BAR -->
-    <BorderPane id="bottom-bar"
-                styleClass="bottom-bar"
-                prefHeight="25"
-                maxHeight="25">
+                <center>
+                    <HBox id="status-bar-middle"/>
+                </center>
 
-        <left>
-            <HBox id="bottom-bar-left"/>
-        </left>
+                <right>
+                    <HBox id="status-bar-right"/>
+                </right>
+            </BorderPane>
+        </top>
 
-        <center>
-            <HBox id="bottom-bar-middle"/>
-        </center>
+        <!-- Must be placed below content -->
+        <bottom>
+            <!-- BOTTOM BAR -->
+            <BorderPane id="bottom-bar"
+                        styleClass="bottom-bar"
+                        prefHeight="25"
+                        maxHeight="25">
+                <left>
+                    <HBox id="bottom-bar-left"/>
+                </left>
 
-        <right>
-            <HBox id="bottom-bar-right" />
-        </right>
+                <center>
+                    <HBox id="bottom-bar-middle"/>
+                </center>
+
+                <right>
+                    <HBox id="bottom-bar-right"/>
+                </right>
+            </BorderPane>
+        </bottom>
 
     </BorderPane>
 
