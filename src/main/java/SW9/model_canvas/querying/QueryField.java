@@ -28,7 +28,7 @@ public class QueryField extends Parent implements LocationAware {
     private final TextField textField = new TextField();
     private static final double FIELD_WIDTH = 500;
 
-    public QueryField(final double x, final double y, final List<ModelContainer> modelContainers ) {
+    public QueryField(final double x, final double y, final List<ModelContainer> modelContainers) {
         xProperty().setValue(x);
         yProperty().setValue(y);
 
@@ -45,8 +45,11 @@ public class QueryField extends Parent implements LocationAware {
             final String query = textField.getText();
 
             final Consumer<Trace> traceCallback = trace -> {
-                trace.getLocation().forEach(Location::trace);
-                trace.getEdges().forEach(Edge::trace);
+                trace.getTransitions().forEach(transition -> {
+                            transition.getTargetLocations().forEach(Location::trace);
+                            transition.getEdges().forEach(Edge::trace);
+                        }
+                );
             };
 
             final Consumer<Boolean> success = result -> {

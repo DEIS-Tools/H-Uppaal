@@ -1,24 +1,19 @@
 package SW9.backend;
 
-import SW9.model_canvas.edges.Edge;
-import SW9.model_canvas.locations.Location;
 import com.uppaal.engine.QueryFeedback;
 import com.uppaal.engine.QueryVerificationResult;
-import com.uppaal.model.system.SystemEdgeSelect;
-import com.uppaal.model.system.SystemLocation;
 import com.uppaal.model.system.symbolic.SymbolicTransition;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class QueryListener implements QueryFeedback {
 
-    private final HUPPAALDocument huppaalDocumentLDocument;
+    private final HUPPAALDocument huppaalDocument;
     private final Consumer<Trace> traceCallback;
 
     public QueryListener(final HUPPAALDocument huppaalDocumentLDocument, final Consumer<Trace> traceCallback) {
-        this.huppaalDocumentLDocument = huppaalDocumentLDocument;
+        this.huppaalDocument = huppaalDocumentLDocument;
         this.traceCallback = traceCallback;
     }
 
@@ -49,25 +44,7 @@ public class QueryListener implements QueryFeedback {
 
     @Override
     public void setTrace(char c, String s, ArrayList<SymbolicTransition> arrayList, int i, QueryVerificationResult queryVerificationResult) {
-
-        final List<Location> locationList = new ArrayList<>();
-        final List<Edge> edgeList = new ArrayList<>();
-
-        for (final SymbolicTransition symbolicTransition : arrayList) {
-            if (symbolicTransition.getTarget() != null) {
-                for (final SystemLocation systemLocation : symbolicTransition.getTarget().getLocations()) {
-                    locationList.add(getHUPPAALDocument().getLocation(systemLocation.getLocation()));
-                }
-            }
-
-            if (symbolicTransition.getEdges() != null) {
-                for (final SystemEdgeSelect systemEdgeSelect : symbolicTransition.getEdges()) {
-                    edgeList.add(getHUPPAALDocument().getEdge(systemEdgeSelect.getEdge()));
-                }
-            }
-        }
-
-        traceCallback.accept(new Trace(locationList, edgeList, c));
+        traceCallback.accept(new Trace(arrayList, getHUPPAALDocument()));
     }
 
     @Override
@@ -86,6 +63,6 @@ public class QueryListener implements QueryFeedback {
     }
 
     public HUPPAALDocument getHUPPAALDocument() {
-        return huppaalDocumentLDocument;
+        return huppaalDocument;
     }
 }
