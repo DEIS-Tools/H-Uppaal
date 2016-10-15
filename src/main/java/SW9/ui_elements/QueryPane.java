@@ -114,6 +114,9 @@ public class QueryPane extends StackPane {
                 CornerRadii.EMPTY,
                 Insets.EMPTY)));
 
+        // Set the elevation of the toolbar
+        toolbar.setEffect(DropShadowHelper.generateElevationShadow(8));
+
         // Find the labels in the toolbar and style them accordingly to the background used
         ((Label) toolbar.lookup("#queries-headline")).setTextFill(color.getTextColor(colorIntensity));
         queriesHeadlineCaption = ((Label) toolbar.lookup("#queries-headline-caption"));
