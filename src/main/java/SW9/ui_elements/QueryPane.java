@@ -202,6 +202,31 @@ public class QueryPane extends StackPane {
         // Add the click listener (will add a new query)
         addQueryButton.setOnMouseClicked(event -> {
             try {
+                // Check if the user actually used the previous query
+                if(queries.get(queries.size() - 1).queryField.textProperty().get().equals("")) {
+
+                    final Node queryView = scrollPaneContent.getChildren().get(queries.size() - 1);
+
+                    final Timeline shakeAnimation = new Timeline();
+
+                    final KeyValue shakeLeft = new KeyValue(queryView.translateXProperty(), -10);
+                    final KeyValue shakeRight = new KeyValue(queryView.translateXProperty(), 10);
+                    final KeyValue noShake = new KeyValue(queryView.translateXProperty(), 0);
+
+                    final KeyFrame initial = new KeyFrame(Duration.millis(0), noShake);
+                    final KeyFrame shake1 = new KeyFrame(Duration.millis(50), shakeLeft);
+                    final KeyFrame shake2 = new KeyFrame(Duration.millis(100), shakeRight);
+                    final KeyFrame shake3 = new KeyFrame(Duration.millis(150), shakeLeft);
+                    final KeyFrame shake4 = new KeyFrame(Duration.millis(200), shakeRight);
+                    final KeyFrame finish = new KeyFrame(Duration.millis(250), noShake);
+
+                    shakeAnimation.getKeyFrames().addAll(initial, shake1, shake2, shake3, shake4, finish);
+
+                    shakeAnimation.play();
+
+                    return;
+                }
+
                 final SimpleStringProperty query = new SimpleStringProperty("");
                 final SimpleStringProperty comment = new SimpleStringProperty("");
 
