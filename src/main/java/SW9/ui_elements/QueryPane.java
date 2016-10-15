@@ -82,14 +82,16 @@ public class QueryPane extends VBox {
         initializeScrollPane();
 
         // Populate the list with queries
-        for (int i = 0; i < 20; i++) {
-            final StringProperty query = new SimpleStringProperty("A[] not deadlock");
-            final StringProperty comment = new SimpleStringProperty("The model does not contain a deadlock");
+        final Query noDeadlockQuery = new Query(new SimpleStringProperty("A[] not deadlock"), new SimpleStringProperty("The model is deadlock free"));
+        queries.add(noDeadlockQuery);
+        scrollPaneContent.getChildren().add(noDeadlockQuery.getView());
 
-            final Query child = new Query(query, comment);
-            queries.add(child);
-            scrollPaneContent.getChildren().add(child.getView());
-        }
+        final Query hasDeadlockQuery = new Query(new SimpleStringProperty("E<> deadlock"), new SimpleStringProperty("The model contains at least one deadlock"));
+        queries.add(hasDeadlockQuery);
+        scrollPaneContent.getChildren().add(hasDeadlockQuery.getView());
+
+        // Force update the label
+        hasDeadlockQuery.updateQueriesHeadlineCaption();
     }
 
     private void initializeScrollPane() {
@@ -138,7 +140,9 @@ public class QueryPane extends VBox {
         runAllButton.setTextFill(color.getTextColor(colorIntensity));
 
         // Add listeners to the buttons
-        clearButton.setOnMouseClicked(event -> queries.forEach(query -> query.queryState.set(QueryState.UNKNOWN)));
+        clearButton.setOnMouseClicked(event -> {
+            queries.forEach(query -> query.queryState.set(QueryState.UNKNOWN));
+        });
         runAllButton.setOnMouseClicked(event -> queries.forEach(Query::runQuery));
 
         toolbar.paddingProperty().set(new Insets(15));
