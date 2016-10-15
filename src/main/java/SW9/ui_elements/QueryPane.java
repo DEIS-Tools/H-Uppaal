@@ -4,10 +4,8 @@ import SW9.Main;
 import SW9.backend.UPPAALDriver;
 import SW9.model_canvas.ModelContainer;
 import SW9.utility.colors.Color;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXRippler;
-import com.jfoenix.controls.JFXSpinner;
-import com.jfoenix.controls.JFXTextField;
+import SW9.utility.helpers.DropShadowHelper;
+import com.jfoenix.controls.*;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -33,16 +31,19 @@ import jiconfont.javafx.IconNode;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.Stack;
 
-public class QueryPane extends VBox {
+public class QueryPane extends StackPane {
 
     private HBox toolbar;
+    private VBox content = new VBox();
     private final ScrollPane scrollPane = new ScrollPane();
     private final VBox scrollPaneContent = new VBox();
     private Label queriesHeadlineCaption;
     private JFXButton clearButton;
     private JFXButton runAllButton;
+    private JFXButton addQueryButton;
+
     private final List<Query> queries = new ArrayList<>();
 
     public QueryPane() throws IOException {
@@ -52,6 +53,9 @@ public class QueryPane extends VBox {
     @FXML
     private void initialize() throws IOException {
         StackPane.setAlignment(this, Pos.CENTER_RIGHT);
+
+        // Add the content to us
+        getChildren().add(content);
 
         // Load the stylesheet for the query pane
         getStylesheets().add("SW9/query_pane.css");
@@ -84,18 +88,74 @@ public class QueryPane extends VBox {
         // Populate the list with queries
         final Query noDeadlockQuery = new Query(new SimpleStringProperty("A[] not deadlock"), new SimpleStringProperty("The model is deadlock free"));
         queries.add(noDeadlockQuery);
-        scrollPaneContent.getChildren().add(noDeadlockQuery.getView());
+        scrollPaneContent.getChildren().add(queries.size() - 1, noDeadlockQuery.getView());
 
         final Query hasDeadlockQuery = new Query(new SimpleStringProperty("E<> deadlock"), new SimpleStringProperty("The model contains at least one deadlock"));
         queries.add(hasDeadlockQuery);
-        scrollPaneContent.getChildren().add(hasDeadlockQuery.getView());
+        scrollPaneContent.getChildren().add(queries.size() - 1, hasDeadlockQuery.getView());
 
         // Force update the label
         hasDeadlockQuery.updateQueriesHeadlineCaption();
+
+        // Add the add new query button
+        initializeAddButton();
+    }
+
+    private void initializeAddButton() throws IOException {
+        addQueryButton = new JFXButton();
+
+        addQueryButton.setButtonType(JFXButton.ButtonType.RAISED);
+        addQueryButton.getStyleClass().add("animated-option-button");
+
+        final Color color = Color.GREY_BLUE;
+        final Color.Intensity colorIntensity = Color.Intensity.I500;
+
+        // Set the color of the button
+        addQueryButton.setBackground(new Background(new BackgroundFill(
+                color.getColor(colorIntensity),
+                new CornerRadii(100),
+                Insets.EMPTY
+        )));
+
+        // Generate and set the add icon
+        final IconNode addIcon = new IconNode(GoogleMaterialDesignIcons.ADD);
+        addIcon.setIconSize(28);
+        addIcon.setFill(color.getTextColor(colorIntensity));
+        addQueryButton.setGraphic(addIcon);
+
+        // Style the rippler effect
+        addQueryButton.setRipplerFill(color.getTextColor(colorIntensity));
+
+        // Add a floating effect for the button
+        addQueryButton.setEffect(DropShadowHelper.generateElevationShadow(6));
+        addQueryButton.setOnMousePressed(event -> addQueryButton.setEffect(DropShadowHelper.generateElevationShadow(12)));
+        addQueryButton.setOnMouseReleased(event -> addQueryButton.setEffect(DropShadowHelper.generateElevationShadow(6)));
+
+        // Add the floating action button
+        getChildren().add(addQueryButton);
+
+        // Align the floating action button to the bottom right part of the container
+        StackPane.setAlignment(addQueryButton, Pos.BOTTOM_RIGHT);
+        addQueryButton.setTranslateX(-24);
+        addQueryButton.setTranslateY(-14);
+
+        // Add the click listener (will add a new query)
+        addQueryButton.setOnMouseClicked(event -> {
+            try {
+                final SimpleStringProperty query = new SimpleStringProperty("");
+                final SimpleStringProperty comment = new SimpleStringProperty("");
+
+                final Query newQuery = new Query(query, comment);
+                queries.add(newQuery);
+                scrollPaneContent.getChildren().add(queries.size() - 1, newQuery.getView());
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void initializeScrollPane() {
-        getChildren().add(scrollPane);
+        content.getChildren().add(scrollPane);
 
         // Will make the scroll pane larger
         scrollPane.setFitToWidth(true);
@@ -111,12 +171,18 @@ public class QueryPane extends VBox {
                 CornerRadii.EMPTY,
                 Insets.EMPTY
         )));
+
+        // Make space for the floating action button by adding an empty region
+        final Region spacer = new Region();
+        spacer.setMinHeight(56 + 14 + 10);
+        spacer.setMaxWidth(56 + 14 + 10);
+        scrollPaneContent.getChildren().add(spacer);
     }
 
     private void initializeToolbar() throws IOException {
         // Load the toolbar fxml
         toolbar = FXMLLoader.load(getClass().getResource("/SW9/fxml/query_pane/toolbar.fxml"));
-        getChildren().add(toolbar);
+        content.getChildren().add(toolbar);
 
         final Color color = Color.GREY_BLUE;
         final Color.Intensity colorIntensity = Color.Intensity.I800;
@@ -243,11 +309,11 @@ public class QueryPane extends VBox {
             queries.forEach(query -> {
                 final QueryState queryState = query.queryState.get();
 
-                if(queryState.equals(QueryState.RUNNING)) {
+                if (queryState.equals(QueryState.RUNNING)) {
                     running[0]++;
-                } else if(queryState.equals(QueryState.SUCCESSFUL)) {
+                } else if (queryState.equals(QueryState.SUCCESSFUL)) {
                     successful[0]++;
-                } else if(queryState.equals(QueryState.UNKNOWN)) {
+                } else if (queryState.equals(QueryState.UNKNOWN)) {
                     unknown[0]++;
                 } else {
                     error[0]++;
@@ -256,22 +322,22 @@ public class QueryPane extends VBox {
 
             String resultString = "";
 
-            if(successful[0] > 0) {
+            if (successful[0] > 0) {
                 resultString += successful[0] + " successful";
             }
 
-            if(error[0] > 0) {
-                if(!resultString.equals("")) resultString += ", ";
+            if (error[0] > 0) {
+                if (!resultString.equals("")) resultString += ", ";
                 resultString += error[0] + " unsuccessful";
             }
 
-            if(unknown[0] > 0) {
-                if(!resultString.equals("")) resultString += ", ";
+            if (unknown[0] > 0) {
+                if (!resultString.equals("")) resultString += ", ";
                 resultString += unknown[0] + " unknown";
             }
 
-            if(running[0] > 0) {
-                if(!resultString.equals("")) resultString += ", ";
+            if (running[0] > 0) {
+                if (!resultString.equals("")) resultString += ", ";
                 resultString += running[0] + " running";
             }
 
@@ -288,7 +354,7 @@ public class QueryPane extends VBox {
                             queryField.getText(),
                             result -> {
                                 // Handle result
-                                if(result) {
+                                if (result) {
                                     Platform.runLater(() -> {
                                         queryState.set(QueryState.SUCCESSFUL);
                                         indicatorLabel.setGraphic(null);

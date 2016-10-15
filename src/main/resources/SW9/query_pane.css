@@ -11,3 +11,11 @@
 .query .indicator-circle {
     -fx-stroke-width: 2;
 }
+
+
+.animated-option-button {
+	-fx-pref-width: 56px;
+	-fx-pref-height: 56px;
+
+	-fx-text-fill: white;
+}
