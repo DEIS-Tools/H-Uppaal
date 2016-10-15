@@ -171,7 +171,7 @@ public class QueryPane extends StackPane {
         addQueryButton = new JFXButton();
 
         addQueryButton.setButtonType(JFXButton.ButtonType.RAISED);
-        addQueryButton.getStyleClass().add("animated-option-button");
+        addQueryButton.getStyleClass().add("floating-action-button");
 
         final Color color = Color.GREY_BLUE;
         final Color.Intensity colorIntensity = Color.Intensity.I500;

@@ -54,3 +54,9 @@
 .window-title {
  -fx-label-padding: 0 0 0 10px;
 }
+
+.floating-action-button {
+	-fx-pref-width: 56px;
+	-fx-pref-height: 56px;
+	-fx-text-fill: white;
+}
