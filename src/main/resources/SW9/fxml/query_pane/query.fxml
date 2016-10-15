@@ -1,15 +1,36 @@
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXRippler?>
 <?import com.jfoenix.controls.JFXTextField?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
+<?import com.jfoenix.controls.JFXSpinner?>
 <HBox xmlns="http://javafx.com/javafx/8.0.76-ea" styleClass="query">
 
-    <Circle fill="green"
-            radius="18"/>
 
-    <VBox HBox.hgrow="ALWAYS">
+    <StackPane>
+        <JFXRippler id="indicator-container">
+            <StackPane>
+                <Circle id="indicator-circle"
+                        styleClass="indicator-circle"
+                        radius="18"/>
+
+                <Label id="indicator-label"
+                       styleClass="title" />
+            </StackPane>
+        </JFXRippler>
+        <JFXSpinner id="indicator-spinner" />
+    </StackPane>
+
+    <Region minWidth="5"/>
+
+    <StackPane HBox.hgrow="ALWAYS" minHeight="65">
         <JFXTextField id="query-text-field" styleClass="subhead"/>
         <JFXTextField id="comment-text-field" styleClass="caption"/>
-    </VBox>
+    </StackPane>
+
+    <StackPane>
+        <JFXButton id="open-button"/>
+    </StackPane>
 
 </HBox>

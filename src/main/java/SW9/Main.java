@@ -42,7 +42,7 @@ import jiconfont.javafx.IconNode;
 
 public class Main extends Application {
 
-    private Parent root;
+    private static Parent root;
     private double xOffset;
     private double yOffset;
     private double previousX, previousY, previousWidth, previousHeight;
@@ -88,6 +88,10 @@ public class Main extends Application {
         initializeStatusBar(stage);
 
         initializeBottomBar(stage);
+    }
+
+    public static ModelCanvas getModelCanvas() {
+        return (ModelCanvas) root.lookup("#model-canvas");
     }
 
     private void loadFonts() {
@@ -314,19 +318,19 @@ public class Main extends Application {
         final QueryPane queryPane = (QueryPane) container.lookup("#query-pane");
 
         final Timeline animation = new Timeline();
-        final KeyValue hiddenTranslateX = new KeyValue(queryPane.translateXProperty(), queryPane.getWidth(), Interpolator.EASE_IN);
+        final KeyValue hiddenTranslateX = new KeyValue(queryPane.translateXProperty(), queryPane.getWidth() * 1.1, Interpolator.EASE_IN);
         final KeyValue visibleTranslateX = new KeyValue(queryPane.translateXProperty(), 0, Interpolator.EASE_OUT);
 
         // Initialize the animation accordingly to the property
         if(isQueryPaneShown.get()) {
             final KeyFrame visibleKeyFrame = new KeyFrame(Duration.millis(0), visibleTranslateX);
-            final KeyFrame hiddenKeyFrame = new KeyFrame(Duration.millis(250), hiddenTranslateX);
+            final KeyFrame hiddenKeyFrame = new KeyFrame(Duration.millis(150), hiddenTranslateX);
 
             animation.getKeyFrames().add(visibleKeyFrame);
             animation.getKeyFrames().add(hiddenKeyFrame);
         } else {
             final KeyFrame hiddenKeyFrame = new KeyFrame(Duration.millis(0), hiddenTranslateX);
-            final KeyFrame visibleKeyFrame = new KeyFrame(Duration.millis(250), visibleTranslateX);
+            final KeyFrame visibleKeyFrame = new KeyFrame(Duration.millis(150), visibleTranslateX);
 
             animation.getKeyFrames().add(hiddenKeyFrame);
             animation.getKeyFrames().add(visibleKeyFrame);
