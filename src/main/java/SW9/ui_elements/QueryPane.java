@@ -5,7 +5,10 @@ import SW9.backend.UPPAALDriver;
 import SW9.model_canvas.ModelContainer;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.DropShadowHelper;
-import com.jfoenix.controls.*;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXRippler;
+import com.jfoenix.controls.JFXSpinner;
+import com.jfoenix.controls.JFXTextField;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -31,17 +34,13 @@ import jiconfont.javafx.IconNode;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 public class QueryPane extends StackPane {
 
-    private HBox toolbar;
-    private VBox content = new VBox();
+    private final VBox content = new VBox();
     private final ScrollPane scrollPane = new ScrollPane();
     private final VBox scrollPaneContent = new VBox();
     private Label queriesHeadlineCaption;
-    private JFXButton clearButton;
-    private JFXButton runAllButton;
     private JFXButton addQueryButton;
 
     private final List<Query> queries = new ArrayList<>();
@@ -101,7 +100,65 @@ public class QueryPane extends StackPane {
         initializeAddButton();
     }
 
-    private void initializeAddButton() throws IOException {
+    private void initializeToolbar() throws IOException {
+        // Load the toolbar fxml
+        final HBox toolbar = FXMLLoader.load(getClass().getResource("/SW9/fxml/query_pane/toolbar.fxml"));
+        content.getChildren().add(toolbar);
+
+        final Color color = Color.GREY_BLUE;
+        final Color.Intensity colorIntensity = Color.Intensity.I800;
+
+        // Set the background of the toolbar
+        toolbar.setBackground(new Background(new BackgroundFill(
+                color.getColor(colorIntensity),
+                CornerRadii.EMPTY,
+                Insets.EMPTY)));
+
+        // Find the labels in the toolbar and style them accordingly to the background used
+        ((Label) toolbar.lookup("#queries-headline")).setTextFill(color.getTextColor(colorIntensity));
+        queriesHeadlineCaption = ((Label) toolbar.lookup("#queries-headline-caption"));
+        queriesHeadlineCaption.setTextFill(color.getTextColor(colorIntensity));
+
+        // Find the buttons in the toolbar and style them accordingly to the background used
+        final JFXButton clearButton = ((JFXButton) toolbar.lookup("#clear-button"));
+        clearButton.setTextFill(color.getTextColor(colorIntensity));
+
+        final JFXButton runAllButton = ((JFXButton) toolbar.lookup("#run-all-button"));
+        runAllButton.setTextFill(color.getTextColor(colorIntensity));
+
+        // Add listeners to the buttons
+        clearButton.setOnMouseClicked(event -> queries.forEach(query -> query.queryState.set(QueryState.UNKNOWN)));
+        runAllButton.setOnMouseClicked(event -> queries.forEach(Query::runQuery));
+
+        toolbar.paddingProperty().set(new Insets(15));
+    }
+
+    private void initializeScrollPane() {
+        content.getChildren().add(scrollPane);
+
+        // Will make the scroll pane larger
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+
+        // Will set the content of the scroll pane (just a VBox)
+        scrollPane.setContent(scrollPaneContent);
+
+        // Styling
+        scrollPane.getStyleClass().addAll("edge-to-edge");
+        scrollPane.setBackground(new Background(new BackgroundFill(
+                javafx.scene.paint.Color.TRANSPARENT,
+                CornerRadii.EMPTY,
+                Insets.EMPTY
+        )));
+
+        // Make space for the floating action button by adding an empty region
+        final Region spacer = new Region();
+        spacer.setMinHeight(56 + 14 + 10);
+        spacer.setMaxWidth(56 + 14 + 10);
+        scrollPaneContent.getChildren().add(spacer);
+    }
+
+    private void initializeAddButton() {
         addQueryButton = new JFXButton();
 
         addQueryButton.setButtonType(JFXButton.ButtonType.RAISED);
@@ -152,66 +209,6 @@ public class QueryPane extends StackPane {
                 e.printStackTrace();
             }
         });
-    }
-
-    private void initializeScrollPane() {
-        content.getChildren().add(scrollPane);
-
-        // Will make the scroll pane larger
-        scrollPane.setFitToWidth(true);
-        scrollPane.setFitToHeight(true);
-
-        // Will set the content of the scroll pane (just a VBox)
-        scrollPane.setContent(scrollPaneContent);
-
-        // Styling
-        scrollPane.getStyleClass().addAll("edge-to-edge");
-        scrollPane.setBackground(new Background(new BackgroundFill(
-                javafx.scene.paint.Color.TRANSPARENT,
-                CornerRadii.EMPTY,
-                Insets.EMPTY
-        )));
-
-        // Make space for the floating action button by adding an empty region
-        final Region spacer = new Region();
-        spacer.setMinHeight(56 + 14 + 10);
-        spacer.setMaxWidth(56 + 14 + 10);
-        scrollPaneContent.getChildren().add(spacer);
-    }
-
-    private void initializeToolbar() throws IOException {
-        // Load the toolbar fxml
-        toolbar = FXMLLoader.load(getClass().getResource("/SW9/fxml/query_pane/toolbar.fxml"));
-        content.getChildren().add(toolbar);
-
-        final Color color = Color.GREY_BLUE;
-        final Color.Intensity colorIntensity = Color.Intensity.I800;
-
-        // Set the background of the toolbar
-        toolbar.setBackground(new Background(new BackgroundFill(
-                color.getColor(colorIntensity),
-                CornerRadii.EMPTY,
-                Insets.EMPTY)));
-
-        // Find the labels in the toolbar and style them accordingly to the background used
-        ((Label) toolbar.lookup("#queries-headline")).setTextFill(color.getTextColor(colorIntensity));
-        queriesHeadlineCaption = ((Label) toolbar.lookup("#queries-headline-caption"));
-        queriesHeadlineCaption.setTextFill(color.getTextColor(colorIntensity));
-
-        // Find the buttons in the toolbar and style them accordingly to the background used
-        clearButton = ((JFXButton) toolbar.lookup("#clear-button"));
-        clearButton.setTextFill(color.getTextColor(colorIntensity));
-
-        runAllButton = ((JFXButton) toolbar.lookup("#run-all-button"));
-        runAllButton.setTextFill(color.getTextColor(colorIntensity));
-
-        // Add listeners to the buttons
-        clearButton.setOnMouseClicked(event -> {
-            queries.forEach(query -> query.queryState.set(QueryState.UNKNOWN));
-        });
-        runAllButton.setOnMouseClicked(event -> queries.forEach(Query::runQuery));
-
-        toolbar.paddingProperty().set(new Insets(15));
     }
 
     private enum QueryState {
