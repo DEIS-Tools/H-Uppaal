@@ -133,6 +133,12 @@ public class QueryPane extends StackPane {
         clearButton.setOnMouseClicked(event -> queries.forEach(query -> query.queryState.set(QueryState.UNKNOWN)));
         runAllButton.setOnMouseClicked(event -> queries.forEach(Query::runQuery));
 
+        // Make the buttons look clickable
+        clearButton.setOnMouseEntered(event -> setCursor(Cursor.HAND));
+        clearButton.setOnMouseExited(event -> setCursor(Cursor.DEFAULT));
+        runAllButton.setOnMouseEntered(event -> setCursor(Cursor.HAND));
+        runAllButton.setOnMouseExited(event -> setCursor(Cursor.DEFAULT));
+
         toolbar.paddingProperty().set(new Insets(16));
     }
 
@@ -236,6 +242,10 @@ public class QueryPane extends StackPane {
                 e.printStackTrace();
             }
         });
+
+        // Make the button look clickable
+        addQueryButton.setOnMouseEntered(event -> setCursor(Cursor.HAND));
+        addQueryButton.setOnMouseExited(event -> setCursor(Cursor.DEFAULT));
     }
 
     private enum QueryState {
