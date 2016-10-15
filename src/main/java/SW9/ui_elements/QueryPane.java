@@ -203,8 +203,7 @@ public class QueryPane extends StackPane {
         addQueryButton.setOnMouseClicked(event -> {
             try {
                 // Check if the user actually used the previous query
-                if(queries.get(queries.size() - 1).queryField.textProperty().get().equals("")) {
-
+                if (queries.get(queries.size() - 1).queryField.textProperty().get().equals("")) {
                     final Node queryView = scrollPaneContent.getChildren().get(queries.size() - 1);
 
                     final Timeline shakeAnimation = new Timeline();
@@ -221,10 +220,9 @@ public class QueryPane extends StackPane {
                     final KeyFrame finish = new KeyFrame(Duration.millis(250), noShake);
 
                     shakeAnimation.getKeyFrames().addAll(initial, shake1, shake2, shake3, shake4, finish);
-
                     shakeAnimation.play();
 
-                    return;
+                    return; // Do not add the query
                 }
 
                 final SimpleStringProperty query = new SimpleStringProperty("");
@@ -232,6 +230,7 @@ public class QueryPane extends StackPane {
 
                 final Query newQuery = new Query(query, comment);
                 queries.add(newQuery);
+                newQuery.updateQueriesHeadlineCaption();
                 scrollPaneContent.getChildren().add(queries.size() - 1, newQuery.getView());
             } catch (final IOException e) {
                 e.printStackTrace();
@@ -321,8 +320,6 @@ public class QueryPane extends StackPane {
                         CornerRadii.EMPTY,
                         Insets.EMPTY)));
             });
-
-            updateQueriesHeadlineCaption();
         }
 
         private synchronized void updateQueriesHeadlineCaption() {
