@@ -16,6 +16,7 @@
     <!-- Container for the two buttons -->
     <HBox alignment="BOTTOM_RIGHT">
         <JFXButton id="clear-button">Clear</JFXButton>
+        <Region minWidth="16" />
         <JFXButton id="run-all-button">Run all</JFXButton>
     </HBox>
 

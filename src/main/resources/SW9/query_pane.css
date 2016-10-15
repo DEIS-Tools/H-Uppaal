@@ -3,7 +3,7 @@
 }
 
 .query {
-    -fx-padding: 0 15;
+    -fx-padding: 0 7 0 8;
     -fx-border-width: 0 0 1 0;
     -fx-border-color: -grey-200;
 }

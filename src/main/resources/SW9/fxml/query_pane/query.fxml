@@ -7,13 +7,12 @@
 <?import com.jfoenix.controls.JFXSpinner?>
 <HBox xmlns="http://javafx.com/javafx/8.0.76-ea" styleClass="query">
 
-
     <StackPane>
         <JFXRippler id="indicator-container">
             <StackPane>
                 <Circle id="indicator-circle"
                         styleClass="indicator-circle"
-                        radius="18"/>
+                        radius="24"/>
 
                 <Label id="indicator-label"
                        styleClass="title" />

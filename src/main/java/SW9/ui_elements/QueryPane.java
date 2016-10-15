@@ -133,7 +133,7 @@ public class QueryPane extends StackPane {
         clearButton.setOnMouseClicked(event -> queries.forEach(query -> query.queryState.set(QueryState.UNKNOWN)));
         runAllButton.setOnMouseClicked(event -> queries.forEach(Query::runQuery));
 
-        toolbar.paddingProperty().set(new Insets(15));
+        toolbar.paddingProperty().set(new Insets(16));
     }
 
     private void initializeScrollPane() {
