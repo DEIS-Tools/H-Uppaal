@@ -105,3 +105,13 @@
 	-fx-pref-height: 56px;
 	-fx-text-fill: white;
 }
+
+.titled-pane > .content {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.titled-pane > .title {
+    -fx-pref-height: 20;
+}

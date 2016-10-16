@@ -6,8 +6,8 @@ import SW9.utility.colors.Colorable;
 import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.BooleanProperty;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXTextField;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
@@ -15,7 +15,11 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TitledPane;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.*;
 
 
@@ -34,6 +38,9 @@ public class ModelComponent extends ModelContainer implements Colorable {
     public final DoubleProperty heightProperty;
 
     private boolean mouseIsHoveringTopBar = false;
+    private TitledPane titledPane;
+    private final Location finalLocation;
+    private final Location initialLocation;
 
     public ModelComponent(final double x, final double y, final double width, final double height, final String name, final MouseTracker canvasMouseTracker) {
         super(name);
@@ -54,7 +61,7 @@ public class ModelComponent extends ModelContainer implements Colorable {
         initializeFrame(frame);
 
         // Initialize locations
-        Location initialLocation = new Location(
+        initialLocation = new Location(
                 xProperty.add(CORNER_SIZE / 2d),
                 yProperty.add(CORNER_SIZE / 2d),
                 canvasMouseTracker,
@@ -62,7 +69,7 @@ public class ModelComponent extends ModelContainer implements Colorable {
                 this
         );
 
-        Location finalLocation = new Location(
+        finalLocation = new Location(
                 xProperty.add(widthProperty.subtract(CORNER_SIZE / 2d)),
                 yProperty.add(heightProperty.subtract(CORNER_SIZE / 2d)),
                 canvasMouseTracker,
@@ -110,11 +117,19 @@ public class ModelComponent extends ModelContainer implements Colorable {
         labelTriangle.layoutXProperty().bind(xProperty.subtract(x).add(0));
         labelTriangle.layoutYProperty().bind(yProperty.subtract(y).add(1));
 
+        // Show more button
+        final JFXButton showMoreButton = new JFXButton("show more");
+        showMoreButton.setOnMouseClicked(event -> titledPane.setExpanded(!titledPane.isExpanded()));
+
+        initializeTextBox();
+
         addChildren(
+                titledPane,
                 frame,
                 labelTriangle,
                 labelContainer,
-                label
+                label,
+                showMoreButton
         );
 
         add(initialLocation);
@@ -122,6 +137,53 @@ public class ModelComponent extends ModelContainer implements Colorable {
 
         // Will add color to the different children depending on their classes
         resetColor();
+    }
+
+    private void initializeTextBox() {
+        titledPane = new TitledPane();
+        titledPane.getStyleClass().add("code-container");
+
+        // Make a text area and add it to the titled pane
+        final TextArea textArea = new TextArea();
+        textArea.getStyleClass().add("body1-mono");
+        titledPane.setContent(textArea);
+
+        titledPane.minWidthProperty().bind(widthProperty);
+        titledPane.minHeightProperty().bind(heightProperty);
+
+        titledPane.layoutXProperty().bind(xProperty());
+        titledPane.layoutYProperty().bind(yProperty());
+
+        // Whenever the titled pane is expanded of contracted, bring it to the front to overlap with locations, edges etc
+        titledPane.expandedProperty().addListener((observable, oldValue, newValue) -> {
+            titledPane.toFront();
+        });
+
+        // TODO: The following code must run every time the width and height updates
+
+        // Generate first corner (to subtract)
+        final Polygon corner1 = new Polygon(
+                0, 0,
+                CORNER_SIZE + 2, 0,
+                0, CORNER_SIZE + 2
+        );
+
+        // Generate second corner (to subtract)
+        final Polygon corner2 = new Polygon(
+                widthProperty.get(), heightProperty.get(),
+                widthProperty.get() - CORNER_SIZE - 2, heightProperty.get(),
+                widthProperty.get(), heightProperty.get() - CORNER_SIZE - 2
+        );
+
+        // Make a mask
+        Shape mask = new Rectangle(widthProperty.get() - 2, heightProperty.get() - 2);
+        mask = Shape.subtract(mask, corner1);
+        mask = Shape.subtract(mask, corner2);
+        mask = Shape.subtract(mask, new Circle(CORNER_SIZE / 2, CORNER_SIZE / 2, Location.RADIUS));
+        mask = Shape.subtract(mask, new Circle(CORNER_SIZE / 2 + widthProperty.get() - Location.RADIUS * 2, CORNER_SIZE / 2 + heightProperty.get() - Location.RADIUS * 2, Location.RADIUS));
+        mask = Shape.subtract(mask, new Rectangle(widthProperty.get(), labelContainer.getHeight()));
+
+        titledPane.setClip(mask);
     }
 
 
