@@ -145,7 +145,7 @@ public class ModelComponent extends ModelContainer implements Colorable {
 
         // Make a text area and add it to the titled pane
         final TextArea textArea = new TextArea();
-        textArea.getStyleClass().add("body1-mono");
+        textArea.getStyleClass().add("body2-mono");
         titledPane.setContent(textArea);
 
         titledPane.minWidthProperty().bind(widthProperty);
