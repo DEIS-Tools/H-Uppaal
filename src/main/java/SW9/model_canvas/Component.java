@@ -207,7 +207,11 @@ public class Component extends Parent implements Colorable, MouseTrackable, Remo
 
         // Whenever the titled pane is expanded of contracted, bring it to the front to overlap with locations, edges etc
         titledPane.expandedProperty().addListener((observable, oldValue, newValue) -> {
-            titledPane.toFront();
+            if (newValue) {
+                titledPane.toFront();
+            } else {
+                titledPane.toBack();
+            }
         });
 
         // TODO: The following code must run every time the width and height updates
