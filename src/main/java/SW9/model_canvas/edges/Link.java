@@ -20,7 +20,7 @@ public class Link extends Parent {
         // Create the draggable line
         Line draggableLine = new Line();
         draggableLine.setStrokeWidth(DRAGGABLE_LINE_STROKE_WIDTH);
-        draggableLine.setStroke(Color.TRANSPARENT);
+        draggableLine.setOpacity(0);
 
         // Bind the draggable line to the visible line
         draggableLine.mouseTransparentProperty().bind(this.mouseTransparentProperty());

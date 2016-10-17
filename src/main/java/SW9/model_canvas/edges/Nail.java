@@ -55,7 +55,14 @@ public class Nail extends Parent implements Removable, Colorable {
 
         DragHelper.makeDraggable(this);
 
-        addChild(circle);
+        // Add drag circle to help drag the nails
+        final Circle dragCircle = new Circle();
+        dragCircle.radiusProperty().set(VISIBLE_RADIUS * 2.5);
+        dragCircle.centerXProperty().bind(circle.centerXProperty());
+        dragCircle.centerYProperty().bind(circle.centerYProperty());
+        dragCircle.setOpacity(0);
+
+        addChildren(circle, dragCircle);
     }
 
     @Override
