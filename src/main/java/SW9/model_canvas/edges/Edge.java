@@ -431,14 +431,14 @@ public class Edge extends Parent implements Removable, Colorable, Traceable {
 
     @Override
     public boolean remove() {
-        sourceLocation.getModelContainer().remove(this);
+        sourceLocation.getComponent().remove(this);
 
         return true;
     }
 
     @Override
     public void reAdd() {
-        sourceLocation.getModelContainer().add(this);
+        sourceLocation.getComponent().add(this);
     }
 
     @Override
@@ -448,12 +448,12 @@ public class Edge extends Parent implements Removable, Colorable, Traceable {
 
     @Override
     public DoubleProperty xProperty() {
-        return sourceLocation.getModelContainer().xProperty();
+        return sourceLocation.getComponent().xProperty();
     }
 
     @Override
     public DoubleProperty yProperty() {
-        return sourceLocation.getModelContainer().yProperty();
+        return sourceLocation.getComponent().yProperty();
     }
 
     public Nail getHoveredNail() {

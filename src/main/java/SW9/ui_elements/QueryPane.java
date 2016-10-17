@@ -2,7 +2,7 @@ package SW9.ui_elements;
 
 import SW9.Main;
 import SW9.backend.UPPAALDriver;
-import SW9.model_canvas.ModelContainer;
+import SW9.model_canvas.Component;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.DropShadowHelper;
 import com.jfoenix.controls.JFXButton;
@@ -381,7 +381,7 @@ public class QueryPane extends StackPane {
 
             // Find the component and run the query on that
             for (final Node child : Main.getModelCanvas().getChildren()) {
-                if (child instanceof ModelContainer) {
+                if (child instanceof Component) {
                     UPPAALDriver.verify(
                             queryField.getText(),
                             result -> {
@@ -406,7 +406,7 @@ public class QueryPane extends StackPane {
                                 updateQueriesHeadlineCaption();
                             })
                             ,
-                            (ModelContainer) child
+                            (Component) child
                     );
 
                     // Do not run on multiple components

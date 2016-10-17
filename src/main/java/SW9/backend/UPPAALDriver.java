@@ -1,6 +1,6 @@
 package SW9.backend;
 
-import SW9.model_canvas.ModelContainer;
+import SW9.model_canvas.Component;
 import com.uppaal.engine.Engine;
 import com.uppaal.engine.EngineException;
 import com.uppaal.engine.Problem;
@@ -25,12 +25,12 @@ public class UPPAALDriver {
         }
     }
 
-    public static void verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final List<ModelContainer> modelContainers) {
-        verify(query, success, failure, TraceType.NONE,e -> {}, modelContainers);
+    public static void verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final List<Component> components) {
+        verify(query, success, failure, TraceType.NONE,e -> {}, components);
     }
 
-    public static void verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final ModelContainer... modelContainers) {
-        verify(query, success, failure, TraceType.NONE, e -> {}, modelContainers);
+    public static void verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final Component... components) {
+        verify(query, success, failure, TraceType.NONE, e -> {}, components);
     }
 
     public static void verify(final String query,
@@ -38,12 +38,12 @@ public class UPPAALDriver {
                               final Consumer<BackendException> failure,
                               final TraceType traceType,
                               final Consumer<Trace> traceCallBack,
-                              final ModelContainer... modelContainers) {
-        final List<ModelContainer> modelContainerList = new ArrayList<>();
-        for (final ModelContainer modelContainer : modelContainers) {
-            modelContainerList.add(modelContainer);
+                              final Component... components) {
+        final List<Component> componentList = new ArrayList<>();
+        for (final Component component : components) {
+            componentList.add(component);
         }
-        verify(query, success, failure, traceType, traceCallBack, modelContainerList);
+        verify(query, success, failure, traceType, traceCallBack, componentList);
     }
 
     public static void verify(final String query,
@@ -51,7 +51,7 @@ public class UPPAALDriver {
                               final Consumer<BackendException> failure,
                               final TraceType traceType,
                               final Consumer<Trace> traceCallBack,
-                              final List<ModelContainer> modelContainers) {
+                              final List<Component> components) {
         // The task that should be executed on the background thread
         // calls success if no exception happens with the result
         // otherwise calls failure with the exception
@@ -60,7 +60,7 @@ public class UPPAALDriver {
             protected Void call() throws Exception {
                 {
                     try {
-                        success.accept(UPPAALDriver.verify(query, traceType, traceCallBack, modelContainers));
+                        success.accept(UPPAALDriver.verify(query, traceType, traceCallBack, components));
                     } catch (final BackendException backendException) {
                         failure.accept(backendException);
                     }
@@ -73,8 +73,8 @@ public class UPPAALDriver {
         new Thread(task).start();
     }
 
-    private static synchronized boolean verify(final String query, final TraceType traceType, final Consumer<Trace> traceCallback, final List<ModelContainer> modelContainers) throws BackendException {
-        final HUPPAALDocument huppaalDocument = new HUPPAALDocument(modelContainers);
+    private static synchronized boolean verify(final String query, final TraceType traceType, final Consumer<Trace> traceCallback, final List<Component> components) throws BackendException {
+        final HUPPAALDocument huppaalDocument = new HUPPAALDocument(components);
 
         // Store the debug document
         storeUppaalFile(huppaalDocument.toUPPAALDocument(), "uppaal-debug/debug.xml");

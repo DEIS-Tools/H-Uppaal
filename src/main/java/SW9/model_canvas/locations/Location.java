@@ -67,7 +67,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     private final BooleanProperty isReachable = new SimpleBooleanProperty(true);
     private final DoubleProperty reachabilityCertainty = new SimpleDoubleProperty(-1);
 
-    private ModelContainer modelContainer;
+    private Component component;
     private List<Edge> deletedEdges = new ArrayList<>();
 
     @Override
@@ -164,10 +164,10 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
 
                     @Override
                     public void run() {
-                        // Do nothing until we have a parent, and that parent is a ModelContainer (otherwise it might not be placed yet)
-                        if (getParent() == null || !(getParent() instanceof ModelContainer)) return;
+                        // Do nothing until we have a parent, and that parent is a Component (otherwise it might not be placed yet)
+                        if (getParent() == null || !(getParent() instanceof Component)) return;
 
-                        final String containerName = modelContainer.getName();
+                        final String containerName = component.getName();
                         final String locationName = getName();
 
                         // If either the container of location are missing a name, do nothing
@@ -183,7 +183,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
                                     });
                                 },
                                 Throwable::printStackTrace,
-                                (ModelContainer) getParent());
+                                (Component) getParent());
                     }
                 }, 0, 5000);
     }
@@ -198,9 +198,9 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         KeyboardTracker.registerKeybind(KeyboardTracker.DISCARD_NEW_LOCATION, removeOnEscape);
     }
 
-    public Location(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY, final MouseTracker canvasMouseTracker, Type type, final ModelContainer modelContainer) {
+    public Location(final ObservableDoubleValue centerX, final ObservableDoubleValue centerY, final MouseTracker canvasMouseTracker, Type type, final Component component) {
         // Initialize the model container
-        this.modelContainer = modelContainer;
+        this.component = component;
 
         // Initialize the type
         this.type = type;
@@ -282,11 +282,11 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
                 event.consume();
 
                 // Find the component that the location should be created inside
-                this.modelContainer = ModelCanvas.getHoveredModelContainer();
+                this.component = ModelCanvas.getHoveredComponent();
 
                 // Bind the circle
-                circle.centerXProperty().bind(this.modelContainer.xProperty().add(canvasMouseTracker.xProperty().get() - (this.modelContainer.xProperty().get())));
-                circle.centerYProperty().bind(this.modelContainer.yProperty().add(canvasMouseTracker.yProperty().get() - (this.modelContainer.yProperty().get())));
+                circle.centerXProperty().bind(this.component.xProperty().add(canvasMouseTracker.xProperty().get() - (this.component.xProperty().get())));
+                circle.centerYProperty().bind(this.component.yProperty().add(canvasMouseTracker.yProperty().get() - (this.component.yProperty().get())));
 
                 // Tell the canvas that the mouse is no longer occupied
                 ModelCanvas.setLocationOnMouse(null);
@@ -310,11 +310,11 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
                 locationPlaceAnimation.play();
 
                 UndoRedoStack.push(() -> { // Perform
-                    resetColor(this.modelContainer.getColor(), this.modelContainer.getColorIntensity());
-                    this.modelContainer.add(this);
+                    resetColor(this.component.getColor(), this.component.getColorIntensity());
+                    this.component.add(this);
                 }, () -> { // Undo
                     resetColor();
-                    this.modelContainer.remove(this);
+                    this.component.remove(this);
                 });
             }
         });
@@ -329,9 +329,9 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
                 final Edge edge = new Edge(this, canvasMouseTracker);
 
                 UndoRedoStack.push(() -> { // Perform
-                    this.modelContainer.add(edge);
+                    this.component.add(edge);
                 }, () -> { // Undo
-                    this.modelContainer.remove(edge);
+                    this.component.remove(edge);
                 });
             }
         });
@@ -370,17 +370,17 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
     }
 
     private void makeDraggable() {
-        ModelContainer parent = (ModelContainer) getParent();
+        Component parent = (Component) getParent();
 
         parentProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null || !(newValue instanceof ModelComponent)) return;
+            if (newValue == null || !(newValue instanceof Component)) return;
 
             DragHelper.makeDraggable(this,
                     (event) -> !event.isShiftDown() &&
                             !ModelCanvas.edgeIsBeingDrawn() &&
                             !this.equals(ModelCanvas.getLocationOnMouse()) &&
                             type.equals(Type.NORMAL),
-                    ((ModelComponent) newValue)::getInternalBounds
+                    ((Component) newValue)::getInternalBounds
             );
         });
     }
@@ -432,8 +432,8 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
         });
     });
 
-    public ModelContainer getModelContainer() {
-        return modelContainer;
+    public Component getComponent() {
+        return component;
     }
 
     public BooleanProperty isReachableProperty() {
@@ -488,16 +488,16 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
 
     @Override
     public boolean remove() {
-        deletedEdges = new ArrayList<>(modelContainer.getEdges(this));
-        modelContainer.remove(this);
+        deletedEdges = new ArrayList<>(component.getEdges(this));
+        component.remove(this);
 
         return true;
     }
 
     @Override
     public void reAdd() {
-        modelContainer.add(this);
-        deletedEdges.forEach(edge -> modelContainer.add(edge));
+        component.add(this);
+        deletedEdges.forEach(edge -> component.add(edge));
     }
 
     @Override

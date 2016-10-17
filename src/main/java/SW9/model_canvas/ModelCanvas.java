@@ -17,7 +17,6 @@ import SW9.utility.helpers.*;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
-import com.hp.hpl.jena.rdf.model.ModelCon;
 import javafx.animation.Transition;
 import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
@@ -42,7 +41,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
     private static Location locationOnMouse = null;
     private static Location hoveredLocation = null;
     private static Edge edgeBeingDrawn = null;
-    private static ModelContainer hoveredModelContainer = null;
+    private static Component hoveredComponent = null;
 
     private final MouseTracker mouseTracker = new MouseTracker(this);
     private int componentCount = 0;
@@ -120,13 +119,13 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
                 addChild(newLocation);
 
                 if (mouseIsHoveringModelContainer()) {
-                    newLocation.resetColor(getHoveredModelContainer().getColor(), getHoveredModelContainer().getColorIntensity());
+                    newLocation.resetColor(getHoveredComponent().getColor(), getHoveredComponent().getColorIntensity());
                 }
             }
         }));
 
         KeyboardTracker.registerKeybind(KeyboardTracker.CREATE_COMPONENT, new Keybind(new KeyCodeCombination(KeyCode.K), () -> {
-            final ModelComponent mc = new ModelComponent(mouseTracker.xProperty().get(), mouseTracker.yProperty().get(), 400, 600, "Component" + componentCount, mouseTracker);
+            final Component mc = new Component(mouseTracker.xProperty().get(), mouseTracker.yProperty().get(), 400, 600, "Component" + componentCount, mouseTracker);
             componentCount++;
             // TODO remove me when adding of clocks, vars and channels can be done through the UI
             mc.addClock("t0");
@@ -141,8 +140,8 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
 
         // TODO remove me when testing of heads is done
         KeyboardTracker.registerKeybind(KeyboardTracker.TESTING_BIND, new Keybind(new KeyCodeCombination(KeyCode.T), () -> {
-            getChildren().stream().filter(child -> child instanceof ModelContainer).forEach(child -> {
-                final ModelContainer container = ((ModelContainer) child);
+            getChildren().stream().filter(child -> child instanceof Component).forEach(child -> {
+                final Component container = ((Component) child);
 
                 container.hasDeadlockProperty().set(!container.hasDeadlockProperty().get());
 
@@ -201,29 +200,29 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
         KeyboardTracker.registerKeybind(KeyboardTracker.COMPONENT_HAS_DEADLOCK, new Keybind(new KeyCodeCombination(KeyCode.D), () -> {
 
 
-            List<ModelContainer> modelContainerList = new ArrayList<>();
+            List<Component> componentList = new ArrayList<>();
             for (Node child : getChildren()) {
-                if (child instanceof ModelContainer) {
-                    modelContainerList.add((ModelContainer) child);
+                if (child instanceof Component) {
+                    componentList.add((Component) child);
                 }
             }
 
-            if(!modelContainerList.isEmpty()) {
-                addChild(new QueryField(200, 200, modelContainerList));
+            if(!componentList.isEmpty()) {
+                addChild(new QueryField(200, 200, componentList));
             }
 
         }));
 
         // Color keybinds below
         KeyboardTracker.registerKeybind(KeyboardTracker.COLOR_0, new Keybind(new KeyCodeCombination(KeyCode.DIGIT0), () -> {
-            final ModelContainer hoveredModelContainer = getHoveredModelContainer();
+            final Component hoveredComponent = getHoveredComponent();
             final Location hoveredLocation = getHoveredLocation();
 
             // Not hovering anything interesting
-            if (hoveredModelContainer == null) return;
+            if (hoveredComponent == null) return;
 
             final Colorable[] hoveredElement = {null};
-            if (hoveredModelContainer != null) hoveredElement[0] = (Colorable) hoveredModelContainer;
+            if (hoveredComponent != null) hoveredElement[0] = (Colorable) hoveredComponent;
             if (hoveredLocation != null) hoveredElement[0] = hoveredLocation;
 
             // Only reset the color, if the element is actually colored (do avoid redundant undo-elements on the stack
@@ -252,14 +251,14 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
 
     private void registerKeyBoardColorKeyBind(final String id, final KeyCode keyCode, final Color color, final Color.Intensity intensity) {
         KeyboardTracker.registerKeybind(id, new Keybind(new KeyCodeCombination(keyCode), () -> {
-            final ModelContainer hoveredModelContainer = getHoveredModelContainer();
+            final Component hoveredComponent = getHoveredComponent();
             final Location hoveredLocation = getHoveredLocation();
 
             // Not hovering anything interesting
-            if (hoveredModelContainer == null && hoveredLocation == null) return;
+            if (hoveredComponent == null && hoveredLocation == null) return;
 
             final Colorable[] hoveredElement = {null};
-            if (hoveredModelContainer != null) hoveredElement[0] = hoveredModelContainer;
+            if (hoveredComponent != null) hoveredElement[0] = hoveredComponent;
             if (hoveredLocation != null) hoveredElement[0] = hoveredLocation;
 
             final Color previousColor = hoveredElement[0].getColor();
@@ -400,16 +399,16 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
         ModelCanvas.edgeBeingDrawn = edgeBeingDrawn;
     }
 
-    public static ModelContainer getHoveredModelContainer() {
-        return hoveredModelContainer;
+    public static Component getHoveredComponent() {
+        return hoveredComponent;
     }
 
-    public static void setHoveredModelContainer(final ModelContainer modelContainer) {
-        hoveredModelContainer = modelContainer;
+    public static void setHoveredComponent(final Component component) {
+        hoveredComponent = component;
     }
 
     public static boolean mouseIsHoveringModelContainer() {
-        return hoveredModelContainer != null;
+        return hoveredComponent != null;
     }
 
     @Override

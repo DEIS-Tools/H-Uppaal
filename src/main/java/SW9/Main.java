@@ -2,7 +2,7 @@ package SW9;
 
 import SW9.issues.Warning;
 import SW9.model_canvas.ModelCanvas;
-import SW9.model_canvas.ModelContainer;
+import SW9.model_canvas.Component;
 import SW9.ui_elements.QueryPane;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.ResizeHelper;
@@ -154,22 +154,22 @@ public class Main extends Application {
             public void onChanged(final Change<? extends Node> change) {
                 if (change.next()) {
                     change.getAddedSubList().forEach(o -> {
-                        if (o instanceof ModelContainer) {
+                        if (o instanceof Component) {
                             // A new model container was added!
-                            final ModelContainer modelContainer = (ModelContainer) o;
+                            final Component component = (Component) o;
 
                             // Label for the warning
-                            final Label label = new Label(modelContainer.getName());
+                            final Label label = new Label(component.getName());
                             label.setTextFill(bottomBarColor.getTextColor(bottomBarColorIntensity));
                             label.getStyleClass().add("caption");
 
                             // Generate warning and warning icon
-                            final Warning<ModelContainer> modelContainerHasDeadlockWarning = new Warning<>(
+                            final Warning<Component> modelContainerHasDeadlockWarning = new Warning<>(
                                     modelContainer1 -> modelContainer1.hasDeadlockProperty().get(),
-                                    modelContainer,
-                                    modelContainer.hasDeadlockProperty()
+                                    component,
+                                    component.hasDeadlockProperty()
                             );
-                            modelContainerHasDeadlockWarning.setMessage(modelContainer.getName() + " contains deadlock!");
+                            modelContainerHasDeadlockWarning.setMessage(component.getName() + " contains deadlock!");
 
                             final IconNode warningIcon = modelContainerHasDeadlockWarning.generateIconNode();
                             warningIcon.setFill(Color.GREY_BLUE.getColor(Color.Intensity.I700));
@@ -177,8 +177,8 @@ public class Main extends Application {
                             warningIcon.xProperty().setValue(200);
                             warningIcon.yProperty().setValue(200);
 
-                            modelContainer.hasDeadlockProperty().setValue(false);
-                            modelContainer.hasDeadlockProperty().setValue(true);
+                            component.hasDeadlockProperty().setValue(false);
+                            component.hasDeadlockProperty().setValue(true);
 
                             // Add the warning icon to the label
                             label.setGraphic(warningIcon);
@@ -198,7 +198,7 @@ public class Main extends Application {
         });
 
         /*
-        final Warning<ModelContainer> modelContainerHasDeadlockWarning = new Warning<>(
+        final Warning<Component> modelContainerHasDeadlockWarning = new Warning<>(
                 modelContainer1 -> modelContainer1.hasDeadlockProperty().get(),
                 modelContainer,
                 modelContainer.hasDeadlockProperty()

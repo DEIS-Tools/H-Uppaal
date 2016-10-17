@@ -1,6 +1,6 @@
 package SW9.backend;
 
-import SW9.model_canvas.ModelContainer;
+import SW9.model_canvas.Component;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
 import com.uppaal.model.core2.Document;
@@ -24,31 +24,31 @@ public class HUPPAALDocument {
     private final Map<com.uppaal.model.core2.Location, Location> uToHLocations = new HashMap<>();
     private final Map<com.uppaal.model.core2.Edge, Edge> uToHEdges = new HashMap<>();
 
-    private final List<ModelContainer> modelContainers;
+    private final List<Component> components;
 
-    public HUPPAALDocument(final List<ModelContainer> modelContainers) {
-        this.modelContainers = modelContainers;
+    public HUPPAALDocument(final List<Component> components) {
+        this.components = components;
         generateUPPAALDocument();
     }
 
     private Document generateUPPAALDocument() {
-        for (final ModelContainer modelContainer : modelContainers) {
+        for (final Component component : components) {
             // Set create a template for each model container
-            final Template template = generateTemplate(modelContainer);
-            template.setProperty("name", modelContainer.getName() + "Template");
+            final Template template = generateTemplate(component);
+            template.setProperty("name", component.getName() + "Template");
         }
 
         String systemDclString = "\n";
-        for (final ModelContainer modelContainer : modelContainers) {
-            systemDclString += modelContainer.getName() + " = " + modelContainer.getName() + "Template();\n";
+        for (final Component component : components) {
+            systemDclString += component.getName() + " = " + component.getName() + "Template();\n";
         }
 
         systemDclString += "system ";
-        for (int i = 0; i < modelContainers.size(); i++) {
+        for (int i = 0; i < components.size(); i++) {
             if (i != 0) {
                 systemDclString += ", ";
             }
-            systemDclString += modelContainers.get(i).getName();
+            systemDclString += components.get(i).getName();
         }
 
         systemDclString += ";";// Set the system declaration
@@ -58,16 +58,16 @@ public class HUPPAALDocument {
         return uppaalDocument;
     }
 
-    private Template generateTemplate(final ModelContainer modelContainer) {
+    private Template generateTemplate(final Component component) {
 
         // Create empty template and insert it into the uppaal document
         final Template template = uppaalDocument.createTemplate();
         uppaalDocument.insert(template, null);
 
-        template.setProperty("declaration", generateTemplateDeclaration(modelContainer));
+        template.setProperty("declaration", generateTemplateDeclaration(component));
 
         // Add all locations from the model container to our conversion map and to the template
-        for (final Location hLocation : modelContainer.getLocations()) {
+        for (final Location hLocation : component.getLocations()) {
 
             // Add the location to the template
             final com.uppaal.model.core2.Location uLocation = addLocation(template, hLocation, "L" + hToULocations.size());
@@ -77,30 +77,30 @@ public class HUPPAALDocument {
             uToHLocations.put(uLocation, hLocation);
         }
 
-        for (final Edge hEdge : modelContainer.getEdges()) {
+        for (final Edge hEdge : component.getEdges()) {
             uToHEdges.put(addEdge(template, hEdge, hToULocations), hEdge);
         }
 
         return template;
     }
 
-    private String generateTemplateDeclaration(final ModelContainer modelContainer) {
+    private String generateTemplateDeclaration(final SW9.model_canvas.Component component) {
 
         // TODO update the types of variables (int, byte etc) and channels (urgent) when added to the model
         String declStr = "";
 
         // Add the clocks
-        for (final String clock : modelContainer.getClocks()) {
+        for (final String clock : component.getClocks()) {
             declStr += "clock " + clock + ";\n";
         }
 
         // Add variables
-        for (final String var : modelContainer.getVariables()) {
+        for (final String var : component.getVariables()) {
             declStr += "int " + var + ";\n";
         }
 
         // Add channels
-        for (final String chan : modelContainer.getChannels()) {
+        for (final String chan : component.getChannels()) {
             declStr += "chan " + chan + ";\n";
         }
 

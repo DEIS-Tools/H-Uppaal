@@ -3,7 +3,7 @@ package SW9.model_canvas.querying;
 import SW9.backend.BackendException;
 import SW9.backend.Trace;
 import SW9.backend.UPPAALDriver;
-import SW9.model_canvas.ModelContainer;
+import SW9.model_canvas.Component;
 import SW9.model_canvas.Parent;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
@@ -28,7 +28,7 @@ public class QueryField extends Parent implements LocationAware {
     private final TextField textField = new TextField();
     private static final double FIELD_WIDTH = 500;
 
-    public QueryField(final double x, final double y, final List<ModelContainer> modelContainers) {
+    public QueryField(final double x, final double y, final List<Component> components) {
         xProperty().setValue(x);
         yProperty().setValue(y);
 
@@ -63,7 +63,7 @@ public class QueryField extends Parent implements LocationAware {
                 textField.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
             };
 
-            UPPAALDriver.verify(query, success, failure, UPPAALDriver.TraceType.SOME, traceCallback, modelContainers);
+            UPPAALDriver.verify(query, success, failure, UPPAALDriver.TraceType.SOME, traceCallback, components);
         });
     }
 
