@@ -110,6 +110,7 @@ public class UPPAALDriver {
 
             // Return the query
             final char result = engine.query(system, traceType.toString(), query, queryListener).result;
+            engine.disconnect();
 
             if (result == 'T') {
                 return true;
@@ -126,6 +127,8 @@ public class UPPAALDriver {
         } catch (EngineException | IOException e) {
             // Something went wrong
             throw new BackendException.BadUPPAALQueryException("Unable to run query", e);
+        } finally {
+            engine.disconnect();
         }
     }
 
