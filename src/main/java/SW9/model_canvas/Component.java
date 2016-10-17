@@ -33,7 +33,7 @@ public class Component extends Parent implements Colorable, MouseTrackable, Remo
     private final StringProperty declarationsProperty = new SimpleStringProperty();
     private final StringProperty name = new SimpleStringProperty();
 
-    // Verifiaction proerpty
+    // Verification property
     private final BooleanProperty hasDeadlock = new SimpleBooleanProperty(true);
 
     // Styling properties
@@ -240,7 +240,6 @@ public class Component extends Parent implements Colorable, MouseTrackable, Remo
 
         titledPane.setClip(mask);
     }
-
 
     private void initializeFrame(final Path frame) {
         MoveTo p1 = new MoveTo();

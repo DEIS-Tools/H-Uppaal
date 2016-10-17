@@ -6,6 +6,7 @@ import SW9.model_canvas.Component;
 import SW9.ui_elements.QueryPane;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.ResizeHelper;
+import SW9.utility.helpers.Resizeable;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXButton;
@@ -15,10 +16,9 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.*;
+import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableNumberValue;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -42,14 +42,13 @@ import jiconfont.javafx.IconNode;
 
 public class Main extends Application {
 
-    private static Parent root;
+    private static StackPane root;
     private double xOffset;
     private double yOffset;
     private double previousX, previousY, previousWidth, previousHeight;
     public static final BooleanProperty isMaximized = new SimpleBooleanProperty(false);
 
     private final static DoubleProperty border = new SimpleDoubleProperty(3d);
-    private JFXButton resizeBtn;
 
     public static void main(String[] args) {
         launch(Main.class, args);
@@ -82,9 +81,49 @@ public class Main extends Application {
 
         // Allows us to resize the window
         stage.resizableProperty().setValue(true);
-        ResizeHelper.initialize(stage, border);
+        final Resizeable jens = new Resizeable() {
+
+            @Override
+            public ReadOnlyDoubleProperty widthProperty() {
+                return stage.widthProperty();
+            }
+
+            @Override
+            public void setWidth(final double width) {
+                stage.setWidth(width);
+            }
+
+            @Override
+            public ReadOnlyDoubleProperty heightProperty() {
+                return stage.heightProperty();
+            }
+
+
+            @Override
+            public void setHeight(final double height) {
+                stage.setHeight(height);
+            }
+
+            @Override
+            public void setX(double x) {
+                stage.setX(x);
+            }
+
+            @Override
+            public void setY(double y) {
+                stage.setY(y);
+            }
+
+            @Override
+            public StackPane getRegionContainer() {
+                return root;
+            }
+        };
+
 
         stage.show();
+
+        ResizeHelper.initialize(jens, border);
 
         // Runnable for maximizing the window
         final Runnable maximizeWindow = () -> {
@@ -245,7 +284,7 @@ public class Main extends Application {
         */
     }
 
-    private void initializeStatusBar(final Stage stage, Runnable maximizeWindow) {
+    private void initializeStatusBar(final Stage stage, final Runnable maximizeWindow) {
         final Scene scene = stage.getScene();
 
         // Find the status bar and make it draggable
@@ -310,7 +349,7 @@ public class Main extends Application {
                 .then(GoogleMaterialDesignIcons.FULLSCREEN_EXIT)
                 .otherwise(GoogleMaterialDesignIcons.FULLSCREEN));
 
-        resizeBtn = new JFXButton("", resizeIcon);
+        final JFXButton resizeBtn = new JFXButton("", resizeIcon);
         resizeBtn.setButtonType(JFXButton.ButtonType.FLAT);
         resizeBtn.setRipplerFill(fontAndRippleColor);
         resizeBtn.setOnMouseClicked(event -> {
@@ -328,7 +367,6 @@ public class Main extends Application {
         closeBtn.setOnMouseClicked(event -> System.exit(0));
         rightStatusBar.getChildren().add(closeBtn);
     }
-
 
     private final BooleanProperty isQueryPaneShown = new SimpleBooleanProperty(false);
 
@@ -363,7 +401,6 @@ public class Main extends Application {
         // Play the animation
         animation.play();
     }
-
 }
 
 
