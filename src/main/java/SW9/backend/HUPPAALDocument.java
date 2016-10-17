@@ -64,7 +64,8 @@ public class HUPPAALDocument {
         final Template template = uppaalDocument.createTemplate();
         uppaalDocument.insert(template, null);
 
-        template.setProperty("declaration", generateTemplateDeclaration(component));
+        String declarations = component.getDeclarations();
+        template.setProperty("declaration", declarations);
 
         // Add all locations from the model container to our conversion map and to the template
         for (final Location hLocation : component.getLocations()) {
@@ -82,29 +83,6 @@ public class HUPPAALDocument {
         }
 
         return template;
-    }
-
-    private String generateTemplateDeclaration(final SW9.model_canvas.Component component) {
-
-        // TODO update the types of variables (int, byte etc) and channels (urgent) when added to the model
-        String declStr = "";
-
-        // Add the clocks
-        for (final String clock : component.getClocks()) {
-            declStr += "clock " + clock + ";\n";
-        }
-
-        // Add variables
-        for (final String var : component.getVariables()) {
-            declStr += "int " + var + ";\n";
-        }
-
-        // Add channels
-        for (final String chan : component.getChannels()) {
-            declStr += "chan " + chan + ";\n";
-        }
-
-        return declStr;
     }
 
     private com.uppaal.model.core2.Location addLocation(final Template template, final Location hLocation, final String fallbackName) {

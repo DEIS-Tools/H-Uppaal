@@ -26,31 +26,30 @@ import java.util.*;
 
 public class Component extends Parent implements Colorable, MouseTrackable, Removable {
 
-    private static final double CORNER_SIZE = ModelCanvas.GRID_SIZE * 2 + Location.RADIUS;
-    protected final MouseTracker mouseTracker = new MouseTracker(this);
-
-    private final Rectangle labelContainer;
-    private final Polygon labelTriangle;
-    private final Label label;
-    private final Path frame;
-
-    public final DoubleProperty xProperty;
-    public final DoubleProperty yProperty;
-    public final DoubleProperty widthProperty;
-    public final DoubleProperty heightProperty;
-
     // Modelling properties
     private final List<Location> locations = new ArrayList<>();
     private final List<Edge> edges = new ArrayList<>();
     private final Map<Location, List<Edge>> locationEdgeMap = new HashMap<>();
-    private final List<String> clocks = new ArrayList<>();
-    private final List<String> variables = new ArrayList<>();
-    private final List<String> channels = new ArrayList<>();
+    private final StringProperty declarationsProperty = new SimpleStringProperty();
     private final StringProperty name = new SimpleStringProperty();
+
+    // Verifiaction proerpty
     private final BooleanProperty hasDeadlock = new SimpleBooleanProperty(true);
-    protected Color color = null;
-    protected Color.Intensity intensity = null;
-    protected boolean colorIsSet = false;
+
+    // Styling properties
+    private static final double CORNER_SIZE = ModelCanvas.GRID_SIZE * 2 + Location.RADIUS;
+    private final MouseTracker mouseTracker = new MouseTracker(this);
+    private final Rectangle labelContainer;
+    private final Polygon labelTriangle;
+    private final Label label;
+    private final Path frame;
+    private final DoubleProperty xProperty;
+    private final DoubleProperty yProperty;
+    private final DoubleProperty widthProperty;
+    private final DoubleProperty heightProperty;
+    private Color color = null;
+    private Color.Intensity intensity = null;
+    private boolean colorIsSet = false;
 
     private boolean mouseIsHoveringTopBar = false;
     private TitledPane titledPane;
@@ -114,7 +113,6 @@ public class Component extends Parent implements Colorable, MouseTrackable, Remo
         label.layoutYProperty().bind(labelContainer.yProperty().subtract(2));
 
         // Styling below
-
         labelContainer.getStyleClass().add("component-label-container");
         labelContainer.setStrokeType(StrokeType.INSIDE);
         labelContainer.setStrokeLineJoin(StrokeLineJoin.ROUND);
@@ -135,6 +133,8 @@ public class Component extends Parent implements Colorable, MouseTrackable, Remo
         final JFXButton showMoreButton = new JFXButton("show more");
         showMoreButton.setOnMouseClicked(event -> titledPane.setExpanded(!titledPane.isExpanded()));
 
+
+        // Initialize declarations box and bind the content to declarations property
         initializeTextBox();
 
         addChildren(
@@ -195,6 +195,9 @@ public class Component extends Parent implements Colorable, MouseTrackable, Remo
         final TextArea textArea = new TextArea();
         textArea.getStyleClass().add("body2-mono");
         titledPane.setContent(textArea);
+
+        // Bind the content of the text area to declarations property
+        declarationsProperty.bind(textArea.textProperty());
 
         titledPane.minWidthProperty().bind(widthProperty);
         titledPane.minHeightProperty().bind(heightProperty);
@@ -498,62 +501,19 @@ public class Component extends Parent implements Colorable, MouseTrackable, Remo
         }
     }
 
-    public List<String> getClocks() {
-        return clocks;
-    }
-
-    public void addClock(final String clock) {
-        clocks.add(clock);
-    }
-
-    public void removeClock(final String clock) {
-        for (int i = 0; i < clocks.size(); i++) {
-            if (clock.equals(clocks.get(i))) {
-                clocks.remove(i);
-                return;
-            }
-        }
-    }
-
-    public List<String> getVariables() {
-        return variables;
-    }
-
-    public void addVariable(final String var) {
-        variables.add(var);
-    }
-
-    public void removeVariable(final String var) {
-        for (int i = 0; i < variables.size(); i++) {
-            if (var.equals(variables.get(i))) {
-                variables.remove(i);
-                return;
-            }
-        }
-    }
-
-    public List<String> getChannels() {
-        return channels;
-    }
-
-    public void addChannel(final String chan) {
-        channels.add(chan);
-    }
-
-    public void removeChannels(final String chan) {
-        for (int i = 0; i < channels.size(); i++) {
-            if (chan.equals(channels.get(i))) {
-                channels.remove(i);
-                return;
-            }
-        }
-    }
-
     public StringProperty nameProperty() {
         return name;
     }
 
     public String getName() {
         return nameProperty().get();
+    }
+
+    public StringProperty declarationsProperty() {
+        return declarationsProperty;
+    }
+
+    public String getDeclarations() {
+        return declarationsProperty.get();
     }
 }
