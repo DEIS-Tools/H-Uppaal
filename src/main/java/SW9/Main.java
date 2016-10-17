@@ -49,6 +49,7 @@ public class Main extends Application {
     public static final BooleanProperty isMaximized = new SimpleBooleanProperty(false);
 
     private final static DoubleProperty border = new SimpleDoubleProperty(3d);
+    private JFXButton resizeBtn;
 
     public static void main(String[] args) {
         launch(Main.class, args);
@@ -85,9 +86,40 @@ public class Main extends Application {
 
         stage.show();
 
-        initializeStatusBar(stage);
+        // Runnable for maximizing the window
+        final Runnable maximizeWindow = () -> {
+            if (isMaximized.get()) {
 
+                // Undo maximized again
+                stage.setX(previousX);
+                stage.setY(previousY);
+                stage.setWidth(previousWidth);
+                stage.setHeight(previousHeight);
+                isMaximized.set(false);
+            } else {
+                previousX = stage.getX();
+                previousY = stage.getY();
+                previousWidth = stage.getWidth();
+                previousHeight = stage.getHeight();
+                stage.setX(0d);
+                stage.setY(0d);
+
+                // Maximize the window
+                final Screen screen1 = Screen.getPrimary();
+                final Rectangle2D bounds = screen1.getVisualBounds();
+                stage.setX(bounds.getMinX());
+                stage.setY(bounds.getMinY());
+                stage.setWidth(bounds.getWidth());
+                stage.setHeight(bounds.getHeight());
+                isMaximized.set(true);
+            }
+        };
+
+        initializeStatusBar(stage, maximizeWindow);
         initializeBottomBar(stage);
+
+        // Maximize the window
+        maximizeWindow.run();
     }
 
     public static ModelCanvas getModelCanvas() {
@@ -213,7 +245,7 @@ public class Main extends Application {
         */
     }
 
-    private void initializeStatusBar(final Stage stage) {
+    private void initializeStatusBar(final Stage stage, Runnable maximizeWindow) {
         final Scene scene = stage.getScene();
 
         // Find the status bar and make it draggable
@@ -278,35 +310,11 @@ public class Main extends Application {
                 .then(GoogleMaterialDesignIcons.FULLSCREEN_EXIT)
                 .otherwise(GoogleMaterialDesignIcons.FULLSCREEN));
 
-        final JFXButton resizeBtn = new JFXButton("", resizeIcon);
+        resizeBtn = new JFXButton("", resizeIcon);
         resizeBtn.setButtonType(JFXButton.ButtonType.FLAT);
         resizeBtn.setRipplerFill(fontAndRippleColor);
         resizeBtn.setOnMouseClicked(event -> {
-            if (isMaximized.get()) {
-
-                // Undo maximized again
-                stage.setX(previousX);
-                stage.setY(previousY);
-                stage.setWidth(previousWidth);
-                stage.setHeight(previousHeight);
-                isMaximized.set(false);
-            } else {
-                previousX = stage.getX();
-                previousY = stage.getY();
-                previousWidth = stage.getWidth();
-                previousHeight = stage.getHeight();
-                stage.setX(0d);
-                stage.setY(0d);
-
-                // Maximize the window
-                Screen screen = Screen.getPrimary();
-                Rectangle2D bounds = screen.getVisualBounds();
-                stage.setX(bounds.getMinX());
-                stage.setY(bounds.getMinY());
-                stage.setWidth(bounds.getWidth());
-                stage.setHeight(bounds.getHeight());
-                isMaximized.set(true);
-            }
+            maximizeWindow.run();
         });
 
         rightStatusBar.getChildren().add(resizeBtn);
@@ -320,6 +328,7 @@ public class Main extends Application {
         closeBtn.setOnMouseClicked(event -> System.exit(0));
         rightStatusBar.getChildren().add(closeBtn);
     }
+
 
     private final BooleanProperty isQueryPaneShown = new SimpleBooleanProperty(false);
 
