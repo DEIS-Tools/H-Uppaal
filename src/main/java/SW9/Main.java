@@ -7,8 +7,6 @@ import SW9.model_canvas.component.NewComponentModel;
 import SW9.model_canvas.component.NewComponentView;
 import SW9.ui_elements.QueryPane;
 import SW9.utility.colors.Color;
-import SW9.utility.helpers.ResizeHelper;
-import SW9.utility.helpers.Resizeable;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXButton;
@@ -19,8 +17,6 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableDoubleValue;
-import javafx.beans.value.ObservableNumberValue;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -28,7 +24,6 @@ import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -81,51 +76,7 @@ public class Main extends Application {
         // Clear any selected elements on any mouse event
         scene.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> SelectHelper.clearSelectedElements());
 
-        // Allows us to resize the window
-        stage.resizableProperty().setValue(true);
-        final Resizeable jens = new Resizeable() {
-
-            @Override
-            public ReadOnlyDoubleProperty widthProperty() {
-                return stage.widthProperty();
-            }
-
-            @Override
-            public void setWidth(final double width) {
-                stage.setWidth(width);
-            }
-
-            @Override
-            public ReadOnlyDoubleProperty heightProperty() {
-                return stage.heightProperty();
-            }
-
-
-            @Override
-            public void setHeight(final double height) {
-                stage.setHeight(height);
-            }
-
-            @Override
-            public void setX(double x) {
-                stage.setX(x);
-            }
-
-            @Override
-            public void setY(double y) {
-                stage.setY(y);
-            }
-
-            @Override
-            public StackPane getRegionContainer() {
-                return root;
-            }
-        };
-
-
         stage.show();
-
-        ResizeHelper.initialize(jens, border);
 
         // Runnable for maximizing the window
         final Runnable maximizeWindow = () -> {
