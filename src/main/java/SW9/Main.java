@@ -3,6 +3,8 @@ package SW9;
 import SW9.issues.Warning;
 import SW9.model_canvas.ModelCanvas;
 import SW9.model_canvas.Component;
+import SW9.model_canvas.component.NewComponentModel;
+import SW9.model_canvas.component.NewComponentView;
 import SW9.ui_elements.QueryPane;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.ResizeHelper;
@@ -158,7 +160,14 @@ public class Main extends Application {
         initializeBottomBar(stage);
 
         // Maximize the window
-        maximizeWindow.run();
+        //maximizeWindow.run();
+
+        final NewComponentModel componentModel = new NewComponentModel();
+        final NewComponentView componentView = new NewComponentView(componentModel);
+
+        componentModel.setLabel("hejsa");
+
+        root.getChildren().add(componentView);
     }
 
     public static ModelCanvas getModelCanvas() {
