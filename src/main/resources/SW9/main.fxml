@@ -15,8 +15,7 @@
                 <ModelCanvas id="model-canvas"/>
 
                 <!-- QUERIES -->
-                <QueryPane
-                        id="query-pane"/>
+                <QueryPane id="query-pane"/>
             </StackPane>
         </center>
 
