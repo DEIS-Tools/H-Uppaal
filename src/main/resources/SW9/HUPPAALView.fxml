@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.geometry.Insets?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         type="AnchorPane"
+         fx:controller="SW9.HUPPAALController">
+
+    <!-- Top status bar -->
+    <BorderPane fx:id="topStatusBar"
+                AnchorPane.topAnchor="0"
+                AnchorPane.leftAnchor="0"
+                AnchorPane.rightAnchor="0">
+
+        <left>
+            <StackPane>
+                <Label fx:id="applicationTitle" styleClass="body2" style="-fx-padding: 0 0 0 5" text="H-UPPAAL">
+                    <graphic>
+                        <FontIcon iconLiteral="gmi-watch-later" iconSize="20"/>
+                    </graphic>
+                </Label>
+            </StackPane>
+        </left>
+
+        <right>
+            <HBox>
+
+                <!-- Close window button -->
+                <JFXButton fx:id="minimizeWindowButton"
+                           onMouseClicked="#minimizeWindowButtonClicked"
+                           style="-fx-button-type: flat;">
+                    <graphic>
+                        <FontIcon iconLiteral="gmi-remove" iconSize="20"/>
+                    </graphic>
+                </JFXButton>
+
+                <!-- Close window button -->
+                <JFXButton fx:id="maximizeWindowButton"
+                           onMouseClicked="#maximizeWindowButtonClicked"
+                           style="-fx-button-type: flat;">
+                    <graphic>
+                        <FontIcon iconLiteral="gmi-fullscreen" iconSize="20"/>
+                    </graphic>
+                </JFXButton>
+
+                <!-- Close window button -->
+                <JFXButton fx:id="closeWindowButton"
+                           onMouseClicked="#closeWindowButtonClicked"
+                           style="-fx-button-type: flat;">
+                    <graphic>
+                        <FontIcon iconLiteral="gmi-close" iconSize="20"/>
+                    </graphic>
+                </JFXButton>
+
+            </HBox>
+        </right>
+
+    </BorderPane>
+
+    <!-- Bottom status bar -->
+    <BorderPane fx:id="bottomStatusBar"
+                styleClass="bottom-bar"
+                prefHeight="25"
+                maxHeight="25"
+                AnchorPane.bottomAnchor="0"
+                AnchorPane.leftAnchor="0"
+                AnchorPane.rightAnchor="0">
+
+    </BorderPane>
+
+</fx:root>
