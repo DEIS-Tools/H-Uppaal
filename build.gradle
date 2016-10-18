@@ -37,4 +37,5 @@ dependencies {
     compile group: 'de.codecentric.centerdevice', name: 'javafxsvg', version: '1.0.0'
     compile group: 'com.github.jiconfont', name: 'jiconfont-javafx', version: '1.0.0'
     compile group: 'com.github.jiconfont', name: 'jiconfont-google_material_design_icons', version: '2.2.0.1'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.3.1'
 }

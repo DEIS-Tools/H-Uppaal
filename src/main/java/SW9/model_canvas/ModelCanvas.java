@@ -1,5 +1,6 @@
 package SW9.model_canvas;
 
+import SW9.backend.HUPPAALDocument;
 import SW9.model_canvas.arrow_heads.BroadcastChannelSenderArrowHead;
 import SW9.model_canvas.arrow_heads.ChannelReceiverArrowHead;
 import SW9.model_canvas.arrow_heads.HandshakeChannelSenderArrowHead;
@@ -30,6 +31,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -142,6 +144,13 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
                     location.reachabilityCertaintyProperty().set(100);
                     location.isReachableProperty().set(false);
                 });
+
+                HUPPAALDocument huppaalDocument = new HUPPAALDocument(container);
+                try {
+                    huppaalDocument.toHuuppaalFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             });
 
             // Outgoing arrows
@@ -187,6 +196,9 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
                     () -> addChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine, handshakeSyncLine, handshakeSyncArrowHead),
                     () -> removeChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine, handshakeSyncLine, handshakeSyncArrowHead)
             );
+
+
+
         }));
 
         // Gets the first model container and checks for deadlock

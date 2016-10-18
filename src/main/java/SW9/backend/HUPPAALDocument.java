@@ -3,15 +3,19 @@ package SW9.backend;
 import SW9.model_canvas.Component;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
+import com.google.gson.*;
 import com.uppaal.model.core2.Document;
 import com.uppaal.model.core2.Property;
 import com.uppaal.model.core2.PrototypeDocument;
 import com.uppaal.model.core2.Template;
 
 import java.awt.*;
-import java.util.HashMap;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class HUPPAALDocument {
 
@@ -25,6 +29,10 @@ public class HUPPAALDocument {
     private final Map<com.uppaal.model.core2.Edge, Edge> uToHEdges = new HashMap<>();
 
     private final List<Component> components;
+
+    public HUPPAALDocument(final Component ... components) {
+        this(Arrays.asList(components));
+    }
 
     public HUPPAALDocument(final List<Component> components) {
         this.components = components;
@@ -193,5 +201,47 @@ public class HUPPAALDocument {
 
     public Edge getEdge(final com.uppaal.model.core2.Edge uEdge) {
         return uToHEdges.get(uEdge);
+    }
+
+    public enum HUUPPAALField {
+        NAME("name"), COLOR("color"), POS_X("posX"), POS_Y("posY"), HEIGHT("height"), WIDTH("width"), LOCATIONS("locations"), EDGES("edges");
+
+        private final String name;
+
+        HUUPPAALField(final String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    public void toHuuppaalFile() throws IOException {
+
+        for (final Component c : components) {
+
+            JsonObject componentJson = c.toJsonObject();
+
+            File file = new File("uppaal-debug/huppaalfiles/" + c.getName() + ".json");
+
+            // if file doesnt exists, then create it
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            JsonParser jp = new JsonParser();
+            JsonElement je = jp.parse(componentJson.toString());
+            String prettyJsonString = gson.toJson(je);
+
+            bw.write(prettyJsonString);
+            bw.close();
+        }
+
     }
 }

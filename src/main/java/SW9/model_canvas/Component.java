@@ -1,5 +1,6 @@
 package SW9.model_canvas;
 
+import SW9.backend.HUPPAALDocument;
 import SW9.backend.UPPAALDriver;
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
@@ -9,6 +10,7 @@ import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
+import com.google.gson.*;
 import com.jfoenix.controls.JFXButton;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableDoubleValue;
@@ -21,10 +23,11 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.shape.*;
 
+import java.lang.reflect.Type;
 import java.util.*;
 
 
-public class Component extends Parent implements Colorable, MouseTrackable, Removable {
+public class Component extends JsonParent implements Colorable, MouseTrackable, Removable{
 
     // Modelling properties
     private final List<Location> locations = new ArrayList<>();
@@ -518,5 +521,22 @@ public class Component extends Parent implements Colorable, MouseTrackable, Remo
 
     public String getDeclarations() {
         return declarationsProperty.get();
+    }
+
+    @Override
+    protected void fromJsonObject() {
+
+    }
+
+    @Override
+    public JsonObject toJsonObject() {
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty(HUPPAALDocument.HUUPPAALField.NAME.toString(), getName());
+        jsonObject.addProperty(HUPPAALDocument.HUUPPAALField.COLOR.toString(), getColor().toHexColor(getColorIntensity()));
+        jsonObject.addProperty(HUPPAALDocument.HUUPPAALField.POS_X.toString(), xProperty().get());
+        jsonObject.addProperty(HUPPAALDocument.HUUPPAALField.POS_Y.toString(), yProperty().get());
+        jsonObject.addProperty(HUPPAALDocument.HUUPPAALField.WIDTH.toString(), getXLimit().get());
+        jsonObject.addProperty(HUPPAALDocument.HUUPPAALField.HEIGHT.toString(), getYLimit().get());
+        return jsonObject;
     }
 }
