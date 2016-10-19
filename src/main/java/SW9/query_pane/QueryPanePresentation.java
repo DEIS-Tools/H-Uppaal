@@ -9,6 +9,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.net.URL;
@@ -47,6 +48,23 @@ public class QueryPanePresentation extends StackPane {
                 CornerRadii.EMPTY,
                 Insets.EMPTY)));
 
+        // Set the font color of elements in the toolbar
+        controller.toolbarTitle.setTextFill(color.getTextColor(colorIntensity));
+        controller.runAllQueriesButton.setRipplerFill(color.getTextColor(colorIntensity));
+        controller.clearAllQueriesButton.setRipplerFill(color.getTextColor(colorIntensity));
+        ((FontIcon) controller.runAllQueriesButton.getGraphic()).setFill(color.getTextColor(colorIntensity));
+        ((FontIcon) controller.clearAllQueriesButton.getGraphic()).setFill(color.getTextColor(colorIntensity));
+
+        controller.runAllQueriesButton.setBackground(new Background(new BackgroundFill(
+                javafx.scene.paint.Color.TRANSPARENT,
+                new CornerRadii(100),
+                Insets.EMPTY)));
+
+        controller.clearAllQueriesButton.setBackground(new Background(new BackgroundFill(
+                javafx.scene.paint.Color.TRANSPARENT,
+                new CornerRadii(100),
+                Insets.EMPTY)));
+
         // Set the elevation of the toolbar
         controller.toolbar.setEffect(DropShadowHelper.generateElevationShadow(8));
     }
@@ -65,7 +83,9 @@ public class QueryPanePresentation extends StackPane {
         // Add a drop shadow to the add query button
         controller.addQueryButton.setEffect(DropShadowHelper.generateElevationShadow(6));
 
+        // Set the font color of the button
         controller.addQueryButton.setRipplerFill(color.getTextColor(intensity));
+        ((FontIcon) controller.addQueryButton.getGraphic()).setFill(color.getTextColor(intensity));
     }
 
 }

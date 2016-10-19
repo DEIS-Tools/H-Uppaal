@@ -1,6 +1,7 @@
 package SW9;
 
 import SW9.utility.colors.Color;
+import SW9.utility.helpers.DropShadowHelper;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
@@ -33,6 +34,8 @@ public class HUPPAALPresentation extends BorderPane {
             // Align the query pane to the bottom of the top bar, and the top of the bottom bar
             controller.topStatusBar.heightProperty().addListener((observable, oldValue, newValue) -> AnchorPane.setTopAnchor(controller.queryPane, (Double) newValue));
             controller.bottomStatusBar.heightProperty().addListener((observable, oldValue, newValue) -> AnchorPane.setBottomAnchor(controller.queryPane, (Double) newValue));
+
+            controller.queryPane.setEffect(DropShadowHelper.generateElevationShadow(8));
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }

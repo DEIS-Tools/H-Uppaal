@@ -2,45 +2,55 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
          fx:controller="SW9.query_pane.QueryPaneController"
-         minWidth="400">
-    
-    <VBox>
+         minWidth="400" style="-fx-background-color: brown;">
+
+    <AnchorPane>
 
         <!-- Toolbar -->
-        <HBox fx:id="toolbar">
+        <AnchorPane fx:id="toolbar" minHeight="56" maxHeight="56" AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
 
-            <VBox>
-                <Label id="queries-headline" styleClass="title">Queries</Label>
-                <Label id="queries-headline-caption" styleClass="subhead">7 successful, 1 error</Label>
+            <StackPane AnchorPane.leftAnchor="16" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+                <Label fx:id="toolbarTitle"
+                       styleClass="title"
+                       text="Queries"/>
+            </StackPane>
+
+            <StackPane AnchorPane.rightAnchor="16" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+                <HBox maxHeight="-Infinity">
+                    <JFXButton fx:id="runAllQueriesButton">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-play-arrow" iconSize="24"/>
+                        </graphic>
+                    </JFXButton>
+
+                    <Region minWidth="16"/>
+
+                    <JFXButton fx:id="clearAllQueriesButton">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-clear-all" iconSize="24"/>
+                        </graphic>
+                    </JFXButton>
+                </HBox>
+            </StackPane>
+
+        </AnchorPane>
+
+        <!-- todo: add query elements -->
+
+        <ScrollPane AnchorPane.topAnchor="56" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+            <VBox fx:id="queriesList">
+                <!-- Queries goes here -->
             </VBox>
+        </ScrollPane>
 
-            <!-- Will create just enough space between the two elements -->
-            <Region HBox.hgrow="ALWAYS"/>
-
-            <!-- Container for the two buttons -->
-            <HBox alignment="BOTTOM_RIGHT">
-                <JFXButton>
-                    <graphic>
-                        <FontIcon iconLiteral="gmi-clear-all" iconSize="24"/>
-                    </graphic>
-                </JFXButton>
-                <Region minWidth="16"/>
-                <JFXButton>
-                    <graphic>
-                        <FontIcon iconLiteral="gmi-play-arrow" iconSize="24"/>
-                    </graphic>
-                </JFXButton>
-            </HBox>
-
-        </HBox>
-
-    </VBox>
+    </AnchorPane>
 
     <!-- Add new query button -->
     <JFXButton fx:id="addQueryButton"
@@ -49,7 +59,8 @@
                translateX="-24"
                translateY="-24"
                onMousePressed="#addQueryButtonPressed"
-               onMouseReleased="#addQueryButtonReleased">
+               onMouseReleased="#addQueryButtonReleased"
+               onMouseClicked="#addQueryButtonClicked">
         <graphic>
             <FontIcon iconLiteral="gmi-add" iconSize="24"/>
         </graphic>
