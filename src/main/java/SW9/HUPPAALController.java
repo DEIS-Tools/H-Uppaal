@@ -28,14 +28,14 @@ public class HUPPAALController implements Initializable {
     public JFXButton closeWindowButton;
     public Label applicationTitle;
 
-    private WindowModel model;
+    private WindowAbstraction model;
 
-    public void setModel(final WindowModel model) {
-        this.model = model;
+    public WindowAbstraction getModel() {
+        return model;
     }
 
-    public WindowModel getModel() {
-        return model;
+    public void setModel(final WindowAbstraction model) {
+        this.model = model;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class HUPPAALController implements Initializable {
     @FXML
     private void maximizeWindowButtonClicked() {
         final Stage stage = ((Stage) minimizeWindowButton.getScene().getWindow());
-        final WindowModel model = getModel();
+        final WindowAbstraction model = getModel();
 
         if (getModel().isIsMaximized()) {
             // Undo maximized again
