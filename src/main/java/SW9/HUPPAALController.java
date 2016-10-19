@@ -1,5 +1,6 @@
 package SW9;
 
+import SW9.query_pane.QueryPanePresentation;
 import SW9.utility.colors.Color;
 import com.jfoenix.controls.JFXButton;
 import javafx.fxml.FXML;
@@ -7,10 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.*;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -27,50 +25,22 @@ public class HUPPAALController implements Initializable {
     public JFXButton maximizeWindowButton;
     public JFXButton closeWindowButton;
     public Label applicationTitle;
+    public QueryPanePresentation queryPane;
 
-    private WindowAbstraction model;
-
-    public WindowAbstraction getModel() {
-        return model;
-    }
-
-    public void setModel(final WindowAbstraction model) {
-        this.model = model;
-    }
+    private WindowAbstraction abstraction;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        final Color topBarBackgroundColor = Color.GREY_BLUE;
-        final Color.Intensity topBarBackgroundColorIntensity = Color.Intensity.I900;
+        // Create new abstraction
+        this.abstraction = new WindowAbstraction();
+    }
 
-        // Set the background for the top status bar
-        topStatusBar.setBackground(
-                new Background(new BackgroundFill(topBarBackgroundColor.getColor(topBarBackgroundColorIntensity),
-                        CornerRadii.EMPTY,
-                        Insets.EMPTY)
-                ));
+    public WindowAbstraction getAbstraction() {
+        return abstraction;
+    }
 
-        // Set the font color for the buttons
-        ((FontIcon) minimizeWindowButton.getGraphic()).setFill(topBarBackgroundColor.getTextColor(topBarBackgroundColorIntensity));
-        minimizeWindowButton.setRipplerFill(topBarBackgroundColor.getTextColor(topBarBackgroundColorIntensity));
-        ((FontIcon) maximizeWindowButton.getGraphic()).setFill(topBarBackgroundColor.getTextColor(topBarBackgroundColorIntensity));
-        maximizeWindowButton.setRipplerFill(topBarBackgroundColor.getTextColor(topBarBackgroundColorIntensity));
-        ((FontIcon) closeWindowButton.getGraphic()).setFill(topBarBackgroundColor.getTextColor(topBarBackgroundColorIntensity));
-        closeWindowButton.setRipplerFill(topBarBackgroundColor.getTextColor(topBarBackgroundColorIntensity));
-
-        // Set the font color for the application title
-        ((FontIcon) applicationTitle.getGraphic()).setFill(topBarBackgroundColor.getTextColor(topBarBackgroundColorIntensity));
-        applicationTitle.setTextFill(topBarBackgroundColor.getTextColor(topBarBackgroundColorIntensity));
-
-        final Color bottomBarBackgroundColor = Color.GREY_BLUE;
-        final Color.Intensity bottomBarBackgroundColorIntensity = Color.Intensity.I200;
-
-        // Set the background for the bottom status bar
-        bottomStatusBar.setBackground(
-                new Background(new BackgroundFill(bottomBarBackgroundColor.getColor(bottomBarBackgroundColorIntensity),
-                        CornerRadii.EMPTY,
-                        Insets.EMPTY)
-                ));
+    public void setAbstraction(final WindowAbstraction abstraction) {
+        this.abstraction = abstraction;
     }
 
     @FXML
@@ -81,21 +51,21 @@ public class HUPPAALController implements Initializable {
     @FXML
     private void maximizeWindowButtonClicked() {
         final Stage stage = ((Stage) minimizeWindowButton.getScene().getWindow());
-        final WindowAbstraction model = getModel();
+        final WindowAbstraction abstraction = getAbstraction();
 
-        if (getModel().isIsMaximized()) {
+        if (abstraction.isIsMaximized()) {
             // Undo maximized again
-            stage.setX(model.getNotMaximizedX());
-            stage.setY(model.getNotMaximizedY());
-            stage.setWidth(model.getNotMaximizedWidth());
-            stage.setHeight(model.getNotMaximizedHeight());
+            stage.setX(abstraction.getNotMaximizedX());
+            stage.setY(abstraction.getNotMaximizedY());
+            stage.setWidth(abstraction.getNotMaximizedWidth());
+            stage.setHeight(abstraction.getNotMaximizedHeight());
 
-            model.setIsMaximized(false);
+            abstraction.setIsMaximized(false);
         } else {
-            model.setNotMaximizedX(stage.getX());
-            model.setNotMaximizedY(stage.getY());
-            model.setNotMaximizedWidth(stage.getWidth());
-            model.setNotMaximizedHeight(stage.getHeight());
+            abstraction.setNotMaximizedX(stage.getX());
+            abstraction.setNotMaximizedY(stage.getY());
+            abstraction.setNotMaximizedWidth(stage.getWidth());
+            abstraction.setNotMaximizedHeight(stage.getHeight());
 
             stage.setX(0d);
             stage.setY(0d);
@@ -108,7 +78,7 @@ public class HUPPAALController implements Initializable {
             stage.setWidth(bounds.getWidth());
             stage.setHeight(bounds.getHeight());
 
-            model.setIsMaximized(true);
+            abstraction.setIsMaximized(true);
         }
     }
 

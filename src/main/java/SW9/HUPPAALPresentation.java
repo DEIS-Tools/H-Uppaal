@@ -1,23 +1,23 @@
 package SW9;
 
+import SW9.utility.colors.Color;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
+import javafx.geometry.Insets;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.net.URL;
 
 public class HUPPAALPresentation extends AnchorPane {
 
+    private final HUPPAALController controller;
+
     public HUPPAALPresentation() {
-        initialize(new HUPPAALPAC(this));
-    }
-
-    public HUPPAALPresentation(final HUPPAALPAC pac) {
-        initialize(pac);
-    }
-
-    private void initialize(final HUPPAALPAC pac) {
         final URL location = this.getClass().getResource("HUPPAALPresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();
@@ -28,11 +28,53 @@ public class HUPPAALPresentation extends AnchorPane {
             fxmlLoader.setRoot(this);
             fxmlLoader.load(location.openStream());
 
-            final HUPPAALController controller = fxmlLoader.getController();
-            pac.setController(controller);
+            controller = fxmlLoader.getController();
+
+            initializeTopStatusBar();
+            initializeBottomStatusBar();
+
+            // Align the query pane to the bottom of the top bar, and the top of the bottom bar
+            controller.topStatusBar.heightProperty().addListener((observable, oldValue, newValue) -> AnchorPane.setTopAnchor(controller.queryPane, (Double) newValue));
+            controller.bottomStatusBar.heightProperty().addListener((observable, oldValue, newValue) -> AnchorPane.setBottomAnchor(controller.queryPane, (Double) newValue));
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeTopStatusBar() {
+        final Color color = Color.GREY_BLUE;
+        final Color.Intensity intensity = Color.Intensity.I900;
+
+        // Set the background for the top status bar
+        controller.topStatusBar.setBackground(
+                new Background(new BackgroundFill(color.getColor(intensity),
+                        CornerRadii.EMPTY,
+                        Insets.EMPTY)
+                ));
+
+        // Set the font color for the buttons
+        ((FontIcon) controller.minimizeWindowButton.getGraphic()).setFill(color.getTextColor(intensity));
+        controller.minimizeWindowButton.setRipplerFill(color.getTextColor(intensity));
+        ((FontIcon) controller.maximizeWindowButton.getGraphic()).setFill(color.getTextColor(intensity));
+        controller.maximizeWindowButton.setRipplerFill(color.getTextColor(intensity));
+        ((FontIcon) controller.closeWindowButton.getGraphic()).setFill(color.getTextColor(intensity));
+        controller.closeWindowButton.setRipplerFill(color.getTextColor(intensity));
+
+        // Set the font color for the application title
+        ((FontIcon) controller.applicationTitle.getGraphic()).setFill(color.getTextColor(intensity));
+        controller.applicationTitle.setTextFill(color.getTextColor(intensity));
+    }
+
+    private void initializeBottomStatusBar() {
+        final Color color = Color.GREY_BLUE;
+        final Color.Intensity intensity = Color.Intensity.I200;
+
+        // Set the background for the bottom status bar
+        controller.bottomStatusBar.setBackground(
+                new Background(new BackgroundFill(color.getColor(intensity),
+                        CornerRadii.EMPTY,
+                        Insets.EMPTY)
+                ));
     }
 
 }

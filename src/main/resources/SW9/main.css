@@ -101,8 +101,8 @@
 }
 
 .floating-action-button {
-	-fx-pref-width: 56px;
-	-fx-pref-height: 56px;
+	-fx-pref-width: 56;
+	-fx-pref-height: 56;
 	-fx-text-fill: white;
 }
 

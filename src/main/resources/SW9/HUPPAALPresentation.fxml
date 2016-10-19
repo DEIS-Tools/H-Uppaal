@@ -10,6 +10,13 @@
          type="AnchorPane"
          fx:controller="SW9.HUPPAALController">
 
+    <!-- Query pane -->
+    <QueryPanePresentation
+            fx:id="queryPane"
+            AnchorPane.topAnchor="0"
+            AnchorPane.rightAnchor="0"
+            AnchorPane.bottomAnchor="0" />
+
     <!-- Top status bar -->
     <BorderPane fx:id="topStatusBar"
                 AnchorPane.topAnchor="0"
@@ -71,7 +78,5 @@
                 AnchorPane.rightAnchor="0">
 
     </BorderPane>
-
-    <QueryPanePresentation/>
 
 </fx:root>

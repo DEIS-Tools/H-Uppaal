@@ -1,12 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
-         type="AnchorPane"
-         fx:controller="SW9.query_pane.QueryPaneController">
+         type="StackPane"
+         fx:controller="SW9.query_pane.QueryPaneController"
+         minWidth="400">
+    
+    <VBox>
 
-    <Label>Hejsa</Label>
+        <!-- Toolbar -->
+        <HBox fx:id="toolbar">
+
+            <VBox>
+                <Label id="queries-headline" styleClass="title">Queries</Label>
+                <Label id="queries-headline-caption" styleClass="subhead">7 successful, 1 error</Label>
+            </VBox>
+
+            <!-- Will create just enough space between the two elements -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Container for the two buttons -->
+            <HBox alignment="BOTTOM_RIGHT">
+                <JFXButton>
+                    <graphic>
+                        <FontIcon iconLiteral="gmi-clear-all" iconSize="24"/>
+                    </graphic>
+                </JFXButton>
+                <Region minWidth="16"/>
+                <JFXButton>
+                    <graphic>
+                        <FontIcon iconLiteral="gmi-play-arrow" iconSize="24"/>
+                    </graphic>
+                </JFXButton>
+            </HBox>
+
+        </HBox>
+
+    </VBox>
+
+    <!-- Add new query button -->
+    <JFXButton fx:id="addQueryButton"
+               styleClass="floating-action-button"
+               StackPane.alignment="BOTTOM_RIGHT"
+               translateX="-24"
+               translateY="-24"
+               onMousePressed="#addQueryButtonPressed"
+               onMouseReleased="#addQueryButtonReleased">
+        <graphic>
+            <FontIcon iconLiteral="gmi-add" iconSize="24"/>
+        </graphic>
+    </JFXButton>
 
 </fx:root>

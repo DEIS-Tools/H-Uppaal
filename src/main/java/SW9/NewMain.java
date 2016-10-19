@@ -27,13 +27,12 @@ public class NewMain extends Application {
         // Remove the classic decoration
         stage.initStyle(StageStyle.UNDECORATED);
 
-        // Make the model and view used for the application
-        final WindowAbstraction windowAbstraction = new WindowAbstraction();
-        final HUPPAALPAC HUPPAALPAC = new HUPPAALPAC(windowAbstraction);
+        // Make the view used for the application
+        final HUPPAALPresentation huppaal = new HUPPAALPresentation();
 
         // Make the scene that we will use, and set its size to 80% of the primary screen
         final Screen screen = Screen.getPrimary();
-        final Scene scene = new Scene(HUPPAALPAC.getPresentation(), screen.getVisualBounds().getWidth() * 0.8, screen.getVisualBounds().getHeight() * 0.8);
+        final Scene scene = new Scene(huppaal, screen.getVisualBounds().getWidth() * 0.8, screen.getVisualBounds().getHeight() * 0.8);
         stage.setScene(scene);
 
         // Load all .css files used todo: these should be loaded in the view classes (?)
