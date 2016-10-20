@@ -17,25 +17,19 @@ import java.util.ResourceBundle;
 
 public class QueryPaneController implements Initializable {
 
-    private QueryPaneAbstraction abstraction;
-
     @FXML
     Label toolbarTitle;
-
     @FXML
     JFXButton addQueryButton;
-
     @FXML
     AnchorPane toolbar;
-
     @FXML
     JFXButton runAllQueriesButton;
-
     @FXML
     JFXButton clearAllQueriesButton;
-
     @FXML
     VBox queriesList;
+    private QueryPaneAbstraction abstraction;
 
     public QueryPaneAbstraction getAbstraction() {
         return abstraction;
@@ -66,15 +60,13 @@ public class QueryPaneController implements Initializable {
                         queriesList.getChildren().add(new QueryPresentation(newQuery));
                     }
                 }
-
-                //System.out.println(c);
             }
         });
     }
 
     @FXML
     private void addQueryButtonClicked() {
-        abstraction.getQueries().add(new Query("A[] not deadlock", "The model does not contain a deadlock", QueryState.RUNNING));
+        abstraction.getQueries().add(new Query("A[] not deadlock", "The model does not contain a deadlock", QueryState.UNKNOWN));
     }
 
     @FXML

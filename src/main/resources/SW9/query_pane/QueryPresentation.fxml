@@ -1,8 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.scene.layout.AnchorPane?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="AnchorPane">
+
+    <StackPane prefHeight="1" style="-fx-background-color:-grey-300;" AnchorPane.rightAnchor="0"
+               AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"/>
+
+    <StackPane id="stateIndicator" prefWidth="5" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+               AnchorPane.leftAnchor="0"/>
+
+    <JFXTextField id="query" HBox.hgrow="ALWAYS" text="A[] not deadlock" AnchorPane.topAnchor="8"
+                  AnchorPane.rightAnchor="56"
+                  AnchorPane.leftAnchor="8"
+                  style="-fx-unfocus-color:transparent;" styleClass="subhead"/>
+    <JFXTextField id="comment" HBox.hgrow="ALWAYS" text="There is no deadlock" AnchorPane.topAnchor="36"
+                  AnchorPane.rightAnchor="56"
+                  AnchorPane.bottomAnchor="4" AnchorPane.leftAnchor="8" style="-fx-unfocus-color:transparent;"
+                  styleClass="caption"/>
+
+    <StackPane AnchorPane.topAnchor="8" AnchorPane.rightAnchor="8" AnchorPane.bottomAnchor="8">
+        <JFXSpinner id="progressIndicator" radius="20"/>
+        <JFXButton id="actionButton">
+            <graphic>
+                <FontIcon iconLiteral="gmi-play-arrow" iconSize="20"/>
+            </graphic>
+        </JFXButton>
+    </StackPane>
+
 
 </fx:root>
