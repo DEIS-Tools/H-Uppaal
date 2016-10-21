@@ -1,21 +1,24 @@
-package SW9.query_pane;
+package SW9.abstractions;
 
-import SW9.abstractions.Query;
-import SW9.abstractions.QueryState;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 
-public class QueryPaneAbstraction {
+public class Project {
 
     private final ObservableList<Query> queries = FXCollections.observableArrayList();
+    private final ObservableList<Component> components = FXCollections.observableArrayList();
 
-    public QueryPaneAbstraction() {
+    public Project() {
 
     }
 
     public ObservableList<Query> getQueries() {
         return queries;
+    }
+
+    public ObservableList<Component> getComponents() {
+        return components;
     }
 
 }

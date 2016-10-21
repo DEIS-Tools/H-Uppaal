@@ -1,5 +1,6 @@
 package SW9;
 
+import SW9.abstractions.Project;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.KeyboardTracker;
 import javafx.application.Application;
@@ -14,12 +15,21 @@ import jiconfont.javafx.IconFontFX;
 
 public class NewMain extends Application {
 
+    private static Project project;
+
     public static void main(final String[] args) {
         launch(NewMain.class, args);
     }
 
+    public static Project getProject() {
+        return project;
+    }
+
     @Override
     public void start(final Stage stage) throws Exception {
+        // Load or create new project
+        project = new Project();
+
         // Load the fonts required for the project
         IconFontFX.register(GoogleMaterialDesignIcons.getIconFont());
         loadFonts();

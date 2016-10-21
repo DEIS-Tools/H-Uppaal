@@ -1,5 +1,6 @@
 package SW9.query_pane;
 
+import SW9.NewMain;
 import SW9.abstractions.Query;
 import SW9.abstractions.QueryState;
 import SW9.utility.helpers.DropShadowHelper;
@@ -29,26 +30,14 @@ public class QueryPaneController implements Initializable {
     JFXButton clearAllQueriesButton;
     @FXML
     VBox queriesList;
-    private QueryPaneAbstraction abstraction;
-
-    public QueryPaneAbstraction getAbstraction() {
-        return abstraction;
-    }
-
-    public void setAbstraction(final QueryPaneAbstraction model) {
-        this.abstraction = model;
-    }
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        // Create new abstraction
-        this.abstraction = new QueryPaneAbstraction();
-
         // We need to register these event manually this way because JFXButton overrides onPressed and onRelease to handle rippler effect
         addQueryButton.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> addQueryButtonPressed());
         addQueryButton.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> addQueryButtonReleased());
 
-        abstraction.getQueries().addListener(new ListChangeListener<Query>() {
+        NewMain.getProject().getQueries().addListener(new ListChangeListener<Query>() {
             @Override
             public void onChanged(final Change<? extends Query> c) {
                 while (c.next()) {
@@ -66,7 +55,7 @@ public class QueryPaneController implements Initializable {
 
     @FXML
     private void addQueryButtonClicked() {
-        abstraction.getQueries().add(new Query("A[] not deadlock", "The model does not contain a deadlock", QueryState.UNKNOWN));
+        NewMain.getProject().getQueries().add(new Query("A[] not deadlock", "The model does not contain a deadlock", QueryState.UNKNOWN));
     }
 
     @FXML
