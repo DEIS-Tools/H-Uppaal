@@ -3,6 +3,7 @@ package SW9.abstractions;
 import SW9.utility.colors.Color;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 public class Component {
@@ -12,6 +13,8 @@ public class Component {
     private final StringProperty declarations = new SimpleStringProperty("");
     private final ObservableList<Location> locations = FXCollections.observableArrayList();
     private final ObservableList<Edge> edges = FXCollections.observableArrayList();
+    private final ObjectProperty<Location> initialLocation = new SimpleObjectProperty<>();
+    private final ObjectProperty<Location> finalLocation = new SimpleObjectProperty<>();
 
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
@@ -28,6 +31,16 @@ public class Component {
 
     public Component(final StringProperty name) {
         this.name = name;
+
+        // A component must have at least one initial location
+        final Location initialLocation = new Location();
+        initialLocation.setType(Location.Type.INITIAL);
+        this.initialLocation.set(initialLocation);
+
+        // A component must have at least one final location
+        final Location finalLocation = new Location();
+        finalLocation.setType(Location.Type.FINAl);
+        this.finalLocation.set(finalLocation);
     }
 
     public String getName() {
@@ -140,5 +153,29 @@ public class Component {
 
     public BooleanProperty declarationOpenProperty() {
         return declarationOpen;
+    }
+
+    public Location getInitialLocation() {
+        return initialLocation.get();
+    }
+
+    public ObjectProperty<Location> initialLocationProperty() {
+        return initialLocation;
+    }
+
+    public void setInitialLocation(final Location initialLocation) {
+        this.initialLocation.set(initialLocation);
+    }
+
+    public Location getFinalLocation() {
+        return finalLocation.get();
+    }
+
+    public ObjectProperty<Location> finalLocationProperty() {
+        return finalLocation;
+    }
+
+    public void setFinalLocation(final Location finalLocation) {
+        this.finalLocation.set(finalLocation);
     }
 }

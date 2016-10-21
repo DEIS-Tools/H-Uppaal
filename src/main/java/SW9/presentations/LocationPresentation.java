@@ -3,8 +3,12 @@ package SW9.presentations;
 import SW9.abstractions.Location;
 import SW9.controllers.LocationController;
 import SW9.utility.colors.Color;
+import SW9.utility.helpers.MouseTrackable;
+import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.When;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.control.Label;
@@ -15,24 +19,32 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.function.Consumer;
 
-public class LocationPresentation extends StackPane {
+public class LocationPresentation extends StackPane implements MouseTrackable {
 
     private final LocationController controller;
-    private final Location location;
+    private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
+
+    private final MouseTracker mouseTracker = new MouseTracker(this);
 
     public LocationPresentation() {
-        final URL location = this.getClass().getResource("LocationPresentation.fxml");
+        this(new Location());
+    }
+
+    public LocationPresentation(final Location location) {
+        final URL url = this.getClass().getResource("LocationPresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(location);
+        fxmlLoader.setLocation(url);
         fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
 
         try {
             fxmlLoader.setRoot(this);
-            fxmlLoader.load(location.openStream());
+            fxmlLoader.load(url.openStream());
 
-            this.controller = fxmlLoader.getController();
-            this.location = controller.getLocation();
+            controller = fxmlLoader.getController();
+            controller.setLocation(location);
+            this.location.bind(controller.locationProperty());
+
             initializeCircle();
             initializeLabel();
             initializeTypeGraphics();
@@ -49,8 +61,8 @@ public class LocationPresentation extends StackPane {
 
     private void initializeCircle() {
         final Circle circle = controller.circle;
-        final ObjectProperty<Color> color = location.colorProperty();
-        final ObjectProperty<Color.Intensity> colorIntensity = location.colorIntensityProperty();
+        final ObjectProperty<Color> color = location.get().colorProperty();
+        final ObjectProperty<Color.Intensity> colorIntensity = location.get().colorIntensityProperty();
 
         // Delegate to style the label based on the color of the location
         final Consumer<Color> updateColor = (newColor) -> {
@@ -68,9 +80,9 @@ public class LocationPresentation extends StackPane {
 
     private void initializeLabel() {
         final Label label = controller.label;
-        final ObjectProperty<Location.Urgency> urgency = location.urgencyProperty();
-        final ObjectProperty<Color> color = location.colorProperty();
-        final ObjectProperty<Color.Intensity> colorIntensity = location.colorIntensityProperty();
+        final ObjectProperty<Location.Urgency> urgency = location.get().urgencyProperty();
+        final ObjectProperty<Color> color = location.get().colorProperty();
+        final ObjectProperty<Color.Intensity> colorIntensity = location.get().colorIntensityProperty();
 
 
         // Delegate to style the label based on the color of the location
@@ -106,8 +118,29 @@ public class LocationPresentation extends StackPane {
         final Circle initialIndicator = controller.initialIndicator;
         final StackPane finalIndicator = controller.finalIndicator;
 
-        initialIndicator.visibleProperty().bind(new When(location.typeProperty().isEqualTo(Location.Type.INITIAL)).then(true).otherwise(false));
-        finalIndicator.visibleProperty().bind(new When(location.typeProperty().isEqualTo(Location.Type.FINAl)).then(true).otherwise(false));
+        location.addListener((observable, oldValue, newLocation) -> {
+            initialIndicator.visibleProperty().bind(new When(newLocation.typeProperty().isEqualTo(Location.Type.INITIAL)).then(true).otherwise(false));
+            finalIndicator.visibleProperty().bind(new When(newLocation.typeProperty().isEqualTo(Location.Type.FINAl)).then(true).otherwise(false));
+        });
 
+    }
+
+    public void setLocation(final Location location) {
+        controller.setLocation(location);
+    }
+
+    @Override
+    public DoubleProperty xProperty() {
+        return location.get().xProperty();
+    }
+
+    @Override
+    public DoubleProperty yProperty() {
+        return location.get().yProperty();
+    }
+
+    @Override
+    public MouseTracker getMouseTracker() {
+        return mouseTracker;
     }
 }

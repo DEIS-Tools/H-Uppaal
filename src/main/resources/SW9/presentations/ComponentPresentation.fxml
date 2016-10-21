@@ -5,6 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Rectangle?>
 <?import SW9.presentations.LocationPresentation?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
@@ -12,23 +13,27 @@
 
     <Rectangle fx:id="background" strokeWidth="2"/>
 
-    <BorderPane>
+    <BorderPane fx:id="frame">
 
         <top>
-            <BorderPane>
+            <BorderPane fx:id="toolbar">
                 <left>
                     <Label text="hejsa"/>
                 </left>
 
                 <right>
-                    <JFXButton text="code" onMouseClicked="#toggleDeclaration"/>
+                    <JFXButton fx:id="toggleDeclarationButton" onMouseClicked="#toggleDeclaration">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-code" iconSize="20"/>
+                        </graphic>
+                    </JFXButton>
                 </right>
             </BorderPane>
         </top>
 
         <center>
             <StackPane fx:id="container">
-                <LocationPresentation />
+                <StackPane fx:id="locationContainer"/>
 
                 <TextArea fx:id="declaration"
                           visible="false"
@@ -39,5 +44,9 @@
         </center>
 
     </BorderPane>
+
+    <LocationPresentation fx:id="initialLocation" />
+
+    <LocationPresentation fx:id="finalLocation" />
 
 </fx:root>

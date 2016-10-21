@@ -3,6 +3,10 @@ package SW9.presentations;
 import SW9.abstractions.Component;
 import SW9.controllers.ComponentController;
 import SW9.utility.colors.Color;
+import SW9.utility.helpers.DragHelper;
+import SW9.utility.helpers.MouseTrackable;
+import SW9.utility.mouse.MouseTracker;
+import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.effect.BlendMode;
@@ -12,10 +16,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Random;
 
-public class ComponentPresentation extends StackPane {
+public class ComponentPresentation extends StackPane implements MouseTrackable {
 
     private final ComponentController controller;
     private final Component component;
+
+    private final MouseTracker mouseTracker = new MouseTracker(this);
 
     public ComponentPresentation() {
         this(new Component("Component" + new Random().nextInt(5000))); // todo: find a new unique component name
@@ -48,6 +54,8 @@ public class ComponentPresentation extends StackPane {
 
             initializeBackground();
 
+            DragHelper.makeDraggable(this);
+
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
@@ -66,5 +74,20 @@ public class ComponentPresentation extends StackPane {
 
         // Will let the grid show through
         controller.background.blendModeProperty().set(BlendMode.MULTIPLY);
+    }
+
+    @Override
+    public DoubleProperty xProperty() {
+        return component.xProperty();
+    }
+
+    @Override
+    public DoubleProperty yProperty() {
+        return component.yProperty();
+    }
+
+    @Override
+    public MouseTracker getMouseTracker() {
+        return mouseTracker;
     }
 }
