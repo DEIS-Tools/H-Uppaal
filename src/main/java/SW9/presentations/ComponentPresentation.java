@@ -6,6 +6,7 @@ import SW9.utility.colors.Color;
 import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.mouse.MouseTracker;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -55,6 +56,20 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
             controller = fxmlLoader.getController();
             controller.setComponent(component);
             this.component.bind(controller.componentProperty());
+
+            controller.frame.setOnMouseEntered(event -> {
+                new Thread(() -> {
+                    Platform.runLater(() -> controller.initialLocation.animateIn());
+
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        // do nothing
+                    }
+
+                    Platform.runLater(() -> controller.finalLocation.animateIn());
+                }).start();
+            });
 
             // Find the x and y coordinates to the values in the model
             layoutXProperty().bind(component.xProperty());

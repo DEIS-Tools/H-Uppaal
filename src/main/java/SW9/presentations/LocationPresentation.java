@@ -5,6 +5,10 @@ import SW9.controllers.LocationController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.mouse.MouseTracker;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -14,6 +18,7 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -127,6 +132,29 @@ public class LocationPresentation extends StackPane implements MouseTrackable {
 
     public void setLocation(final Location location) {
         controller.setLocation(location);
+    }
+
+    public void animateIn() {
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+
+        final Timeline initialAnimation = new Timeline();
+
+        final KeyValue scale0x = new KeyValue(scaleXProperty(), 0, interpolator);
+        final KeyValue scale0y = new KeyValue(scaleYProperty(), 0, interpolator);
+
+        final KeyValue scale2x = new KeyValue(scaleXProperty(), 1.1, interpolator);
+        final KeyValue scale2y = new KeyValue(scaleYProperty(), 1.1, interpolator);
+
+        final KeyValue scale1x = new KeyValue(scaleXProperty(), 1, interpolator);
+        final KeyValue scale1y = new KeyValue(scaleYProperty(), 1, interpolator);
+
+        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale0x, scale0y);
+        final KeyFrame kf2 = new KeyFrame(Duration.millis(200), scale2x, scale2y);
+        final KeyFrame kf3 = new KeyFrame(Duration.millis(250), scale1x, scale1y);
+
+        initialAnimation.getKeyFrames().addAll(kf1, kf2, kf3);
+
+        initialAnimation.play();
     }
 
     @Override
