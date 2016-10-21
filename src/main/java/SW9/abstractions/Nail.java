@@ -1,4 +1,4 @@
-package SW9.abstractions.components;
+package SW9.abstractions;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -13,23 +13,23 @@ public class Nail {
         return x.get();
     }
 
-    public DoubleProperty xProperty() {
-        return x;
-    }
-
     public void setX(final double x) {
         this.x.set(x);
+    }
+
+    public DoubleProperty xProperty() {
+        return x;
     }
 
     public double getY() {
         return y.get();
     }
 
-    public DoubleProperty yProperty() {
-        return y;
-    }
-
     public void setY(final double y) {
         this.y.set(y);
+    }
+
+    public DoubleProperty yProperty() {
+        return y;
     }
 }
