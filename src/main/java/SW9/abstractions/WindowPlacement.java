@@ -5,7 +5,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
-public class WindowAbstraction {
+public class WindowPlacement {
 
     private final BooleanProperty isMaximized = new SimpleBooleanProperty(false);
 

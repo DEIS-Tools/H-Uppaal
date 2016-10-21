@@ -1,6 +1,6 @@
 package SW9.controllers;
 
-import SW9.abstractions.WindowAbstraction;
+import SW9.abstractions.WindowPlacement;
 import SW9.presentations.QueryPanePresentation;
 import com.jfoenix.controls.JFXButton;
 import javafx.fxml.FXML;
@@ -25,20 +25,20 @@ public class HUPPAALController implements Initializable {
     public Label applicationTitle;
     public QueryPanePresentation queryPane;
 
-    private WindowAbstraction abstraction;
+    private WindowPlacement windowPlacement;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        // Create new abstraction
-        this.abstraction = new WindowAbstraction();
+        // Create new windowPlacement
+        this.windowPlacement = new WindowPlacement();
     }
 
-    public WindowAbstraction getAbstraction() {
-        return abstraction;
+    public WindowPlacement getWindowPlacement() {
+        return windowPlacement;
     }
 
-    public void setAbstraction(final WindowAbstraction abstraction) {
-        this.abstraction = abstraction;
+    public void setWindowPlacement(final WindowPlacement windowPlacement) {
+        this.windowPlacement = windowPlacement;
     }
 
     @FXML
@@ -49,7 +49,7 @@ public class HUPPAALController implements Initializable {
     @FXML
     private void maximizeWindowButtonClicked() {
         final Stage stage = ((Stage) minimizeWindowButton.getScene().getWindow());
-        final WindowAbstraction abstraction = getAbstraction();
+        final WindowPlacement abstraction = getWindowPlacement();
 
         if (abstraction.isIsMaximized()) {
             // Undo maximized again
