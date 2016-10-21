@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Line?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         type="StackPane"
+         fx:controller="SW9.controllers.LocationController" maxHeight="40" maxWidth="40">
+
+    <Circle fx:id="circle" radius="20" strokeType="INSIDE" centerX="20" centerY="20"/>
+
+    <StackPane fx:id="finalIndicator">
+        <Line strokeWidth="2" style="-fx-stroke: white;" startX="12" startY="12" endX="28" endY="28"/>
+        <Line strokeWidth="2" style="-fx-stroke: white;" startX="28" startY="12" endX="12" endY="28"/>
+    </StackPane>
+
+    <Circle fx:id="initialIndicator" strokeType="INSIDE" strokeWidth="2"
+            style="-fx-stroke: -white; -fx-fill: transparent;" radius="15"/>
+    <Label fx:id="label" style="-fx-fill: -white;" styleClass="subhead"/>
+
+
+</fx:root>

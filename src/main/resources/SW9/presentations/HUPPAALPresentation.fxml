@@ -77,7 +77,6 @@
         </BorderPane>
     </top>
 
-
     <!-- Bottom status bar -->
     <bottom>
         <BorderPane fx:id="bottomStatusBar"
