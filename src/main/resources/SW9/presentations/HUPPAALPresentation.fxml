@@ -4,11 +4,16 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import SW9.presentations.CanvasPresentation?>
 <?import SW9.presentations.QueryPanePresentation?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="BorderPane"
          fx:controller="SW9.controllers.HUPPAALController">
+
+    <center>
+        <CanvasPresentation/>
+    </center>
 
     <!-- Query pane -->
     <right>

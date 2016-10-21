@@ -10,6 +10,7 @@ import SW9.model_canvas.lines.DashedLine;
 import SW9.model_canvas.locations.Location;
 import SW9.model_canvas.querying.QueryField;
 import SW9.model_canvas.synchronization.ChannelBox;
+import SW9.presentations.CanvasPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.colors.Colorable;
@@ -57,7 +58,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
         canvasExpanderNode.translateYProperty().bind(this.translateYProperty().multiply(-1));
 
         // Add a grid to the canvas
-        final Grid grid = new Grid(GRID_SIZE);
+        final CanvasPresentation.Grid grid = new CanvasPresentation.Grid(GRID_SIZE);
         getChildren().add(grid);
 
         DragHelper.makeDraggable(this, mouseEvent -> mouseEvent.getButton().equals(MouseButton.SECONDARY));
