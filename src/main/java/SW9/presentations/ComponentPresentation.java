@@ -1,7 +1,6 @@
 package SW9.presentations;
 
 import SW9.abstractions.Component;
-import SW9.abstractions.Location;
 import SW9.controllers.ComponentController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.DragHelper;
@@ -15,7 +14,6 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.layout.*;
 import javafx.scene.shape.*;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -141,10 +139,12 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
             // Mask the parent of the frame (will also mask the background)
             mask = Path.subtract(rectangle, corner1);
             mask = Path.subtract(mask, corner2);
-            controller.frame.getParent().setClip(mask);
+            controller.frame.setClip(mask);
+            controller.background.setClip(Path.union(mask, mask));
+            controller.background.setOpacity(0.5);
 
             // Add the missing lines that we cropped away
-            final Line line1 = new Line(CORNER_SIZE - 1, 0, 0, CORNER_SIZE - 1);
+            final Line line1 = new Line(CORNER_SIZE, 0, 0, CORNER_SIZE);
             line1.setFill(component.getColor().getColor(component.getColorIntensity().next(2)));
             line1.setStrokeWidth(2);
             StackPane.setAlignment(line1, Pos.TOP_LEFT);
@@ -155,6 +155,15 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
             line2.setStrokeWidth(2);
             StackPane.setAlignment(line2, Pos.BOTTOM_RIGHT);
             getChildren().add(line2);
+
+            // Set the stroke color to two shades darker
+            controller.frame.setBorder(new Border(new BorderStroke(
+                    component.getColor().getColor(component.getColorIntensity().next(2)),
+                    BorderStrokeStyle.SOLID,
+                    CornerRadii.EMPTY,
+                    new BorderWidths(2),
+                    Insets.EMPTY
+            )));
         });
     }
 
@@ -165,14 +174,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
             controller.background.heightProperty().bind(component.heightProperty());
 
             // Set the background color to the lightest possible version of the color
-            controller.background.setFill(Color.AMBER.getColor(Color.Intensity.I500));
-
-            // Set the stroke color to two shades darker
-            controller.background.setStrokeWidth(2);
-            controller.background.setStroke(component.getColor().getColor(component.getColorIntensity().next(2)));
-
-            // Will let the grid show through
-            controller.background.blendModeProperty().set(BlendMode.MULTIPLY);
+            controller.background.setFill(component.getColor().getColor(component.getColorIntensity()));
         });
     }
 

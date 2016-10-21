@@ -118,15 +118,18 @@
 
 .text-area {
     -fx-background-insets: 0;
-    -fx-background-color: transparent white transparent white;
+    -fx-background-color: white white white white;
+    -fx-background-radius: 0;
 }
 
 .text-area .content {
-    -fx-background-color: transparent white transparent white;
+    -fx-background-color: white white white white;
+    -fx-background-radius: 0;
 }
 
 .text-area:focused .content {
-    -fx-background-color: transparent white transparent white;
+    -fx-background-color: white white white white;
+    -fx-background-radius: 0;
 }
 
 .text-area:focused {
