@@ -115,3 +115,27 @@
 .titled-pane > .title {
     -fx-pref-height: 20;
 }
+
+.text-area {
+    -fx-background-insets: 0;
+    -fx-background-color: transparent white transparent white;
+}
+
+.text-area .content {
+    -fx-background-color: transparent white transparent white;
+}
+
+.text-area:focused .content {
+    -fx-background-color: transparent white transparent white;
+}
+
+.text-area:focused {
+    -fx-highlight-fill: -deep-orange-500;
+    -fx-highlight-text-fill: -white;
+}
+
+.text-area .content {
+    -fx-padding: 10px;
+    -fx-highlight-fill: -deep-orange-500;
+    -fx-highlight-text-fill: -white;
+}

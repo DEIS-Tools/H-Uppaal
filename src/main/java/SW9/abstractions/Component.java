@@ -16,8 +16,9 @@ public class Component {
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
-    private final DoubleProperty width = new SimpleDoubleProperty(0d);
-    private final DoubleProperty height = new SimpleDoubleProperty(0d);
+    private final DoubleProperty width = new SimpleDoubleProperty(450d);
+    private final DoubleProperty height = new SimpleDoubleProperty(600d);
+    private final BooleanProperty declarationOpen = new SimpleBooleanProperty(false);
     private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.GREY_BLUE);
     private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I700);
 
@@ -131,5 +132,13 @@ public class Component {
 
     public ObjectProperty<Color.Intensity> colorIntensityProperty() {
         return colorIntensity;
+    }
+
+    public boolean isDeclarationOpen() {
+        return declarationOpen.get();
+    }
+
+    public BooleanProperty declarationOpenProperty() {
+        return declarationOpen;
     }
 }

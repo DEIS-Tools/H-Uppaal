@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         type="StackPane"
+         fx:controller="SW9.controllers.ComponentController">
+
+    <Rectangle fx:id="background" strokeWidth="2"/>
+
+    <BorderPane>
+
+        <top>
+            <BorderPane>
+                <left>
+                    <Label text="hejsa"/>
+                </left>
+
+                <right>
+                    <JFXButton text="code" onMouseClicked="#toggleDeclaration"/>
+                </right>
+            </BorderPane>
+        </top>
+
+        <center>
+            <StackPane fx:id="container">
+                <Label>LOCATION</Label>
+
+                <TextArea fx:id="declaration"
+                          visible="false"
+                          StackPane.alignment="TOP_CENTER"
+                          styleClass="body2-mono"
+                          style="-fx-faint-focus-color: transparent; -fx-focus-color: transparent; " />
+            </StackPane>
+        </center>
+
+    </BorderPane>
+
+</fx:root>
