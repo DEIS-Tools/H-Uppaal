@@ -8,13 +8,13 @@ public class Location {
     // Verification properties
     private final StringProperty name = new SimpleStringProperty("");
     private final StringProperty invariant = new SimpleStringProperty("");
-    private final ObjectProperty<Type> type = new SimpleObjectProperty<>(Type.NORMAL);
+    private final ObjectProperty<Type> type = new SimpleObjectProperty<>(Type.FINAl);
     private final ObjectProperty<Urgency> urgency = new SimpleObjectProperty<>(Urgency.NORMAL);
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
     private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.GREY_BLUE);
-    private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I700);
+    private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I500);
 
     public String getName() {
         return name.get();
