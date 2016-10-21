@@ -4,6 +4,7 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Rectangle?>
+<?import SW9.presentations.LocationPresentation?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
@@ -27,7 +28,7 @@
 
         <center>
             <StackPane fx:id="container">
-                <Label>LOCATION</Label>
+                <LocationPresentation />
 
                 <TextArea fx:id="declaration"
                           visible="false"

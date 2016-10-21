@@ -8,7 +8,7 @@ public class Location {
     // Verification properties
     private final StringProperty name = new SimpleStringProperty("");
     private final StringProperty invariant = new SimpleStringProperty("");
-    private final ObjectProperty<Type> type = new SimpleObjectProperty<>(Type.FINAl);
+    private final ObjectProperty<Type> type = new SimpleObjectProperty<>(Type.NORMAL);
     private final ObjectProperty<Urgency> urgency = new SimpleObjectProperty<>(Urgency.NORMAL);
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
