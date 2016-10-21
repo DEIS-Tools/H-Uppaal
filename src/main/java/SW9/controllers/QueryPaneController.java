@@ -1,8 +1,9 @@
-package SW9.query_pane;
+package SW9.controllers;
 
 import SW9.NewMain;
 import SW9.abstractions.Query;
 import SW9.abstractions.QueryState;
+import SW9.presentations.QueryPresentation;
 import SW9.utility.helpers.DropShadowHelper;
 import com.jfoenix.controls.JFXButton;
 import javafx.collections.ListChangeListener;

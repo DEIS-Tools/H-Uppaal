@@ -8,7 +8,7 @@
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
-         fx:controller="SW9.query_pane.QueryPaneController"
+         fx:controller="SW9.controllers.QueryPaneController"
          minWidth="400" style="-fx-background-color: brown;">
 
     <AnchorPane>

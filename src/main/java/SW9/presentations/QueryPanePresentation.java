@@ -1,5 +1,6 @@
-package SW9.query_pane;
+package SW9.presentations;
 
+import SW9.controllers.QueryPaneController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.DropShadowHelper;
 import javafx.fxml.FXMLLoader;

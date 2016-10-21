@@ -1,17 +1,15 @@
-package SW9;
+package SW9.controllers;
 
-import SW9.query_pane.QueryPanePresentation;
-import SW9.utility.colors.Color;
+import SW9.abstractions.WindowAbstraction;
+import SW9.presentations.QueryPanePresentation;
 import com.jfoenix.controls.JFXButton;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
 import java.util.ResourceBundle;

@@ -1,4 +1,4 @@
-package SW9.query_pane;
+package SW9.presentations;
 
 import SW9.abstractions.Query;
 import SW9.abstractions.QueryState;

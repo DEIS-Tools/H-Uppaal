@@ -1,4 +1,4 @@
-package SW9;
+package SW9.abstractions;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
