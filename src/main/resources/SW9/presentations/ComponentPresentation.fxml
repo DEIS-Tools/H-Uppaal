@@ -4,14 +4,14 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Rectangle?>
-<?import SW9.presentations.LocationPresentation?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import SW9.presentations.LocationPresentation?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
          fx:controller="SW9.controllers.ComponentController">
 
-    <Rectangle fx:id="background" strokeWidth="2"/>
+    <Rectangle fx:id="background"/>
 
     <BorderPane fx:id="frame">
 
@@ -32,14 +32,14 @@
         </top>
 
         <center>
-            <StackPane fx:id="container">
+            <StackPane>
                 <StackPane fx:id="locationContainer"/>
 
                 <TextArea fx:id="declaration"
                           visible="false"
                           StackPane.alignment="TOP_CENTER"
                           styleClass="body2-mono"
-                          style="-fx-faint-focus-color: transparent; -fx-focus-color: transparent; " />
+                          style="-fx-faint-focus-color: transparent; -fx-focus-color: transparent;"/>
             </StackPane>
         </center>
 
