@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class CanvasPresentation extends Pane implements MouseTrackable {
 
     public static final int GRID_SIZE = 25;
-    
+
     private final DoubleProperty x = new SimpleDoubleProperty();
     private final DoubleProperty y = new SimpleDoubleProperty(0);
     private final MouseTracker mouseTracker = new MouseTracker(this);
@@ -36,14 +36,19 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
             fxmlLoader.setRoot(this);
             fxmlLoader.load(location.openStream());
 
-            final Grid grid = new Grid(GRID_SIZE);
-            getChildren().add(grid);
+            initializeGrid();
 
             DragHelper.makeDraggable(this, mouseEvent -> mouseEvent.getButton().equals(MouseButton.SECONDARY));
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeGrid() {
+        final Grid grid = new Grid(GRID_SIZE);
+        getChildren().add(grid);
+        grid.toBack();
     }
 
     @Override
