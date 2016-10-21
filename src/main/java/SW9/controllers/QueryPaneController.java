@@ -19,18 +19,12 @@ import java.util.ResourceBundle;
 
 public class QueryPaneController implements Initializable {
 
-    @FXML
-    Label toolbarTitle;
-    @FXML
-    JFXButton addQueryButton;
-    @FXML
-    AnchorPane toolbar;
-    @FXML
-    JFXButton runAllQueriesButton;
-    @FXML
-    JFXButton clearAllQueriesButton;
-    @FXML
-    VBox queriesList;
+    public Label toolbarTitle;
+    public JFXButton addQueryButton;
+    public AnchorPane toolbar;
+    public JFXButton runAllQueriesButton;
+    public JFXButton clearAllQueriesButton;
+    public VBox queriesList;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
