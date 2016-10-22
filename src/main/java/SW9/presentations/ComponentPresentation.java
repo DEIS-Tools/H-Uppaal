@@ -71,6 +71,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
                 }).start();
             });
 
+            controller.finalLocation.shakeAnimation();
+
             // Find the x and y coordinates to the values in the model
             layoutXProperty().bind(component.xProperty());
             layoutYProperty().bind(component.yProperty());

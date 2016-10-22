@@ -1,27 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.Group?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.shape.Circle?>
-<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
-         type="StackPane"
-         fx:controller="SW9.controllers.LocationController" maxHeight="40" maxWidth="40"
+         type="Group"
+         fx:controller="SW9.controllers.LocationController"
          fx:id="root">
 
-    <Circle fx:id="circle" radius="20" strokeType="INSIDE" centerX="20" centerY="20"
+    <Circle fx:id="circle" radius="20" strokeType="INSIDE"
             onMouseEntered="#mouseEntered" onMouseExited="#mouseExited"/>
 
-    <StackPane fx:id="finalIndicator" mouseTransparent="true">
-        <Line strokeWidth="2" style="-fx-stroke: white;" startX="12" startY="12" endX="28" endY="28"/>
-        <Line strokeWidth="2" style="-fx-stroke: white;" startX="28" startY="12" endX="12" endY="28"/>
-    </StackPane>
+    <Circle fx:id="shakeIndicator" radius="10" mouseTransparent="true" fill="white" opacity="0"/>
 
-    <Circle fx:id="initialIndicator" strokeType="INSIDE" strokeWidth="2"
-            style="-fx-stroke: -white; -fx-fill: transparent;" radius="15" mouseTransparent="true"/>
+    <Group fx:id="shakeContent">
+        <StackPane fx:id="finalIndicator" mouseTransparent="true" translateX="-11" translateY="-11">
+            <Line strokeWidth="2" style="-fx-stroke: white;" startX="-10" startY="-10" endX="10" endY="10"/>
+            <Line strokeWidth="2" style="-fx-stroke: white;" startX="10" startY="-10" endX="-10" endY="10"/>
+        </StackPane>
 
-    <Label fx:id="label" style="-fx-fill: -white;" styleClass="subhead" mouseTransparent="true"/>
+        <Circle fx:id="initialIndicator" strokeType="INSIDE" strokeWidth="2"
+                style="-fx-stroke: -white; -fx-fill: transparent;" radius="15" mouseTransparent="true"/>
 
+        <Label fx:id="label" style="-fx-fill: -white;" styleClass="subhead" mouseTransparent="true"/>
+    </Group>
 
 </fx:root>

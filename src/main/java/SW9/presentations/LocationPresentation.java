@@ -15,6 +15,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
+import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
@@ -24,7 +25,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.function.Consumer;
 
-public class LocationPresentation extends StackPane implements MouseTrackable {
+public class LocationPresentation extends Group implements MouseTrackable {
 
     private final LocationController controller;
     private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
@@ -170,5 +171,69 @@ public class LocationPresentation extends StackPane implements MouseTrackable {
     @Override
     public MouseTracker getMouseTracker() {
         return mouseTracker;
+    }
+
+    public void shakeAnimation() {
+
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+
+        final Timeline initialAnimation = new Timeline();
+        final Timeline shakeContentAnimation = new Timeline();
+
+        final KeyValue scale0x = new KeyValue(scaleXProperty(), 1, interpolator);
+        final KeyValue scale0y = new KeyValue(scaleYProperty(), 1, interpolator);
+        final KeyValue radius0 = new KeyValue(controller.shakeIndicator.radiusProperty(), 0, interpolator);
+        final KeyValue opacity0 = new KeyValue(controller.shakeIndicator.opacityProperty(), 0, interpolator);
+
+        final KeyValue scale1x = new KeyValue(scaleXProperty(), 1.3, interpolator);
+        final KeyValue scale1y = new KeyValue(scaleYProperty(), 1.3, interpolator);
+        final KeyValue radius1 = new KeyValue(controller.shakeIndicator.radiusProperty(), controller.circle.getRadius() * 0.85, interpolator);
+        final KeyValue opacity1 = new KeyValue(controller.shakeIndicator.opacityProperty(), 0.2, interpolator);
+
+        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale0x, scale0y, radius0, opacity0);
+        final KeyFrame kf2 = new KeyFrame(Duration.millis(2500), scale1x, scale1y, radius1, opacity1);
+        final KeyFrame kf3 = new KeyFrame(Duration.millis(3300), radius0, opacity0);
+        final KeyFrame kf4 = new KeyFrame(Duration.millis(3500), scale0x, scale0y);
+        final KeyFrame kfEnd = new KeyFrame(Duration.millis(8000), null);
+
+        initialAnimation.getKeyFrames().addAll(kf1, kf2, kf3, kf4, kfEnd);
+
+        final KeyValue noShakeX = new KeyValue(controller.shakeContent.translateXProperty(), 0, interpolator);
+        final KeyValue shakeLeftX = new KeyValue(controller.shakeContent.translateXProperty(), -1, interpolator);
+        final KeyValue shakeRightX = new KeyValue(controller.shakeContent.translateXProperty(), 1, interpolator);
+
+        final KeyFrame[] shakeFrames = {
+                new KeyFrame(Duration.millis(0), noShakeX),
+                new KeyFrame(Duration.millis(1450), noShakeX),
+
+                new KeyFrame(Duration.millis(1500), shakeLeftX),
+                new KeyFrame(Duration.millis(1550), shakeRightX),
+                new KeyFrame(Duration.millis(1600), shakeLeftX),
+                new KeyFrame(Duration.millis(1650), shakeRightX),
+                new KeyFrame(Duration.millis(1700), shakeLeftX),
+                new KeyFrame(Duration.millis(1750), shakeRightX),
+                new KeyFrame(Duration.millis(1800), shakeLeftX),
+                new KeyFrame(Duration.millis(1850), shakeRightX),
+                new KeyFrame(Duration.millis(1900), shakeLeftX),
+                new KeyFrame(Duration.millis(1950), shakeRightX),
+                new KeyFrame(Duration.millis(2000), shakeLeftX),
+                new KeyFrame(Duration.millis(2050), shakeRightX),
+                new KeyFrame(Duration.millis(2100), shakeLeftX),
+                new KeyFrame(Duration.millis(2150), shakeRightX),
+                new KeyFrame(Duration.millis(2200), shakeLeftX),
+                new KeyFrame(Duration.millis(2250), shakeRightX),
+
+                new KeyFrame(Duration.millis(2300), noShakeX),
+                new KeyFrame(Duration.millis(8000), null)
+        };
+
+        shakeContentAnimation.getKeyFrames().addAll(shakeFrames);
+
+        shakeContentAnimation.setCycleCount(1000);
+        initialAnimation.setCycleCount(1000);
+
+        shakeContentAnimation.play();
+        initialAnimation.play();
+
     }
 }

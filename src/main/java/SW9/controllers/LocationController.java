@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
@@ -24,10 +25,12 @@ public class LocationController implements Initializable {
 
     public Circle circle;
 
+    public Group root;
     public Label label;
     public Circle initialIndicator;
     public StackPane finalIndicator;
-    public StackPane root;
+    public Circle shakeIndicator;
+    public Group shakeContent;
 
     private Timeline enteredAnimation;
     private Timeline existedAnimation = new Timeline();
