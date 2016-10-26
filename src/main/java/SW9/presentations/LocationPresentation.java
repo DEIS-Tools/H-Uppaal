@@ -13,6 +13,7 @@ import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
@@ -52,8 +53,11 @@ public class LocationPresentation extends Group implements MouseTrackable {
             this.location.bind(controller.locationProperty());
 
             initializeCircle();
-            initializeLabel();
             initializeTypeGraphics();
+            initializeInvariantCircle();
+            initializeUrgencyCircle();
+
+
 
             // TODO introduce change of name and invariant
             // TODO make location draggable within a component
@@ -63,6 +67,45 @@ public class LocationPresentation extends Group implements MouseTrackable {
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeUrgencyCircle() {
+        this.location.addListener((observable, oldValue, newLocation) -> {
+            final Color color =  newLocation.getColor();
+            final Color.Intensity colorIntensity =  newLocation.getColorIntensity();
+
+            final StackPane urgencyContainer = controller.urgencyContainer;
+            final Circle urgencyCircle = controller.urgencyCircle;
+            final Label urgencyLabel = controller.urgencyLabel;
+
+            urgencyContainer.visibleProperty().bind(newLocation.urgencyProperty().isNotEqualTo(Location.Urgency.NORMAL));
+            urgencyCircle.setFill(color.getColor(colorIntensity));
+            urgencyCircle.setStroke(color.getColor(colorIntensity.next(2)));
+            urgencyLabel.setTextFill(color.getTextColor(colorIntensity));
+
+            urgencyLabel.textProperty().bind(
+                    new When(newLocation.urgencyProperty().isEqualTo(Location.Urgency.URGENT)).
+                    then("U").
+                    otherwise("C")
+            );
+        });
+    }
+
+    private void initializeInvariantCircle() {
+        this.location.addListener((observable, oldValue, newLocation) -> {
+            final Color color =  newLocation.getColor();
+            final Color.Intensity colorIntensity =  newLocation.getColorIntensity();
+
+            final StackPane invariantContainer = controller.invariantContainer;
+            final Circle invariantCircle = controller.invariantCircle;
+            final Label invariantLabel = controller.invariantLabel;
+
+            invariantContainer.visibleProperty().bind(newLocation.invariantProperty().isNotEmpty());
+            invariantCircle.setFill(color.getColor(colorIntensity));
+            invariantCircle.setStroke(color.getColor(colorIntensity.next(2)));
+            invariantLabel.setTextFill(color.getTextColor(colorIntensity));
+
+        });
     }
 
     private void initializeCircle() {
@@ -82,42 +125,6 @@ public class LocationPresentation extends Group implements MouseTrackable {
 
         // Update the color of the circle when the color of the location is updated
         color.addListener((observable, oldValue, newValue) -> updateColor.accept(newValue));
-    }
-
-    private void initializeLabel() {
-        final Label label = controller.label;
-        final ObjectProperty<Location.Urgency> urgency = location.get().urgencyProperty();
-        final ObjectProperty<Color> color = location.get().colorProperty();
-        final ObjectProperty<Color.Intensity> colorIntensity = location.get().colorIntensityProperty();
-
-
-        // Delegate to style the label based on the color of the location
-        final Consumer<Color> updateColor = (newColor) -> {
-            label.setTextFill(newColor.getTextColor(colorIntensity.get()));
-        };
-
-        // Set the initial color
-        updateColor.accept(color.get());
-
-        // Update the color of the label when the color of the location is updated
-        color.addListener((observable, oldValue, newValue) -> updateColor.accept(newValue));
-
-        // Delegate to update te text of the label depending of the urgency
-        final Consumer<Location.Urgency> updateText = (newType) -> {
-            if (newType.equals(Location.Urgency.URGENT)) {
-                label.setText("U");
-            } else if (newType.equals(Location.Urgency.COMMITTED)) {
-                label.setText("C");
-            } else {
-                label.setText("");
-            }
-        };
-
-        // Set the initial text
-        updateText.accept(urgency.get());
-
-        // Update the text whenever the urgency changes
-        urgency.addListener((observable, oldValue, newValue) -> updateText.accept(newValue));
     }
 
     private void initializeTypeGraphics() {

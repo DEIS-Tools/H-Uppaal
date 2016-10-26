@@ -26,11 +26,18 @@ public class LocationController implements Initializable {
     public Circle circle;
 
     public Group root;
-    public Label label;
     public Circle initialIndicator;
     public StackPane finalIndicator;
     public Circle shakeIndicator;
     public Group shakeContent;
+
+    public StackPane invariantContainer;
+    public Circle invariantCircle;
+    public Label invariantLabel;
+
+    public StackPane urgencyContainer;
+    public Circle urgencyCircle;
+    public Label urgencyLabel;
 
     private Timeline enteredAnimation;
     private Timeline existedAnimation = new Timeline();
