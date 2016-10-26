@@ -1,5 +1,6 @@
 package SW9.controllers;
 
+import SW9.abstractions.Component;
 import SW9.abstractions.Location;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -22,6 +23,7 @@ import java.util.ResourceBundle;
 public class LocationController implements Initializable {
 
     private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
+    private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
 
     public Circle circle;
 
@@ -78,6 +80,18 @@ public class LocationController implements Initializable {
         return location;
     }
 
+    public Component getComponent() {
+        return component.get();
+    }
+
+    public ObjectProperty<Component> componentProperty() {
+        return component;
+    }
+
+    public void setComponent(final Component component) {
+        this.component.set(component);
+    }
+
     @FXML
     private void mouseEntered() {
         circle.setCursor(Cursor.HAND);
@@ -90,6 +104,11 @@ public class LocationController implements Initializable {
         circle.setCursor(Cursor.DEFAULT);
 
         existedAnimation.play();
+    }
+
+    @FXML
+    private void mousePressed() {
+
     }
 
 }

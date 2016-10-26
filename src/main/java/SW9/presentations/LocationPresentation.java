@@ -1,5 +1,6 @@
 package SW9.presentations;
 
+import SW9.abstractions.Component;
 import SW9.abstractions.Location;
 import SW9.controllers.LocationController;
 import SW9.utility.colors.Color;
@@ -29,14 +30,11 @@ public class LocationPresentation extends Group implements MouseTrackable {
 
     private final LocationController controller;
     private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
+    private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
 
     private final MouseTracker mouseTracker = new MouseTracker(this);
 
-    public LocationPresentation() {
-        this(new Location());
-    }
-
-    public LocationPresentation(final Location location) {
+    public LocationPresentation(final Location location, final Component component) {
         final URL url = this.getClass().getResource("LocationPresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();
@@ -44,25 +42,28 @@ public class LocationPresentation extends Group implements MouseTrackable {
         fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
 
         try {
-            fxmlLoader.setRoot(this);
-            fxmlLoader.load(url.openStream());
-
-            controller = fxmlLoader.getController();
-            controller.setLocation(location);
-            this.location.bind(controller.locationProperty());
-
             initializeCircle();
             initializeTypeGraphics();
             initializeInvariantCircle();
             initializeUrgencyCircle();
             initializeNameLabel();
 
+            fxmlLoader.setRoot(this);
+            fxmlLoader.load(url.openStream());
 
+            controller = fxmlLoader.getController();
+
+            // Bind the location with the one of the controller
+            controller.setLocation(location);
+            this.location.bind(controller.locationProperty());
+
+            // Bind the component with the one of the controller
+            controller.setComponent(component);
+            this.component.bind(controller.componentProperty());
 
             // TODO introduce change of name and invariant
             // TODO make location draggable within a component
             // TODO make creation of location possible from the mouse
-
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
@@ -70,17 +71,17 @@ public class LocationPresentation extends Group implements MouseTrackable {
     }
 
     private void initializeNameLabel() {
-        final Label nameLabel = controller.nameLabel;
-
-        nameLabel.widthProperty().addListener((observable, oldValue, newValue) -> {
-            nameLabel.translateXProperty().set(newValue.doubleValue() / - 2);
-        });
-
-        nameLabel.heightProperty().addListener((observable, oldValue, newValue) -> {
-            nameLabel.translateYProperty().set(newValue.doubleValue() / - 2);
-        });
-
         this.location.addListener((observable, oldValue, newLocation) -> {
+            final Label nameLabel = controller.nameLabel;
+
+            nameLabel.widthProperty().addListener((obsWidth, oldWidth, newWidth) -> {
+                nameLabel.translateXProperty().set(newWidth.doubleValue() / - 2);
+            });
+
+            nameLabel.heightProperty().addListener((obsHeight, oldHeight, newHeight) -> {
+                nameLabel.translateYProperty().set(newHeight.doubleValue() / - 2);
+            });
+
             final Color color =  newLocation.getColor();
             final Color.Intensity colorIntensity =  newLocation.getColorIntensity();
             nameLabel.setTextFill(color.getTextColor(colorIntensity));
@@ -129,29 +130,30 @@ public class LocationPresentation extends Group implements MouseTrackable {
     }
 
     private void initializeCircle() {
-        final Circle circle = controller.circle;
-        final ObjectProperty<Color> color = location.get().colorProperty();
-        final ObjectProperty<Color.Intensity> colorIntensity = location.get().colorIntensityProperty();
+        location.addListener((observable, oldValue, newLocation) -> {
+            final Circle circle = controller.circle;
+            final ObjectProperty<Color> color = newLocation.colorProperty();
+            final ObjectProperty<Color.Intensity> colorIntensity = newLocation.colorIntensityProperty();
 
-        // Delegate to style the label based on the color of the location
-        final Consumer<Color> updateColor = (newColor) -> {
-            circle.setFill(newColor.getColor(colorIntensity.get()));
-            circle.setStroke(newColor.getColor(colorIntensity.get().next(2)));
-        };
+            // Delegate to style the label based on the color of the location
+            final Consumer<Color> updateColor = (newColor) -> {
+                circle.setFill(newColor.getColor(colorIntensity.get()));
+                circle.setStroke(newColor.getColor(colorIntensity.get().next(2)));
+            };
 
+            // Set the initial color
+            updateColor.accept(color.get());
 
-        // Set the initial color
-        updateColor.accept(color.get());
-
-        // Update the color of the circle when the color of the location is updated
-        color.addListener((observable, oldValue, newValue) -> updateColor.accept(newValue));
+            // Update the color of the circle when the color of the location is updated
+            color.addListener((obs, old, newValue) -> updateColor.accept(newValue));
+        });
     }
 
     private void initializeTypeGraphics() {
-        final Circle initialIndicator = controller.initialIndicator;
-        final StackPane finalIndicator = controller.finalIndicator;
-
         location.addListener((observable, oldValue, newLocation) -> {
+            final Circle initialIndicator = controller.initialIndicator;
+            final StackPane finalIndicator = controller.finalIndicator;
+
             initialIndicator.visibleProperty().bind(new When(newLocation.typeProperty().isEqualTo(Location.Type.INITIAL)).then(true).otherwise(false));
             finalIndicator.visibleProperty().bind(new When(newLocation.typeProperty().isEqualTo(Location.Type.FINAl)).then(true).otherwise(false));
         });

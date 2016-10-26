@@ -11,7 +11,7 @@
          fx:id="root">
 
     <Circle fx:id="circle" radius="20" strokeType="INSIDE"
-            onMouseEntered="#mouseEntered" onMouseExited="#mouseExited"/>
+            onMouseEntered="#mouseEntered" onMouseExited="#mouseExited" onMousePressed="#mousePressed"/>
 
     <Circle fx:id="shakeIndicator" radius="10" mouseTransparent="true" fill="white" opacity="0"/>
 

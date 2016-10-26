@@ -48,8 +48,4 @@
 
     </BorderPane>
 
-    <LocationPresentation fx:id="initialLocation" />
-
-    <LocationPresentation fx:id="finalLocation" />
-
 </fx:root>

@@ -31,8 +31,6 @@ public class ComponentController implements Initializable {
     public TextArea declaration;
     public JFXButton toggleDeclarationButton;
     public StackPane locationContainer;
-    public LocationPresentation initialLocation;
-    public LocationPresentation finalLocation;
     public BorderPane frame;
     public JFXTextField name;
 

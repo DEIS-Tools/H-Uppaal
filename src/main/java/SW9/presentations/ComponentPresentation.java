@@ -1,6 +1,7 @@
 package SW9.presentations;
 
 import SW9.abstractions.Component;
+import SW9.abstractions.Location;
 import SW9.controllers.ComponentController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.DragHelper;
@@ -29,6 +30,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
 
     private final ComponentController controller;
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
+    private LocationPresentation initialLocationPresentation = null;
+    private LocationPresentation finalLocationPresentation = null;
 
     private final MouseTracker mouseTracker = new MouseTracker(this);
 
@@ -44,6 +47,41 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
         fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
 
         try {
+            // Instantiate new initial and final location presentations when the component is updated
+            this.component.addListener((observable, oldValue, newComponent) -> {
+
+                if(initialLocationPresentation != null) {
+                    getChildren().remove(initialLocationPresentation);
+                }
+
+                if(finalLocationPresentation != null) {
+                    getChildren().remove(finalLocationPresentation);
+                }
+
+                // Instantiate views for the initial and final location
+                initialLocationPresentation = new LocationPresentation(newComponent.getInitialLocation(), newComponent);
+                finalLocationPresentation = new LocationPresentation(newComponent.getFinalLocation(), newComponent);
+
+                // Add the locations to the view
+                getChildren().addAll(initialLocationPresentation, finalLocationPresentation);
+
+                ComponentPresentation.this.controller.frame.setOnMouseEntered(event -> {
+                    new Thread(() -> {
+                        Platform.runLater(initialLocationPresentation::animateIn);
+
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            // do nothing
+                        }
+
+                        Platform.runLater(finalLocationPresentation::animateIn);
+                    }).start();
+                });
+
+                finalLocationPresentation.shakeAnimation();
+            });
+
             initializeToolbar();
             initializeFrame();
             initializeInitialLocation();
@@ -57,22 +95,6 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
             controller = fxmlLoader.getController();
             controller.setComponent(component);
             this.component.bind(controller.componentProperty());
-
-            controller.frame.setOnMouseEntered(event -> {
-                new Thread(() -> {
-                    Platform.runLater(() -> controller.initialLocation.animateIn());
-
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // do nothing
-                    }
-
-                    Platform.runLater(() -> controller.finalLocation.animateIn());
-                }).start();
-            });
-
-            controller.finalLocation.shakeAnimation();
 
             // Find the x and y coordinates to the values in the model
             layoutXProperty().bind(component.xProperty());
@@ -112,23 +134,23 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
 
     private void initializeInitialLocation() {
         component.addListener((observable, oldValue, component) -> {
-            controller.initialLocation.setLocation(component.getInitialLocation());
-            controller.initialLocation.setTranslateX(7);
-            controller.initialLocation.setTranslateY(7);
-            controller.initialLocation.toFront();
+            initialLocationPresentation.setLocation(component.getInitialLocation());
+            initialLocationPresentation.setTranslateX(7);
+            initialLocationPresentation.setTranslateY(7);
+            initialLocationPresentation.toFront();
 
-            StackPane.setAlignment(controller.initialLocation, Pos.TOP_LEFT);
+            StackPane.setAlignment(initialLocationPresentation, Pos.TOP_LEFT);
         });
     }
 
     private void initializeFinalLocation() {
         component.addListener((observable, oldValue, component) -> {
-            controller.finalLocation.setLocation(component.getFinalLocation());
-            controller.finalLocation.setTranslateX(-7);
-            controller.finalLocation.setTranslateY(-7);
-            controller.finalLocation.toFront();
+            finalLocationPresentation.setLocation(component.getFinalLocation());
+            finalLocationPresentation.setTranslateX(-7);
+            finalLocationPresentation.setTranslateY(-7);
+            finalLocationPresentation.toFront();
 
-            StackPane.setAlignment(controller.finalLocation, Pos.BOTTOM_RIGHT);
+            StackPane.setAlignment(finalLocationPresentation, Pos.BOTTOM_RIGHT);
         });
     }
 
