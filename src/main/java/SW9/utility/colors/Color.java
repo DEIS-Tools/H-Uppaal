@@ -337,6 +337,16 @@ public enum Color {
         return "#" + Integer.toHexString(toAwtColor(intensity).getRGB()).substring(2);
     }
 
+    public java.awt.Color toAwtTextColor(final Intensity intensity) {
+        return new java.awt.Color((int) (getTextColor(intensity).getRed() * 255),
+                (int) (getTextColor(intensity).getGreen() * 255),
+                (int) (getTextColor(intensity).getBlue() * 255));
+    }
+
+    public String toHexTextColor(final Intensity intensity) {
+        return "#" + Integer.toHexString(toAwtTextColor(intensity).getRGB()).substring(2);
+    }
+
     public enum Intensity {
         I50,
         I100,

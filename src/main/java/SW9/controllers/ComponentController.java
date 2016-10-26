@@ -3,12 +3,14 @@ package SW9.controllers;
 import SW9.abstractions.Component;
 import SW9.presentations.LocationPresentation;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXTextField;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -32,6 +34,7 @@ public class ComponentController implements Initializable {
     public LocationPresentation initialLocation;
     public LocationPresentation finalLocation;
     public BorderPane frame;
+    public JFXTextField name;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
