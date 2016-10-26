@@ -1,6 +1,7 @@
 package SW9.utility.mouse;
 
 import SW9.model_canvas.ModelCanvas;
+import SW9.presentations.CanvasPresentation;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
@@ -90,8 +91,8 @@ public class MouseTracker {
 
         // Register our own event handler to register mouse placement at all times
         registerOnMouseMovedEventHandler(event -> {
-            xProperty.set(event.getX() - (event.getX() % ModelCanvas.GRID_SIZE) + (ModelCanvas.GRID_SIZE / 2));
-            yProperty.set(event.getY() - (event.getY() % ModelCanvas.GRID_SIZE) + (ModelCanvas.GRID_SIZE / 2));
+            xProperty.set(event.getX() - (event.getX() % CanvasPresentation.GRID_SIZE));
+            yProperty.set(event.getY() - (event.getY() % CanvasPresentation.GRID_SIZE));
         });
     }
 
