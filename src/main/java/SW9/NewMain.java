@@ -51,6 +51,9 @@ public class NewMain extends Application {
         scene.getStylesheets().add("SW9/colors.css");
         scene.getStylesheets().add("SW9/model_canvas.css");
 
+        // Handle a mouse click as a deselection of all elements
+        scene.setOnMousePressed(event -> scene.getFocusOwner().getParent().requestFocus());
+
         // Let our keyboard tracker handle all key presses
         scene.setOnKeyPressed(KeyboardTracker.handleKeyPress);
 
