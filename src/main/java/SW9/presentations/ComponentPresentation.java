@@ -47,41 +47,9 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
         fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
 
         try {
-            // Instantiate new initial and final location presentations when the component is updated
-            this.component.addListener((observable, oldValue, newComponent) -> {
 
-                if(initialLocationPresentation != null) {
-                    getChildren().remove(initialLocationPresentation);
-                }
 
-                if(finalLocationPresentation != null) {
-                    getChildren().remove(finalLocationPresentation);
-                }
-
-                // Instantiate views for the initial and final location
-                initialLocationPresentation = new LocationPresentation(newComponent.getInitialLocation(), newComponent);
-                finalLocationPresentation = new LocationPresentation(newComponent.getFinalLocation(), newComponent);
-
-                // Add the locations to the view
-                getChildren().addAll(initialLocationPresentation, finalLocationPresentation);
-
-                ComponentPresentation.this.controller.frame.setOnMouseEntered(event -> {
-                    new Thread(() -> {
-                        Platform.runLater(initialLocationPresentation::animateIn);
-
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            // do nothing
-                        }
-
-                        Platform.runLater(finalLocationPresentation::animateIn);
-                    }).start();
-                });
-
-                finalLocationPresentation.shakeAnimation();
-            });
-
+            initializeModelContainer();
             initializeToolbar();
             initializeFrame();
             initializeInitialLocation();
@@ -113,6 +81,45 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
         }
     }
 
+    private void initializeModelContainer() {
+        // Instantiate new initial and final location presentations when the component is updated
+        this.component.addListener((observable, oldValue, newComponent) -> {
+
+            controller.modelContainer.toFront();
+
+            if(initialLocationPresentation != null) {
+                controller.modelContainer.getChildren().remove(initialLocationPresentation);
+            }
+
+            if(finalLocationPresentation != null) {
+                controller.modelContainer.getChildren().remove(finalLocationPresentation);
+            }
+
+            // Instantiate views for the initial and final location
+            initialLocationPresentation = new LocationPresentation(newComponent.getInitialLocation(), newComponent);
+            finalLocationPresentation = new LocationPresentation(newComponent.getFinalLocation(), newComponent);
+
+            // Add the locations to the view
+            controller.modelContainer.getChildren().addAll(initialLocationPresentation, finalLocationPresentation);
+
+            ComponentPresentation.this.controller.frame.setOnMouseEntered(event -> {
+                new Thread(() -> {
+                    Platform.runLater(initialLocationPresentation::animateIn);
+
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        // do nothing
+                    }
+
+                    Platform.runLater(finalLocationPresentation::animateIn);
+                }).start();
+            });
+
+            finalLocationPresentation.shakeAnimation();
+        });
+    }
+
     private void initializeName() {
         component.addListener((observable, oldValue, component) -> {
             // Set the text field to the name in the model, and bind the model to the text field
@@ -135,9 +142,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
     private void initializeInitialLocation() {
         component.addListener((observable, oldValue, component) -> {
             initialLocationPresentation.setLocation(component.getInitialLocation());
-            initialLocationPresentation.setTranslateX(7);
-            initialLocationPresentation.setTranslateY(7);
-            initialLocationPresentation.toFront();
+            initialLocationPresentation.setLayoutX(CORNER_SIZE/2);
+            initialLocationPresentation.setLayoutY(CORNER_SIZE/2);
 
             StackPane.setAlignment(initialLocationPresentation, Pos.TOP_LEFT);
         });
@@ -146,9 +152,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
     private void initializeFinalLocation() {
         component.addListener((observable, oldValue, component) -> {
             finalLocationPresentation.setLocation(component.getFinalLocation());
-            finalLocationPresentation.setTranslateX(-7);
-            finalLocationPresentation.setTranslateY(-7);
-            finalLocationPresentation.toFront();
+            finalLocationPresentation.setLayoutX(component.getWidth() - CORNER_SIZE /2);
+            finalLocationPresentation.setLayoutY(component.getHeight() - CORNER_SIZE /2);
 
             StackPane.setAlignment(finalLocationPresentation, Pos.BOTTOM_RIGHT);
         });
@@ -181,6 +186,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
             Shape mask;
             final Rectangle rectangle = new Rectangle(component.getWidth(), component.getHeight());
 
+
             // Generate first corner (to subtract)
             final Polygon corner1 = new Polygon(
                     0, 0,
@@ -202,18 +208,23 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
             controller.background.setClip(Path.union(mask, mask));
             controller.background.setOpacity(0.5);
 
-            // Add the missing lines that we cropped away
-            final Line line1 = new Line(CORNER_SIZE, 0, 0, CORNER_SIZE);
-            line1.setFill(component.getColor().getColor(component.getColorIntensity().next(2)));
-            line1.setStrokeWidth(2);
-            StackPane.setAlignment(line1, Pos.TOP_LEFT);
-            getChildren().add(line1);
+            // Bind the missing lines that we cropped away
+            controller.line1.setStartX(CORNER_SIZE);
+            controller.line1.setStartY(0);
+            controller.line1.setEndX(0);
+            controller.line1.setEndY(CORNER_SIZE);
 
-            final Line line2 = new Line(CORNER_SIZE, 0, 0, CORNER_SIZE);
-            line2.setFill(component.getColor().getColor(component.getColorIntensity().next(2)));
-            line2.setStrokeWidth(2);
-            StackPane.setAlignment(line2, Pos.BOTTOM_RIGHT);
-            getChildren().add(line2);
+            controller.line1.setFill(component.getColor().getColor(component.getColorIntensity().next(2)));
+            controller.line1.setStrokeWidth(2);
+            StackPane.setAlignment(controller.line1, Pos.TOP_LEFT);
+
+            controller.line2.setStartX(CORNER_SIZE);
+            controller.line2.setStartY(0);
+            controller.line2.setEndX(0);
+            controller.line2.setEndY(CORNER_SIZE);
+            controller.line2.setFill(component.getColor().getColor(component.getColorIntensity().next(2)));
+            controller.line2.setStrokeWidth(2);
+            StackPane.setAlignment(controller.line2, Pos.BOTTOM_RIGHT);
 
             // Set the stroke color to two shades darker
             controller.frame.setBorder(new Border(new BorderStroke(
@@ -223,6 +234,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
                     new BorderWidths(2),
                     Insets.EMPTY
             )));
+
         });
     }
 

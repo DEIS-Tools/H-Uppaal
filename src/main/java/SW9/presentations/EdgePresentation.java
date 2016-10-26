@@ -1,18 +1,17 @@
 package SW9.presentations;
 
 import SW9.abstractions.Edge;
-import SW9.abstractions.Location;
 import SW9.controllers.EdgeController;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
-import javafx.scene.Group;
+import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 import java.net.URL;
 
-public class EdgePresentation extends Group {
+public class EdgePresentation extends Pane {
 
     private final EdgeController controller;
     private final ObjectProperty<Edge> edge = new SimpleObjectProperty<>();

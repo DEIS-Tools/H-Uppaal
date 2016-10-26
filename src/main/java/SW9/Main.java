@@ -178,7 +178,7 @@ public class Main extends Application {
         );
 
         // Find the first model container
-        Node container = scene.lookup("#root");
+        Node container = scene.lookup("#edgeRoot");
         container = container.lookup("#main-content");
         ((ModelCanvas) container.lookup("#model-canvas")).getChildren().addListener(new ListChangeListener<Node>() {
             @Override
@@ -332,7 +332,7 @@ public class Main extends Application {
 
     private void toggleQueryPane(final Scene scene) {
         // Find the query pane
-        Node container = scene.lookup("#root");
+        Node container = scene.lookup("#edgeRoot");
         container = container.lookup("#main-content");
         final QueryPane queryPane = (QueryPane) container.lookup("#query-pane");
 

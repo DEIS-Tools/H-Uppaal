@@ -1,7 +1,9 @@
 package SW9.controllers;
 
 import SW9.abstractions.Component;
+import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
+import SW9.presentations.EdgePresentation;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -74,6 +76,8 @@ public class LocationController implements Initializable {
 
     public void setLocation(final Location location) {
         this.location.set(location);
+        this.location.get().xProperty().bind(root.layoutXProperty());
+        this.location.get().yProperty().bind(root.layoutYProperty());
     }
 
     public ObjectProperty<Location> locationProperty() {
@@ -108,7 +112,7 @@ public class LocationController implements Initializable {
 
     @FXML
     private void mousePressed() {
-
+        getComponent().addEdge(new Edge(location));
     }
 
 }

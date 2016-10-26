@@ -23,7 +23,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
 
     private final DoubleProperty x = new SimpleDoubleProperty();
     private final DoubleProperty y = new SimpleDoubleProperty(0);
-    private final MouseTracker mouseTracker = new MouseTracker(this);
+    public static MouseTracker mouseTracker;
 
     public CanvasPresentation() {
         final URL location = this.getClass().getResource("CanvasPresentation.fxml");
@@ -31,6 +31,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         final FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(location);
         fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
+        mouseTracker = new MouseTracker(this);
 
         try {
             fxmlLoader.setRoot(this);

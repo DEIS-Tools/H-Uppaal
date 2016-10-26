@@ -3,7 +3,6 @@ package SW9.abstractions;
 import SW9.utility.colors.Color;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 public class Component {
@@ -69,6 +68,14 @@ public class Component {
 
     public ObservableList<Location> getLocations() {
         return locations;
+    }
+
+    public boolean addEdge(final Edge edge) {
+        return edges.add(edge);
+    }
+
+    public boolean removeEdge(final Edge edge) {
+        return edges.remove(edge);
     }
 
     public ObservableList<Edge> getEdges() {

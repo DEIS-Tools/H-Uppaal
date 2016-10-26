@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.Group?>
+<?import javafx.scene.layout.Pane?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
-         type="Group"
+         type="Pane"
          fx:controller="SW9.controllers.EdgeController"
-         fx:id="root">
+         fx:id="edgeRoot">
 
 </fx:root>

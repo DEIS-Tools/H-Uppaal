@@ -1,21 +1,25 @@
 package SW9.controllers;
 
 import SW9.abstractions.Component;
-import SW9.presentations.LocationPresentation;
+import SW9.abstractions.Edge;
+import SW9.presentations.EdgePresentation;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
@@ -33,9 +37,26 @@ public class ComponentController implements Initializable {
     public StackPane locationContainer;
     public BorderPane frame;
     public JFXTextField name;
+    public StackPane root;
+    public Pane modelContainer;
+    public Line line1;
+    public Line line2;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+
+        component.addListener((obsComponent, oldComponent, newComponent) -> {
+            newComponent.getEdges().addListener(new ListChangeListener<Edge>() {
+                @Override
+                public void onChanged(final Change<? extends Edge> c) {
+                    if (c.next()) {
+                        c.getAddedSubList().forEach(o -> {
+                            root.getChildren().add(new EdgePresentation(o));
+                        });
+                    }
+                }
+            });
+        });
 
     }
 

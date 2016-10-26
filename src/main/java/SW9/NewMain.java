@@ -4,6 +4,7 @@ import SW9.abstractions.Project;
 import SW9.presentations.HUPPAALPresentation;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.KeyboardTracker;
+import SW9.utility.mouse.MouseTracker;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
@@ -30,6 +31,7 @@ public class NewMain extends Application {
     public void start(final Stage stage) throws Exception {
         // Load or create new project
         project = new Project();
+
 
         // Load the fonts required for the project
         IconFontFX.register(GoogleMaterialDesignIcons.getIconFont());
@@ -63,6 +65,7 @@ public class NewMain extends Application {
         // We're now ready! Let the curtains fall!
         stage.show();
     }
+
 
     private void loadFonts() {
         Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-Black.ttf"), 14);

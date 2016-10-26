@@ -1,13 +1,17 @@
 package SW9.utility.helpers;
 
+import SW9.NewMain;
 import SW9.model_canvas.arrow_heads.ArrowHead;
 import SW9.model_canvas.arrow_heads.ChannelReceiverArrowHead;
 import SW9.model_canvas.arrow_heads.ChannelSenderArrowHead;
 import SW9.model_canvas.arrow_heads.HandshakeChannelSenderArrowHead;
 import SW9.model_canvas.lines.DashedLine;
 import SW9.model_canvas.locations.Location;
+import SW9.presentations.CanvasPresentation;
+import SW9.presentations.LocationPresentation;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -43,6 +47,17 @@ public class BindingHelper {
     public static void bind(final Line subject, final Circle source, final MouseTracker target) {
         // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
         final LineBinding lineBinding = LineBinding.getCircleBindings(source, target);
+
+        // Bind the subjects properties accordingly to our calculations
+        subject.startXProperty().bind(lineBinding.startX);
+        subject.startYProperty().bind(lineBinding.startY);
+        subject.endXProperty().bind(lineBinding.endX);
+        subject.endYProperty().bind(lineBinding.endY);
+    }
+
+    public static void bind(final Line subject, final SW9.abstractions.Location source, final MouseTracker target) {
+        // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
+        final LineBinding lineBinding = LineBinding.getLocationBindings(source, target);
 
         // Bind the subjects properties accordingly to our calculations
         subject.startXProperty().bind(lineBinding.startX);
@@ -134,6 +149,16 @@ public class BindingHelper {
             );
         }
 
+        private static LineBinding getLocationBindings(final SW9.abstractions.Location source, final MouseTracker target) {
+
+            return new BindingHelper.LineBinding(
+                    calculateXBinding(source, new Point(target)),
+                    calculateYBinding(source, new Point(target)),
+                    target.xProperty(),
+                    target.yProperty()
+            );
+        }
+
         private static LineBinding getCircleBindings(final Circle source, final Point target) {
             return new BindingHelper.LineBinding(
                     calculateXBinding(source, target),
@@ -171,6 +196,36 @@ public class BindingHelper {
                 protected double computeValue() {
                     double angle = Math.atan2(source.centerYProperty().get() - target.yProperty().get(), source.centerXProperty().get() - target.xProperty().get()) - Math.toRadians(180);
                     return source.centerYProperty().get() + source.radiusProperty().get() * Math.sin(angle);
+                }
+            };
+        }
+
+        private static ObservableDoubleValue calculateXBinding(final SW9.abstractions.Location source, final Point target) {
+            return new DoubleBinding() {
+                {
+                    super.bind(source.xProperty(), source.yProperty());
+                    super.bind(target.xProperty(), target.yProperty());
+                }
+
+                @Override
+                protected double computeValue() {
+                    final double angle = Math.atan2(source.yProperty().get() - target.yProperty().get(), source.xProperty().get() - target.xProperty().get()) - Math.toRadians(180);
+                    return source.xProperty().get() + LocationPresentation.RADIUS * Math.cos(angle);
+                }
+            };
+        }
+
+        private static ObservableDoubleValue calculateYBinding(final SW9.abstractions.Location source, final Point target) {
+            return new DoubleBinding() {
+                {
+                    super.bind(source.xProperty(), source.yProperty());
+                    super.bind(target.xProperty(), target.yProperty());
+                }
+
+                @Override
+                protected double computeValue() {
+                    double angle = Math.atan2(source.yProperty().get() - target.yProperty().get(), source.xProperty().get() - target.xProperty().get()) - Math.toRadians(180);
+                    return source.yProperty().get() + LocationPresentation.RADIUS * Math.sin(angle);
                 }
             };
         }

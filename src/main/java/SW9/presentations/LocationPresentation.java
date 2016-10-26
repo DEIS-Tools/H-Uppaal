@@ -14,6 +14,7 @@ import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
@@ -28,6 +29,7 @@ import java.util.function.Consumer;
 
 public class LocationPresentation extends Group implements MouseTrackable {
 
+    public static final double RADIUS = 20;
     private final LocationController controller;
     private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();

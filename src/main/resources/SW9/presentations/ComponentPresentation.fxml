@@ -7,9 +7,12 @@
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <?import SW9.presentations.LocationPresentation?>
 <?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.shape.Line?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
+         fx:id="root"
          fx:controller="SW9.controllers.ComponentController">
 
     <Rectangle fx:id="background"/>
@@ -47,5 +50,10 @@
         </center>
 
     </BorderPane>
+
+    <Line fx:id="line1" />
+    <Line fx:id="line2" />
+
+    <Pane fx:id="modelContainer" pickOnBounds="false" />
 
 </fx:root>
