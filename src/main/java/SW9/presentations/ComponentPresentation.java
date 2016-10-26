@@ -49,6 +49,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
             initializeInitialLocation();
             initializeFinalLocation();
             initializeBackground();
+            initializeName();
 
             fxmlLoader.setRoot(this);
             fxmlLoader.load(location.openStream());
@@ -88,6 +89,25 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeName() {
+        component.addListener((observable, oldValue, component) -> {
+            // Set the text field to the name in the model, and bind the model to the text field
+            controller.name.setText(component.getName());
+            component.nameProperty().bind(controller.name.textProperty());
+
+            final Color color = component.getColor();
+            final Color.Intensity colorIntensity = component.getColorIntensity();
+
+            // Set the text color for the label
+            controller.name.setStyle("-fx-text-fill: " + color.toHexTextColor(colorIntensity) + ";");
+            controller.name.setFocusColor(color.getTextColor(colorIntensity));
+            controller.name.setUnFocusColor(javafx.scene.paint.Color.TRANSPARENT);
+
+            // Add a left margin of CORNER_SIZE
+            controller.name.setPadding(new Insets(0, 0, 0, CORNER_SIZE));
+        });
     }
 
     private void initializeInitialLocation() {
