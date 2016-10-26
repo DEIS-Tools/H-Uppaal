@@ -13,7 +13,6 @@ import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
@@ -56,6 +55,7 @@ public class LocationPresentation extends Group implements MouseTrackable {
             initializeTypeGraphics();
             initializeInvariantCircle();
             initializeUrgencyCircle();
+            initializeNameLabel();
 
 
 
@@ -67,6 +67,26 @@ public class LocationPresentation extends Group implements MouseTrackable {
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeNameLabel() {
+        final Label nameLabel = controller.nameLabel;
+
+        nameLabel.widthProperty().addListener((observable, oldValue, newValue) -> {
+            nameLabel.translateXProperty().set(newValue.doubleValue() / - 2);
+        });
+
+        nameLabel.heightProperty().addListener((observable, oldValue, newValue) -> {
+            nameLabel.translateYProperty().set(newValue.doubleValue() / - 2);
+        });
+
+        this.location.addListener((observable, oldValue, newLocation) -> {
+            final Color color =  newLocation.getColor();
+            final Color.Intensity colorIntensity =  newLocation.getColorIntensity();
+            nameLabel.setTextFill(color.getTextColor(colorIntensity));
+
+            nameLabel.textProperty().bind(newLocation.nameProperty());
+        });
     }
 
     private void initializeUrgencyCircle() {

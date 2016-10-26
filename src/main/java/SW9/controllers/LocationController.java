@@ -38,6 +38,7 @@ public class LocationController implements Initializable {
     public StackPane urgencyContainer;
     public Circle urgencyCircle;
     public Label urgencyLabel;
+    public Label nameLabel;
 
     private Timeline enteredAnimation;
     private Timeline existedAnimation = new Timeline();

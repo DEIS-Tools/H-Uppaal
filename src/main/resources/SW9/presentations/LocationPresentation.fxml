@@ -25,6 +25,8 @@
                 style="-fx-stroke: -white; -fx-fill: transparent;" radius="15" mouseTransparent="true"/>
     </Group>
 
+    <Label fx:id="nameLabel" styleClass="subhead"/>
+
     <StackPane translateX="0.5" translateY="7" fx:id="invariantContainer">
         <Circle fx:id="invariantCircle" radius="10" mouseTransparent="true"/>
         <Label text="I" fx:id="invariantLabel" styleClass="body2"/>
