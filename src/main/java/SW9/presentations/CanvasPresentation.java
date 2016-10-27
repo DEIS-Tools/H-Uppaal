@@ -20,10 +20,9 @@ import java.util.ArrayList;
 public class CanvasPresentation extends Pane implements MouseTrackable {
 
     public static final int GRID_SIZE = 25;
-
+    public static MouseTracker mouseTracker;
     private final DoubleProperty x = new SimpleDoubleProperty();
     private final DoubleProperty y = new SimpleDoubleProperty(0);
-    public static MouseTracker mouseTracker;
 
     public CanvasPresentation() {
         final URL location = this.getClass().getResource("CanvasPresentation.fxml");
@@ -32,6 +31,10 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         fxmlLoader.setLocation(location);
         fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
         mouseTracker = new MouseTracker(this);
+
+        mouseTracker.xProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("x " + mouseTracker.xProperty().get() + " - y " + mouseTracker.yProperty().get());
+        });
 
         try {
             fxmlLoader.setRoot(this);

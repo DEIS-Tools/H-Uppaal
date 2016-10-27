@@ -1,6 +1,5 @@
 package SW9.utility.mouse;
 
-import SW9.model_canvas.ModelCanvas;
 import SW9.presentations.CanvasPresentation;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -14,8 +13,6 @@ public class MouseTracker {
 
     private final DoubleProperty xProperty = new SimpleDoubleProperty(0);
     private final DoubleProperty yProperty = new SimpleDoubleProperty(0);
-    private boolean isActive = true;
-
     private final ArrayList<EventHandler<MouseEvent>> onMouseMovedEventHandlers = new ArrayList<>();
     private final ArrayList<EventHandler<MouseEvent>> onMouseClickedEventHandlers = new ArrayList<>();
     private final ArrayList<EventHandler<MouseEvent>> onMouseEnteredEventHandlers = new ArrayList<>();
@@ -23,7 +20,7 @@ public class MouseTracker {
     private final ArrayList<EventHandler<MouseEvent>> onMouseDraggedEventHandlers = new ArrayList<>();
     private final ArrayList<EventHandler<MouseEvent>> onMousePressedEventHandlers = new ArrayList<>();
     private final ArrayList<EventHandler<MouseEvent>> onMouseReleasedEventHandlers = new ArrayList<>();
-
+    private boolean isActive = true;
     private final EventHandler<MouseEvent> onMouseMovedEventHandler = event -> {
         if (!isActive) return;
         onMouseMovedEventHandlers.removeIf(handler -> handler == null);
@@ -90,7 +87,7 @@ public class MouseTracker {
         owner.setOnMouseReleased(this.onMouseReleasedEventHandler);
 
         // Register our own event handler to register mouse placement at all times
-        registerOnMouseMovedEventHandler(event -> {
+        owner.addEventFilter(MouseEvent.ANY, event -> {
             xProperty.set(event.getX() - (event.getX() % CanvasPresentation.GRID_SIZE));
             yProperty.set(event.getY() - (event.getY() % CanvasPresentation.GRID_SIZE));
         });

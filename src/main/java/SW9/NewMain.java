@@ -4,7 +4,6 @@ import SW9.abstractions.Project;
 import SW9.presentations.HUPPAALPresentation;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.KeyboardTracker;
-import SW9.utility.mouse.MouseTracker;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
@@ -54,7 +53,10 @@ public class NewMain extends Application {
         scene.getStylesheets().add("SW9/model_canvas.css");
 
         // Handle a mouse click as a deselection of all elements
-        scene.setOnMousePressed(event -> scene.getFocusOwner().getParent().requestFocus());
+        scene.setOnMousePressed(event -> {
+            if (scene.getFocusOwner() == null || scene.getFocusOwner().getParent() == null) return;
+            scene.getFocusOwner().getParent().requestFocus();
+        });
 
         // Let our keyboard tracker handle all key presses
         scene.setOnKeyPressed(KeyboardTracker.handleKeyPress);

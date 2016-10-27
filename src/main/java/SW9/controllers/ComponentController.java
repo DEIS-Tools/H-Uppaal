@@ -63,7 +63,7 @@ public class ComponentController implements Initializable {
                 public void onChanged(final Change<? extends Edge> c) {
                     if (c.next()) {
                         c.getAddedSubList().forEach(o -> {
-                            root.getChildren().add(new EdgePresentation(o));
+                            root.getChildren().add(new EdgePresentation(o, newComponent));
                         });
                     }
                 }

@@ -1,5 +1,6 @@
 package SW9.presentations;
 
+import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.controllers.EdgeController;
 import javafx.beans.property.ObjectProperty;
@@ -14,9 +15,11 @@ import java.net.URL;
 public class EdgePresentation extends Pane {
 
     private final EdgeController controller;
-    private final ObjectProperty<Edge> edge = new SimpleObjectProperty<>();
 
-    public EdgePresentation(final Edge edge) {
+    private final ObjectProperty<Edge> edge = new SimpleObjectProperty<>();
+    private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
+
+    public EdgePresentation(final Edge edge, final Component component) {
         final URL url = this.getClass().getResource("EdgePresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();
@@ -28,8 +31,12 @@ public class EdgePresentation extends Pane {
             fxmlLoader.load(url.openStream());
 
             controller = fxmlLoader.getController();
+
             controller.setEdge(edge);
             this.edge.bind(controller.edgeProperty());
+
+            controller.setComponent(component);
+            this.component.bind(controller.componentProperty());
 
 
         } catch (final IOException ioe) {

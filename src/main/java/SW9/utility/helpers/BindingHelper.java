@@ -1,17 +1,13 @@
 package SW9.utility.helpers;
 
-import SW9.NewMain;
 import SW9.model_canvas.arrow_heads.ArrowHead;
 import SW9.model_canvas.arrow_heads.ChannelReceiverArrowHead;
 import SW9.model_canvas.arrow_heads.ChannelSenderArrowHead;
-import SW9.model_canvas.arrow_heads.HandshakeChannelSenderArrowHead;
-import SW9.model_canvas.lines.DashedLine;
 import SW9.model_canvas.locations.Location;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.LocationPresentation;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -55,9 +51,9 @@ public class BindingHelper {
         subject.endYProperty().bind(lineBinding.endY);
     }
 
-    public static void bind(final Line subject, final SW9.abstractions.Location source, final MouseTracker target) {
+    public static void bind(final Line subject, final SW9.abstractions.Location source, final ObservableDoubleValue x, final ObservableDoubleValue y) {
         // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
-        final LineBinding lineBinding = LineBinding.getLocationBindings(source, target);
+        final LineBinding lineBinding = LineBinding.getLocationBindings(source, CanvasPresentation.mouseTracker, x, y);
 
         // Bind the subjects properties accordingly to our calculations
         subject.startXProperty().bind(lineBinding.startX);
@@ -111,6 +107,79 @@ public class BindingHelper {
         handshakeLine.endYProperty().bind(bindings.endY);
     }
 
+    public static void bind(final ArrowHead subject, final Circle source, final Circle target) {
+        // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
+        final LineBinding lineBinding = LineBinding.getCircleBindings(source, target);
+
+        ObservableDoubleValue startX = lineBinding.startX;
+        ObservableDoubleValue startY = lineBinding.startY;
+        ObservableDoubleValue endX = lineBinding.endX;
+        ObservableDoubleValue endY = lineBinding.endY;
+
+        subject.xProperty().bind(endX);
+        subject.yProperty().bind(endY);
+
+        DoubleBinding rotationBinding = new DoubleBinding() {
+            {
+                super.bind(startX, startY, endX, endY);
+            }
+
+            @Override
+            protected double computeValue() {
+                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
+                return Math.toDegrees(angle) + 90;
+            }
+        };
+
+
+        subject.rotateProperty().bind(rotationBinding);
+    }
+
+    public static void bind(final ArrowHead subject, final Circle source, final MouseTracker target) {
+        // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
+        final LineBinding lineBinding = LineBinding.getCircleBindings(source, target);
+
+        ObservableDoubleValue startX = lineBinding.startX;
+        ObservableDoubleValue startY = lineBinding.startY;
+        ObservableDoubleValue endX = lineBinding.endX;
+        ObservableDoubleValue endY = lineBinding.endY;
+
+        subject.xProperty().bind(endX);
+        subject.yProperty().bind(endY);
+
+        DoubleBinding rotationBinding = new DoubleBinding() {
+            {
+                super.bind(startX, startY, endX, endY);
+            }
+
+            @Override
+            protected double computeValue() {
+                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
+                return Math.toDegrees(angle) + 90;
+            }
+        };
+
+
+        subject.rotateProperty().bind(rotationBinding);
+    }
+
+    public static void bind(final Line subject, final ArrowHead target) {
+        final Circle arrowHeadField = new Circle();
+        arrowHeadField.centerXProperty().bind(target.xProperty());
+        arrowHeadField.centerYProperty().bind(target.yProperty());
+        arrowHeadField.setRadius(target.getHeadHeight());
+
+        final LineBinding lineBinding = LineBinding.getCircleBindings(arrowHeadField, new Point(subject.startXProperty(), subject.startYProperty()));
+
+        if (target.shouldBindToTip()) {
+            subject.endXProperty().bind(target.xProperty());
+            subject.endYProperty().bind(target.yProperty());
+        } else {
+            subject.endXProperty().bind(lineBinding.startX);
+            subject.endYProperty().bind(lineBinding.startY);
+        }
+    }
+
     private static class LineBinding {
         final ObservableDoubleValue startX;
         final ObservableDoubleValue startY;
@@ -156,6 +225,18 @@ public class BindingHelper {
                     calculateYBinding(source, new Point(target)),
                     target.xProperty(),
                     target.yProperty()
+            );
+        }
+
+        private static LineBinding getLocationBindings(final SW9.abstractions.Location source, final MouseTracker target, final ObservableDoubleValue x, final ObservableDoubleValue y) {
+
+            final Point point = new Point(target.xProperty().subtract(x), target.yProperty().subtract(y));
+
+            return new BindingHelper.LineBinding(
+                    calculateXBinding(source, point),
+                    calculateYBinding(source, point),
+                    target.xProperty().subtract(x),
+                    target.yProperty().subtract(y)
             );
         }
 
@@ -260,79 +341,6 @@ public class BindingHelper {
 
         private ObservableDoubleValue yProperty() {
             return y;
-        }
-    }
-
-    public static void bind(final ArrowHead subject, final Circle source, final Circle target) {
-        // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
-        final LineBinding lineBinding = LineBinding.getCircleBindings(source, target);
-
-        ObservableDoubleValue startX = lineBinding.startX;
-        ObservableDoubleValue startY = lineBinding.startY;
-        ObservableDoubleValue endX = lineBinding.endX;
-        ObservableDoubleValue endY = lineBinding.endY;
-
-        subject.xProperty().bind(endX);
-        subject.yProperty().bind(endY);
-
-        DoubleBinding rotationBinding = new DoubleBinding() {
-            {
-                super.bind(startX, startY, endX, endY);
-            }
-
-            @Override
-            protected double computeValue() {
-                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
-                return Math.toDegrees(angle) + 90;
-            }
-        };
-
-
-        subject.rotateProperty().bind(rotationBinding);
-    }
-
-    public static void bind(final ArrowHead subject, final Circle source, final MouseTracker target) {
-        // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
-        final LineBinding lineBinding = LineBinding.getCircleBindings(source, target);
-
-        ObservableDoubleValue startX = lineBinding.startX;
-        ObservableDoubleValue startY = lineBinding.startY;
-        ObservableDoubleValue endX = lineBinding.endX;
-        ObservableDoubleValue endY = lineBinding.endY;
-
-        subject.xProperty().bind(endX);
-        subject.yProperty().bind(endY);
-
-        DoubleBinding rotationBinding = new DoubleBinding() {
-            {
-                super.bind(startX, startY, endX, endY);
-            }
-
-            @Override
-            protected double computeValue() {
-                double angle = Math.atan2(startY.get() - endY.get(), startX.get() - endX.get());
-                return Math.toDegrees(angle) + 90;
-            }
-        };
-
-
-        subject.rotateProperty().bind(rotationBinding);
-    }
-
-    public static void bind(final Line subject, final ArrowHead target) {
-        final Circle arrowHeadField = new Circle();
-        arrowHeadField.centerXProperty().bind(target.xProperty());
-        arrowHeadField.centerYProperty().bind(target.yProperty());
-        arrowHeadField.setRadius(target.getHeadHeight());
-
-        final LineBinding lineBinding = LineBinding.getCircleBindings(arrowHeadField, new Point(subject.startXProperty(), subject.startYProperty()));
-
-        if (target.shouldBindToTip()) {
-            subject.endXProperty().bind(target.xProperty());
-            subject.endYProperty().bind(target.yProperty());
-        } else {
-            subject.endXProperty().bind(lineBinding.startX);
-            subject.endYProperty().bind(lineBinding.startY);
         }
     }
 
