@@ -2,7 +2,6 @@ package SW9.utility.helpers;
 
 import SW9.model_canvas.ModelCanvas;
 import SW9.presentations.CanvasPresentation;
-import SW9.presentations.ComponentPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.NumberBinding;
@@ -10,7 +9,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
@@ -230,8 +228,8 @@ public class DragHelper {
                 subject.setTranslateY(newY);
             }
             else {
-                subject.translateXProperty().set(newX - (newX % CanvasPresentation.GRID_SIZE) + (CanvasPresentation.GRID_SIZE / 2));
-                subject.translateYProperty().set(newY - (newY % CanvasPresentation.GRID_SIZE) + (CanvasPresentation.GRID_SIZE / 2));
+                subject.xProperty().set(newX - (newX % CanvasPresentation.GRID_SIZE) + (CanvasPresentation.GRID_SIZE / 2));
+                subject.yProperty().set(newY - (newY % CanvasPresentation.GRID_SIZE) + (CanvasPresentation.GRID_SIZE / 2));
             }
 
             subject.setCursor(Cursor.MOVE);

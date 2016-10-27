@@ -1,7 +1,6 @@
 package SW9.presentations;
 
 import SW9.abstractions.Component;
-import SW9.abstractions.Location;
 import SW9.controllers.ComponentController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.DragHelper;
@@ -17,7 +16,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.layout.*;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
@@ -30,10 +32,9 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
 
     private final ComponentController controller;
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
+    private final MouseTracker mouseTracker = new MouseTracker(this);
     private LocationPresentation initialLocationPresentation = null;
     private LocationPresentation finalLocationPresentation = null;
-
-    private final MouseTracker mouseTracker = new MouseTracker(this);
 
     public ComponentPresentation() {
         this(new Component("Component" + new Random().nextInt(5000))); // todo: find a new unique component name
@@ -63,10 +64,6 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
             controller = fxmlLoader.getController();
             controller.setComponent(component);
             this.component.bind(controller.componentProperty());
-
-            // Find the x and y coordinates to the values in the model
-            layoutXProperty().bind(component.xProperty());
-            layoutYProperty().bind(component.yProperty());
 
             // Bind the width and the height of the view to the values in the model
             minWidthProperty().bind(component.widthProperty());
@@ -251,12 +248,12 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
 
     @Override
     public DoubleProperty xProperty() {
-        return component.get().xProperty();
+        return layoutXProperty();
     }
 
     @Override
     public DoubleProperty yProperty() {
-        return component.get().yProperty();
+        return layoutYProperty();
     }
 
     @Override

@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.Rectangle?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
-<?import SW9.presentations.LocationPresentation?>
-<?import com.jfoenix.controls.JFXTextField?>
-<?import javafx.scene.Group?>
-<?import javafx.scene.shape.Line?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
@@ -22,9 +20,14 @@
         <top>
             <BorderPane fx:id="toolbar">
                 <center>
+                    <HBox>
                     <StackPane>
                         <JFXTextField fx:id="name" styleClass="subhead" translateY="1" />
                     </StackPane>
+                        <Label fx:id="x" text="X" textFill="white" styleClass="subhead"/>
+                        <Region minWidth="20"/>
+                        <Label fx:id="y" text="Y" textFill="white" styleClass="subhead"/>
+                    </HBox>
                 </center>
 
                 <right>

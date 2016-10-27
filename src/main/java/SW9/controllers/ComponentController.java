@@ -11,8 +11,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -41,9 +41,21 @@ public class ComponentController implements Initializable {
     public Pane modelContainer;
     public Line line1;
     public Line line2;
+    public Label x;
+    public Label y;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+
+        component.addListener((observable, oldValue, newValue) -> {
+            newValue.xProperty().bind(root.layoutXProperty());
+            newValue.yProperty().bind(root.layoutYProperty());
+        });
+
+        component.addListener((observable, oldValue, newValue) -> {
+            x.textProperty().bind(newValue.xProperty().asString());
+            y.textProperty().bind(newValue.yProperty().asString());
+        });
 
         component.addListener((obsComponent, oldComponent, newComponent) -> {
             newComponent.getEdges().addListener(new ListChangeListener<Edge>() {
@@ -98,12 +110,12 @@ public class ComponentController implements Initializable {
         return component.get();
     }
 
-    public ObjectProperty<Component> componentProperty() {
-        return component;
-    }
-
     public void setComponent(final Component component) {
         this.component.set(component);
+    }
+
+    public ObjectProperty<Component> componentProperty() {
+        return component;
     }
 
 }
