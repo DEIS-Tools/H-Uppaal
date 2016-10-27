@@ -5,7 +5,10 @@
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="Group"
+         fx:controller="SW9.controllers.NailController"
          fx:id="root">
-    <Circle radius="7"/>
+
+    <Circle fx:id="nailCircle" radius="6.25"/>
+    <Circle fill="transparent" radius="12.5"/>
 
 </fx:root>

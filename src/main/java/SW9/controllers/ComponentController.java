@@ -10,6 +10,7 @@ import javafx.animation.Transition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -36,7 +37,6 @@ public class ComponentController implements Initializable {
     public Rectangle background;
     public TextArea declaration;
     public JFXButton toggleDeclarationButton;
-    public StackPane locationContainer;
     public BorderPane frame;
     public JFXTextField name;
     public StackPane root;
@@ -133,4 +133,9 @@ public class ComponentController implements Initializable {
         return component;
     }
 
+
+    @FXML
+    private void pusse() {
+        System.out.println("pusse");
+    }
 }

@@ -15,10 +15,9 @@
 
     <Rectangle fx:id="background"/>
 
-    <Pane fx:id="modelContainer" pickOnBounds="false" />
+
 
     <BorderPane fx:id="frame">
-
         <top>
             <BorderPane fx:id="toolbar">
                 <center>
@@ -44,8 +43,7 @@
 
         <center>
             <StackPane>
-                <StackPane fx:id="locationContainer"/>
-
+                <Pane fx:id="modelContainer" onMousePressed="#pusse"/>
                 <TextArea fx:id="declaration"
                           visible="false"
                           StackPane.alignment="TOP_CENTER"
@@ -58,8 +56,7 @@
 
     <Line fx:id="line1" />
     <Line fx:id="line2" />
-
-    <Pane fx:id="defaultLocationsContainer" pickOnBounds="false" />
+    <Pane fx:id="defaultLocationsContainer" pickOnBounds="false"/>
 
 
 </fx:root>

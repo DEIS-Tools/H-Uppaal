@@ -7,6 +7,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
 import java.net.URL;
@@ -41,7 +42,9 @@ public class EdgeController implements Initializable {
                 if (newEdge.getNails().isEmpty()) {
                     final Line line = new Line();
                     lines.add(line);
-                    BindingHelper.bind(line, newEdge.getSourceLocation(), newComponent.xProperty(), newComponent.yProperty());
+                    Circle c1 = new Circle(24, -6, 0);
+                    edgeRoot.getChildren().add(c1);
+                    BindingHelper.bind(line, c1, newComponent.xProperty(), newComponent.yProperty());
                     edgeRoot.getChildren().add(line);
                 }
             });
