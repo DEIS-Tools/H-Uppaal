@@ -1,7 +1,10 @@
 package SW9.presentations;
 
+import SW9.utility.UndoRedoStack;
 import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.MouseTrackable;
+import SW9.utility.keyboard.Keybind;
+import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
@@ -9,6 +12,9 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
@@ -32,9 +38,8 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
         mouseTracker = new MouseTracker(this);
 
-        mouseTracker.xProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("x " + mouseTracker.xProperty().get() + " - y " + mouseTracker.yProperty().get());
-        });
+        KeyboardTracker.registerKeybind(KeyboardTracker.UNDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN), UndoRedoStack::undo));
+        KeyboardTracker.registerKeybind(KeyboardTracker.REDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), UndoRedoStack::redo));
 
         try {
             fxmlLoader.setRoot(this);

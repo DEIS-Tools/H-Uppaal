@@ -3,7 +3,7 @@ package SW9.controllers;
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
-import SW9.presentations.EdgePresentation;
+import SW9.utility.UndoRedoStack;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -88,12 +88,12 @@ public class LocationController implements Initializable {
         return component.get();
     }
 
-    public ObjectProperty<Component> componentProperty() {
-        return component;
-    }
-
     public void setComponent(final Component component) {
         this.component.set(component);
+    }
+
+    public ObjectProperty<Component> componentProperty() {
+        return component;
     }
 
     @FXML
@@ -112,7 +112,22 @@ public class LocationController implements Initializable {
 
     @FXML
     private void mousePressed() {
-        getComponent().addEdge(new Edge(location));
+        final Component component = getComponent();
+        final Edge unfinishedEdge = component.getUnfinishedEdge();
+
+        if (unfinishedEdge != null) {
+            unfinishedEdge.setTargetLocation(getLocation());
+        } else {
+            final Edge newEdge = new Edge(getLocation());
+
+            UndoRedoStack.push(() -> { // Perform
+                System.out.println("addedge");
+                component.addEdge(newEdge);
+            }, () -> { // Undo
+                System.out.println("removedgee");
+                component.removeEdge(newEdge);
+            });
+        }
     }
 
 }

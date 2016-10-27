@@ -166,23 +166,31 @@ public class Component {
         return initialLocation.get();
     }
 
-    public ObjectProperty<Location> initialLocationProperty() {
-        return initialLocation;
-    }
-
     public void setInitialLocation(final Location initialLocation) {
         this.initialLocation.set(initialLocation);
+    }
+
+    public ObjectProperty<Location> initialLocationProperty() {
+        return initialLocation;
     }
 
     public Location getFinalLocation() {
         return finalLocation.get();
     }
 
+    public void setFinalLocation(final Location finalLocation) {
+        this.finalLocation.set(finalLocation);
+    }
+
     public ObjectProperty<Location> finalLocationProperty() {
         return finalLocation;
     }
 
-    public void setFinalLocation(final Location finalLocation) {
-        this.finalLocation.set(finalLocation);
+    public Edge getUnfinishedEdge() {
+        for (final Edge edge : edges) {
+            if (edge.getTargetLocation() == null) return edge;
+        }
+
+        return null;
     }
 }

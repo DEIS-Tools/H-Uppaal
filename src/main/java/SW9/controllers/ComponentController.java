@@ -24,6 +24,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class ComponentController implements Initializable {
@@ -44,6 +46,8 @@ public class ComponentController implements Initializable {
     public Label x;
     public Label y;
 
+    private Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
+
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
 
@@ -62,8 +66,18 @@ public class ComponentController implements Initializable {
                 @Override
                 public void onChanged(final Change<? extends Edge> c) {
                     if (c.next()) {
-                        c.getAddedSubList().forEach(o -> {
-                            root.getChildren().add(new EdgePresentation(o, newComponent));
+                        // Edges are added to the component
+                        c.getAddedSubList().forEach(edge -> {
+                            final EdgePresentation edgePresentation = new EdgePresentation(edge, newComponent);
+                            edgePresentationMap.put(edge, edgePresentation);
+                            root.getChildren().add(edgePresentation);
+                        });
+
+                        // Edges are removed from the component
+                        c.getRemoved().forEach(edge -> {
+                            final EdgePresentation edgePresentation = edgePresentationMap.get(edge);
+                            root.getChildren().remove(edgePresentation);
+                            edgePresentationMap.remove(edge);
                         });
                     }
                 }

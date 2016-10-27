@@ -62,6 +62,17 @@ public class BindingHelper {
         subject.endYProperty().bind(lineBinding.endY);
     }
 
+    public static void bind(final Line subject, final SW9.abstractions.Location source, final SW9.abstractions.Location target) {
+        // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
+        final LineBinding lineBinding = LineBinding.getLocationBindings(source, target);
+
+        // Bind the subjects properties accordingly to our calculations
+        subject.startXProperty().bind(lineBinding.startX);
+        subject.startYProperty().bind(lineBinding.startY);
+        subject.endXProperty().bind(lineBinding.endX);
+        subject.endYProperty().bind(lineBinding.endY);
+    }
+
     public static void place(final Circle subject, final MouseEvent target) {
         // Calculate the bindings (so that the subject will be centered on where the mouse event happened)
         subject.centerXProperty().set(target.getX());
@@ -218,16 +229,6 @@ public class BindingHelper {
             );
         }
 
-        private static LineBinding getLocationBindings(final SW9.abstractions.Location source, final MouseTracker target) {
-
-            return new BindingHelper.LineBinding(
-                    calculateXBinding(source, new Point(target)),
-                    calculateYBinding(source, new Point(target)),
-                    target.xProperty(),
-                    target.yProperty()
-            );
-        }
-
         private static LineBinding getLocationBindings(final SW9.abstractions.Location source, final MouseTracker target, final ObservableDoubleValue x, final ObservableDoubleValue y) {
 
             final Point point = new Point(target.xProperty().subtract(x), target.yProperty().subtract(y));
@@ -238,6 +239,20 @@ public class BindingHelper {
                     target.xProperty().subtract(x),
                     target.yProperty().subtract(y)
             );
+        }
+
+        private static LineBinding getLocationBindings(final SW9.abstractions.Location source, final SW9.abstractions.Location target) {
+
+            final Point sourcePoint = new Point(source.xProperty(), source.yProperty());
+            final Point targetPoint = new Point(target.xProperty(), target.yProperty());
+
+            return new BindingHelper.LineBinding(
+                    calculateXBinding(source, targetPoint),
+                    calculateYBinding(source, targetPoint),
+                    calculateXBinding(target, sourcePoint),
+                    calculateYBinding(target, sourcePoint)
+            );
+
         }
 
         private static LineBinding getCircleBindings(final Circle source, final Point target) {
