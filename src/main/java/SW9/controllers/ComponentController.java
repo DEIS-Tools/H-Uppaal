@@ -45,6 +45,7 @@ public class ComponentController implements Initializable {
     public Line line2;
     public Label x;
     public Label y;
+    public Pane defaultLocationsContainer;
 
     private Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
 
@@ -70,13 +71,13 @@ public class ComponentController implements Initializable {
                         c.getAddedSubList().forEach(edge -> {
                             final EdgePresentation edgePresentation = new EdgePresentation(edge, newComponent);
                             edgePresentationMap.put(edge, edgePresentation);
-                            root.getChildren().add(edgePresentation);
+                            modelContainer.getChildren().add(edgePresentation);
                         });
 
                         // Edges are removed from the component
                         c.getRemoved().forEach(edge -> {
                             final EdgePresentation edgePresentation = edgePresentationMap.get(edge);
-                            root.getChildren().remove(edgePresentation);
+                            modelContainer.getChildren().remove(edgePresentation);
                             edgePresentationMap.remove(edge);
                         });
                     }

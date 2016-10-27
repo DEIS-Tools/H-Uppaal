@@ -49,8 +49,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
 
         try {
 
-
-            initializeModelContainer();
+            initializeDefaultLocationsContainer();
             initializeToolbar();
             initializeFrame();
             initializeInitialLocation();
@@ -78,18 +77,16 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
         }
     }
 
-    private void initializeModelContainer() {
+    private void initializeDefaultLocationsContainer() {
         // Instantiate new initial and final location presentations when the component is updated
         this.component.addListener((observable, oldValue, newComponent) -> {
 
-            controller.modelContainer.toFront();
-
             if(initialLocationPresentation != null) {
-                controller.modelContainer.getChildren().remove(initialLocationPresentation);
+                controller.defaultLocationsContainer.getChildren().remove(initialLocationPresentation);
             }
 
             if(finalLocationPresentation != null) {
-                controller.modelContainer.getChildren().remove(finalLocationPresentation);
+                controller.defaultLocationsContainer.getChildren().remove(finalLocationPresentation);
             }
 
             // Instantiate views for the initial and final location
@@ -97,7 +94,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
             finalLocationPresentation = new LocationPresentation(newComponent.getFinalLocation(), newComponent);
 
             // Add the locations to the view
-            controller.modelContainer.getChildren().addAll(initialLocationPresentation, finalLocationPresentation);
+            controller.defaultLocationsContainer.getChildren().addAll(initialLocationPresentation, finalLocationPresentation);
 
             ComponentPresentation.this.controller.frame.setOnMouseEntered(event -> {
                 new Thread(() -> {
