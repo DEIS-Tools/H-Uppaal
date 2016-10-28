@@ -88,8 +88,8 @@ public class MouseTracker {
 
         // Register our own event handler to register mouse placement at all times
         owner.addEventFilter(MouseEvent.ANY, event -> {
-            xProperty.set(event.getX() - (event.getX() % CanvasPresentation.GRID_SIZE));
-            yProperty.set(event.getY() - (event.getY() % CanvasPresentation.GRID_SIZE));
+            xProperty.set(event.getX());
+            yProperty.set(event.getY());
         });
     }
 
