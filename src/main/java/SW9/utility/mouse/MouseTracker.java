@@ -30,7 +30,7 @@ public class MouseTracker {
 
         @Override
         protected double computeValue() {
-            return xProperty().get() - (xProperty().get() % CanvasPresentation.GRID_SIZE) + (CanvasPresentation.GRID_SIZE / 2);
+            return xProperty().get() - (xProperty().get() % CanvasPresentation.GRID_SIZE) + CanvasPresentation.GRID_SIZE * 0.5;
         }
     };
     private final DoubleBinding gridY = new DoubleBinding() {
@@ -40,7 +40,7 @@ public class MouseTracker {
 
         @Override
         protected double computeValue() {
-            return yProperty().get() - (yProperty().get() % CanvasPresentation.GRID_SIZE) + (CanvasPresentation.GRID_SIZE / 2);
+            return yProperty().get() - (yProperty().get() % CanvasPresentation.GRID_SIZE) + CanvasPresentation.GRID_SIZE * 0.5;
         }
     };
 

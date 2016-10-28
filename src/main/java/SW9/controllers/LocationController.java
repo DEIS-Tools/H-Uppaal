@@ -121,10 +121,8 @@ public class LocationController implements Initializable {
             final Edge newEdge = new Edge(getLocation());
 
             UndoRedoStack.push(() -> { // Perform
-                System.out.println("addedge");
                 component.addEdge(newEdge);
             }, () -> { // Undo
-                System.out.println("removedgee");
                 component.removeEdge(newEdge);
             });
         }

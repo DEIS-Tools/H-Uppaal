@@ -131,4 +131,12 @@ public class Edge {
         return nails;
     }
 
+    public boolean addNail(final Nail nail) {
+        return nails.add(nail);
+    }
+
+    public boolean removeNail(final Nail nail) {
+        return nails.remove(nail);
+    }
+
 }

@@ -228,8 +228,8 @@ public class DragHelper {
                 subject.setTranslateY(newY);
             }
             else {
-                subject.xProperty().set(newX - (newX % CanvasPresentation.GRID_SIZE) + (CanvasPresentation.GRID_SIZE / 2));
-                subject.yProperty().set(newY - (newY % CanvasPresentation.GRID_SIZE) + (CanvasPresentation.GRID_SIZE / 2));
+                subject.xProperty().set(newX - (newX % CanvasPresentation.GRID_SIZE) + CanvasPresentation.GRID_SIZE * 0.5);
+                subject.yProperty().set(newY - (newY % CanvasPresentation.GRID_SIZE) + CanvasPresentation.GRID_SIZE * 0.5);
             }
 
             subject.setCursor(Cursor.MOVE);

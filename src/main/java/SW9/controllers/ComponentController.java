@@ -2,7 +2,10 @@ package SW9.controllers;
 
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
+import SW9.abstractions.Nail;
+import SW9.presentations.CanvasPresentation;
 import SW9.presentations.EdgePresentation;
+import SW9.utility.mouse.MouseTracker;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.animation.Interpolator;
@@ -47,6 +50,8 @@ public class ComponentController implements Initializable {
     public Label y;
     public Pane defaultLocationsContainer;
 
+    private MouseTracker mouseTracker;
+
     private Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
 
     @Override
@@ -85,6 +90,8 @@ public class ComponentController implements Initializable {
             });
         });
 
+        // The root view have been inflated, initialize the mouse tracker on it
+        mouseTracker = new MouseTracker(root);
     }
 
     public void toggleDeclaration(final MouseEvent mouseEvent) {
@@ -133,9 +140,15 @@ public class ComponentController implements Initializable {
         return component;
     }
 
-
     @FXML
-    private void pusse() {
-        System.out.println("pusse");
+    private void modelContainerOnPressed(final MouseEvent event) {
+        final Edge unfinishedEdge = getComponent().getUnfinishedEdge();
+        if(unfinishedEdge != null) {
+            unfinishedEdge.addNail(new Nail(CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()), CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty())));
+        }
+    }
+
+    public MouseTracker getMouseTracker() {
+        return mouseTracker;
     }
 }

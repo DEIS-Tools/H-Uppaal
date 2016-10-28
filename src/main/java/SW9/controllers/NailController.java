@@ -22,6 +22,12 @@ public class NailController implements Initializable {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         nail.addListener((observable, oldValue, newValue) -> {
+
+            // Draw the presentation based on the intial value from the abstraction
+            root.setLayoutX(newValue.getX());
+            root.setLayoutY(newValue.getY());
+
+            // Reflect future updates from the presentation into the abstraction
             newValue.xProperty().bind(root.layoutXProperty());
             newValue.yProperty().bind(root.layoutYProperty());
         });

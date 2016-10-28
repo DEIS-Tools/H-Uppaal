@@ -32,7 +32,6 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
 
     private final ComponentController controller;
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
-    private final MouseTracker mouseTracker = new MouseTracker(this);
     private LocationPresentation initialLocationPresentation = null;
     private LocationPresentation finalLocationPresentation = null;
 
@@ -255,6 +254,6 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
 
     @Override
     public MouseTracker getMouseTracker() {
-        return mouseTracker;
+        return controller.getMouseTracker();
     }
 }

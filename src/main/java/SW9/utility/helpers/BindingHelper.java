@@ -230,13 +230,16 @@ public class BindingHelper {
         }
 
         private static LineBinding getLocationBindings(final SW9.abstractions.Location source, final MouseTracker target, final ObservableDoubleValue x, final ObservableDoubleValue y) {
-            final Point point = new Point(target.gridXProperty().subtract(x), target.gridYProperty().subtract(y));
+            final ObservableDoubleValue mouseX = target.gridXProperty().subtract(x);
+            final ObservableDoubleValue mouseY = target.gridYProperty().subtract(y);
+
+            final Point point = new Point(mouseX, mouseY);
 
             return new BindingHelper.LineBinding(
                     calculateXBinding(source, point),
                     calculateYBinding(source, point),
-                    target.gridXProperty().subtract(x),
-                    target.gridYProperty().subtract(y)
+                    mouseX,
+                    mouseY
             );
         }
 

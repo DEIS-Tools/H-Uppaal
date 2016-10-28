@@ -6,6 +6,6 @@
          type="Pane"
          fx:controller="SW9.controllers.CanvasController">
 
-    <ComponentPresentation />
+    <ComponentPresentation layoutX="37" layoutY="37"/>
 
 </fx:root>

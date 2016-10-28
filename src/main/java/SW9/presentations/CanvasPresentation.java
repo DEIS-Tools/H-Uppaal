@@ -107,7 +107,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                             @Override
                             protected double computeValue() {
                                 final int moveFactor = (int) (getParent().getTranslateX() / gridSize);
-                                return -1 * moveFactor * gridSize + gridSize / 2;
+                                return -1 * moveFactor * gridSize + 0.5 * gridSize;
                             }
                         };
 
@@ -144,7 +144,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                             @Override
                             protected double computeValue() {
                                 final int moveFactor = (int) (getParent().getTranslateY() / gridSize);
-                                return -1 * moveFactor * gridSize + gridSize / 2;
+                                return -1 * moveFactor * gridSize + 0.5 * gridSize;
                             }
                         };
 

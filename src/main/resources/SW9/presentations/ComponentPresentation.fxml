@@ -16,7 +16,7 @@
     <Rectangle fx:id="background"/>
 
     <StackPane>
-        <Pane fx:id="modelContainer" onMousePressed="#pusse"/>
+        <Pane fx:id="modelContainer" onMousePressed="#modelContainerOnPressed"/>
         <TextArea fx:id="declaration"
                   visible="false"
                   StackPane.alignment="TOP_CENTER"
