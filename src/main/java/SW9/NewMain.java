@@ -6,6 +6,7 @@ import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.KeyboardTracker;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
@@ -31,13 +32,16 @@ public class NewMain extends Application {
         // Load or create new project
         project = new Project();
 
+        // Set the title and icon for the application
+        stage.setTitle("H-UPPAAL");
+        stage.getIcons().add(new Image("SW9/uppaal.ico"));
 
         // Load the fonts required for the project
         IconFontFX.register(GoogleMaterialDesignIcons.getIconFont());
         loadFonts();
 
         // Remove the classic decoration
-        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initStyle(StageStyle.UNIFIED);
 
         // Make the view used for the application
         final HUPPAALPresentation huppaal = new HUPPAALPresentation();

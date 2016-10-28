@@ -27,7 +27,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
 
     public static final int GRID_SIZE = 10;
     public static MouseTracker mouseTracker;
-    private final DoubleProperty x = new SimpleDoubleProperty();
+    private final DoubleProperty x = new SimpleDoubleProperty(0);
     private final DoubleProperty y = new SimpleDoubleProperty(0);
 
     public CanvasPresentation() {
@@ -48,7 +48,6 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
             initializeGrid();
 
             DragHelper.makeDraggable(this, mouseEvent -> mouseEvent.getButton().equals(MouseButton.SECONDARY));
-
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }

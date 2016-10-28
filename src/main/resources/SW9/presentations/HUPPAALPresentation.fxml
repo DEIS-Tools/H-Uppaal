@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
-<?import org.kordamp.ikonli.javafx.FontIcon?>
 <?import SW9.presentations.CanvasPresentation?>
 <?import SW9.presentations.QueryPanePresentation?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
@@ -12,7 +10,15 @@
          fx:controller="SW9.controllers.HUPPAALController">
 
     <center>
-        <CanvasPresentation/>
+        <StackPane>
+            <CanvasPresentation/>
+
+            <StackPane fx:id="toolbar"
+                       StackPane.alignment="TOP_CENTER"
+                       minHeight="56" maxHeight="56">
+                <Label fx:id="title" text="H-UPPAAL" styleClass="title" StackPane.alignment="CENTER_LEFT"/>
+            </StackPane>
+        </StackPane>
     </center>
 
     <!-- Query pane -->
@@ -23,59 +29,6 @@
                 AnchorPane.rightAnchor="0"
                 AnchorPane.bottomAnchor="0"/>
     </right>
-
-    <!-- Top status bar -->
-    <top>
-        <BorderPane fx:id="topStatusBar"
-                    AnchorPane.topAnchor="0"
-                    AnchorPane.leftAnchor="0"
-                    AnchorPane.rightAnchor="0">
-
-            <left>
-                <StackPane>
-                    <Label fx:id="applicationTitle" styleClass="body2" style="-fx-padding: 0 0 0 5" text="H-UPPAAL">
-                        <graphic>
-                            <FontIcon iconLiteral="gmi-watch-later" iconSize="20"/>
-                        </graphic>
-                    </Label>
-                </StackPane>
-            </left>
-
-            <right>
-                <HBox>
-
-                    <!-- Close window button -->
-                    <JFXButton fx:id="minimizeWindowButton"
-                               onMouseClicked="#minimizeWindowButtonClicked"
-                               style="-fx-button-type: flat;">
-                        <graphic>
-                            <FontIcon iconLiteral="gmi-remove" iconSize="20"/>
-                        </graphic>
-                    </JFXButton>
-
-                    <!-- Close window button -->
-                    <JFXButton fx:id="maximizeWindowButton"
-                               onMouseClicked="#maximizeWindowButtonClicked"
-                               style="-fx-button-type: flat;">
-                        <graphic>
-                            <FontIcon iconLiteral="gmi-fullscreen" iconSize="20"/>
-                        </graphic>
-                    </JFXButton>
-
-                    <!-- Close window button -->
-                    <JFXButton fx:id="closeWindowButton"
-                               onMouseClicked="#closeWindowButtonClicked"
-                               style="-fx-button-type: flat;">
-                        <graphic>
-                            <FontIcon iconLiteral="gmi-close" iconSize="20"/>
-                        </graphic>
-                    </JFXButton>
-
-                </HBox>
-            </right>
-
-        </BorderPane>
-    </top>
 
     <!-- Bottom status bar -->
     <bottom>
@@ -89,6 +42,5 @@
 
         </BorderPane>
     </bottom>
-
 
 </fx:root>

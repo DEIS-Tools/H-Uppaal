@@ -33,6 +33,7 @@ public class QueryPanePresentation extends StackPane {
             controller = fxmlLoader.getController();
 
             initializeToolbar();
+
             initializeAddQueryButton();
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);

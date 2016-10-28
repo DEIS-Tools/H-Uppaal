@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
@@ -25,6 +26,7 @@ public class QueryPaneController implements Initializable {
     public JFXButton runAllQueriesButton;
     public JFXButton clearAllQueriesButton;
     public VBox queriesList;
+    public StackPane root;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {

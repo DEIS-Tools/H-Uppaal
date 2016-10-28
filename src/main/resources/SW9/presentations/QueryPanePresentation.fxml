@@ -8,8 +8,9 @@
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
+         fx:id="root"
          fx:controller="SW9.controllers.QueryPaneController"
-         minWidth="400" style="-fx-background-color: brown;">
+         minWidth="400">
 
     <AnchorPane>
 
@@ -44,9 +45,12 @@
         </AnchorPane>
 
 
-        <ScrollPane fitToHeight="true" fitToWidth="true" AnchorPane.topAnchor="56" AnchorPane.bottomAnchor="0"
+        <ScrollPane fitToHeight="true" fitToWidth="true"
+                    AnchorPane.topAnchor="56"
+                    AnchorPane.bottomAnchor="0"
                     AnchorPane.leftAnchor="0"
-                    AnchorPane.rightAnchor="0" styleClass="edge-to-edge">
+                    AnchorPane.rightAnchor="0"
+                    styleClass="edge-to-edge">
             <VBox fx:id="queriesList">
                 <!-- Queries goes here -->
             </VBox>
