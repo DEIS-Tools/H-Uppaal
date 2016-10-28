@@ -17,6 +17,9 @@ import java.net.URL;
 
 public class NailPresentation extends Group implements MouseTrackable {
 
+    private static final double INVISIBLE_RADIUS = 0d;
+    private static final double VISIBLE_RADIUS = 10d;
+
     private final NailController controller;
     private final ObjectProperty<Nail> nail = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
@@ -29,7 +32,6 @@ public class NailPresentation extends Group implements MouseTrackable {
         fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
 
         try {
-
             initializeNailCircle();
 
             fxmlLoader.setRoot(this);
@@ -52,7 +54,6 @@ public class NailPresentation extends Group implements MouseTrackable {
 
     private void initializeNailCircle() {
         component.addListener((obsComponent, oldComponent, newComponent) -> {
-
             // When the color of the component updates, update the nail indicator as well
             newComponent.colorProperty().addListener((obsColor, oldColor, newColor) -> {
                 controller.nailCircle.setFill(newColor.getColor(newComponent.getColorIntensity()));

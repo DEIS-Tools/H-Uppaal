@@ -49,6 +49,12 @@ public class LocationController implements Initializable {
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+
+        this.location.addListener((obsLocation, oldLocation, newLocation) -> {
+            // The radius property on the abstraction must reflect the radius in the view
+            newLocation.radiusProperty().bind(circle.radiusProperty());
+        });
+
         final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
 
         enteredAnimation = new Timeline();

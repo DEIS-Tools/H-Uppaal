@@ -1,9 +1,10 @@
 package SW9.abstractions;
 
 import SW9.utility.colors.Color;
+import SW9.utility.helpers.Circular;
 import javafx.beans.property.*;
 
-public class Location {
+public class Location implements Circular {
 
     // Verification properties
     private final StringProperty name = new SimpleStringProperty("");
@@ -13,6 +14,7 @@ public class Location {
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
+    private final DoubleProperty radius = new SimpleDoubleProperty(0d);
     private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.GREY_BLUE);
     private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I500);
 
@@ -112,12 +114,25 @@ public class Location {
         return colorIntensity;
     }
 
+    public double getRadius() {
+        return radius.get();
+    }
+
+    public void setRadius(final double radius) {
+        this.radius.set(radius);
+    }
+
+    @Override
+    public DoubleProperty radiusProperty() {
+        return radius;
+    }
+
     public enum Type {
-        NORMAL, INITIAL, FINAl
+        NORMAL, INITIAL, FINAl;
     }
 
     public enum Urgency {
-        NORMAL, URGENT, COMMITTED
+        NORMAL, URGENT, COMMITTED;
     }
 
 }

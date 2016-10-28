@@ -191,6 +191,17 @@ public class BindingHelper {
         }
     }
 
+    public static <T extends Circular> void bind(final Line subject, final T source, final T target) {
+        // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
+        final LineBinding lineBinding = LineBinding.getCircleBindings(source, target);
+
+        // Bind the subjects properties accordingly to our calculations
+        subject.startXProperty().bind(lineBinding.startX);
+        subject.startYProperty().bind(lineBinding.startY);
+        subject.endXProperty().bind(lineBinding.endX);
+        subject.endYProperty().bind(lineBinding.endY);
+    }
+
     private static class LineBinding {
         final ObservableDoubleValue startX;
         final ObservableDoubleValue startY;
@@ -226,6 +237,15 @@ public class BindingHelper {
                     calculateYBinding(source, new Point(target)),
                     target.xProperty(),
                     target.yProperty()
+            );
+        }
+
+        private static <T extends Circular> LineBinding getCircleBindings(final T source, final T target) {
+            return new BindingHelper.LineBinding(
+                    calculateXBinding(source, new Point(target)),
+                    calculateYBinding(source, new Point(target)),
+                    calculateXBinding(target, new Point(source)),
+                    calculateYBinding(target, new Point(source))
             );
         }
 
@@ -327,10 +347,47 @@ public class BindingHelper {
                 }
             };
         }
+
+        private static <T extends Circular> ObservableDoubleValue calculateXBinding(final T source, final Point target) {
+            return new DoubleBinding() {
+                {
+                    super.bind(source.xProperty(), source.yProperty());
+                    super.bind(target.xProperty(), target.yProperty());
+                    super.bind(source.radiusProperty());
+                }
+
+                @Override
+                protected double computeValue() {
+                    final double angle = Math.atan2(source.yProperty().get() - target.yProperty().get(), source.xProperty().get() - target.xProperty().get()) - Math.toRadians(180);
+                    return source.xProperty().get() + source.radiusProperty().get() * Math.cos(angle);
+                }
+            };
+        }
+
+        private static <T extends Circular> ObservableDoubleValue calculateYBinding(final T source, final Point target) {
+            return new DoubleBinding() {
+                {
+                    super.bind(source.xProperty(), source.yProperty());
+                    super.bind(target.xProperty(), target.yProperty());
+                    super.bind(source.radiusProperty());
+                }
+
+                @Override
+                protected double computeValue() {
+                    double angle = Math.atan2(source.yProperty().get() - target.yProperty().get(), source.xProperty().get() - target.xProperty().get()) - Math.toRadians(180);
+                    return source.yProperty().get() + source.radiusProperty().get() * Math.sin(angle);
+                }
+            };
+        }
     }
 
     private static class Point {
         private final ObservableDoubleValue x, y;
+
+        Point(final Circular circular) {
+            this.x = circular.xProperty();
+            this.y = circular.yProperty();
+        }
 
         Point(final ObservableDoubleValue x, final ObservableDoubleValue y) {
             this.x = x;

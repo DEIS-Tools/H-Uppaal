@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
 
 public class EdgeController implements Initializable {
 
-    final ArrayList<Line> lines = new ArrayList<>();
+    private final ArrayList<Line> lines = new ArrayList<>();
     private final ObjectProperty<Edge> edge = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
     public Pane edgeRoot;
@@ -55,7 +55,13 @@ public class EdgeController implements Initializable {
                         while (change.next()) {
                             // There were added some nails
                             change.getAddedSubList().forEach(nail -> {
-                                edgeRoot.getChildren().addAll(new NailPresentation(nail, newComponent));
+                                // Create a new nail presentation based on the abstraction added to the list
+                                final NailPresentation newNail = new NailPresentation(nail, newComponent);
+                                edgeRoot.getChildren().addAll(newNail);
+
+                                // The previous last line must end in the new nail
+                                final Line lastLine = lines.get(lines.size() - 1);
+                                BindingHelper.bind(lastLine, newEdge.getSourceLocation(), nail);
                             });
                         }
                     }
