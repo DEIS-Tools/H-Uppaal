@@ -10,6 +10,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
@@ -141,10 +142,16 @@ public class ComponentController implements Initializable {
     }
 
     @FXML
-    private void modelContainerOnPressed(final MouseEvent event) {
+    private void modelContainerOnPressed() {
         final Edge unfinishedEdge = getComponent().getUnfinishedEdge();
         if (unfinishedEdge != null) {
-            unfinishedEdge.addNail(new Nail(CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()), CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty())));
+            // Calculate the position for the new nail (based on the component position and the canvas mouse tracker)
+            final DoubleBinding x = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty());
+            final DoubleBinding y = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty());
+
+            // Create the abstraction for the new nail and add it to the unfinished edge
+            final Nail newNail = new Nail(x, y);
+            unfinishedEdge.addNail(newNail);
         }
     }
 
