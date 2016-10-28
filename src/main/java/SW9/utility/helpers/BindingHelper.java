@@ -230,38 +230,13 @@ public class BindingHelper {
         }
 
         private static LineBinding getLocationBindings(final SW9.abstractions.Location source, final MouseTracker target, final ObservableDoubleValue x, final ObservableDoubleValue y) {
-
-
-            final DoubleBinding gridFollowX = new DoubleBinding() {
-                {
-                    super.bind(target.xProperty(), x);
-                }
-
-                @Override
-                protected double computeValue() {
-                    final double rawX = target.xProperty().get() - x.get();
-                    return rawX - (rawX % CanvasPresentation.GRID_SIZE) + (CanvasPresentation.GRID_SIZE / 2);
-                }
-            };
-            final DoubleBinding gridFollowY = new DoubleBinding() {
-                {
-                    super.bind(target.yProperty(), y);
-                }
-
-                @Override
-                protected double computeValue() {
-                    final double rawY = target.yProperty().get() - y.get();
-                    return rawY - (rawY % CanvasPresentation.GRID_SIZE) + (CanvasPresentation.GRID_SIZE / 2);
-                }
-            };
-
-            final Point point = new Point(gridFollowX, gridFollowY);
+            final Point point = new Point(target.gridXProperty().subtract(x), target.gridYProperty().subtract(y));
 
             return new BindingHelper.LineBinding(
                     calculateXBinding(source, point),
                     calculateYBinding(source, point),
-                    gridFollowX,
-                    gridFollowY
+                    target.gridXProperty().subtract(x),
+                    target.gridYProperty().subtract(y)
             );
         }
 
