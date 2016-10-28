@@ -4,9 +4,6 @@ import SW9.abstractions.Component;
 import SW9.abstractions.Nail;
 import SW9.controllers.NailController;
 import SW9.utility.colors.Color;
-import SW9.utility.helpers.MouseTrackable;
-import SW9.utility.mouse.MouseTracker;
-import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
@@ -14,7 +11,7 @@ import javafx.scene.Group;
 import java.io.IOException;
 import java.net.URL;
 
-public class NailPresentation extends Group implements MouseTrackable {
+public class NailPresentation extends Group {
 
     private static final double INVISIBLE_RADIUS = 0d;
     private static final double VISIBLE_RADIUS = 10d;
@@ -63,20 +60,5 @@ public class NailPresentation extends Group implements MouseTrackable {
 
         // Initialize the color of the nail
         updateNailColor.run();
-    }
-
-    @Override
-    public DoubleProperty xProperty() {
-        return null;
-    }
-
-    @Override
-    public DoubleProperty yProperty() {
-        return null;
-    }
-
-    @Override
-    public MouseTracker getMouseTracker() {
-        return null;
     }
 }
