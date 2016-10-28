@@ -42,9 +42,7 @@ public class EdgeController implements Initializable {
                 if (newEdge.getNails().isEmpty()) {
                     final Line line = new Line();
                     lines.add(line);
-                    Circle c1 = new Circle(24, -6, 0);
-                    edgeRoot.getChildren().add(c1);
-                    BindingHelper.bind(line, c1, newComponent.xProperty(), newComponent.yProperty());
+                    BindingHelper.bind(line, newEdge.getSourceLocation(), newComponent.xProperty(), newComponent.yProperty());
                     edgeRoot.getChildren().add(line);
                 }
             });

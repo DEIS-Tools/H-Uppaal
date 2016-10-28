@@ -15,9 +15,16 @@
 
     <Rectangle fx:id="background"/>
 
+    <StackPane>
+        <Pane fx:id="modelContainer" onMousePressed="#pusse"/>
+        <TextArea fx:id="declaration"
+                  visible="false"
+                  StackPane.alignment="TOP_CENTER"
+                  styleClass="body2-mono"
+                  style="-fx-faint-focus-color: transparent; -fx-focus-color: transparent;"/>
+    </StackPane>
 
-
-    <BorderPane fx:id="frame">
+    <BorderPane fx:id="frame" pickOnBounds="false">
         <top>
             <BorderPane fx:id="toolbar">
                 <center>
@@ -40,19 +47,9 @@
                 </right>
             </BorderPane>
         </top>
-
-        <center>
-            <StackPane>
-                <Pane fx:id="modelContainer" onMousePressed="#pusse"/>
-                <TextArea fx:id="declaration"
-                          visible="false"
-                          StackPane.alignment="TOP_CENTER"
-                          styleClass="body2-mono"
-                          style="-fx-faint-focus-color: transparent; -fx-focus-color: transparent;"/>
-            </StackPane>
-        </center>
-
     </BorderPane>
+
+
 
     <Line fx:id="line1" />
     <Line fx:id="line2" />

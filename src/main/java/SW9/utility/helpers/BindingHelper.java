@@ -191,17 +191,6 @@ public class BindingHelper {
         }
     }
 
-    public static void bind(Line subject, Circle c1, ObservableDoubleValue x, ObservableDoubleValue y) {
-        // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
-        final LineBinding lineBinding = LineBinding.getLocationBindings(c1, CanvasPresentation.mouseTracker, x, y);
-
-        // Bind the subjects properties accordingly to our calculations
-        subject.startXProperty().bind(lineBinding.startX);
-        subject.startYProperty().bind(lineBinding.startY);
-        subject.endXProperty().bind(lineBinding.endX);
-        subject.endYProperty().bind(lineBinding.endY);
-    }
-
     private static class LineBinding {
         final ObservableDoubleValue startX;
         final ObservableDoubleValue startY;
@@ -241,18 +230,6 @@ public class BindingHelper {
         }
 
         private static LineBinding getLocationBindings(final SW9.abstractions.Location source, final MouseTracker target, final ObservableDoubleValue x, final ObservableDoubleValue y) {
-
-            final Point point = new Point(target.xProperty().subtract(x), target.yProperty().subtract(y));
-
-            return new BindingHelper.LineBinding(
-                    calculateXBinding(source, point),
-                    calculateYBinding(source, point),
-                    target.xProperty().subtract(x),
-                    target.yProperty().subtract(y)
-            );
-        }
-
-        private static LineBinding getLocationBindings(final Circle source, final MouseTracker target, final ObservableDoubleValue x, final ObservableDoubleValue y) {
 
             final Point point = new Point(target.xProperty().subtract(x), target.yProperty().subtract(y));
 
