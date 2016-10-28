@@ -28,7 +28,7 @@ import java.util.Random;
 
 public class ComponentPresentation extends StackPane implements MouseTrackable {
 
-    private final static double CORNER_SIZE = 50;
+    private final static double CORNER_SIZE = 60;
 
     private final ComponentController controller;
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();

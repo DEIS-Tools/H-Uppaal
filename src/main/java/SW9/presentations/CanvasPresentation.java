@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 public class CanvasPresentation extends Pane implements MouseTrackable {
 
-    public static final int GRID_SIZE = 25;
+    public static final int GRID_SIZE = 10;
     public static MouseTracker mouseTracker;
     private final DoubleProperty x = new SimpleDoubleProperty();
     private final DoubleProperty y = new SimpleDoubleProperty(0);
