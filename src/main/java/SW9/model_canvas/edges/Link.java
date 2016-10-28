@@ -3,7 +3,6 @@ package SW9.model_canvas.edges;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.mouse.MouseTracker;
 import javafx.scene.Parent;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 public class Link extends Parent {

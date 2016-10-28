@@ -93,7 +93,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
                     // If we did not successfully removed the element, re-add the already deleted ones
                     if (!result) {
                         // Re-add elements
-                        for(int j = i - 1; j >= 0; j--) {
+                        for (int j = i - 1; j >= 0; j--) {
                             removable = copy.get(j);
                             removable.reAdd();
                         }
@@ -201,7 +201,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
                 }
             }
 
-            if(!componentList.isEmpty()) {
+            if (!componentList.isEmpty()) {
                 addChild(new QueryField(200, 200, componentList));
             }
 

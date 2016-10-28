@@ -24,9 +24,9 @@
             <BorderPane fx:id="toolbar">
                 <center>
                     <HBox>
-                    <StackPane>
-                        <JFXTextField fx:id="name" styleClass="subhead" translateY="1" />
-                    </StackPane>
+                        <StackPane>
+                            <JFXTextField fx:id="name" styleClass="subhead" translateY="1"/>
+                        </StackPane>
                         <Label fx:id="x" text="X" textFill="white" styleClass="subhead"/>
                         <Region minWidth="20"/>
                         <Label fx:id="y" text="Y" textFill="white" styleClass="subhead"/>
@@ -52,8 +52,8 @@
         </center>
     </BorderPane>
 
-    <Line fx:id="line1" />
-    <Line fx:id="line2" />
+    <Line fx:id="line1"/>
+    <Line fx:id="line2"/>
     <Pane fx:id="defaultLocationsContainer" pickOnBounds="false"/>
 
 </fx:root>

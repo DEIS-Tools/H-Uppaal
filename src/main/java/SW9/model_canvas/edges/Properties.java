@@ -10,7 +10,6 @@ import SW9.utility.mouse.MouseTracker;
 import com.jfoenix.controls.JFXTextField;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -45,7 +44,7 @@ public class Properties extends Parent implements LocationAware, MouseTrackable,
 
         public final String icon;
 
-        Type (final String icon) {
+        Type(final String icon) {
             this.icon = icon;
         }
     }
@@ -53,18 +52,19 @@ public class Properties extends Parent implements LocationAware, MouseTrackable,
     public static class Entry {
         public Properties.Type type;
         public StringProperty stringBinder;
+
         public Entry(final Properties.Type type, final StringProperty stringBinder) {
             this.type = type;
             this.stringBinder = stringBinder;
         }
     }
 
-    public Properties(final Entry ... entries) {
+    public Properties(final Entry... entries) {
         this.getStyleClass().add("edge-properties");
 
         final VBox propertiesBox = new VBox();
 
-        for(final Entry entry : entries) {
+        for (final Entry entry : entries) {
             propertiesBox.getChildren().add(generatePropertyBox(entry));
         }
 
@@ -76,7 +76,7 @@ public class Properties extends Parent implements LocationAware, MouseTrackable,
         // Hide the elements in hiddenElements (input fields) when we are not hovering the properties
         localMouseTracker.registerOnMouseEnteredEventHandler(event -> {
             // Do not snow if we have a location on the mouse
-            if(ModelCanvas.mouseHasLocation()) {
+            if (ModelCanvas.mouseHasLocation()) {
                 hiddenElements.forEach(node -> node.setVisible(false));
             } else {
                 hiddenElements.forEach(node -> node.setVisible(true));

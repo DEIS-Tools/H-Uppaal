@@ -14,7 +14,6 @@ import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
@@ -77,15 +76,15 @@ public class LocationPresentation extends Group implements MouseTrackable {
             final Label nameLabel = controller.nameLabel;
 
             nameLabel.widthProperty().addListener((obsWidth, oldWidth, newWidth) -> {
-                nameLabel.translateXProperty().set(newWidth.doubleValue() / - 2);
+                nameLabel.translateXProperty().set(newWidth.doubleValue() / -2);
             });
 
             nameLabel.heightProperty().addListener((obsHeight, oldHeight, newHeight) -> {
-                nameLabel.translateYProperty().set(newHeight.doubleValue() / - 2);
+                nameLabel.translateYProperty().set(newHeight.doubleValue() / -2);
             });
 
-            final Color color =  newLocation.getColor();
-            final Color.Intensity colorIntensity =  newLocation.getColorIntensity();
+            final Color color = newLocation.getColor();
+            final Color.Intensity colorIntensity = newLocation.getColorIntensity();
             nameLabel.setTextFill(color.getTextColor(colorIntensity));
 
             nameLabel.textProperty().bind(newLocation.nameProperty());
@@ -94,8 +93,8 @@ public class LocationPresentation extends Group implements MouseTrackable {
 
     private void initializeUrgencyCircle() {
         this.location.addListener((observable, oldValue, newLocation) -> {
-            final Color color =  newLocation.getColor();
-            final Color.Intensity colorIntensity =  newLocation.getColorIntensity();
+            final Color color = newLocation.getColor();
+            final Color.Intensity colorIntensity = newLocation.getColorIntensity();
 
             final StackPane urgencyContainer = controller.urgencyContainer;
             final Circle urgencyCircle = controller.urgencyCircle;
@@ -108,16 +107,16 @@ public class LocationPresentation extends Group implements MouseTrackable {
 
             urgencyLabel.textProperty().bind(
                     new When(newLocation.urgencyProperty().isEqualTo(Location.Urgency.URGENT)).
-                    then("U").
-                    otherwise("C")
+                            then("U").
+                            otherwise("C")
             );
         });
     }
 
     private void initializeInvariantCircle() {
         this.location.addListener((observable, oldValue, newLocation) -> {
-            final Color color =  newLocation.getColor();
-            final Color.Intensity colorIntensity =  newLocation.getColorIntensity();
+            final Color color = newLocation.getColor();
+            final Color.Intensity colorIntensity = newLocation.getColorIntensity();
 
             final StackPane invariantContainer = controller.invariantContainer;
             final Circle invariantCircle = controller.invariantCircle;

@@ -2,7 +2,6 @@ package SW9.model_canvas.arrow_heads;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcTo;
-import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 

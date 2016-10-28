@@ -10,5 +10,5 @@ public interface IParent {
 
     void removeChild(final Node child);
 
-    void removeChildren(final Node ... children);
+    void removeChildren(final Node... children);
 }

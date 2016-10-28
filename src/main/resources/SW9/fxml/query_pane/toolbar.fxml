@@ -1,8 +1,6 @@
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
 <?import com.jfoenix.controls.JFXButton?>
-<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
 <HBox xmlns="http://javafx.com/javafx/8.0.76-ea">
 
     <VBox>
@@ -11,12 +9,12 @@
     </VBox>
 
     <!-- Will create just enough space between the two elements -->
-    <Region HBox.hgrow="ALWAYS" />
+    <Region HBox.hgrow="ALWAYS"/>
 
     <!-- Container for the two buttons -->
     <HBox alignment="BOTTOM_RIGHT">
         <JFXButton id="clear-button">Clear</JFXButton>
-        <Region minWidth="16" />
+        <Region minWidth="16"/>
         <JFXButton id="run-all-button">Run all</JFXButton>
     </HBox>
 

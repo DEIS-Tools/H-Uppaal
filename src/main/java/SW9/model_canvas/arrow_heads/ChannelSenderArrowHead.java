@@ -26,7 +26,7 @@ public abstract class ChannelSenderArrowHead extends ArrowHead {
     private ObservableDoubleValue cy = Bindings.subtract(ay, TRIANGLE_LENGTH);
 
     private BooleanProperty isUrgent = new SimpleBooleanProperty();
-    
+
     public ChannelSenderArrowHead() {
         super();
         addChildren(initializeTriangle(), initializeLabel());

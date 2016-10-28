@@ -80,11 +80,11 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
         // Instantiate new initial and final location presentations when the component is updated
         this.component.addListener((observable, oldValue, newComponent) -> {
 
-            if(initialLocationPresentation != null) {
+            if (initialLocationPresentation != null) {
                 controller.defaultLocationsContainer.getChildren().remove(initialLocationPresentation);
             }
 
-            if(finalLocationPresentation != null) {
+            if (finalLocationPresentation != null) {
                 controller.defaultLocationsContainer.getChildren().remove(finalLocationPresentation);
             }
 
@@ -135,8 +135,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
     private void initializeInitialLocation() {
         component.addListener((observable, oldValue, component) -> {
             initialLocationPresentation.setLocation(component.getInitialLocation());
-            initialLocationPresentation.setLayoutX(CORNER_SIZE/2);
-            initialLocationPresentation.setLayoutY(CORNER_SIZE/2);
+            initialLocationPresentation.setLayoutX(CORNER_SIZE / 2);
+            initialLocationPresentation.setLayoutY(CORNER_SIZE / 2);
 
             StackPane.setAlignment(initialLocationPresentation, Pos.TOP_LEFT);
         });
@@ -145,8 +145,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
     private void initializeFinalLocation() {
         component.addListener((observable, oldValue, component) -> {
             finalLocationPresentation.setLocation(component.getFinalLocation());
-            finalLocationPresentation.setLayoutX(component.getWidth() - CORNER_SIZE /2);
-            finalLocationPresentation.setLayoutY(component.getHeight() - CORNER_SIZE /2);
+            finalLocationPresentation.setLayoutX(component.getWidth() - CORNER_SIZE / 2);
+            finalLocationPresentation.setLayoutY(component.getHeight() - CORNER_SIZE / 2);
 
             StackPane.setAlignment(finalLocationPresentation, Pos.BOTTOM_RIGHT);
         });

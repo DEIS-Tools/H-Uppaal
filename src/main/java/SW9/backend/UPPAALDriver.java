@@ -26,11 +26,13 @@ public class UPPAALDriver {
     }
 
     public static void verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final List<Component> components) {
-        verify(query, success, failure, TraceType.NONE,e -> {}, components);
+        verify(query, success, failure, TraceType.NONE, e -> {
+        }, components);
     }
 
     public static void verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final Component... components) {
-        verify(query, success, failure, TraceType.NONE, e -> {}, components);
+        verify(query, success, failure, TraceType.NONE, e -> {
+        }, components);
     }
 
     public static void verify(final String query,

@@ -1,8 +1,8 @@
 package SW9;
 
 import SW9.issues.Warning;
-import SW9.model_canvas.ModelCanvas;
 import SW9.model_canvas.Component;
+import SW9.model_canvas.ModelCanvas;
 import SW9.model_canvas.component.NewComponentModel;
 import SW9.model_canvas.component.NewComponentView;
 import SW9.ui_elements.QueryPane;
@@ -16,7 +16,10 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -341,7 +344,7 @@ public class Main extends Application {
         final KeyValue visibleTranslateX = new KeyValue(queryPane.translateXProperty(), 0, Interpolator.EASE_OUT);
 
         // Initialize the animation accordingly to the property
-        if(isQueryPaneShown.get()) {
+        if (isQueryPaneShown.get()) {
             final KeyFrame visibleKeyFrame = new KeyFrame(Duration.millis(0), visibleTranslateX);
             final KeyFrame hiddenKeyFrame = new KeyFrame(Duration.millis(150), hiddenTranslateX);
 

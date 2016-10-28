@@ -223,11 +223,10 @@ public class DragHelper {
             final double newX = previousXTranslation[0] + event.getScreenX() + dragXOffset[0];
             final double newY = previousYTranslation[0] + event.getScreenY() + dragYOffset[0];
 
-            if(subject instanceof CanvasPresentation) {
+            if (subject instanceof CanvasPresentation) {
                 subject.setTranslateX(newX);
                 subject.setTranslateY(newY);
-            }
-            else {
+            } else {
                 subject.xProperty().set(newX - (newX % CanvasPresentation.GRID_SIZE) + CanvasPresentation.GRID_SIZE * 0.5);
                 subject.yProperty().set(newY - (newY % CanvasPresentation.GRID_SIZE) + CanvasPresentation.GRID_SIZE * 0.5);
             }

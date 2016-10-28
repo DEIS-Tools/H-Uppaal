@@ -2,10 +2,8 @@ package SW9.backend;
 
 import SW9.model_canvas.edges.Edge;
 import SW9.model_canvas.locations.Location;
-import com.uppaal.model.system.SystemEdge;
 import com.uppaal.model.system.SystemEdgeSelect;
 import com.uppaal.model.system.SystemLocation;
-import com.uppaal.model.system.SystemState;
 import com.uppaal.model.system.symbolic.SymbolicState;
 import com.uppaal.model.system.symbolic.SymbolicTransition;
 
@@ -26,19 +24,19 @@ public class Trace {
 
             final SystemEdgeSelect[] chosenEdges = symbolicTransition.getEdges();
 
-            if(sourceState != null) {
+            if (sourceState != null) {
                 for (final SystemLocation sourceSystemLocation : sourceState.getLocations()) {
                     sourceLocations.add(huppaalDocument.getLocation(sourceSystemLocation.getLocation()));
                 }
             }
 
-            if(targetState != null) {
+            if (targetState != null) {
                 for (final SystemLocation targetSystemLocation : targetState.getLocations()) {
                     targetLocations.add(huppaalDocument.getLocation(targetSystemLocation.getLocation()));
                 }
             }
 
-            if(chosenEdges != null) {
+            if (chosenEdges != null) {
                 for (final SystemEdgeSelect chosenEdge : chosenEdges) {
                     edges.add(huppaalDocument.getEdge(chosenEdge.getEdge()));
                 }

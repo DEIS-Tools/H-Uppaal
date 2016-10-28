@@ -112,7 +112,7 @@ public class ComponentController implements Initializable {
             }
 
             protected void interpolate(final double fraction) {
-                if(getComponent().isDeclarationOpen()) {
+                if (getComponent().isDeclarationOpen()) {
                     circle.setRadius(fraction * maxRadius);
                 } else {
                     circle.setRadius(maxRadius - fraction * maxRadius);
@@ -143,7 +143,7 @@ public class ComponentController implements Initializable {
     @FXML
     private void modelContainerOnPressed(final MouseEvent event) {
         final Edge unfinishedEdge = getComponent().getUnfinishedEdge();
-        if(unfinishedEdge != null) {
+        if (unfinishedEdge != null) {
             unfinishedEdge.addNail(new Nail(CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()), CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty())));
         }
     }

@@ -32,8 +32,8 @@
         <Label text="I" fx:id="invariantLabel" styleClass="body2"/>
     </StackPane>
 
-    <StackPane  translateX="-20.5" translateY="7" fx:id="urgencyContainer">
-        <Circle fx:id="urgencyCircle" radius="10" mouseTransparent="true" />
+    <StackPane translateX="-20.5" translateY="7" fx:id="urgencyContainer">
+        <Circle fx:id="urgencyCircle" radius="10" mouseTransparent="true"/>
         <Label text="U" fx:id="urgencyLabel" styleClass="body2"/>
     </StackPane>
 

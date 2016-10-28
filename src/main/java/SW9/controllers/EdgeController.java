@@ -52,7 +52,7 @@ public class EdgeController implements Initializable {
                 newEdge.getNails().addListener(new ListChangeListener<Nail>() {
                     @Override
                     public void onChanged(final Change<? extends Nail> change) {
-                        while(change.next()) {
+                        while (change.next()) {
                             // There were added some nails
                             change.getAddedSubList().forEach(nail -> {
                                 edgeRoot.getChildren().addAll(new NailPresentation(nail, newComponent));

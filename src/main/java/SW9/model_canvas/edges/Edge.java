@@ -223,7 +223,7 @@ public class Edge extends Parent implements Removable, Colorable, Traceable {
                 add(newNail, 0);
             }
             // We do not have a single nail, but we need at least 1 when source and target locations are different
-            else if(ModelCanvas.mouseIsHoveringLocation() && nails.size() == 0 && !sourceLocation.equals(targetLocation)) {
+            else if (ModelCanvas.mouseIsHoveringLocation() && nails.size() == 0 && !sourceLocation.equals(targetLocation)) {
                 final Nail newNail = new Nail(sourceLocation.xProperty(), sourceLocation.yProperty().add(sourceLocation.circle.getRadius() * 2));
                 add(newNail, 0);
             }
@@ -539,7 +539,7 @@ public class Edge extends Parent implements Removable, Colorable, Traceable {
     public StringProperty updateProperty() {
         return updateProperty;
     }
-    
+
     public String getUpdate() {
         return updateProperty.get();
     }
