@@ -59,23 +59,23 @@ public class ComponentController implements Initializable {
     public void initialize(final URL location, final ResourceBundle resources) {
 
         component.addListener((observable, oldValue, newValue) -> {
+            // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width from the presentation into the abstraction
+
+            // Bind the position of the abstraction to the values in the view
             newValue.xProperty().bind(root.layoutXProperty());
             newValue.yProperty().bind(root.layoutYProperty());
-        });
 
-        component.addListener((observable, oldValue, newValue) -> {
+            // Some debug values in the view todo: remove these at some point
             x.textProperty().bind(newValue.xProperty().asString());
             y.textProperty().bind(newValue.yProperty().asString());
-        });
 
-        component.addListener((obsComponent, oldComponent, newComponent) -> {
-            newComponent.getEdges().addListener(new ListChangeListener<Edge>() {
+            newValue.getEdges().addListener(new ListChangeListener<Edge>() {
                 @Override
                 public void onChanged(final Change<? extends Edge> c) {
                     if (c.next()) {
                         // Edges are added to the component
                         c.getAddedSubList().forEach(edge -> {
-                            final EdgePresentation edgePresentation = new EdgePresentation(edge, newComponent);
+                            final EdgePresentation edgePresentation = new EdgePresentation(edge, newValue);
                             edgePresentationMap.put(edge, edgePresentation);
                             modelContainer.getChildren().add(edgePresentation);
                         });
