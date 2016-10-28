@@ -17,11 +17,6 @@
 
     <StackPane>
         <Pane fx:id="modelContainer" onMousePressed="#modelContainerOnPressed"/>
-        <TextArea fx:id="declaration"
-                  visible="false"
-                  StackPane.alignment="TOP_CENTER"
-                  styleClass="body2-mono"
-                  style="-fx-faint-focus-color: transparent; -fx-focus-color: transparent;"/>
     </StackPane>
 
     <BorderPane fx:id="frame" pickOnBounds="false">
@@ -47,6 +42,14 @@
                 </right>
             </BorderPane>
         </top>
+
+        <center>
+            <TextArea fx:id="declaration"
+                      visible="false"
+                      StackPane.alignment="TOP_CENTER"
+                      styleClass="body2-mono"
+                      style="-fx-faint-focus-color: transparent; -fx-focus-color: transparent;"/>
+        </center>
     </BorderPane>
 
 
