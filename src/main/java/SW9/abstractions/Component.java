@@ -70,16 +70,24 @@ public class Component {
         return locations;
     }
 
+    public boolean addLocation(final Location location) {
+        return locations.add(location);
+    }
+
+    public boolean removeLocation(final Location location) {
+        return locations.remove(location);
+    }
+
+    public ObservableList<Edge> getEdges() {
+        return edges;
+    }
+
     public boolean addEdge(final Edge edge) {
         return edges.add(edge);
     }
 
     public boolean removeEdge(final Edge edge) {
         return edges.remove(edge);
-    }
-
-    public ObservableList<Edge> getEdges() {
-        return edges;
     }
 
     public double getX() {
