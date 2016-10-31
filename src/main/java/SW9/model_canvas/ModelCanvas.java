@@ -64,216 +64,6 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
         DragHelper.makeDraggable(this, mouseEvent -> mouseEvent.getButton().equals(MouseButton.SECONDARY));
     }
 
-    @FXML
-    public void initialize() {
-        KeyboardTracker.registerKeybind(KeyboardTracker.ADD_CHANNEL_BOX, new Keybind(new KeyCodeCombination(KeyCode.B), () -> {
-            final ChannelBox channelBox = new ChannelBox();
-
-            UndoRedoStack.push(() -> { // Perform
-                addChild(channelBox);
-            }, () -> { // Undo
-                removeChild(channelBox);
-            });
-        }));
-
-        KeyboardTracker.registerKeybind(KeyboardTracker.DELETE_SELECTED, new Keybind(new KeyCodeCombination(KeyCode.DELETE), () -> {
-            final ArrayList<Removable> copy = new ArrayList<>();
-
-            SelectHelper.getSelectedElements().forEach(copy::add);
-
-            SelectHelper.clearSelectedElements();
-
-            UndoRedoStack.push(() -> { // Perform
-                for (int i = 0; i < copy.size(); i++) {
-                    Removable removable = copy.get(i);
-
-                    // Check if we successfully removed the element
-                    final boolean result = removable.remove();
-
-                    // If we did not successfully removed the element, re-add the already deleted ones
-                    if (!result) {
-                        // Re-add elements
-                        for (int j = i - 1; j >= 0; j--) {
-                            removable = copy.get(j);
-                            removable.reAdd();
-                        }
-
-                        // Rollback this perform (clear the history of this perform action)
-                        UndoRedoStack.forget();
-                    }
-                }
-
-            }, () -> { // Undo
-                copy.forEach(Removable::deselect);
-                copy.forEach(Removable::reAdd);
-            });
-        }));
-
-        KeyboardTracker.registerKeybind(KeyboardTracker.UNDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN), UndoRedoStack::undo));
-        KeyboardTracker.registerKeybind(KeyboardTracker.REDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), UndoRedoStack::redo));
-
-        KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
-            if (!mouseHasLocation()) {
-                final Location newLocation = new Location(mouseTracker);
-                locationOnMouse = newLocation;
-                newLocation.setEffect(DropShadowHelper.generateElevationShadow(22));
-                addChild(newLocation);
-
-                if (mouseIsHoveringModelContainer()) {
-                    newLocation.resetColor(getHoveredComponent().getColor(), getHoveredComponent().getColorIntensity());
-                }
-            }
-        }));
-
-        KeyboardTracker.registerKeybind(KeyboardTracker.CREATE_COMPONENT, new Keybind(new KeyCodeCombination(KeyCode.K), () -> {
-            final Component mc = new Component(mouseTracker.xProperty().get(), mouseTracker.yProperty().get(), 400, 600, "Component" + componentCount, mouseTracker);
-            componentCount++;
-
-            UndoRedoStack.push(() -> addChild(mc), () -> removeChild(mc));
-        }));
-
-        // TODO remove me when testing of heads is done
-        KeyboardTracker.registerKeybind(KeyboardTracker.TESTING_BIND, new Keybind(new KeyCodeCombination(KeyCode.T), () -> {
-            getChildren().stream().filter(child -> child instanceof Component).forEach(child -> {
-                final Component container = ((Component) child);
-
-                container.hasDeadlockProperty().set(!container.hasDeadlockProperty().get());
-
-                container.getLocations().forEach(location -> {
-                    location.reachabilityCertaintyProperty().set(100);
-                    location.isReachableProperty().set(false);
-                });
-            });
-
-            // Outgoing arrows
-            final Circle outgoingStart1 = new Circle(100, 100, 0);
-            final Circle outgoingEnd1 = new Circle(200, 100, 0);
-
-            final Circle outgoingStart2 = new Circle(100, 200, 0);
-            final Circle outgoingEnd2 = new Circle(200, 200, 0);
-
-            final HandshakeChannelSenderArrowHead handshakeArrowHead = new HandshakeChannelSenderArrowHead();
-            final BroadcastChannelSenderArrowHead broadCastArrowHead = new BroadcastChannelSenderArrowHead();
-            handshakeArrowHead.isUrgentProperty().setValue(true);
-
-            final Line handshakeArrowLine = new Line();
-            final Line broadCastArrowLine = new Line();
-
-            BindingHelper.bind(handshakeArrowLine, handshakeArrowHead, outgoingStart1, outgoingEnd1);
-            BindingHelper.bind(broadCastArrowLine, broadCastArrowHead, outgoingStart2, outgoingEnd2);
-
-
-            // Incoming arrows
-            final Circle incomingEnd1 = new Circle(300, 100, 0);
-            final Circle incomingStart1 = new Circle(400, 100, 0);
-
-            final Line channelReceiverLine = new Line();
-            final ChannelReceiverArrowHead channelReceiverArrowHead = new ChannelReceiverArrowHead();
-
-            BindingHelper.bind(channelReceiverLine, channelReceiverArrowHead, incomingStart1, incomingEnd1);
-
-            // Lines between outgoing and incoming arrows
-            final DashedLine handshakeSyncLine = new DashedLine();
-            final SimpleArrowHead handshakeSyncArrowHead = new SimpleArrowHead();
-
-            BindingHelper.bind(handshakeSyncLine, handshakeArrowHead, channelReceiverArrowHead);
-            BindingHelper.bind(handshakeSyncArrowHead, outgoingEnd1, channelReceiverArrowHead.getCircle());
-
-            // Properties
-            final Properties properties = new Properties();
-            properties.xProperty().set(100);
-            properties.yProperty().set(300);
-
-            UndoRedoStack.push(
-                    () -> addChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine, handshakeSyncLine, handshakeSyncArrowHead),
-                    () -> removeChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine, handshakeSyncLine, handshakeSyncArrowHead)
-            );
-        }));
-
-        // Gets the first model container and checks for deadlock
-        KeyboardTracker.registerKeybind(KeyboardTracker.COMPONENT_HAS_DEADLOCK, new Keybind(new KeyCodeCombination(KeyCode.D), () -> {
-
-
-            List<Component> componentList = new ArrayList<>();
-            for (Node child : getChildren()) {
-                if (child instanceof Component) {
-                    componentList.add((Component) child);
-                }
-            }
-
-            if (!componentList.isEmpty()) {
-                addChild(new QueryField(200, 200, componentList));
-            }
-
-        }));
-
-        // Color keybinds below
-        KeyboardTracker.registerKeybind(KeyboardTracker.COLOR_0, new Keybind(new KeyCodeCombination(KeyCode.DIGIT0), () -> {
-            final Component hoveredComponent = getHoveredComponent();
-            final Location hoveredLocation = getHoveredLocation();
-
-            // Not hovering anything interesting
-            if (hoveredComponent == null) return;
-
-            final Colorable[] hoveredElement = {null};
-            if (hoveredComponent != null) hoveredElement[0] = (Colorable) hoveredComponent;
-            if (hoveredLocation != null) hoveredElement[0] = hoveredLocation;
-
-            // Only reset the color, if the element is actually colored (do avoid redundant undo-elements on the stack
-            if (hoveredElement[0].isColored()) {
-                final Color previousColor = hoveredElement[0].getColor();
-                final Color.Intensity previousIntensity = hoveredElement[0].getColorIntensity();
-
-                UndoRedoStack.push(() -> { // Perform
-                    hoveredElement[0].resetColor();
-                }, () -> { // Undo
-                    hoveredElement[0].color(previousColor, previousIntensity);
-                });
-            }
-        }));
-
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_1, KeyCode.DIGIT1, Color.RED, Color.Intensity.I700);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_2, KeyCode.DIGIT2, Color.PINK, Color.Intensity.I500);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_3, KeyCode.DIGIT3, Color.PURPLE, Color.Intensity.I500);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_4, KeyCode.DIGIT4, Color.INDIGO, Color.Intensity.I500);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_5, KeyCode.DIGIT5, Color.BLUE, Color.Intensity.I500);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_6, KeyCode.DIGIT6, Color.TEAL, Color.Intensity.I500);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_7, KeyCode.DIGIT7, Color.GREY, Color.Intensity.I600);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_8, KeyCode.DIGIT8, Color.GREEN, Color.Intensity.I700);
-        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_9, KeyCode.DIGIT9, Color.BROWN, Color.Intensity.I500);
-    }
-
-    private void registerKeyBoardColorKeyBind(final String id, final KeyCode keyCode, final Color color, final Color.Intensity intensity) {
-        KeyboardTracker.registerKeybind(id, new Keybind(new KeyCodeCombination(keyCode), () -> {
-            final Component hoveredComponent = getHoveredComponent();
-            final Location hoveredLocation = getHoveredLocation();
-
-            // Not hovering anything interesting
-            if (hoveredComponent == null && hoveredLocation == null) return;
-
-            final Colorable[] hoveredElement = {null};
-            if (hoveredComponent != null) hoveredElement[0] = hoveredComponent;
-            if (hoveredLocation != null) hoveredElement[0] = hoveredLocation;
-
-            final Color previousColor = hoveredElement[0].getColor();
-            final Color.Intensity previousIntensity = hoveredElement[0].getColorIntensity();
-            final boolean wasPreviouslyColors = hoveredElement[0].isColored();
-
-            UndoRedoStack.push(() -> { // Perform
-                final boolean result = hoveredElement[0].color(color, intensity);
-                if (!result) {
-                    UndoRedoStack.undo(); // We did not color the element, undo the action immediately
-                }
-            }, () -> { // Undo
-                if (wasPreviouslyColors) {
-                    hoveredElement[0].color(previousColor, previousIntensity);
-                } else {
-                    hoveredElement[0].resetColor(previousColor, previousIntensity);
-                }
-            });
-        }));
-    }
-
     /**
      * Gets the Location that currently follows the mouse on the canvas
      * This functionality is maintained by the Location themselves.
@@ -403,6 +193,216 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
 
     public static boolean mouseIsHoveringModelContainer() {
         return hoveredComponent != null;
+    }
+
+    @FXML
+    public void initialize() {
+        KeyboardTracker.registerKeybind(KeyboardTracker.ADD_CHANNEL_BOX, new Keybind(new KeyCodeCombination(KeyCode.B), () -> {
+            final ChannelBox channelBox = new ChannelBox();
+
+            UndoRedoStack.push(() -> { // Perform
+                addChild(channelBox);
+            }, () -> { // Undo
+                removeChild(channelBox);
+            });
+        }));
+
+        KeyboardTracker.registerKeybind(KeyboardTracker.DELETE_SELECTED, new Keybind(new KeyCodeCombination(KeyCode.DELETE), () -> {
+            final ArrayList<Removable> copy = new ArrayList<>();
+
+            SelectHelper.getSelectedElements().forEach(copy::add);
+
+            SelectHelper.clearSelectedElements();
+
+            UndoRedoStack.push(() -> { // Perform
+                for (int i = 0; i < copy.size(); i++) {
+                    Removable removable = copy.get(i);
+
+                    // Check if we successfully removed the element
+                    final boolean result = removable.remove();
+
+                    // If we did not successfully removed the element, re-add the already deleted ones
+                    if (!result) {
+                        // Re-add elements
+                        for (int j = i - 1; j >= 0; j--) {
+                            removable = copy.get(j);
+                            removable.reAdd();
+                        }
+
+                        // Rollback this perform (clear the history of this perform action)
+                        UndoRedoStack.forget();
+                    }
+                }
+
+            }, () -> { // Undo
+                copy.forEach(Removable::deselect);
+                copy.forEach(Removable::reAdd);
+            });
+        }));
+
+        KeyboardTracker.registerKeybind(KeyboardTracker.UNDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN), UndoRedoStack::undo));
+        KeyboardTracker.registerKeybind(KeyboardTracker.REDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), UndoRedoStack::redo));
+
+        KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
+            if (!mouseHasLocation()) {
+                final Location newLocation = new Location(mouseTracker);
+                locationOnMouse = newLocation;
+                newLocation.setEffect(DropShadowHelper.generateElevationShadow(22));
+                addChild(newLocation);
+
+                if (mouseIsHoveringModelContainer()) {
+                    newLocation.resetColor(getHoveredComponent().getColor(), getHoveredComponent().getColorIntensity());
+                }
+            }
+        }));
+
+        KeyboardTracker.registerKeybind(KeyboardTracker.CREATE_COMPONENT, new Keybind(new KeyCodeCombination(KeyCode.K), () -> {
+            final Component mc = new Component(mouseTracker.xProperty().get(), mouseTracker.yProperty().get(), 400, 600, "Component" + componentCount, mouseTracker);
+            componentCount++;
+
+            UndoRedoStack.push(() -> addChild(mc), () -> removeChild(mc));
+        }));
+
+        // TODO remove me when testing of heads is done
+        KeyboardTracker.registerKeybind(KeyboardTracker.TESTING_BIND, new Keybind(new KeyCodeCombination(KeyCode.T), () -> {
+            getChildren().stream().filter(child -> child instanceof Component).forEach(child -> {
+                final Component container = ((Component) child);
+
+                container.hasDeadlockProperty().set(!container.hasDeadlockProperty().get());
+
+                container.getLocations().forEach(location -> {
+                    location.reachabilityCertaintyProperty().set(100);
+                    location.isReachableProperty().set(false);
+                });
+            });
+
+            // Outgoing arrows
+            final Circle outgoingStart1 = new Circle(100, 100, 0);
+            final Circle outgoingEnd1 = new Circle(200, 100, 0);
+
+            final Circle outgoingStart2 = new Circle(100, 200, 0);
+            final Circle outgoingEnd2 = new Circle(200, 200, 0);
+
+            final HandshakeChannelSenderArrowHead handshakeArrowHead = new HandshakeChannelSenderArrowHead();
+            final BroadcastChannelSenderArrowHead broadCastArrowHead = new BroadcastChannelSenderArrowHead();
+            handshakeArrowHead.isUrgentProperty().setValue(true);
+
+            final Line handshakeArrowLine = new Line();
+            final Line broadCastArrowLine = new Line();
+
+//            BindingHelper.bind(handshakeArrowLine, handshakeArrowHead, outgoingStart1, outgoingEnd1);
+//            BindingHelper.bind(broadCastArrowLine, broadCastArrowHead, outgoingStart2, outgoingEnd2);
+
+
+            // Incoming arrows
+            final Circle incomingEnd1 = new Circle(300, 100, 0);
+            final Circle incomingStart1 = new Circle(400, 100, 0);
+
+            final Line channelReceiverLine = new Line();
+            final ChannelReceiverArrowHead channelReceiverArrowHead = new ChannelReceiverArrowHead();
+
+//            BindingHelper.bind(channelReceiverLine, channelReceiverArrowHead, incomingStart1, incomingEnd1);
+
+            // Lines between outgoing and incoming arrows
+            final DashedLine handshakeSyncLine = new DashedLine();
+            final SimpleArrowHead handshakeSyncArrowHead = new SimpleArrowHead();
+
+            BindingHelper.bind(handshakeSyncLine, handshakeArrowHead, channelReceiverArrowHead);
+//            BindingHelper.bind(handshakeSyncArrowHead, outgoingEnd1, channelReceiverArrowHead.getCircle());
+
+            // Properties
+            final Properties properties = new Properties();
+            properties.xProperty().set(100);
+            properties.yProperty().set(300);
+
+            UndoRedoStack.push(
+                    () -> addChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine, handshakeSyncLine, handshakeSyncArrowHead),
+                    () -> removeChildren(handshakeArrowLine, broadCastArrowLine, handshakeArrowHead, broadCastArrowHead, properties, channelReceiverArrowHead, channelReceiverLine, handshakeSyncLine, handshakeSyncArrowHead)
+            );
+        }));
+
+        // Gets the first model container and checks for deadlock
+        KeyboardTracker.registerKeybind(KeyboardTracker.COMPONENT_HAS_DEADLOCK, new Keybind(new KeyCodeCombination(KeyCode.D), () -> {
+
+
+            List<Component> componentList = new ArrayList<>();
+            for (Node child : getChildren()) {
+                if (child instanceof Component) {
+                    componentList.add((Component) child);
+                }
+            }
+
+            if (!componentList.isEmpty()) {
+                addChild(new QueryField(200, 200, componentList));
+            }
+
+        }));
+
+        // Color keybinds below
+        KeyboardTracker.registerKeybind(KeyboardTracker.COLOR_0, new Keybind(new KeyCodeCombination(KeyCode.DIGIT0), () -> {
+            final Component hoveredComponent = getHoveredComponent();
+            final Location hoveredLocation = getHoveredLocation();
+
+            // Not hovering anything interesting
+            if (hoveredComponent == null) return;
+
+            final Colorable[] hoveredElement = {null};
+            if (hoveredComponent != null) hoveredElement[0] = (Colorable) hoveredComponent;
+            if (hoveredLocation != null) hoveredElement[0] = hoveredLocation;
+
+            // Only reset the color, if the element is actually colored (do avoid redundant undo-elements on the stack
+            if (hoveredElement[0].isColored()) {
+                final Color previousColor = hoveredElement[0].getColor();
+                final Color.Intensity previousIntensity = hoveredElement[0].getColorIntensity();
+
+                UndoRedoStack.push(() -> { // Perform
+                    hoveredElement[0].resetColor();
+                }, () -> { // Undo
+                    hoveredElement[0].color(previousColor, previousIntensity);
+                });
+            }
+        }));
+
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_1, KeyCode.DIGIT1, Color.RED, Color.Intensity.I700);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_2, KeyCode.DIGIT2, Color.PINK, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_3, KeyCode.DIGIT3, Color.PURPLE, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_4, KeyCode.DIGIT4, Color.INDIGO, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_5, KeyCode.DIGIT5, Color.BLUE, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_6, KeyCode.DIGIT6, Color.TEAL, Color.Intensity.I500);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_7, KeyCode.DIGIT7, Color.GREY, Color.Intensity.I600);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_8, KeyCode.DIGIT8, Color.GREEN, Color.Intensity.I700);
+        registerKeyBoardColorKeyBind(KeyboardTracker.COLOR_9, KeyCode.DIGIT9, Color.BROWN, Color.Intensity.I500);
+    }
+
+    private void registerKeyBoardColorKeyBind(final String id, final KeyCode keyCode, final Color color, final Color.Intensity intensity) {
+        KeyboardTracker.registerKeybind(id, new Keybind(new KeyCodeCombination(keyCode), () -> {
+            final Component hoveredComponent = getHoveredComponent();
+            final Location hoveredLocation = getHoveredLocation();
+
+            // Not hovering anything interesting
+            if (hoveredComponent == null && hoveredLocation == null) return;
+
+            final Colorable[] hoveredElement = {null};
+            if (hoveredComponent != null) hoveredElement[0] = hoveredComponent;
+            if (hoveredLocation != null) hoveredElement[0] = hoveredLocation;
+
+            final Color previousColor = hoveredElement[0].getColor();
+            final Color.Intensity previousIntensity = hoveredElement[0].getColorIntensity();
+            final boolean wasPreviouslyColors = hoveredElement[0].isColored();
+
+            UndoRedoStack.push(() -> { // Perform
+                final boolean result = hoveredElement[0].color(color, intensity);
+                if (!result) {
+                    UndoRedoStack.undo(); // We did not color the element, undo the action immediately
+                }
+            }, () -> { // Undo
+                if (wasPreviouslyColors) {
+                    hoveredElement[0].color(previousColor, previousIntensity);
+                } else {
+                    hoveredElement[0].resetColor(previousColor, previousIntensity);
+                }
+            });
+        }));
     }
 
     @Override

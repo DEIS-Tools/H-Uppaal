@@ -17,15 +17,15 @@ import jiconfont.javafx.IconNode;
 
 public class BindingHelper {
 
-    public static void bind(final Line lineSubject, final ArrowHead arrowHeadSubject, final Circle source, final Circle target) {
+    public static void bind(final Line lineSubject, final ArrowHead arrowHeadSubject, final Circular source, final Circular target) {
         BindingHelper.bind(lineSubject, source, target);
         BindingHelper.bind(arrowHeadSubject, source, target);
         BindingHelper.bind(lineSubject, arrowHeadSubject);
     }
 
-    public static void bind(final Line lineSubject, final ArrowHead arrowHeadSubject, final Circle source, final MouseTracker target) {
-        BindingHelper.bind(lineSubject, source, target);
-        BindingHelper.bind(arrowHeadSubject, source, target);
+    public static void bind(final Line lineSubject, final ArrowHead arrowHeadSubject, final Circular source, final ObservableDoubleValue x, final ObservableDoubleValue y) {
+        BindingHelper.bind(lineSubject, source, x, y);
+        BindingHelper.bind(arrowHeadSubject, source, x, y);
         BindingHelper.bind(lineSubject, arrowHeadSubject);
     }
 
@@ -51,9 +51,9 @@ public class BindingHelper {
         subject.endYProperty().bind(lineBinding.endY);
     }
 
-    public static void bind(final Line subject, final SW9.abstractions.Location source, final ObservableDoubleValue x, final ObservableDoubleValue y) {
+    public static void bind(final Line subject, final Circular source, final ObservableDoubleValue x, final ObservableDoubleValue y) {
         // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
-        final LineBinding lineBinding = LineBinding.getLocationBindings(source, CanvasPresentation.mouseTracker, x, y);
+        final LineBinding lineBinding = LineBinding.getCircularBindings(source, CanvasPresentation.mouseTracker, x, y);
 
         // Bind the subjects properties accordingly to our calculations
         subject.startXProperty().bind(lineBinding.startX);
@@ -62,9 +62,9 @@ public class BindingHelper {
         subject.endYProperty().bind(lineBinding.endY);
     }
 
-    public static void bind(final Line subject, final SW9.abstractions.Location source, final SW9.abstractions.Location target) {
+    public static void bind(final Line subject, final Circular source, final Circular target) {
         // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
-        final LineBinding lineBinding = LineBinding.getLocationBindings(source, target);
+        final LineBinding lineBinding = LineBinding.getCircularBindings(source, target);
 
         // Bind the subjects properties accordingly to our calculations
         subject.startXProperty().bind(lineBinding.startX);
@@ -118,7 +118,7 @@ public class BindingHelper {
         handshakeLine.endYProperty().bind(bindings.endY);
     }
 
-    public static void bind(final ArrowHead subject, final Circle source, final Circle target) {
+    public static void bind(final ArrowHead subject, final Circular source, final Circular target) {
         // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
         final LineBinding lineBinding = LineBinding.getCircleBindings(source, target);
 
@@ -146,9 +146,9 @@ public class BindingHelper {
         subject.rotateProperty().bind(rotationBinding);
     }
 
-    public static void bind(final ArrowHead subject, final Circle source, final MouseTracker target) {
+    public static void bind(final ArrowHead subject, final Circular source, final ObservableDoubleValue x, final ObservableDoubleValue y) {
         // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
-        final LineBinding lineBinding = LineBinding.getCircleBindings(source, target);
+        final LineBinding lineBinding = LineBinding.getCircularBindings(source, CanvasPresentation.mouseTracker, x, y);
 
         ObservableDoubleValue startX = lineBinding.startX;
         ObservableDoubleValue startY = lineBinding.startY;
@@ -189,17 +189,6 @@ public class BindingHelper {
             subject.endXProperty().bind(lineBinding.startX);
             subject.endYProperty().bind(lineBinding.startY);
         }
-    }
-
-    public static <T extends Circular> void bind(final Line subject, final T source, final T target) {
-        // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
-        final LineBinding lineBinding = LineBinding.getCircleBindings(source, target);
-
-        // Bind the subjects properties accordingly to our calculations
-        subject.startXProperty().bind(lineBinding.startX);
-        subject.startYProperty().bind(lineBinding.startY);
-        subject.endXProperty().bind(lineBinding.endX);
-        subject.endYProperty().bind(lineBinding.endY);
     }
 
     private static class LineBinding {
@@ -249,7 +238,7 @@ public class BindingHelper {
             );
         }
 
-        private static LineBinding getLocationBindings(final SW9.abstractions.Location source, final MouseTracker target, final ObservableDoubleValue x, final ObservableDoubleValue y) {
+        private static LineBinding getCircularBindings(final Circular source, final MouseTracker target, final ObservableDoubleValue x, final ObservableDoubleValue y) {
             final ObservableDoubleValue mouseX = target.gridXProperty().subtract(x);
             final ObservableDoubleValue mouseY = target.gridYProperty().subtract(y);
 
@@ -263,8 +252,7 @@ public class BindingHelper {
             );
         }
 
-        private static LineBinding getLocationBindings(final SW9.abstractions.Location source, final SW9.abstractions.Location target) {
-
+        private static LineBinding getCircularBindings(final Circular source, final Circular target) {
             final Point sourcePoint = new Point(source.xProperty(), source.yProperty());
             final Point targetPoint = new Point(target.xProperty(), target.yProperty());
 

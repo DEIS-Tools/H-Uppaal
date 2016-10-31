@@ -5,6 +5,7 @@
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="Pane"
          fx:controller="SW9.controllers.EdgeController"
-         fx:id="edgeRoot" mouseTransparent="true">
+         fx:id="edgeRoot"
+         mouseTransparent="true">
 
 </fx:root>
