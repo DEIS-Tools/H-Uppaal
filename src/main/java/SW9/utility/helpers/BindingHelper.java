@@ -5,7 +5,6 @@ import SW9.model_canvas.arrow_heads.ChannelReceiverArrowHead;
 import SW9.model_canvas.arrow_heads.ChannelSenderArrowHead;
 import SW9.model_canvas.locations.Location;
 import SW9.presentations.CanvasPresentation;
-import SW9.presentations.LocationPresentation;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ObservableDoubleValue;
@@ -133,6 +132,7 @@ public class BindingHelper {
         DoubleBinding rotationBinding = new DoubleBinding() {
             {
                 super.bind(startX, startY, endX, endY);
+                super.bind(source.scaleProperty());
             }
 
             @Override
@@ -306,48 +306,19 @@ public class BindingHelper {
             };
         }
 
-        private static ObservableDoubleValue calculateXBinding(final SW9.abstractions.Location source, final Point target) {
-            return new DoubleBinding() {
-                {
-                    super.bind(source.xProperty(), source.yProperty());
-                    super.bind(target.xProperty(), target.yProperty());
-                }
-
-                @Override
-                protected double computeValue() {
-                    final double angle = Math.atan2(source.yProperty().get() - target.yProperty().get(), source.xProperty().get() - target.xProperty().get()) - Math.toRadians(180);
-                    return source.xProperty().get() + LocationPresentation.RADIUS * Math.cos(angle);
-                }
-            };
-        }
-
-        private static ObservableDoubleValue calculateYBinding(final SW9.abstractions.Location source, final Point target) {
-            return new DoubleBinding() {
-                {
-                    super.bind(source.xProperty(), source.yProperty());
-                    super.bind(target.xProperty(), target.yProperty());
-                }
-
-                @Override
-                protected double computeValue() {
-                    double angle = Math.atan2(source.yProperty().get() - target.yProperty().get(), source.xProperty().get() - target.xProperty().get()) - Math.toRadians(180);
-                    return source.yProperty().get() + LocationPresentation.RADIUS * Math.sin(angle);
-                }
-            };
-        }
-
         private static <T extends Circular> ObservableDoubleValue calculateXBinding(final T source, final Point target) {
             return new DoubleBinding() {
                 {
                     super.bind(source.xProperty(), source.yProperty());
                     super.bind(target.xProperty(), target.yProperty());
                     super.bind(source.radiusProperty());
+                    super.bind(source.scaleProperty());
                 }
 
                 @Override
                 protected double computeValue() {
                     final double angle = Math.atan2(source.yProperty().get() - target.yProperty().get(), source.xProperty().get() - target.xProperty().get()) - Math.toRadians(180);
-                    return source.xProperty().get() + source.radiusProperty().get() * Math.cos(angle);
+                    return source.xProperty().get() + source.radiusProperty().get() * source.scaleProperty().get() * Math.cos(angle);
                 }
             };
         }
@@ -358,12 +329,13 @@ public class BindingHelper {
                     super.bind(source.xProperty(), source.yProperty());
                     super.bind(target.xProperty(), target.yProperty());
                     super.bind(source.radiusProperty());
+                    super.bind(source.scaleProperty());
                 }
 
                 @Override
                 protected double computeValue() {
-                    double angle = Math.atan2(source.yProperty().get() - target.yProperty().get(), source.xProperty().get() - target.xProperty().get()) - Math.toRadians(180);
-                    return source.yProperty().get() + source.radiusProperty().get() * Math.sin(angle);
+                    final double angle = Math.atan2(source.yProperty().get() - target.yProperty().get(), source.xProperty().get() - target.xProperty().get()) - Math.toRadians(180);
+                    return source.yProperty().get() + source.radiusProperty().get() * source.scaleProperty().get() * Math.sin(angle);
                 }
             };
         }
