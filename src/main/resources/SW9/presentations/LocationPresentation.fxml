@@ -8,10 +8,10 @@
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="Group"
          fx:controller="SW9.controllers.LocationController"
-         fx:id="root">
+         fx:id="root"
+         onMouseEntered="#mouseEntered" onMouseExited="#mouseExited" onMousePressed="#mousePressed">
 
-    <Circle fx:id="circle" radius="20" strokeType="INSIDE"
-            onMouseEntered="#mouseEntered" onMouseExited="#mouseExited" onMousePressed="#mousePressed"/>
+    <Circle fx:id="circle" radius="20" strokeType="INSIDE"/>
 
     <Circle fx:id="shakeIndicator" radius="10" mouseTransparent="true" fill="white" opacity="0"/>
 
@@ -25,14 +25,14 @@
                 style="-fx-stroke: -white; -fx-fill: transparent;" radius="15" mouseTransparent="true"/>
     </Group>
 
-    <Label fx:id="nameLabel" styleClass="subhead"/>
+    <Label fx:id="nameLabel" styleClass="subhead" mouseTransparent="true"/>
 
-    <StackPane translateX="0.5" translateY="7" fx:id="invariantContainer">
+    <StackPane translateX="0.5" translateY="7" fx:id="invariantContainer" mouseTransparent="true">
         <Circle fx:id="invariantCircle" radius="10" mouseTransparent="true"/>
         <Label text="I" fx:id="invariantLabel" styleClass="body2"/>
     </StackPane>
 
-    <StackPane translateX="-20.5" translateY="7" fx:id="urgencyContainer">
+    <StackPane translateX="-20.5" translateY="7" fx:id="urgencyContainer" mouseTransparent="true">
         <Circle fx:id="urgencyCircle" radius="10" mouseTransparent="true"/>
         <Label text="U" fx:id="urgencyLabel" styleClass="body2"/>
     </StackPane>

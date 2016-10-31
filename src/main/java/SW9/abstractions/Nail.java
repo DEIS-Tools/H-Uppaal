@@ -56,4 +56,9 @@ public class Nail implements Circular {
     public DoubleProperty radiusProperty() {
         return radius;
     }
+
+    @Override
+    public DoubleProperty scaleProperty() {
+        return new SimpleDoubleProperty(1d);
+    }
 }

@@ -31,6 +31,9 @@ public class LocationPresentation extends Group implements MouseTrackable {
     private final LocationController controller;
 
     private final MouseTracker mouseTracker = new MouseTracker(this);
+    private final Timeline initialAnimation = new Timeline();
+    private final Timeline hoverAnimationEntered = new Timeline();
+    private final Timeline hoverAnimationExited = new Timeline();
 
     public LocationPresentation(final Location location, final Component component) {
         final URL url = this.getClass().getResource("LocationPresentation.fxml");
@@ -61,10 +64,51 @@ public class LocationPresentation extends Group implements MouseTrackable {
             initializeUrgencyCircle();
             initializeNameLabel();
 
+            initializeInitialAnimation();
+            initializeHoverAnimationEntered();
+            initializeHoverAnimationExited();
+
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeHoverAnimationEntered() {
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+
+        final KeyValue scale1x = new KeyValue(scaleXProperty(), 1, interpolator);
+        final KeyValue scale2x = new KeyValue(scaleXProperty(), 1.1, interpolator);
+
+        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale1x);
+        final KeyFrame kf2 = new KeyFrame(Duration.millis(100), scale2x);
+
+        hoverAnimationEntered.getKeyFrames().addAll(kf1, kf2);
+    }
+
+    private void initializeHoverAnimationExited() {
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+
+        final KeyValue scale2x = new KeyValue(scaleXProperty(), 1.1, interpolator);
+        final KeyValue scale1x = new KeyValue(scaleXProperty(), 1, interpolator);
+
+        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale2x);
+        final KeyFrame kf2 = new KeyFrame(Duration.millis(100), scale1x);
+
+        hoverAnimationExited.getKeyFrames().addAll(kf1, kf2);
+    }
+
+    private void initializeInitialAnimation() {
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+        final KeyValue scale0x = new KeyValue(scaleXProperty(), 0, interpolator);
+        final KeyValue scale2x = new KeyValue(scaleXProperty(), 1.1, interpolator);
+        final KeyValue scale1x = new KeyValue(scaleXProperty(), 1, interpolator);
+
+        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale0x);
+        final KeyFrame kf2 = new KeyFrame(Duration.millis(200), scale2x);
+        final KeyFrame kf3 = new KeyFrame(Duration.millis(250), scale1x);
+
+        initialAnimation.getKeyFrames().addAll(kf1, kf2, kf3);
     }
 
     private void initializeNameLabel() {
@@ -160,26 +204,15 @@ public class LocationPresentation extends Group implements MouseTrackable {
     }
 
     public void animateIn() {
-        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
-
-        final Timeline initialAnimation = new Timeline();
-
-        final KeyValue scale0x = new KeyValue(scaleXProperty(), 0, interpolator);
-        final KeyValue scale0y = new KeyValue(scaleYProperty(), 0, interpolator);
-
-        final KeyValue scale2x = new KeyValue(scaleXProperty(), 1.1, interpolator);
-        final KeyValue scale2y = new KeyValue(scaleYProperty(), 1.1, interpolator);
-
-        final KeyValue scale1x = new KeyValue(scaleXProperty(), 1, interpolator);
-        final KeyValue scale1y = new KeyValue(scaleYProperty(), 1, interpolator);
-
-        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale0x, scale0y);
-        final KeyFrame kf2 = new KeyFrame(Duration.millis(200), scale2x, scale2y);
-        final KeyFrame kf3 = new KeyFrame(Duration.millis(250), scale1x, scale1y);
-
-        initialAnimation.getKeyFrames().addAll(kf1, kf2, kf3);
-
         initialAnimation.play();
+    }
+
+    public void animateHoverEntered() {
+        hoverAnimationEntered.play();
+    }
+
+    public void animateHoverExited() {
+        hoverAnimationExited.play();
     }
 
     @Override
@@ -205,19 +238,17 @@ public class LocationPresentation extends Group implements MouseTrackable {
         final Timeline shakeContentAnimation = new Timeline();
 
         final KeyValue scale0x = new KeyValue(scaleXProperty(), 1, interpolator);
-        final KeyValue scale0y = new KeyValue(scaleYProperty(), 1, interpolator);
         final KeyValue radius0 = new KeyValue(controller.shakeIndicator.radiusProperty(), 0, interpolator);
         final KeyValue opacity0 = new KeyValue(controller.shakeIndicator.opacityProperty(), 0, interpolator);
 
         final KeyValue scale1x = new KeyValue(scaleXProperty(), 1.3, interpolator);
-        final KeyValue scale1y = new KeyValue(scaleYProperty(), 1.3, interpolator);
         final KeyValue radius1 = new KeyValue(controller.shakeIndicator.radiusProperty(), controller.circle.getRadius() * 0.85, interpolator);
         final KeyValue opacity1 = new KeyValue(controller.shakeIndicator.opacityProperty(), 0.2, interpolator);
 
-        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale0x, scale0y, radius0, opacity0);
-        final KeyFrame kf2 = new KeyFrame(Duration.millis(2500), scale1x, scale1y, radius1, opacity1);
+        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale0x, radius0, opacity0);
+        final KeyFrame kf2 = new KeyFrame(Duration.millis(2500), scale1x, radius1, opacity1);
         final KeyFrame kf3 = new KeyFrame(Duration.millis(3300), radius0, opacity0);
-        final KeyFrame kf4 = new KeyFrame(Duration.millis(3500), scale0x, scale0y);
+        final KeyFrame kf4 = new KeyFrame(Duration.millis(3500), scale0x);
         final KeyFrame kfEnd = new KeyFrame(Duration.millis(8000), null);
 
         initialAnimation.getKeyFrames().addAll(kf1, kf2, kf3, kf4, kfEnd);

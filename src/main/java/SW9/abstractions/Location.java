@@ -11,10 +11,12 @@ public class Location implements Circular {
     private final StringProperty invariant = new SimpleStringProperty("");
     private final ObjectProperty<Type> type = new SimpleObjectProperty<>(Type.NORMAL);
     private final ObjectProperty<Urgency> urgency = new SimpleObjectProperty<>(Urgency.NORMAL);
+
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
     private final DoubleProperty radius = new SimpleDoubleProperty(0d);
+    private final SimpleDoubleProperty scale = new SimpleDoubleProperty(1d);
     private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.GREY_BLUE);
     private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I500);
 
@@ -125,6 +127,19 @@ public class Location implements Circular {
     @Override
     public DoubleProperty radiusProperty() {
         return radius;
+    }
+
+    public double getScale() {
+        return scale.get();
+    }
+
+    public void setScale(final double scale) {
+        this.scale.set(scale);
+    }
+
+    @Override
+    public DoubleProperty scaleProperty() {
+        return scale;
     }
 
     public enum Type {
