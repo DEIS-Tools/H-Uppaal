@@ -5,6 +5,7 @@ import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
 import SW9.presentations.LocationPresentation;
 import SW9.utility.UndoRedoStack;
+import SW9.utility.helpers.BindingHelper;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -12,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 
@@ -39,6 +41,7 @@ public class LocationController implements Initializable {
     public Circle urgencyCircle;
     public Label urgencyLabel;
     public Label nameLabel;
+    private boolean isPlaced;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -61,8 +64,15 @@ public class LocationController implements Initializable {
 
     public void setLocation(final Location location) {
         this.location.set(location);
-        this.location.get().xProperty().bind(root.layoutXProperty());
-        this.location.get().yProperty().bind(root.layoutYProperty());
+
+        if (location.getType().equals(Location.Type.NORMAL)) {
+            root.layoutXProperty().bind(location.xProperty());
+            root.layoutYProperty().bind(location.yProperty());
+        } else {
+            location.xProperty().bind(root.layoutXProperty());
+            location.yProperty().bind(root.layoutYProperty());
+            isPlaced = true;
+        }
     }
 
     public ObjectProperty<Location> locationProperty() {
@@ -96,20 +106,27 @@ public class LocationController implements Initializable {
     }
 
     @FXML
-    private void mousePressed() {
+    private void mousePressed(final MouseEvent event) {
         final Component component = getComponent();
-        final Edge unfinishedEdge = component.getUnfinishedEdge();
+        event.consume();
+        if (isPlaced) {
+            final Edge unfinishedEdge = component.getUnfinishedEdge();
 
-        if (unfinishedEdge != null) {
-            unfinishedEdge.setTargetLocation(getLocation());
+            if (unfinishedEdge != null) {
+                unfinishedEdge.setTargetLocation(getLocation());
+            } else {
+                final Edge newEdge = new Edge(getLocation());
+
+                UndoRedoStack.push(() -> { // Perform
+                    component.addEdge(newEdge);
+                }, () -> { // Undo
+                    component.removeEdge(newEdge);
+                });
+            }
         } else {
-            final Edge newEdge = new Edge(getLocation());
 
-            UndoRedoStack.push(() -> { // Perform
-                component.addEdge(newEdge);
-            }, () -> { // Undo
-                component.removeEdge(newEdge);
-            });
+            BindingHelper.place(getLocation(), getComponent().xProperty(), getComponent().yProperty());
+            isPlaced = true;
         }
     }
 

@@ -16,6 +16,20 @@ import jiconfont.javafx.IconNode;
 
 public class BindingHelper {
 
+    public static void bind(final Circular subject, final ObservableDoubleValue x, final ObservableDoubleValue y) {
+        subject.xProperty().bind(CanvasPresentation.mouseTracker.gridXProperty().subtract(x));
+        subject.yProperty().bind(CanvasPresentation.mouseTracker.gridYProperty().subtract(y));
+    }
+
+    public static void place(final Circular subject, final ObservableDoubleValue x, final ObservableDoubleValue y) {
+
+
+        subject.xProperty().unbind();
+        subject.yProperty().unbind();
+        subject.xProperty().set(CanvasPresentation.mouseTracker.gridXProperty().subtract(x).get());
+        subject.yProperty().set(CanvasPresentation.mouseTracker.gridYProperty().subtract(y).get());
+    }
+
     public static void bind(final Line lineSubject, final ArrowHead arrowHeadSubject, final Circular source, final Circular target) {
         BindingHelper.bind(lineSubject, source, target);
         BindingHelper.bind(arrowHeadSubject, source, target);

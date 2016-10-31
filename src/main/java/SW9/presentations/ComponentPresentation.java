@@ -67,7 +67,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
             initializeName();
 
             // Make the component draggable
-            DragHelper.makeDraggable(this);
+            DragHelper.makeDraggable(this, event -> controller.getComponent().getUnfinishedEdge() == null);
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }

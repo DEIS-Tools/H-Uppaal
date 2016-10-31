@@ -2,9 +2,15 @@ package SW9.controllers;
 
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
+import SW9.abstractions.Location;
 import SW9.abstractions.Nail;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.EdgePresentation;
+import SW9.presentations.LocationPresentation;
+import SW9.utility.UndoRedoStack;
+import SW9.utility.helpers.BindingHelper;
+import SW9.utility.keyboard.Keybind;
+import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
@@ -19,6 +25,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -36,7 +44,8 @@ import java.util.ResourceBundle;
 public class ComponentController implements Initializable {
 
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
-
+    private final Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
+    private final Map<Location, LocationPresentation> locationPresentationMap = new HashMap<>();
     public BorderPane toolbar;
     public Rectangle background;
     public TextArea declaration;
@@ -50,13 +59,20 @@ public class ComponentController implements Initializable {
     public Label x;
     public Label y;
     public Pane defaultLocationsContainer;
-
     private MouseTracker mouseTracker;
-
-    private Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+        // Register a keybind for adding new locations
+        KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
+            final Location newLocation = new Location();
+
+            UndoRedoStack.push(() -> { // Perform
+                component.get().addLocation(newLocation);
+            }, () -> { // Undo
+                component.get().removeLocation(newLocation);
+            });
+        }));
 
         component.addListener((observable, oldValue, newValue) -> {
             // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width from the presentation into the abstraction
@@ -85,6 +101,31 @@ public class ComponentController implements Initializable {
                             final EdgePresentation edgePresentation = edgePresentationMap.get(edge);
                             modelContainer.getChildren().remove(edgePresentation);
                             edgePresentationMap.remove(edge);
+                        });
+                    }
+                }
+            });
+
+            newValue.getLocations().addListener(new ListChangeListener<Location>() {
+                @Override
+                public void onChanged(final Change<? extends Location> c) {
+                    if (c.next()) {
+                        // Locations are added to the component
+                        c.getAddedSubList().forEach(location -> {
+                            // Create a new presentation, and register it on the map
+                            final LocationPresentation newLocationPresentation = new LocationPresentation(location, getComponent());
+                            locationPresentationMap.put(location, newLocationPresentation);
+
+                            // Add it to the view
+                            modelContainer.getChildren().add(newLocationPresentation);
+
+                            // Bind the newly created location to the mouse
+                            BindingHelper.bind(location, getComponent().xProperty(), getComponent().yProperty());
+                        });
+
+                        // Locations are removed from the component
+                        c.getRemoved().forEach(location -> {
+                            root.getChildren().remove(locationPresentationMap.get(location));
                         });
                     }
                 }
@@ -142,7 +183,7 @@ public class ComponentController implements Initializable {
     }
 
     @FXML
-    private void modelContainerOnPressed() {
+    private void modelContainerOnPressed(final MouseEvent event) {
         final Edge unfinishedEdge = getComponent().getUnfinishedEdge();
         if (unfinishedEdge != null) {
             // Calculate the position for the new nail (based on the component position and the canvas mouse tracker)
