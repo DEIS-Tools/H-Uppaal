@@ -7,7 +7,9 @@ import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.mouse.MouseTracker;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
@@ -107,6 +109,15 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
 
     private void initializeName() {
         final Component component = controller.getComponent();
+        final BooleanProperty initialized = new SimpleBooleanProperty(false);
+
+        controller.name.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue && !initialized.get()) {
+                controller.root.requestFocus();
+                initialized.setValue(true);
+            }
+        });
+
 
         // Set the text field to the name in the model, and bind the model to the text field
         controller.name.setText(component.getName());
