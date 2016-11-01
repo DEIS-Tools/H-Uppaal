@@ -5,7 +5,6 @@ import SW9.utility.colors.Color;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
-import javafx.scene.control.MenuBar;
 import javafx.scene.layout.*;
 
 import java.io.IOException;
@@ -49,10 +48,9 @@ public class HUPPAALPresentation extends BorderPane {
                         Insets.EMPTY)
                 ));
 
-        final MenuBar menuBar = new MenuBar();
         final String os = System.getProperty("os.name");
         if (os != null && os.startsWith("Mac")) {
-            menuBar.useSystemMenuBarProperty().set(true);
+            controller.menuBar.useSystemMenuBarProperty().set(true);
         }
     }
 
