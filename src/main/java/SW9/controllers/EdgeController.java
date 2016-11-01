@@ -8,13 +8,16 @@ import SW9.presentations.CanvasPresentation;
 import SW9.presentations.Link;
 import SW9.presentations.NailPresentation;
 import SW9.utility.helpers.BindingHelper;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
-
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -140,13 +143,45 @@ public class EdgeController implements Initializable {
     }
 
     public void edgeEntered() {
-        // TODO Niklas animer dem flot
-        getEdge().getNails().forEach(nail -> nail.setRadius(NailPresentation.HOVERED_RADIUS));
+        final int timeBetweenAnimations = 10;
+        final int[] timeOffset = {0};
+
+        getEdge().getNails().forEach(nail -> {
+            final Timeline animation = new Timeline();
+
+            final KeyValue radius0 = new KeyValue(nail.radiusProperty(), NailPresentation.COLLAPSED_RADIUS);
+            final KeyValue radius1 = new KeyValue(nail.radiusProperty(), NailPresentation.HOVERED_RADIUS);
+
+            final KeyFrame kf1 = new KeyFrame(Duration.millis(timeOffset[0]), radius0);
+            final KeyFrame kf2 = new KeyFrame(Duration.millis(timeOffset[0] + 100), radius1);
+
+            timeOffset[0] += timeBetweenAnimations;
+
+            animation.getKeyFrames().addAll(kf1, kf2);
+
+            animation.play();
+        });
     }
 
     public void edgeExited() {
-        // TODO Niklas animer dem flot
-        getEdge().getNails().forEach(nail -> nail.setRadius(NailPresentation.COLLAPSED_RADIUS));
+        final int timeBetweenAnimations = 10;
+        final int[] timeOffset = {0};
+
+        getEdge().getNails().forEach(nail -> {
+            final Timeline animation = new Timeline();
+
+            final KeyValue radius0 = new KeyValue(nail.radiusProperty(), NailPresentation.COLLAPSED_RADIUS);
+            final KeyValue radius1 = new KeyValue(nail.radiusProperty(), NailPresentation.HOVERED_RADIUS);
+
+            final KeyFrame kf1 = new KeyFrame(Duration.millis(timeOffset[0]), radius1);
+            final KeyFrame kf2 = new KeyFrame(Duration.millis(timeOffset[0] + 100), radius0);
+
+            timeOffset[0] += timeBetweenAnimations;
+
+            animation.getKeyFrames().addAll(kf1, kf2);
+
+            animation.play();
+        });
     }
 
 }
