@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import SW9.presentations.CanvasPresentation?>
 <?import SW9.presentations.QueryPanePresentation?>
@@ -24,23 +24,50 @@
     <!-- Query pane -->
     <right>
         <QueryPanePresentation
-                fx:id="queryPane"
-                AnchorPane.topAnchor="0"
-                AnchorPane.rightAnchor="0"
-                AnchorPane.bottomAnchor="0"/>
+                fx:id="queryPane"/>
     </right>
 
     <!-- Bottom status bar -->
     <bottom>
         <BorderPane fx:id="bottomStatusBar"
                     styleClass="bottom-bar"
-                    prefHeight="25"
-                    maxHeight="25"
-                    AnchorPane.bottomAnchor="0"
-                    AnchorPane.leftAnchor="0"
-                    AnchorPane.rightAnchor="0">
+                    prefHeight="24"
+                    maxHeight="24">
 
         </BorderPane>
     </bottom>
+
+    <top>
+        <MenuBar fx:id="menuBar" minHeight="24" maxHeight="24">
+            <menus>
+                <Menu text="File">
+                    <items>
+                        <MenuItem text="New"/>
+                        <MenuItem text="Open"/>
+                        <MenuItem text="Save"/>
+                        <MenuItem text="Save As"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="Exit"/>
+                    </items>
+                </Menu>
+                <Menu text="Edit">
+                    <items>
+                        <MenuItem text="Copy"/>
+                        <MenuItem text="Cut"/>
+                        <MenuItem text="Paste"/>
+                    </items>
+                </Menu>
+                <Menu text="Help">
+                    <items>
+                        <MenuItem text="Search" disable="true"/>
+                        <MenuItem text="Online Manual" visible="false"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem text="About"/>
+                    </items>
+                </Menu>
+            </menus>
+
+        </MenuBar>
+    </top>
 
 </fx:root>

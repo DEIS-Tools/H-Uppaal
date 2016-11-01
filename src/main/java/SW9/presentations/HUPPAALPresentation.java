@@ -5,6 +5,7 @@ import SW9.utility.colors.Color;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
+import javafx.scene.control.MenuBar;
 import javafx.scene.layout.*;
 
 import java.io.IOException;
@@ -27,12 +28,31 @@ public class HUPPAALPresentation extends BorderPane {
 
             controller = fxmlLoader.getController();
 
+            initializeTopBar();
             initializeBottomStatusBar();
             initializeToolbar();
 
             controller.bottomStatusBar.heightProperty().addListener((observable, oldValue, newValue) -> AnchorPane.setBottomAnchor(controller.queryPane, (Double) newValue));
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
+        }
+    }
+
+    private void initializeTopBar() {
+        final Color color = Color.GREY_BLUE;
+        final Color.Intensity intensity = Color.Intensity.I900;
+
+        // Set the background for the top toolbar
+        controller.menuBar.setBackground(
+                new Background(new BackgroundFill(color.getColor(intensity),
+                        CornerRadii.EMPTY,
+                        Insets.EMPTY)
+                ));
+
+        final MenuBar menuBar = new MenuBar();
+        final String os = System.getProperty("os.name");
+        if (os != null && os.startsWith("Mac")) {
+            menuBar.useSystemMenuBarProperty().set(true);
         }
     }
 

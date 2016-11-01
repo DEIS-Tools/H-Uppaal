@@ -3,6 +3,7 @@ package SW9.controllers;
 import SW9.presentations.QueryPanePresentation;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
@@ -15,6 +16,7 @@ public class HUPPAALController implements Initializable {
     public QueryPanePresentation queryPane;
     public StackPane toolbar;
     public Label title;
+    public MenuBar menuBar;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
