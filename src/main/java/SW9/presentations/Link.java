@@ -12,6 +12,7 @@ public class Link extends Group {
     private final DoubleProperty endX;
     private final DoubleProperty startY;
     private final DoubleProperty endY;
+    private final static double HOVER_LINE_STROKE_WIDTH = 10d;
 
     public Link() {
         this(0,0,0,0);
@@ -45,7 +46,7 @@ public class Link extends Group {
         hiddenHoverLine.endYProperty().bind(shownLine.endYProperty());
 
         // Style the hidden line
-        hiddenHoverLine.setStrokeWidth(10);
+        hiddenHoverLine.setStrokeWidth(HOVER_LINE_STROKE_WIDTH);
         hiddenHoverLine.setStroke(Color.TRANSPARENT);
     }
 
