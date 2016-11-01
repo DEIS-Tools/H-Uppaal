@@ -91,7 +91,7 @@ public class Edge extends Parent implements Removable, Colorable, Traceable {
             // Bind the link from the source location to the location we clicked
             // Bind the nail to the coordinates we clicked
             if (!ModelCanvas.mouseIsHoveringLocation() && linesIsEmpty.get() && nailsIsEmpty.get()) {
-                BindingHelper.bind(link.line, sourceLocation.circle, nail.circle);
+                //BindingHelper.bind(link.line, sourceLocation.circle, nail.circle);
             }
 
             // If we are creating the n'th nail and link
@@ -100,7 +100,7 @@ public class Edge extends Parent implements Removable, Colorable, Traceable {
             else if (!ModelCanvas.mouseIsHoveringLocation() && !linesIsEmpty.get() && !nailsIsEmpty.get()) {
                 final Nail previousNail = nails.get(nails.size() - 1);
 
-                BindingHelper.bind(link.line, previousNail.circle, nail.circle);
+                // BindingHelper.bind(link.line, previousNail.circle, nail.circle);
             }
 
             // We have at least one nail and one link, and are now finishing the edge by pressing a location
@@ -137,8 +137,8 @@ public class Edge extends Parent implements Removable, Colorable, Traceable {
                     nails.addAll(firstNail, secondNail);
 
                     // Bind the links between the nails and source locations
-                    BindingHelper.bind(firstLink.line, sourceLocation.circle, firstNail.circle);
-                    BindingHelper.bind(secondLink.line, firstNail.circle, secondNail.circle);
+//                    BindingHelper.bind(firstLink.line, sourceLocation.circle, firstNail.circle);
+//                    BindingHelper.bind(secondLink.line, firstNail.circle, secondNail.circle);
 /*
                     BindingHelper.bind(link.line, arrowHead, secondNail.circle, getTargetLocation().circle);
 */
@@ -325,7 +325,7 @@ public class Edge extends Parent implements Removable, Colorable, Traceable {
             endCircle = nails.get(indexOfNail + 1).circle;
         }
 
-        BindingHelper.bind(b.line, startCircle, endCircle);
+//        BindingHelper.bind(b.line, startCircle, endCircle);
 
         removeChild(nail);
         nails.remove(nail);
@@ -369,8 +369,8 @@ public class Edge extends Parent implements Removable, Colorable, Traceable {
         addChildren(nail, newLink);
         nail.toFront();
 
-        BindingHelper.bind(newLink.line, startCircle, nail.circle);
-        BindingHelper.bind(links.get(position + 1).line, nail.circle, endCircle);
+//        BindingHelper.bind(newLink.line, startCircle, nail.circle);
+//        BindingHelper.bind(links.get(position + 1).line, nail.circle, endCircle);
 
         if (position == nails.size() - 1) {
 //            BindingHelper.bind(links.get(position + 1).line, arrowHead, nail.circle, endCircle);

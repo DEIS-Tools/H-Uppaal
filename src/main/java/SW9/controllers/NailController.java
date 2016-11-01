@@ -22,10 +22,9 @@ public class NailController implements Initializable {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         nail.addListener((obsNail, oldNail, newNail) -> {
-            nailCircle.setRadius(newNail.getRadius());
 
-            // The radius property on the abstraction must reflect the radius in the view
-            newNail.radiusProperty().bind(nailCircle.radiusProperty());
+            // The radius from the abstraction is the master and the view simply reflects what is in the model
+            nailCircle.radiusProperty().bind(newNail.radiusProperty());
 
             // Draw the presentation based on the initial value from the abstraction
             root.setLayoutX(newNail.getX());
