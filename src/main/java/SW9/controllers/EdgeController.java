@@ -12,7 +12,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
-import javafx.scene.layout.Pane;
+import javafx.scene.Group;
 import javafx.scene.shape.Line;
 
 import java.net.URL;
@@ -25,7 +25,7 @@ public class EdgeController implements Initializable {
     private final ObjectProperty<Edge> edge = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
     private final SimpleArrowHead simpleArrowHead = new SimpleArrowHead();
-    public Pane edgeRoot;
+    public Group edgeRoot;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -59,6 +59,9 @@ public class EdgeController implements Initializable {
                     final Nail lastNail = nails.get(nails.size() - 1);
                     BindingHelper.bind(lastLine, simpleArrowHead, lastNail, newTargetLocation);
                 }
+
+                // When the target location isset the
+                edgeRoot.setMouseTransparent(false);
             });
 
             component.addListener((obsComponent, oldComponent, newComponent) -> {
@@ -134,6 +137,14 @@ public class EdgeController implements Initializable {
 
     public ObjectProperty<Component> componentProperty() {
         return component;
+    }
+
+    public void edgeEntered() {
+        System.out.println("enter edge");
+    }
+
+    public void edgeExited() {
+        System.out.println("exit edge");
     }
 
 }

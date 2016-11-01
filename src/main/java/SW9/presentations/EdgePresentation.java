@@ -7,12 +7,12 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
-import javafx.scene.layout.Pane;
+import javafx.scene.Group;
 
 import java.io.IOException;
 import java.net.URL;
 
-public class EdgePresentation extends Pane {
+public class EdgePresentation extends Group {
 
     private final EdgeController controller;
 
