@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KeyboardTracker {
-    private static final Map<String, Keybind> keyMap = new HashMap<>();
-
     public static final String ADD_NEW_LOCATION = "ADD_NEW_LOCATION";
     public static final String DISCARD_NEW_LOCATION = "DISCARD_NEW_LOCATION";
     public static final String DISCARD_NEW_EDGE = "DISCARD_NEW_EDGE";
@@ -29,11 +27,10 @@ public class KeyboardTracker {
     public static final String COLOR_7 = "COLOR_7";
     public static final String COLOR_8 = "COLOR_8";
     public static final String COLOR_9 = "COLOR_9";
-
     public static final String COMPONENT_HAS_DEADLOCK = "COMPONENT_HAS_DEADLOCK";
-
     public static final String TESTING_BIND = "TESTING_BIND";
-
+    public static final String TOGGLE_QUERY_PANE = "TOGGLE_QUERY_PANE";
+    private static final Map<String, Keybind> keyMap = new HashMap<>();
     public static final EventHandler<KeyEvent> handleKeyPress = event -> {
 
         Map<String, Keybind> copy = new HashMap<>(keyMap);

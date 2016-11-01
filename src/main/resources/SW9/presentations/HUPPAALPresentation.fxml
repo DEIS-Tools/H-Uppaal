@@ -7,24 +7,29 @@
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="BorderPane"
+         fx:id="root"
          fx:controller="SW9.controllers.HUPPAALController">
 
     <center>
         <StackPane>
-            <CanvasPresentation/>
+            <CanvasPresentation fx:id="canvas"/>
 
             <StackPane fx:id="toolbar"
                        StackPane.alignment="TOP_CENTER"
                        minHeight="56" maxHeight="56">
                 <Label fx:id="title" text="H-UPPAAL" styleClass="title" StackPane.alignment="CENTER_LEFT"/>
             </StackPane>
+
+            <QueryPanePresentation
+                    fx:id="queryPane"
+                    StackPane.alignment="TOP_RIGHT"
+                    maxWidth="400"/>
         </StackPane>
     </center>
 
     <!-- Query pane -->
     <right>
-        <QueryPanePresentation
-                fx:id="queryPane"/>
+        <Label fx:id="fillerElement"/>
     </right>
 
     <!-- Bottom status bar -->

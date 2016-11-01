@@ -2,10 +2,18 @@ package SW9.presentations;
 
 import SW9.controllers.HUPPAALController;
 import SW9.utility.colors.Color;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
 import javafx.scene.layout.*;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -13,6 +21,12 @@ import java.net.URL;
 public class HUPPAALPresentation extends BorderPane {
 
     private final HUPPAALController controller;
+
+    private final BooleanProperty queryPaneOpen = new SimpleBooleanProperty(false);
+    private final SimpleDoubleProperty queryPaneAnimationProperty = new SimpleDoubleProperty(0);
+
+    private Timeline closeQueryPaneAnimation;
+    private Timeline openQueryPaneAnimation;
 
     public HUPPAALPresentation() {
         final URL location = this.getClass().getResource("HUPPAALPresentation.fxml");
@@ -30,11 +44,61 @@ public class HUPPAALPresentation extends BorderPane {
             initializeTopBar();
             initializeBottomStatusBar();
             initializeToolbar();
+            initializeToggleQueryPaneFunctionality();
 
             controller.bottomStatusBar.heightProperty().addListener((observable, oldValue, newValue) -> AnchorPane.setBottomAnchor(controller.queryPane, (Double) newValue));
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeToggleQueryPaneFunctionality() {
+        // Set the translation of the query pane to be equal to its width
+        // Will hide the element, and force it in then the right side of the border pane is enlarged
+        controller.queryPane.translateXProperty().bind(controller.queryPane.widthProperty());
+
+        // Bind the translate of the canvas to half of the animation property (negated) to push the element correctly
+        controller.canvas.translateXProperty().bind(queryPaneAnimationProperty.divide(-2));
+
+        // Whenever the width of the query pane is updated, update the animations
+        controller.queryPane.widthProperty().addListener((observable) -> {
+            initializeOpenQueryPaneAnimation();
+            initializeCloseQueryPaneAnimation();
+        });
+
+        // Whenever the animation property changed, change the size of the filler element to push the canvas
+        queryPaneAnimationProperty.addListener((observable, oldValue, newValue) -> {
+            controller.fillerElement.setMinWidth(newValue.doubleValue());
+            controller.fillerElement.setMaxWidth(newValue.doubleValue());
+        });
+    }
+
+    private void initializeCloseQueryPaneAnimation() {
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+
+        openQueryPaneAnimation = new Timeline();
+
+        final KeyValue open = new KeyValue(queryPaneAnimationProperty, controller.queryPane.getWidth(), interpolator);
+        final KeyValue closed = new KeyValue(queryPaneAnimationProperty, 0, interpolator);
+
+        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), open);
+        final KeyFrame kf2 = new KeyFrame(Duration.millis(200), closed);
+
+        openQueryPaneAnimation.getKeyFrames().addAll(kf1, kf2);
+    }
+
+    private void initializeOpenQueryPaneAnimation() {
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+
+        closeQueryPaneAnimation = new Timeline();
+
+        final KeyValue closed = new KeyValue(queryPaneAnimationProperty, 0, interpolator);
+        final KeyValue open = new KeyValue(queryPaneAnimationProperty, controller.queryPane.getWidth(), interpolator);
+
+        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), closed);
+        final KeyFrame kf2 = new KeyFrame(Duration.millis(200), open);
+
+        closeQueryPaneAnimation.getKeyFrames().addAll(kf1, kf2);
     }
 
     private void initializeTopBar() {
@@ -90,4 +154,14 @@ public class HUPPAALPresentation extends BorderPane {
                 ));
     }
 
+    public void toggleQueryPane() {
+        if (queryPaneOpen.get()) {
+            openQueryPaneAnimation.play();
+        } else {
+            closeQueryPaneAnimation.play();
+        }
+
+        // Toggle the open state
+        queryPaneOpen.set(queryPaneOpen.not().get());
+    }
 }
