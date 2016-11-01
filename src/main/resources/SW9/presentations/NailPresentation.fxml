@@ -8,7 +8,7 @@
          fx:controller="SW9.controllers.NailController"
          fx:id="root">
 
-    <Circle fx:id="nailCircle" radius="6.25" opacity="1"/>
-    <Circle fx:id="dragCircle" radius="12.5" opacity="0.1"/>
+    <Circle fx:id="nailCircle"/>
+    <Circle fx:id="dragCircle" radius="12.5" opacity="0"/>
 
 </fx:root>

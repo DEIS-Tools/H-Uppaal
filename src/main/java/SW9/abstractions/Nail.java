@@ -10,7 +10,7 @@ public class Nail implements Circular {
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
-    private final DoubleProperty radius = new SimpleDoubleProperty(0d);
+    private final DoubleProperty radius = new SimpleDoubleProperty(3d);
 
     public Nail(final ObservableDoubleValue x, final ObservableDoubleValue y) {
         this(x.get(), y.get());

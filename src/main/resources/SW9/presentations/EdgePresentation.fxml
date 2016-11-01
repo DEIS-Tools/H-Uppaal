@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.Group?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
-         type="Pane"
+         type="Group"
          fx:controller="SW9.controllers.EdgeController"
          fx:id="edgeRoot"
+         onMouseEntered="#edgeEntered"
+         onMouseExited="#edgeExited"
          mouseTransparent="true">
 
 </fx:root>
