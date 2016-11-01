@@ -15,6 +15,7 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
@@ -67,7 +68,15 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
             initializeName();
 
             // Make the component draggable
-            DragHelper.makeDraggable(this, event -> controller.getComponent().getUnfinishedEdge() == null);
+            DragHelper.makeDraggable(this, event -> {
+                // We can only drag using left click
+                if (!event.getButton().equals(MouseButton.PRIMARY)) return false;
+
+                // We cant drag if we have an unfinished edge
+                if (controller.getComponent().getUnfinishedEdge() != null) return false;
+
+                return true;
+            });
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
@@ -90,19 +99,17 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
         // Add the locations to the view
         controller.defaultLocationsContainer.getChildren().addAll(initialLocationPresentation, finalLocationPresentation);
 
-        ComponentPresentation.this.controller.frame.setOnMouseEntered(event -> {
-            new Thread(() -> {
-                Platform.runLater(initialLocationPresentation::animateIn);
+        ComponentPresentation.this.controller.frame.setOnMouseEntered(event -> new Thread(() -> {
+            Platform.runLater(initialLocationPresentation::animateIn);
 
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    // do nothing
-                }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
 
-                Platform.runLater(finalLocationPresentation::animateIn);
-            }).start();
-        });
+            Platform.runLater(finalLocationPresentation::animateIn);
+        }).start());
 
         finalLocationPresentation.shakeAnimation();
     }
