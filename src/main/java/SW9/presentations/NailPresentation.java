@@ -13,8 +13,8 @@ import java.net.URL;
 
 public class NailPresentation extends Group {
 
-    private static final double INVISIBLE_RADIUS = 0d;
-    private static final double VISIBLE_RADIUS = 10d;
+    public static final double COLLAPSED_RADIUS = 2d;
+    public static final double HOVERED_RADIUS = 7d;
 
     private final NailController controller;
 

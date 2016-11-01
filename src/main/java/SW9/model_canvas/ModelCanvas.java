@@ -307,7 +307,7 @@ public class ModelCanvas extends Pane implements MouseTrackable, IParent {
             final DashedLine handshakeSyncLine = new DashedLine();
             final SimpleArrowHead handshakeSyncArrowHead = new SimpleArrowHead();
 
-            BindingHelper.bind(handshakeSyncLine, handshakeArrowHead, channelReceiverArrowHead);
+//            BindingHelper.bind(handshakeSyncLine, handshakeArrowHead, channelReceiverArrowHead);
 //            BindingHelper.bind(handshakeSyncArrowHead, outgoingEnd1, channelReceiverArrowHead.getCircle());
 
             // Properties

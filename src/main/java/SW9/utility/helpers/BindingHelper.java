@@ -5,13 +5,13 @@ import SW9.model_canvas.arrow_heads.ChannelReceiverArrowHead;
 import SW9.model_canvas.arrow_heads.ChannelSenderArrowHead;
 import SW9.model_canvas.locations.Location;
 import SW9.presentations.CanvasPresentation;
+import SW9.presentations.Link;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 import jiconfont.javafx.IconNode;
 
 public class BindingHelper {
@@ -30,19 +30,19 @@ public class BindingHelper {
         subject.yProperty().set(CanvasPresentation.mouseTracker.gridYProperty().subtract(y).get());
     }
 
-    public static void bind(final Line lineSubject, final ArrowHead arrowHeadSubject, final Circular source, final Circular target) {
+    public static void bind(final Link lineSubject, final ArrowHead arrowHeadSubject, final Circular source, final Circular target) {
         BindingHelper.bind(lineSubject, source, target);
         BindingHelper.bind(arrowHeadSubject, source, target);
         BindingHelper.bind(lineSubject, arrowHeadSubject);
     }
 
-    public static void bind(final Line lineSubject, final ArrowHead arrowHeadSubject, final Circular source, final ObservableDoubleValue x, final ObservableDoubleValue y) {
+    public static void bind(final Link lineSubject, final ArrowHead arrowHeadSubject, final Circular source, final ObservableDoubleValue x, final ObservableDoubleValue y) {
         BindingHelper.bind(lineSubject, source, x, y);
         BindingHelper.bind(arrowHeadSubject, source, x, y);
         BindingHelper.bind(lineSubject, arrowHeadSubject);
     }
 
-    public static void bind(final Line subject, final Circle source, final Circle target) {
+    public static void bind(final Link subject, final Circle source, final Circle target) {
         // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
         final LineBinding lineBinding = LineBinding.getCircleBindings(source, target);
 
@@ -53,7 +53,7 @@ public class BindingHelper {
         subject.endYProperty().bind(lineBinding.endY);
     }
 
-    public static void bind(final Line subject, final Circle source, final MouseTracker target) {
+    public static void bind(final Link subject, final Circle source, final MouseTracker target) {
         // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
         final LineBinding lineBinding = LineBinding.getCircleBindings(source, target);
 
@@ -64,7 +64,7 @@ public class BindingHelper {
         subject.endYProperty().bind(lineBinding.endY);
     }
 
-    public static void bind(final Line subject, final Circular source, final ObservableDoubleValue x, final ObservableDoubleValue y) {
+    public static void bind(final Link subject, final Circular source, final ObservableDoubleValue x, final ObservableDoubleValue y) {
         // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
         final LineBinding lineBinding = LineBinding.getCircularBindings(source, CanvasPresentation.mouseTracker, x, y);
 
@@ -75,7 +75,7 @@ public class BindingHelper {
         subject.endYProperty().bind(lineBinding.endY);
     }
 
-    public static void bind(final Line subject, final Circular source, final Circular target) {
+    public static void bind(final Link subject, final Circular source, final Circular target) {
         // Calculate the bindings (so that the line will be based on the circle circumference instead of in its center)
         final LineBinding lineBinding = LineBinding.getCircularBindings(source, target);
 
@@ -121,7 +121,7 @@ public class BindingHelper {
         icon.yProperty().bind(location.yProperty().add(Location.RADIUS));
     }
 
-    public static <T extends ChannelSenderArrowHead> void bind(final Line handshakeLine, final T senderArrowHead, final ChannelReceiverArrowHead receiverArrowHead) {
+    public static <T extends ChannelSenderArrowHead> void bind(final Link handshakeLine, final T senderArrowHead, final ChannelReceiverArrowHead receiverArrowHead) {
         final LineBinding bindings = LineBinding.getCircleBindings(receiverArrowHead.getCircle(), new Point(senderArrowHead));
 
         handshakeLine.startXProperty().bind(bindings.startX);
@@ -188,7 +188,7 @@ public class BindingHelper {
         subject.rotateProperty().bind(rotationBinding);
     }
 
-    public static void bind(final Line subject, final ArrowHead target) {
+    public static void bind(final Link subject, final ArrowHead target) {
         final Circle arrowHeadField = new Circle();
         arrowHeadField.centerXProperty().bind(target.xProperty());
         arrowHeadField.centerYProperty().bind(target.yProperty());
