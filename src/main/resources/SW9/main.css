@@ -142,3 +142,11 @@
     -fx-highlight-fill: -deep-orange-500;
     -fx-highlight-text-fill: -white;
 }
+
+.menu .label {
+    -fx-text-fill: -white;
+}
+
+.menu-item .label {
+    -fx-text-fill: -black;
+}

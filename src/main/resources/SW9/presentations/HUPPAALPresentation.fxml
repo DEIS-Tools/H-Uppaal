@@ -38,7 +38,7 @@
     </bottom>
 
     <top>
-        <MenuBar fx:id="menuBar" minHeight="24" maxHeight="24">
+        <MenuBar fx:id="menuBar">
             <menus>
                 <Menu text="File">
                     <items>

@@ -38,19 +38,20 @@ public class HUPPAALPresentation extends BorderPane {
     }
 
     private void initializeTopBar() {
-        final Color color = Color.GREY_BLUE;
-        final Color.Intensity intensity = Color.Intensity.I900;
-
-        // Set the background for the top toolbar
-        controller.menuBar.setBackground(
-                new Background(new BackgroundFill(color.getColor(intensity),
-                        CornerRadii.EMPTY,
-                        Insets.EMPTY)
-                ));
-
         final String os = System.getProperty("os.name");
         if (os != null && os.startsWith("Mac")) {
             controller.menuBar.useSystemMenuBarProperty().set(true);
+            controller.menuBar.setVisible(false);
+        } else {
+            final Color color = Color.GREY_BLUE;
+            final Color.Intensity intensity = Color.Intensity.I900;
+
+            // Set the background for the top toolbar
+            controller.menuBar.setBackground(
+                    new Background(new BackgroundFill(color.getColor(intensity),
+                            CornerRadii.EMPTY,
+                            Insets.EMPTY)
+                    ));
         }
     }
 
