@@ -125,7 +125,9 @@ public class ComponentController implements Initializable {
 
                         // Locations are removed from the component
                         c.getRemoved().forEach(location -> {
-                            root.getChildren().remove(locationPresentationMap.get(location));
+                            final LocationPresentation locationPresentation = locationPresentationMap.get(location);
+                            modelContainer.getChildren().remove(locationPresentation);
+                            locationPresentationMap.remove(location);
                         });
                     }
                 }
