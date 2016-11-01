@@ -44,7 +44,7 @@ public class HUPPAALPresentation extends BorderPane {
             controller.menuBar.setVisible(false);
         } else {
             final Color color = Color.GREY_BLUE;
-            final Color.Intensity intensity = Color.Intensity.I900;
+            final Color.Intensity intensity = Color.Intensity.I800;
 
             // Set the background for the top toolbar
             controller.menuBar.setBackground(
@@ -52,6 +52,14 @@ public class HUPPAALPresentation extends BorderPane {
                             CornerRadii.EMPTY,
                             Insets.EMPTY)
                     ));
+
+            // Set the bottom border
+            controller.menuBar.setBorder(new Border(new BorderStroke(
+                    color.getColor(intensity.next()),
+                    BorderStrokeStyle.SOLID,
+                    CornerRadii.EMPTY,
+                    new BorderWidths(0, 0, 1, 0)
+            )));
         }
     }
 

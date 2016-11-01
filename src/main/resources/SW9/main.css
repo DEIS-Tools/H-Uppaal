@@ -145,6 +145,9 @@
 
 .menu .label {
     -fx-text-fill: -white;
+
+    -fx-font-family: "Roboto";
+    -fx-font-size: 13.0;
 }
 
 .menu-item .label {
