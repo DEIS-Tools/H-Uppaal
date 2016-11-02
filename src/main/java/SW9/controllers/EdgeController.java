@@ -143,40 +143,32 @@ public class EdgeController implements Initializable {
     }
 
     public void edgeEntered() {
-        final int timeBetweenAnimations = 10;
-        final int[] timeOffset = {0};
-
         getEdge().getNails().forEach(nail -> {
             final Timeline animation = new Timeline();
 
             final KeyValue radius0 = new KeyValue(nail.radiusProperty(), NailPresentation.COLLAPSED_RADIUS);
+            final KeyValue radius2 = new KeyValue(nail.radiusProperty(), NailPresentation.HOVERED_RADIUS * 1.2);
             final KeyValue radius1 = new KeyValue(nail.radiusProperty(), NailPresentation.HOVERED_RADIUS);
 
-            final KeyFrame kf1 = new KeyFrame(Duration.millis(timeOffset[0]), radius0);
-            final KeyFrame kf2 = new KeyFrame(Duration.millis(timeOffset[0] + 100), radius1);
+            final KeyFrame kf1 = new KeyFrame(Duration.millis(0), radius0);
+            final KeyFrame kf2 = new KeyFrame(Duration.millis(80), radius2);
+            final KeyFrame kf3 = new KeyFrame(Duration.millis(100), radius1);
 
-            timeOffset[0] += timeBetweenAnimations;
-
-            animation.getKeyFrames().addAll(kf1, kf2);
+            animation.getKeyFrames().addAll(kf1, kf2, kf3);
 
             animation.play();
         });
     }
 
     public void edgeExited() {
-        final int timeBetweenAnimations = 10;
-        final int[] timeOffset = {0};
-
         getEdge().getNails().forEach(nail -> {
             final Timeline animation = new Timeline();
 
             final KeyValue radius0 = new KeyValue(nail.radiusProperty(), NailPresentation.COLLAPSED_RADIUS);
             final KeyValue radius1 = new KeyValue(nail.radiusProperty(), NailPresentation.HOVERED_RADIUS);
 
-            final KeyFrame kf1 = new KeyFrame(Duration.millis(timeOffset[0]), radius1);
-            final KeyFrame kf2 = new KeyFrame(Duration.millis(timeOffset[0] + 100), radius0);
-
-            timeOffset[0] += timeBetweenAnimations;
+            final KeyFrame kf1 = new KeyFrame(Duration.millis(0), radius1);
+            final KeyFrame kf2 = new KeyFrame(Duration.millis(100), radius0);
 
             animation.getKeyFrames().addAll(kf1, kf2);
 
