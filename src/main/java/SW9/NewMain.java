@@ -3,10 +3,13 @@ package SW9;
 import SW9.abstractions.Project;
 import SW9.presentations.HUPPAALPresentation;
 import SW9.utility.helpers.SelectHelper;
+import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
@@ -70,6 +73,12 @@ public class NewMain extends Application {
 
         // We're now ready! Let the curtains fall!
         stage.show();
+
+        // Register a key-bind for showing debug-information
+        KeyboardTracker.registerKeybind("DEBUG", new Keybind(new KeyCodeCombination(KeyCode.D), () -> {
+            // Toggle the debug mode for the debug class (will update misc. debug variables which presentations bind to)
+            Debug.debugModeEnabled.set(!Debug.debugModeEnabled.get());
+        }));
     }
 
 

@@ -1,5 +1,6 @@
 package SW9.presentations;
 
+import SW9.Debug;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Group;
@@ -19,7 +20,7 @@ public class Link extends Group {
 
     public Link(final double startX, final double endX, final double startY, final double endY) {
 
-        // Set the intial values
+        // Set the initial values
         this.startX = new SimpleDoubleProperty(startX);
         this.endX = new SimpleDoubleProperty(endX);
         this.startY = new SimpleDoubleProperty(startY);
@@ -46,7 +47,10 @@ public class Link extends Group {
 
         // Style the hidden line
         hiddenHoverLine.setStrokeWidth(HOVER_LINE_STROKE_WIDTH);
-        hiddenHoverLine.setOpacity(0);
+
+        // Debug visuals
+        hiddenHoverLine.setStroke(Debug.hoverableAreaColor.getColor(Debug.hoverableAreaColorIntensity));
+        hiddenHoverLine.opacityProperty().bind(Debug.hoverableAreaOpacity);
     }
 
     public double getStartX() {
