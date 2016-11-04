@@ -18,6 +18,7 @@ public class NailController implements Initializable {
 
     public Group root;
     public Circle nailCircle;
+    public Circle dragCircle;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {

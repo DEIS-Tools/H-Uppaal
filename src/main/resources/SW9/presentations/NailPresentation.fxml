@@ -9,6 +9,6 @@
          fx:id="root">
 
     <Circle fx:id="nailCircle"/>
-    <Circle fx:id="dragCircle" radius="12.5" opacity="0.3"/>
+    <Circle fx:id="dragCircle" radius="12.5" opacity="0"/>
 
 </fx:root>

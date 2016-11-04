@@ -31,23 +31,16 @@ public class EdgeController implements Initializable {
     private final ObjectProperty<Edge> edge = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
     private final SimpleArrowHead simpleArrowHead = new SimpleArrowHead();
-    public Group edgeRoot;
-
     private final SimpleBooleanProperty isHoveringEdge = new SimpleBooleanProperty(false);
     private final SimpleIntegerProperty timeHoveringEdge = new SimpleIntegerProperty(0);
-
+    public Group edgeRoot;
     private Runnable collapseNail;
-    private Thread runningJens;
+    private Thread runningThread;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-
-        timeHoveringEdge.addListener((observable, oldValue, newValue) -> {
-            System.out.println(newValue);
-        });
-
         collapseNail = () -> {
-            final int interval = 100;
+            final int interval = 50;
 
             int previousValue = 1;
 
@@ -56,7 +49,10 @@ public class EdgeController implements Initializable {
                     Thread.sleep(interval);
 
                     if(isHoveringEdge.get()) {
-                        timeHoveringEdge.set(timeHoveringEdge.get() + interval);
+                        // Do not let the timer go above this threshold
+                        if (timeHoveringEdge.get() <= 500) {
+                            timeHoveringEdge.set(timeHoveringEdge.get() + interval);
+                        }
                     } else {
                         timeHoveringEdge.set(timeHoveringEdge.get() - interval);
                     }
@@ -203,11 +199,11 @@ public class EdgeController implements Initializable {
     public void edgeEntered() {
         isHoveringEdge.set(true);
 
-        if((runningJens != null && runningJens.isAlive())) return; // Do not re-animate
+        if ((runningThread != null && runningThread.isAlive())) return; // Do not re-animate
 
-        timeHoveringEdge.set(1000);
-        runningJens = new Thread(collapseNail);
-        runningJens.start();
+        timeHoveringEdge.set(500);
+        runningThread = new Thread(collapseNail);
+        runningThread.start();
 
         getEdge().getNails().forEach(nail -> {
             final Timeline animation = new Timeline();
