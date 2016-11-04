@@ -47,7 +47,7 @@ public class Link extends Group {
 
         // Style the hidden line
         hiddenHoverLine.setStrokeWidth(HOVER_LINE_STROKE_WIDTH);
-        hiddenHoverLine.setStroke(Color.TRANSPARENT);
+        hiddenHoverLine.setOpacity(0.3);
     }
 
     public double getStartX() {
