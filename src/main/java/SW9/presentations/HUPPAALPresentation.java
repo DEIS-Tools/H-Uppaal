@@ -18,7 +18,9 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.net.URL;
 
-public class HUPPAALPresentation extends BorderPane {
+import static javafx.scene.paint.Color.TRANSPARENT;
+
+public class HUPPAALPresentation extends StackPane {
 
     private final HUPPAALController controller;
 
@@ -45,11 +47,32 @@ public class HUPPAALPresentation extends BorderPane {
             initializeBottomStatusBar();
             initializeToolbar();
             initializeToggleQueryPaneFunctionality();
+            initializeQueryDetailsDialog();
 
             controller.bottomStatusBar.heightProperty().addListener((observable, oldValue, newValue) -> AnchorPane.setBottomAnchor(controller.queryPane, (Double) newValue));
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeQueryDetailsDialog() {
+        final Color modalBarColor = Color.GREY_BLUE;
+        final Color.Intensity modalBarColorIntensity = Color.Intensity.I500;
+
+        // Set the background of the modal bar
+        controller.modalBar.setBackground(new Background(new BackgroundFill(
+                modalBarColor.getColor(modalBarColorIntensity),
+                CornerRadii.EMPTY,
+                Insets.EMPTY
+        )));
+
+        // Set the color of the query text field
+        controller.queryTextField.setUnFocusColor(TRANSPARENT);
+        controller.queryTextField.setFocusColor(modalBarColor.getColor(modalBarColorIntensity));
+
+        // Set the color of the comment text field
+        controller.commentTextField.setUnFocusColor(TRANSPARENT);
+        controller.commentTextField.setFocusColor(modalBarColor.getColor(modalBarColorIntensity));
     }
 
     private void initializeToggleQueryPaneFunctionality() {

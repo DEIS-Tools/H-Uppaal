@@ -1,74 +1,153 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import SW9.presentations.CanvasPresentation?>
 <?import SW9.presentations.QueryPanePresentation?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
-         type="BorderPane"
+         type="StackPane"
          fx:id="root"
          fx:controller="SW9.controllers.HUPPAALController">
 
-    <center>
-        <StackPane>
-            <CanvasPresentation fx:id="canvas"/>
+    <!-- Actual content of the view -->
+    <BorderPane>
 
-            <StackPane fx:id="toolbar"
-                       StackPane.alignment="TOP_CENTER"
-                       minHeight="56" maxHeight="56">
-                <Label fx:id="title" text="H-UPPAAL" styleClass="title" StackPane.alignment="CENTER_LEFT"/>
+        <center>
+            <StackPane>
+                <CanvasPresentation fx:id="canvas"/>
+
+                <StackPane fx:id="toolbar"
+                           StackPane.alignment="TOP_CENTER"
+                           minHeight="56" maxHeight="56">
+                    <Label fx:id="title" text="H-UPPAAL" styleClass="title" StackPane.alignment="CENTER_LEFT"/>
+                </StackPane>
+
+                <QueryPanePresentation
+                        fx:id="queryPane"
+                        StackPane.alignment="TOP_RIGHT"
+                        maxWidth="400"/>
             </StackPane>
+        </center>
 
-            <QueryPanePresentation
-                    fx:id="queryPane"
-                    StackPane.alignment="TOP_RIGHT"
-                    maxWidth="400"/>
-        </StackPane>
-    </center>
+        <!-- Query pane -->
+        <right>
+            <Label fx:id="fillerElement"/>
+        </right>
 
-    <!-- Query pane -->
-    <right>
-        <Label fx:id="fillerElement"/>
-    </right>
+        <!-- Bottom status bar -->
+        <bottom>
+            <BorderPane fx:id="bottomStatusBar"
+                        styleClass="bottom-bar"
+                        prefHeight="24"
+                        maxHeight="24">
 
-    <!-- Bottom status bar -->
-    <bottom>
-        <BorderPane fx:id="bottomStatusBar"
-                    styleClass="bottom-bar"
-                    prefHeight="24"
-                    maxHeight="24">
+            </BorderPane>
+        </bottom>
 
-        </BorderPane>
-    </bottom>
+        <top>
+            <!-- Menu bar for "file" etc (only visible on windows) -->
+            <MenuBar fx:id="menuBar">
 
-    <top>
-        <!-- Menu bar for "file" etc (only visible on windows) -->
-        <MenuBar fx:id="menuBar">
+                <Menu text="File">
+                    <MenuItem text="New"/>
+                    <MenuItem text="Open"/>
+                    <MenuItem text="Save"/>
+                    <MenuItem text="Save As"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="Exit"/>
+                </Menu>
 
-            <Menu text="File">
-                <MenuItem text="New"/>
-                <MenuItem text="Open"/>
-                <MenuItem text="Save"/>
-                <MenuItem text="Save As"/>
-                <SeparatorMenuItem/>
-                <MenuItem text="Exit"/>
-            </Menu>
+                <Menu text="Edit">
+                    <MenuItem text="Copy"/>
+                    <MenuItem text="Cut"/>
+                    <MenuItem text="Paste"/>
+                </Menu>
 
-            <Menu text="Edit">
-                <MenuItem text="Copy"/>
-                <MenuItem text="Cut"/>
-                <MenuItem text="Paste"/>
-            </Menu>
+                <Menu text="Help">
+                    <MenuItem text="Search" disable="true"/>
+                    <MenuItem text="Online Manual" visible="false"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="About"/>
+                </Menu>
 
-            <Menu text="Help">
-                <MenuItem text="Search" disable="true"/>
-                <MenuItem text="Online Manual" visible="false"/>
-                <SeparatorMenuItem/>
-                <MenuItem text="About"/>
-            </Menu>
+            </MenuBar>
+        </top>
 
-        </MenuBar>
-    </top>
+    </BorderPane>
+
+    <!-- Dialog -->
+    <StackPane fx:id="dialogContainer" style="-fx-background-color: #0000007F;">
+        <JFXDialog fx:id="dialog">
+
+            <VBox>
+
+                <!-- Will scale the dialod -->
+                <Region minWidth="400"/>
+
+                <StackPane fx:id="modalBar" style="-fx-background-color: -blue-grey-800;">
+
+                </StackPane>
+
+                <!-- Content -->
+                <VBox>
+
+                    <VBox style="-fx-padding: 24px;">
+                        <Text text="Detailed Query Information" styleClass="title"/>
+
+                        <Region minHeight="20"/>
+
+                        <JFXTextField fx:id="queryTextField"
+                                      text="A[] not deadlock"
+                                      styleClass="subhead" style="-fx-padding: 0;"/>
+
+                        <Region minHeight="8"/>
+
+                        <JFXTextField fx:id="commentTextField"
+                                      text="There is no deadlock in the model"
+                                      styleClass="subhead" style="-fx-padding: 0;"/>
+
+                        <Region minHeight="16"/>
+
+                        <!-- States explored -->
+                        <HBox>
+                            <Text styleClass="subhead" style="-fx-font-weight: bold;">States explored:</Text>
+                            <Region minWidth="4"/>
+                            <Text styleClass="subhead">802.102</Text>
+                        </HBox>
+
+                        <Region minHeight="4"/>
+
+                        <!-- RAM Usage -->
+                        <HBox>
+                            <Text styleClass="subhead" style="-fx-font-weight: bold;">RAM Usage:</Text>
+                            <Region minWidth="4"/>
+                            <Text styleClass="subhead">96MB / 6.327MB / 0MB</Text>
+                        </HBox>
+
+                        <Region minHeight="16"/>
+
+                    </VBox>
+
+                    <!--
+                    <Region style="-fx-background-color: -grey-100;" minHeight="1" />
+                    -->
+
+                    <JFXProgressBar/>
+
+                    <HBox style="-fx-padding: 8px;">
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <JFXButton text="Stop Query"/>
+                    </HBox>
+
+                </VBox>
+
+            </VBox>
+
+        </JFXDialog>
+    </StackPane>
 
 </fx:root>
