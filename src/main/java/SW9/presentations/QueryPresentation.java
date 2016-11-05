@@ -3,13 +3,14 @@ package SW9.presentations;
 import SW9.abstractions.Query;
 import SW9.abstractions.QueryState;
 import SW9.utility.colors.Color;
-import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXTextField;
 import javafx.beans.binding.When;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.layout.*;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -59,15 +60,21 @@ public class QueryPresentation extends AnchorPane {
 
     private void initializeActionIcon() {
         // Find the action icon
-        final JFXButton actionButton = (JFXButton) lookup("#actionButton");
-        final FontIcon actionIcon = (FontIcon) actionButton.getGraphic();
+        final JFXRippler actionButton = (JFXRippler) lookup("#actionButton");
+        final FontIcon actionButtonIcon = (FontIcon) lookup("#actionButtonIcon");
+
+        actionButton.setCursor(Cursor.HAND);
+
+        actionButton.setRipplerFill(Color.GREY.getColor(Color.Intensity.I500));
 
         // Delegate that based on the query state updated the action icon
         final Consumer<QueryState> updateIcon = (queryState) -> {
             if (queryState.equals(QueryState.RUNNING)) {
-                actionIcon.setIconLiteral("gmi-stop");
+                actionButtonIcon.setIconLiteral("gmi-stop");
+                actionButtonIcon.setIconSize(22);
             } else {
-                actionIcon.setIconLiteral("gmi-play-arrow");
+                actionButtonIcon.setIconLiteral("gmi-play-arrow");
+                actionButtonIcon.setIconSize(22);
             }
         };
 
@@ -77,8 +84,16 @@ public class QueryPresentation extends AnchorPane {
         // Update the icon when ever the query state is updated
         query.queryStateProperty().addListener((observable, oldValue, newValue) -> updateIcon.accept(newValue));
 
-        actionButton.setOnMousePressed(event -> {
-            System.out.println(event);
+        actionButton.setMaskType(JFXRippler.RipplerMask.CIRCLE);
+
+        actionButton.getChildren().get(0).setOnMousePressed(event -> {
+            if (query.getQueryState().equals(QueryState.RUNNING)) {
+                // todo: Stop the query
+                query.setQueryState(QueryState.UNKNOWN);
+            } else {
+                // todo: Start the query
+                query.setQueryState(QueryState.RUNNING);
+            }
         });
     }
 

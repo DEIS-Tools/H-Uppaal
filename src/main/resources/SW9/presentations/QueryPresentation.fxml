@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXRippler?>
 <?import com.jfoenix.controls.JFXSpinner?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.layout.*?>
@@ -29,11 +29,13 @@
 
     <StackPane AnchorPane.topAnchor="8" AnchorPane.rightAnchor="8" AnchorPane.bottomAnchor="8">
         <JFXSpinner id="progressIndicator" radius="20"/>
-        <JFXButton id="actionButton">
-            <graphic>
-                <FontIcon iconLiteral="gmi-play-arrow" iconSize="20"/>
-            </graphic>
-        </JFXButton>
+
+        <JFXRippler id="actionButton">
+            <StackPane minWidth="40" maxWidth="40" minHeight="40" maxHeight="40">
+                <FontIcon id="actionButtonIcon" iconLiteral="gmi-play-arrow" iconSize="24"/>
+            </StackPane>
+        </JFXRippler>
+
     </StackPane>
 
 
