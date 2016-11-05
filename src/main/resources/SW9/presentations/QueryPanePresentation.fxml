@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXRippler?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
@@ -26,19 +27,21 @@
 
             <StackPane AnchorPane.rightAnchor="16" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
                 <HBox maxHeight="-Infinity">
-                    <JFXButton fx:id="runAllQueriesButton">
-                        <graphic>
-                            <FontIcon iconLiteral="gmi-play-arrow" iconSize="24"/>
-                        </graphic>
-                    </JFXButton>
 
-                    <Region minWidth="16"/>
+                    <JFXRippler fx:id="runAllQueriesButton">
+                        <StackPane minWidth="40" minHeight="40">
+                            <FontIcon iconLiteral="gmi-play-arrow" iconSize="24" fill="white"/>
+                        </StackPane>
+                    </JFXRippler>
 
-                    <JFXButton fx:id="clearAllQueriesButton">
-                        <graphic>
-                            <FontIcon iconLiteral="gmi-clear-all" iconSize="24"/>
-                        </graphic>
-                    </JFXButton>
+                    <Region minWidth="8"/>
+
+                    <JFXRippler fx:id="clearAllQueriesButton">
+                        <StackPane minWidth="40" minHeight="40">
+                            <FontIcon iconLiteral="gmi-clear-all" iconSize="24" fill="white"/>
+                        </StackPane>
+                    </JFXRippler>
+
                 </HBox>
             </StackPane>
 
