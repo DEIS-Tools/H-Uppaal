@@ -14,14 +14,18 @@
     <StackPane id="stateIndicator" prefWidth="5" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
                AnchorPane.leftAnchor="0"/>
 
-    <JFXTextField id="query" HBox.hgrow="ALWAYS" text="A[] not deadlock" AnchorPane.topAnchor="8"
+    <JFXTextField id="query" HBox.hgrow="ALWAYS"
+                  AnchorPane.topAnchor="8"
                   AnchorPane.rightAnchor="56"
                   AnchorPane.leftAnchor="8"
                   style="-fx-unfocus-color:transparent;" styleClass="subhead"/>
-    <JFXTextField id="comment" HBox.hgrow="ALWAYS" text="There is no deadlock" AnchorPane.topAnchor="36"
+
+    <JFXTextField id="comment" HBox.hgrow="ALWAYS"
+                  AnchorPane.topAnchor="36"
                   AnchorPane.rightAnchor="56"
-                  AnchorPane.bottomAnchor="4" AnchorPane.leftAnchor="8" style="-fx-unfocus-color:transparent;"
-                  styleClass="caption"/>
+                  AnchorPane.bottomAnchor="4"
+                  AnchorPane.leftAnchor="8"
+                  style="-fx-unfocus-color:transparent;" styleClass="caption"/>
 
     <StackPane AnchorPane.topAnchor="8" AnchorPane.rightAnchor="8" AnchorPane.bottomAnchor="8">
         <JFXSpinner id="progressIndicator" radius="20"/>

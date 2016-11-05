@@ -5,6 +5,7 @@ import SW9.abstractions.QueryState;
 import SW9.utility.colors.Color;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSpinner;
+import com.jfoenix.controls.JFXTextField;
 import javafx.beans.binding.When;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
@@ -36,15 +37,24 @@ public class QueryPresentation extends AnchorPane {
             this.query = query;
 
             initializeStateIndicator();
-
             initializeProgressIndicator();
-
             initializeActionIcon();
-
+            initializeTextFields();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeTextFields() {
+        final JFXTextField queryTextField = (JFXTextField) lookup("#query");
+        final JFXTextField commentTextField = (JFXTextField) lookup("#comment");
+
+        queryTextField.setText(query.getQuery());
+        commentTextField.setText(query.getComment());
+
+        query.queryProperty().bind(queryTextField.textProperty());
+        query.commentProperty().bind(commentTextField.textProperty());
     }
 
     private void initializeActionIcon() {
@@ -66,6 +76,10 @@ public class QueryPresentation extends AnchorPane {
 
         // Update the icon when ever the query state is updated
         query.queryStateProperty().addListener((observable, oldValue, newValue) -> updateIcon.accept(newValue));
+
+        actionButton.setOnMousePressed(event -> {
+            System.out.println(event);
+        });
     }
 
     private void initializeProgressIndicator() {
