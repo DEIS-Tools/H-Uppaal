@@ -57,9 +57,6 @@ public class HUPPAALPresentation extends BorderPane {
         // Will hide the element, and force it in then the right side of the border pane is enlarged
         controller.queryPane.translateXProperty().bind(controller.queryPane.widthProperty());
 
-        // Bind the translate of the canvas to half of the animation property (negated) to push the element correctly
-        controller.canvas.translateXProperty().bind(queryPaneAnimationProperty.divide(-2));
-
         // Whenever the width of the query pane is updated, update the animations
         controller.queryPane.widthProperty().addListener((observable) -> {
             initializeOpenQueryPaneAnimation();
