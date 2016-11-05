@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import com.jfoenix.controls.JFXRippler?>
-<?import com.jfoenix.controls.JFXSpinner?>
-<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.*?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
@@ -28,13 +26,28 @@
                   style="-fx-unfocus-color:transparent;" styleClass="caption"/>
 
     <StackPane AnchorPane.topAnchor="8" AnchorPane.rightAnchor="8" AnchorPane.bottomAnchor="8">
-        <JFXSpinner id="progressIndicator" radius="20"/>
 
-        <JFXRippler id="actionButton">
-            <StackPane minWidth="40" maxWidth="40" minHeight="40" maxHeight="40">
-                <FontIcon id="actionButtonIcon" iconLiteral="gmi-play-arrow" iconSize="24"/>
+        <HBox>
+
+            <JFXRippler id="detailsButton" scaleX="0">
+                <StackPane minWidth="40" maxWidth="40" minHeight="40" maxHeight="40">
+                    <FontIcon id="detailsButtonIcon" iconLiteral="gmi-content-paste" iconSize="24"/>
+                </StackPane>
+            </JFXRippler>
+
+            <Region minWidth="8"/>
+
+            <StackPane>
+                <JFXSpinner id="progressIndicator" radius="20"/>
+
+                <JFXRippler id="actionButton">
+                    <StackPane minWidth="40" maxWidth="40" minHeight="40" maxHeight="40">
+                        <FontIcon id="actionButtonIcon" iconLiteral="gmi-play-arrow" iconSize="24"/>
+                    </StackPane>
+                </JFXRippler>
             </StackPane>
-        </JFXRippler>
+
+        </HBox>
 
     </StackPane>
 

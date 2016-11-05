@@ -7,10 +7,7 @@ import com.jfoenix.controls.JFXRippler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
@@ -33,12 +30,38 @@ public class QueryPanePresentation extends StackPane {
 
             controller = fxmlLoader.getController();
 
+            initializeLeftBorder();
             initializeToolbar();
-
+            initializeBackground();
             initializeAddQueryButton();
+
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeLeftBorder() {
+        controller.toolbar.setBorder(new Border(new BorderStroke(
+                Color.GREY_BLUE.getColor(Color.Intensity.I900),
+                BorderStrokeStyle.SOLID,
+                CornerRadii.EMPTY,
+                new BorderWidths(0, 0, 0, 1)
+        )));
+
+        controller.scrollPane.setBorder(new Border(new BorderStroke(
+                Color.GREY.getColor(Color.Intensity.I400),
+                BorderStrokeStyle.SOLID,
+                CornerRadii.EMPTY,
+                new BorderWidths(0, 0, 0, 1)
+        )));
+    }
+
+    private void initializeBackground() {
+        controller.queriesList.setBackground(new Background(new BackgroundFill(
+                Color.GREY.getColor(Color.Intensity.I200),
+                CornerRadii.EMPTY,
+                Insets.EMPTY
+        )));
     }
 
     private void initializeToolbar() {

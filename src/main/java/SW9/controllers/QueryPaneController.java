@@ -7,14 +7,18 @@ import SW9.presentations.QueryPresentation;
 import SW9.utility.helpers.DropShadowHelper;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXRippler;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -28,6 +32,7 @@ public class QueryPaneController implements Initializable {
     public JFXRippler clearAllQueriesButton;
     public VBox queriesList;
     public StackPane root;
+    public ScrollPane scrollPane;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -50,7 +55,6 @@ public class QueryPaneController implements Initializable {
                 }
             }
         });
-
     }
 
     @FXML
@@ -70,11 +74,20 @@ public class QueryPaneController implements Initializable {
 
     @FXML
     private void runAllQueriesButtonClicked() {
+        final int interval = 50;
+        final int[] counter = {0};
+
         // Todo: Actually display the results here
         NewMain.getProject().getQueries().forEach(query -> {
-            final QueryState queryState = QueryState.values()[(int) (Math.random() * QueryState.values().length)];
+            final Timeline timeline = new Timeline(new KeyFrame(
+                    Duration.millis(counter[0] * interval),
+                    ae -> {
+                        final QueryState queryState = QueryState.values()[(int) (Math.random() * QueryState.values().length)];
+                        query.setQueryState(queryState);
+                    }));
+            timeline.play();
 
-            query.setQueryState(queryState);
+            counter[0]++;
         });
     }
 
