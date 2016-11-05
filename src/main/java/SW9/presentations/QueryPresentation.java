@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.function.Consumer;
 
+import static javafx.scene.paint.Color.TRANSPARENT;
+
 public class QueryPresentation extends AnchorPane {
 
     private final Query query;
@@ -50,8 +52,6 @@ public class QueryPresentation extends AnchorPane {
         final JFXButton actionButton = (JFXButton) lookup("#actionButton");
         final FontIcon actionIcon = (FontIcon) actionButton.getGraphic();
 
-
-        int a = 2;
         // Delegate that based on the query state updated the action icon
         final Consumer<QueryState> updateIcon = (queryState) -> {
             if (queryState.equals(QueryState.RUNNING)) {
@@ -85,10 +85,17 @@ public class QueryPresentation extends AnchorPane {
             final Color color = queryState.getColor();
             final Color.Intensity colorIntensity = queryState.getColorIntensity();
 
-            stateIndicator.setBackground(new Background(new BackgroundFill(color.getColor(colorIntensity),
-                    CornerRadii.EMPTY,
-                    Insets.EMPTY)
-            ));
+            if (queryState.equals(QueryState.UNKNOWN) || queryState.equals(QueryState.RUNNING)) {
+                stateIndicator.setBackground(new Background(new BackgroundFill(TRANSPARENT,
+                        CornerRadii.EMPTY,
+                        Insets.EMPTY)
+                ));
+            } else {
+                stateIndicator.setBackground(new Background(new BackgroundFill(color.getColor(colorIntensity),
+                        CornerRadii.EMPTY,
+                        Insets.EMPTY)
+                ));
+            }
         };
 
         // Update the initial color

@@ -50,6 +50,7 @@ public class QueryPaneController implements Initializable {
                 }
             }
         });
+
     }
 
     @FXML
@@ -65,5 +66,20 @@ public class QueryPaneController implements Initializable {
     @FXML
     private void addQueryButtonReleased() {
         addQueryButton.setEffect(DropShadowHelper.generateElevationShadow(6));
+    }
+
+    @FXML
+    private void runAllQueriesButtonClicked() {
+        // Todo: Actually display the results here
+        NewMain.getProject().getQueries().forEach(query -> {
+            final QueryState queryState = QueryState.values()[(int) (Math.random() * QueryState.values().length)];
+
+            query.setQueryState(queryState);
+        });
+    }
+
+    @FXML
+    private void clearAllQueriesButtonClicked() {
+        NewMain.getProject().getQueries().forEach(query -> query.setQueryState(QueryState.UNKNOWN));
     }
 }

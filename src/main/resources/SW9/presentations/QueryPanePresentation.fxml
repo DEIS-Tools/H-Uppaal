@@ -29,7 +29,7 @@
                 <HBox maxHeight="-Infinity">
 
                     <JFXRippler fx:id="runAllQueriesButton">
-                        <StackPane minWidth="40" minHeight="40">
+                        <StackPane minWidth="40" minHeight="40" onMouseClicked="#runAllQueriesButtonClicked">
                             <FontIcon iconLiteral="gmi-play-arrow" iconSize="24" fill="white"/>
                         </StackPane>
                     </JFXRippler>
@@ -37,7 +37,7 @@
                     <Region minWidth="8"/>
 
                     <JFXRippler fx:id="clearAllQueriesButton">
-                        <StackPane minWidth="40" minHeight="40">
+                        <StackPane minWidth="40" minHeight="40" onMouseClicked="#clearAllQueriesButtonClicked">
                             <FontIcon iconLiteral="gmi-clear-all" iconSize="24" fill="white"/>
                         </StackPane>
                     </JFXRippler>
