@@ -18,7 +18,7 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Circle;
+import javafx.scene.shape.*;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 
 public class LocationPresentation extends Group implements MouseTrackable {
 
-    public static final double RADIUS = 20;
+    private static final double RADIUS = 20;
     private final LocationController controller;
 
     private final MouseTracker mouseTracker = new MouseTracker(this);
@@ -58,11 +58,13 @@ public class LocationPresentation extends Group implements MouseTrackable {
             // TODO make location draggable within a component
             // TODO make creation of location possible from the mouse
 
-            initializeCircle();
+
             initializeTypeGraphics();
-            initializeInvariantCircle();
-            initializeUrgencyCircle();
             initializeNameLabel();
+
+            initializeCircle();
+            initializeRectangle();
+            initializeHexagon();
 
             initializeInitialAnimation();
             initializeHoverAnimationEntered();
@@ -72,6 +74,67 @@ public class LocationPresentation extends Group implements MouseTrackable {
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeHexagon() {
+        final MoveTo p1 = new MoveTo(0, 10);
+        final LineTo p2 = new LineTo(10, 0);
+        final LineTo p3 = new LineTo(30, 0);
+        final LineTo p4 = new LineTo(40, 10);
+        final LineTo p5 = new LineTo(40, 30);
+        final LineTo p6 = new LineTo(30, 40);
+        final LineTo p7 = new LineTo(10, 40);
+        final LineTo p8 = new LineTo(0, 30);
+        final LineTo p9 = new LineTo(0, 10);
+
+        controller.hexagon.getElements().addAll(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+        controller.hexagonShakeIndicator.getElements().addAll(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+
+        final Location location = controller.getLocation();
+
+        final Path hexagon = controller.hexagon;
+        final ObjectProperty<Color> color = location.colorProperty();
+        final ObjectProperty<Color.Intensity> colorIntensity = location.colorIntensityProperty();
+
+        // Delegate to style the label based on the color of the location
+        final Consumer<Color> updateColor = (newColor) -> {
+            hexagon.setFill(newColor.getColor(colorIntensity.get()));
+            hexagon.setStroke(newColor.getColor(colorIntensity.get().next(2)));
+        };
+
+        // Set the initial color
+        updateColor.accept(color.get());
+
+        // Update the color of the hexagon when the color of the location is updated
+        color.addListener((obs, oldColor, newColor) -> updateColor.accept(newColor));
+
+        // The hexagon shape should only be visible when the location is urgent
+        hexagon.visibleProperty().bind(location.urgencyProperty().isEqualTo(Location.Urgency.URGENT));
+        controller.hexagonShakeIndicator.visibleProperty().bind(hexagon.visibleProperty());
+    }
+
+    private void initializeRectangle() {
+        final Location location = controller.getLocation();
+
+        final Rectangle rectangle = controller.rectangle;
+        final ObjectProperty<Color> color = location.colorProperty();
+        final ObjectProperty<Color.Intensity> colorIntensity = location.colorIntensityProperty();
+
+        // Delegate to style the label based on the color of the location
+        final Consumer<Color> updateColor = (newColor) -> {
+            rectangle.setFill(newColor.getColor(colorIntensity.get()));
+            rectangle.setStroke(newColor.getColor(colorIntensity.get().next(2)));
+        };
+
+        // Set the initial color
+        updateColor.accept(color.get());
+
+        // Update the color of the rectangle when the color of the location is updated
+        color.addListener((obs, oldColor, newColor) -> updateColor.accept(newColor));
+
+        // The rectangle shape should only be visible when the location is urgent
+        rectangle.visibleProperty().bind(location.urgencyProperty().isEqualTo(Location.Urgency.COMMITTED));
+        controller.rectangleShakeIndicator.visibleProperty().bind(rectangle.visibleProperty());
     }
 
     private void initializeHoverAnimationEntered() {
@@ -131,44 +194,6 @@ public class LocationPresentation extends Group implements MouseTrackable {
         nameLabel.textProperty().bind(location.nameProperty());
     }
 
-    private void initializeUrgencyCircle() {
-        final Location location = controller.getLocation();
-
-        final Color color = location.getColor();
-        final Color.Intensity colorIntensity = location.getColorIntensity();
-
-        final StackPane urgencyContainer = controller.urgencyContainer;
-        final Circle urgencyCircle = controller.urgencyCircle;
-        final Label urgencyLabel = controller.urgencyLabel;
-
-        urgencyContainer.visibleProperty().bind(location.urgencyProperty().isNotEqualTo(Location.Urgency.NORMAL));
-        urgencyCircle.setFill(color.getColor(colorIntensity));
-        urgencyCircle.setStroke(color.getColor(colorIntensity.next(2)));
-        urgencyLabel.setTextFill(color.getTextColor(colorIntensity));
-
-        urgencyLabel.textProperty().bind(
-                new When(location.urgencyProperty().isEqualTo(Location.Urgency.URGENT)).
-                        then("U").
-                        otherwise("C")
-        );
-    }
-
-    private void initializeInvariantCircle() {
-        final Location location = controller.getLocation();
-
-        final Color color = location.getColor();
-        final Color.Intensity colorIntensity = location.getColorIntensity();
-
-        final StackPane invariantContainer = controller.invariantContainer;
-        final Circle invariantCircle = controller.invariantCircle;
-        final Label invariantLabel = controller.invariantLabel;
-
-        invariantContainer.visibleProperty().bind(location.invariantProperty().isNotEmpty());
-        invariantCircle.setFill(color.getColor(colorIntensity));
-        invariantCircle.setStroke(color.getColor(colorIntensity.next(2)));
-        invariantLabel.setTextFill(color.getTextColor(colorIntensity));
-    }
-
     private void initializeCircle() {
         final Location location = controller.getLocation();
 
@@ -187,6 +212,10 @@ public class LocationPresentation extends Group implements MouseTrackable {
 
         // Update the color of the circle when the color of the location is updated
         color.addListener((obs, old, newValue) -> updateColor.accept(newValue));
+
+        // The circle shape should only be visible when the location is urgent
+        circle.visibleProperty().bind(location.urgencyProperty().isEqualTo(Location.Urgency.NORMAL));
+        controller.circleShakeIndicator.visibleProperty().bind(circle.visibleProperty());
     }
 
     private void initializeTypeGraphics() {
@@ -232,18 +261,36 @@ public class LocationPresentation extends Group implements MouseTrackable {
 
     public void shakeAnimation() {
 
+        // Animation for rectangle shape (bind to the circle animation)
+        controller.rectangleShakeIndicator.opacityProperty().bind(controller.circleShakeIndicator.opacityProperty());
+        controller.circleShakeIndicator.radiusProperty().addListener((observable, oldValue, newValue) -> {
+            controller.rectangleShakeIndicator.setWidth(newValue.doubleValue() * 2);
+            controller.rectangleShakeIndicator.setTranslateX(newValue.doubleValue() * -1);
+
+            controller.rectangleShakeIndicator.setHeight(newValue.doubleValue() * 2);
+            controller.rectangleShakeIndicator.setTranslateY(newValue.doubleValue() * -1);
+        });
+
+        // Animation for hexagon shape (bind to the circle animation)
+        controller.hexagonShakeIndicator.opacityProperty().bind(controller.circleShakeIndicator.opacityProperty());
+        controller.circleShakeIndicator.radiusProperty().addListener((observable, oldValue, newValue) -> {
+            controller.hexagonShakeIndicator.scaleXProperty().set(newValue.doubleValue() / LocationPresentation.RADIUS);
+            controller.hexagonShakeIndicator.scaleYProperty().set(newValue.doubleValue() / LocationPresentation.RADIUS);
+        });
+
+
         final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
 
         final Timeline initialAnimation = new Timeline();
         final Timeline shakeContentAnimation = new Timeline();
 
         final KeyValue scale0x = new KeyValue(scaleXProperty(), 1, interpolator);
-        final KeyValue radius0 = new KeyValue(controller.shakeIndicator.radiusProperty(), 0, interpolator);
-        final KeyValue opacity0 = new KeyValue(controller.shakeIndicator.opacityProperty(), 0, interpolator);
+        final KeyValue radius0 = new KeyValue(controller.circleShakeIndicator.radiusProperty(), 0, interpolator);
+        final KeyValue opacity0 = new KeyValue(controller.circleShakeIndicator.opacityProperty(), 0, interpolator);
 
         final KeyValue scale1x = new KeyValue(scaleXProperty(), 1.3, interpolator);
-        final KeyValue radius1 = new KeyValue(controller.shakeIndicator.radiusProperty(), controller.circle.getRadius() * 0.85, interpolator);
-        final KeyValue opacity1 = new KeyValue(controller.shakeIndicator.opacityProperty(), 0.2, interpolator);
+        final KeyValue radius1 = new KeyValue(controller.circleShakeIndicator.radiusProperty(), controller.circle.getRadius() * 0.85, interpolator);
+        final KeyValue opacity1 = new KeyValue(controller.circleShakeIndicator.opacityProperty(), 0.2, interpolator);
 
         final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale0x, radius0, opacity0);
         final KeyFrame kf2 = new KeyFrame(Duration.millis(2500), scale1x, radius1, opacity1);

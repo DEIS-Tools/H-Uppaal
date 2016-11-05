@@ -6,6 +6,8 @@ import SW9.abstractions.Location;
 import SW9.presentations.LocationPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.helpers.BindingHelper;
+import SW9.utility.keyboard.Keybind;
+import SW9.utility.keyboard.KeyboardTracker;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -13,9 +15,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.Rectangle;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -25,27 +31,22 @@ public class LocationController implements Initializable {
     private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
 
-    public Circle circle;
-
     public Group root;
     public Circle initialIndicator;
     public StackPane finalIndicator;
-    public Circle shakeIndicator;
     public Group shakeContent;
 
-    public StackPane invariantContainer;
-    public Circle invariantCircle;
-    public Label invariantLabel;
-
-    public StackPane urgencyContainer;
-    public Circle urgencyCircle;
-    public Label urgencyLabel;
     public Label nameLabel;
+    public Rectangle rectangle;
+    public Rectangle rectangleShakeIndicator;
+    public Circle circle;
+    public Circle circleShakeIndicator;
+    public Path hexagon;
+    public Path hexagonShakeIndicator;
     private boolean isPlaced;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-
         this.location.addListener((obsLocation, oldLocation, newLocation) -> {
             // The radius property on the abstraction must reflect the radius in the view
             newLocation.radiusProperty().bind(circle.radiusProperty());
@@ -96,6 +97,45 @@ public class LocationController implements Initializable {
         circle.setCursor(Cursor.HAND);
 
         ((LocationPresentation) root).animateHoverEntered();
+
+        // Keybind for making location urgent
+        KeyboardTracker.registerKeybind(KeyboardTracker.MAKE_LOCATION_URGENT, new Keybind(new KeyCodeCombination(KeyCode.U), () -> {
+            final Location.Urgency previousUrgency = location.get().getUrgency();
+
+            if (previousUrgency.equals(Location.Urgency.URGENT)) {
+                UndoRedoStack.push(() -> { // Perform
+                    getLocation().setUrgency(Location.Urgency.NORMAL);
+                }, () -> { // Undo
+                    getLocation().setUrgency(previousUrgency);
+                });
+            } else {
+                UndoRedoStack.push(() -> { // Perform
+                    getLocation().setUrgency(Location.Urgency.URGENT);
+                }, () -> { // Undo
+                    getLocation().setUrgency(previousUrgency);
+                });
+            }
+        }));
+
+        // Keybind for making location committed
+        KeyboardTracker.registerKeybind(KeyboardTracker.MAKE_LOCATION_COMMITTED, new Keybind(new KeyCodeCombination(KeyCode.C), () -> {
+            final Location.Urgency previousUrgency = location.get().getUrgency();
+
+            if (previousUrgency.equals(Location.Urgency.COMMITTED)) {
+                UndoRedoStack.push(() -> { // Perform
+                    getLocation().setUrgency(Location.Urgency.NORMAL);
+                }, () -> { // Undo
+                    getLocation().setUrgency(previousUrgency);
+                });
+            } else {
+                UndoRedoStack.push(() -> { // Perform
+                    getLocation().setUrgency(Location.Urgency.COMMITTED);
+                }, () -> { // Undo
+                    getLocation().setUrgency(previousUrgency);
+                });
+            }
+
+        }));
     }
 
     @FXML
@@ -103,6 +143,9 @@ public class LocationController implements Initializable {
         circle.setCursor(Cursor.DEFAULT);
 
         ((LocationPresentation) root).animateHoverExited();
+
+        KeyboardTracker.unregisterKeybind(KeyboardTracker.MAKE_LOCATION_URGENT);
+        KeyboardTracker.unregisterKeybind(KeyboardTracker.MAKE_LOCATION_COMMITTED);
     }
 
     @FXML

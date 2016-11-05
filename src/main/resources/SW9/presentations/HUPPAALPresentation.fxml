@@ -79,7 +79,7 @@
     </BorderPane>
 
     <!-- Dialog -->
-    <StackPane fx:id="dialogContainer" style="-fx-background-color: #0000007F;">
+    <StackPane fx:id="dialogContainer" style="-fx-background-color: #0000007F;" visible="false">
         <JFXDialog fx:id="dialog">
 
             <VBox>

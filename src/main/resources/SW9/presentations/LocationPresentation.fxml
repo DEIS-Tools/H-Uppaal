@@ -11,9 +11,18 @@
          fx:id="root"
          onMouseEntered="#mouseEntered" onMouseExited="#mouseExited" onMousePressed="#mousePressed">
 
+    <!-- Circular location -->
     <Circle fx:id="circle" radius="20" strokeType="INSIDE"/>
+    <Circle fx:id="circleShakeIndicator" radius="10" mouseTransparent="true" fill="white" opacity="0"/>
 
-    <Circle fx:id="shakeIndicator" radius="10" mouseTransparent="true" fill="white" opacity="0"/>
+    <!-- Square location -->
+    <Rectangle fx:id="rectangle" width="40" height="40" strokeType="INSIDE" translateX="-20" translateY="-20"/>
+    <Rectangle fx:id="rectangleShakeIndicator" mouseTransparent="true" fill="white" opacity="0"/>
+
+    <!-- Hexagon location -->
+    <Path fx:id="hexagon" strokeType="INSIDE" translateX="-20" translateY="-20"/>
+    <Path fx:id="hexagonShakeIndicator" strokeType="INSIDE" translateX="-20" translateY="-20" mouseTransparent="true"
+          fill="white" opacity="0"/>
 
     <Group fx:id="shakeContent">
         <StackPane fx:id="finalIndicator" mouseTransparent="true" translateX="-11" translateY="-11">
@@ -26,15 +35,5 @@
     </Group>
 
     <Label fx:id="nameLabel" styleClass="subhead" mouseTransparent="true"/>
-
-    <StackPane translateX="0.5" translateY="7" fx:id="invariantContainer" mouseTransparent="true">
-        <Circle fx:id="invariantCircle" radius="10" mouseTransparent="true"/>
-        <Label text="I" fx:id="invariantLabel" styleClass="body2"/>
-    </StackPane>
-
-    <StackPane translateX="-20.5" translateY="7" fx:id="urgencyContainer" mouseTransparent="true">
-        <Circle fx:id="urgencyCircle" radius="10" mouseTransparent="true"/>
-        <Label text="U" fx:id="urgencyLabel" styleClass="body2"/>
-    </StackPane>
 
 </fx:root>
