@@ -1,7 +1,9 @@
 package SW9.presentations;
 
+import SW9.NewMain;
 import SW9.abstractions.Query;
 import SW9.abstractions.QueryState;
+import SW9.backend.UPPAALDriver;
 import SW9.utility.colors.Color;
 import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXSpinner;
@@ -145,8 +147,21 @@ public class QueryPresentation extends AnchorPane {
                 // todo: Stop the query
                 query.setQueryState(QueryState.UNKNOWN);
             } else {
-                // todo: Start the query
                 query.setQueryState(QueryState.RUNNING);
+
+                UPPAALDriver.verify(query.getQuery(),
+                        aBoolean -> {
+                            if(aBoolean) {
+                                query.setQueryState(QueryState.SUCCESSFUL);
+                            } else {
+                                query.setQueryState(QueryState.ERROR);
+                            }
+                        },
+                        e -> {
+                            query.setQueryState(QueryState.SYNTAX_ERROR);
+                        },
+                        NewMain.getProject().getComponents()
+                );
             }
         });
     }

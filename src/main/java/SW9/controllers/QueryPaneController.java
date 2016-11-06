@@ -3,6 +3,7 @@ package SW9.controllers;
 import SW9.NewMain;
 import SW9.abstractions.Query;
 import SW9.abstractions.QueryState;
+import SW9.backend.UPPAALDriver;
 import SW9.presentations.QueryPresentation;
 import SW9.utility.helpers.DropShadowHelper;
 import com.jfoenix.controls.JFXButton;
@@ -77,14 +78,22 @@ public class QueryPaneController implements Initializable {
         final int interval = 50;
         final int[] counter = {0};
 
-        // Todo: Actually display the results here
         NewMain.getProject().getQueries().forEach(query -> {
             final Timeline timeline = new Timeline(new KeyFrame(
-                    Duration.millis(counter[0] * interval),
-                    ae -> {
-                        final QueryState queryState = QueryState.values()[(int) (Math.random() * QueryState.values().length)];
-                        query.setQueryState(queryState);
-                    }));
+                    Duration.millis(1 + counter[0] * interval),
+                    ae -> UPPAALDriver.verify(query.getQuery(),
+                            aBoolean -> {
+                                if(aBoolean) {
+                                    query.setQueryState(QueryState.SUCCESSFUL);
+                                } else {
+                                    query.setQueryState(QueryState.ERROR);
+                                }
+                            },
+                            e -> {
+                                query.setQueryState(QueryState.SYNTAX_ERROR);
+                            },
+                            NewMain.getProject().getComponents()
+                    )));
             timeline.play();
 
             counter[0]++;
