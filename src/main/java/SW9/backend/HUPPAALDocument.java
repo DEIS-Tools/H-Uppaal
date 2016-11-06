@@ -1,8 +1,8 @@
 package SW9.backend;
 
-import SW9.model_canvas.Component;
-import SW9.model_canvas.edges.Edge;
-import SW9.model_canvas.locations.Location;
+import SW9.abstractions.Component;
+import SW9.abstractions.Edge;
+import SW9.abstractions.Location;
 import com.uppaal.model.core2.Document;
 import com.uppaal.model.core2.Property;
 import com.uppaal.model.core2.PrototypeDocument;
@@ -78,6 +78,18 @@ public class HUPPAALDocument {
             uToHLocations.put(uLocation, hLocation);
         }
 
+        // Add the initial location to the template
+        final Location initialLocation = component.getInitialLocation();
+        final com.uppaal.model.core2.Location uLocation1 = addLocation(template, initialLocation, "L" + hToULocations.size());
+        hToULocations.put(initialLocation, uLocation1);
+        uToHLocations.put(uLocation1, initialLocation);
+
+        // Add the initial location to the template
+        final Location finalLocation = component.getFinalLocation();
+        final com.uppaal.model.core2.Location uLocation2 = addLocation(template, finalLocation, "L" + hToULocations.size());
+        hToULocations.put(finalLocation, uLocation2);
+        uToHLocations.put(uLocation2, finalLocation);
+
         for (final Edge hEdge : component.getEdges()) {
             uToHEdges.put(addEdge(template, hEdge, hToULocations), hEdge);
         }
@@ -107,22 +119,22 @@ public class HUPPAALDocument {
         }
 
         // Add committed property if location is committed
-        if (hLocation.isCommitted()) {
+        if (hLocation.getUrgency().equals(Location.Urgency.COMMITTED)) {
             uLocation.setProperty("committed", true);
         }
 
         // Add urgent property if location is urgent
-        if (hLocation.isUrgent()) {
+        if (hLocation.getUrgency().equals(Location.Urgency.URGENT)) {
             uLocation.setProperty("urgent", true);
         }
 
         // Add initial property if location is initial
-        if (hLocation.isInitial()) {
+        if (hLocation.getType().equals(Location.Type.INITIAL)) {
             uLocation.setProperty("init", true);
         }
 
         // Update the placement of the name label
-        Property p = uLocation.getProperty("name");
+        final Property p = uLocation.getProperty("name");
         p.setProperty("x", x);
         p.setProperty("y", y - 30);
 

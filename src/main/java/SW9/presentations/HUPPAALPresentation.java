@@ -2,6 +2,7 @@ package SW9.presentations;
 
 import SW9.controllers.HUPPAALController;
 import SW9.utility.colors.Color;
+import com.jfoenix.controls.JFXRippler;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -18,7 +19,9 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.net.URL;
 
-public class HUPPAALPresentation extends BorderPane {
+import static javafx.scene.paint.Color.TRANSPARENT;
+
+public class HUPPAALPresentation extends StackPane {
 
     private final HUPPAALController controller;
 
@@ -45,6 +48,8 @@ public class HUPPAALPresentation extends BorderPane {
             initializeBottomStatusBar();
             initializeToolbar();
             initializeToggleQueryPaneFunctionality();
+            initializeQueryDetailsDialog();
+            initializeGenerateUppaalModelButton();
 
             controller.bottomStatusBar.heightProperty().addListener((observable, oldValue, newValue) -> AnchorPane.setBottomAnchor(controller.queryPane, (Double) newValue));
         } catch (final IOException ioe) {
@@ -52,13 +57,38 @@ public class HUPPAALPresentation extends BorderPane {
         }
     }
 
+    private void initializeGenerateUppaalModelButton() {
+        final Color color = Color.GREY_BLUE;
+        final Color.Intensity colorIntensity = Color.Intensity.I800;
+
+        controller.generateUppaalModel.setMaskType(JFXRippler.RipplerMask.CIRCLE);
+        controller.generateUppaalModel.setRipplerFill(color.getTextColor(colorIntensity));
+    }
+
+    private void initializeQueryDetailsDialog() {
+        final Color modalBarColor = Color.GREY_BLUE;
+        final Color.Intensity modalBarColorIntensity = Color.Intensity.I500;
+
+        // Set the background of the modal bar
+        controller.modalBar.setBackground(new Background(new BackgroundFill(
+                modalBarColor.getColor(modalBarColorIntensity),
+                CornerRadii.EMPTY,
+                Insets.EMPTY
+        )));
+
+        // Set the color of the query text field
+        controller.queryTextField.setUnFocusColor(TRANSPARENT);
+        controller.queryTextField.setFocusColor(modalBarColor.getColor(modalBarColorIntensity));
+
+        // Set the color of the comment text field
+        controller.commentTextField.setUnFocusColor(TRANSPARENT);
+        controller.commentTextField.setFocusColor(modalBarColor.getColor(modalBarColorIntensity));
+    }
+
     private void initializeToggleQueryPaneFunctionality() {
         // Set the translation of the query pane to be equal to its width
         // Will hide the element, and force it in then the right side of the border pane is enlarged
         controller.queryPane.translateXProperty().bind(controller.queryPane.widthProperty());
-
-        // Bind the translate of the canvas to half of the animation property (negated) to push the element correctly
-        controller.canvas.translateXProperty().bind(queryPaneAnimationProperty.divide(-2));
 
         // Whenever the width of the query pane is updated, update the animations
         controller.queryPane.widthProperty().addListener((observable) -> {

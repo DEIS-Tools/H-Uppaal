@@ -11,7 +11,10 @@ import SW9.utility.helpers.BindingHelper;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -28,10 +31,61 @@ public class EdgeController implements Initializable {
     private final ObjectProperty<Edge> edge = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
     private final SimpleArrowHead simpleArrowHead = new SimpleArrowHead();
+    private final SimpleBooleanProperty isHoveringEdge = new SimpleBooleanProperty(false);
+    private final SimpleIntegerProperty timeHoveringEdge = new SimpleIntegerProperty(0);
     public Group edgeRoot;
+    private Runnable collapseNail;
+    private Thread runningThread;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+        collapseNail = () -> {
+            final int interval = 50;
+
+            int previousValue = 1;
+
+            try {
+                while(true) {
+                    Thread.sleep(interval);
+
+                    if(isHoveringEdge.get()) {
+                        // Do not let the timer go above this threshold
+                        if (timeHoveringEdge.get() <= 500) {
+                            timeHoveringEdge.set(timeHoveringEdge.get() + interval);
+                        }
+                    } else {
+                        timeHoveringEdge.set(timeHoveringEdge.get() - interval);
+                    }
+
+                    if(previousValue >= 0 && timeHoveringEdge.get() < 0) {
+                        // Run on UI thread
+                        Platform.runLater(() -> {
+                            // Collapse all nails
+                            getEdge().getNails().forEach(nail -> {
+                                final Timeline animation = new Timeline();
+
+                                final KeyValue radius0 = new KeyValue(nail.radiusProperty(), NailPresentation.COLLAPSED_RADIUS);
+                                final KeyValue radius1 = new KeyValue(nail.radiusProperty(), NailPresentation.HOVERED_RADIUS);
+
+                                final KeyFrame kf1 = new KeyFrame(Duration.millis(0), radius1);
+                                final KeyFrame kf2 = new KeyFrame(Duration.millis(100), radius0);
+
+                                animation.getKeyFrames().addAll(kf1, kf2);
+
+                                animation.play();
+                            });
+                        });
+
+                        break;
+                    }
+
+                    previousValue = timeHoveringEdge.get();
+                }
+
+            } catch (final InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
 
         edge.addListener((obsEdge, oldEdge, newEdge) -> {
 
@@ -143,6 +197,14 @@ public class EdgeController implements Initializable {
     }
 
     public void edgeEntered() {
+        isHoveringEdge.set(true);
+
+        if ((runningThread != null && runningThread.isAlive())) return; // Do not re-animate
+
+        timeHoveringEdge.set(500);
+        runningThread = new Thread(collapseNail);
+        runningThread.start();
+
         getEdge().getNails().forEach(nail -> {
             final Timeline animation = new Timeline();
 
@@ -161,19 +223,7 @@ public class EdgeController implements Initializable {
     }
 
     public void edgeExited() {
-        getEdge().getNails().forEach(nail -> {
-            final Timeline animation = new Timeline();
-
-            final KeyValue radius0 = new KeyValue(nail.radiusProperty(), NailPresentation.COLLAPSED_RADIUS);
-            final KeyValue radius1 = new KeyValue(nail.radiusProperty(), NailPresentation.HOVERED_RADIUS);
-
-            final KeyFrame kf1 = new KeyFrame(Duration.millis(0), radius1);
-            final KeyFrame kf2 = new KeyFrame(Duration.millis(100), radius0);
-
-            animation.getKeyFrames().addAll(kf1, kf2);
-
-            animation.play();
-        });
+        isHoveringEdge.set(false);
     }
 
 }

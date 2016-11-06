@@ -174,7 +174,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
                         if (containerName == null || locationName == null) return;
 
                         // Run the verification query
-                        UPPAALDriver.verify(
+                        /*UPPAALDriver.verify(
                                 "E<> " + containerName + "." + locationName,
                                 aBoolean -> {
                                     Platform.runLater(() -> {
@@ -183,7 +183,7 @@ public class Location extends Parent implements MouseTrackable, Removable, Color
                                     });
                                 },
                                 Throwable::printStackTrace,
-                                (Component) getParent());
+                                (Component) getParent());*/
                     }
                 }, 0, 5000);
     }

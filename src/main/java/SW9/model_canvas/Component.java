@@ -179,9 +179,9 @@ public class Component extends Parent implements Colorable, MouseTrackable, Remo
 
                     @Override
                     public void run() {
-                        UPPAALDriver.verify("E<> deadlock", hasDeadlock::set, e -> {
+                        /*UPPAALDriver.verify("E<> deadlock", hasDeadlock::set, e -> {
                             System.out.println("Exception thrown from deadlock checker");
-                        }, Component.this);
+                        }, Component.this);*/
                     }
                 }, 0, 5000);
 

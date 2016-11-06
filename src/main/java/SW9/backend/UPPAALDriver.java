@@ -1,6 +1,6 @@
 package SW9.backend;
 
-import SW9.model_canvas.Component;
+import SW9.abstractions.Component;
 import com.uppaal.engine.Engine;
 import com.uppaal.engine.EngineException;
 import com.uppaal.engine.Problem;
@@ -15,15 +15,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class UPPAALDriver {
-
-    public enum TraceType {
-        NONE, SOME, SHORTEST, FASTEST;
-
-        @Override
-        public String toString() {
-            return "trace " + this.ordinal();
-        }
-    }
 
     public static void verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final List<Component> components) {
         verify(query, success, failure, TraceType.NONE, e -> {
@@ -153,6 +144,15 @@ public class UPPAALDriver {
         } catch (IOException e) {
             // TODO Handle exception
             e.printStackTrace();
+        }
+    }
+
+    public enum TraceType {
+        NONE, SOME, SHORTEST, FASTEST;
+
+        @Override
+        public String toString() {
+            return "trace " + this.ordinal();
         }
     }
 

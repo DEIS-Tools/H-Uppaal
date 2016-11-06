@@ -1,5 +1,6 @@
 package SW9.controllers;
 
+import SW9.Debug;
 import SW9.abstractions.Component;
 import SW9.abstractions.Nail;
 import javafx.beans.property.ObjectProperty;
@@ -18,6 +19,7 @@ public class NailController implements Initializable {
 
     public Group root;
     public Circle nailCircle;
+    public Circle dragCircle;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -34,6 +36,10 @@ public class NailController implements Initializable {
             newNail.xProperty().bind(root.layoutXProperty());
             newNail.yProperty().bind(root.layoutYProperty());
         });
+
+        // Debug visuals
+        dragCircle.opacityProperty().bind(Debug.draggableAreaOpacity);
+        dragCircle.setFill(Debug.draggableAreaColor.getColor(Debug.draggableAreaColorIntensity));
     }
 
     public Nail getNail() {

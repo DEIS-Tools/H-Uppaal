@@ -85,6 +85,10 @@ public class ComponentController implements Initializable {
             x.textProperty().bind(newValue.xProperty().asString());
             y.textProperty().bind(newValue.yProperty().asString());
 
+            // Bind the declarations of the abstraction the the view
+            declaration.setText(newValue.getDeclarations());
+            newValue.declarationsProperty().bind(declaration.textProperty());
+
             newValue.getEdges().addListener(new ListChangeListener<Edge>() {
                 @Override
                 public void onChanged(final Change<? extends Edge> c) {

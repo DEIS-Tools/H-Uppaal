@@ -1,18 +1,18 @@
 package SW9.presentations;
 
+import SW9.Debug;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Group;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 public class Link extends Group {
 
+    private final static double HOVER_LINE_STROKE_WIDTH = 10d;
     private final DoubleProperty startX;
     private final DoubleProperty endX;
     private final DoubleProperty startY;
     private final DoubleProperty endY;
-    private final static double HOVER_LINE_STROKE_WIDTH = 10d;
 
     public Link() {
         this(0,0,0,0);
@@ -20,7 +20,7 @@ public class Link extends Group {
 
     public Link(final double startX, final double endX, final double startY, final double endY) {
 
-        // Set the intial values
+        // Set the initial values
         this.startX = new SimpleDoubleProperty(startX);
         this.endX = new SimpleDoubleProperty(endX);
         this.startY = new SimpleDoubleProperty(startY);
@@ -47,55 +47,58 @@ public class Link extends Group {
 
         // Style the hidden line
         hiddenHoverLine.setStrokeWidth(HOVER_LINE_STROKE_WIDTH);
-        hiddenHoverLine.setStroke(Color.TRANSPARENT);
+
+        // Debug visuals
+        hiddenHoverLine.setStroke(Debug.hoverableAreaColor.getColor(Debug.hoverableAreaColorIntensity));
+        hiddenHoverLine.opacityProperty().bind(Debug.hoverableAreaOpacity);
     }
 
     public double getStartX() {
         return startX.get();
     }
 
-    public DoubleProperty startXProperty() {
-        return startX;
+    public void setStartX(final double startX) {
+        this.startX.set(startX);
     }
 
-    public void setStartX(double startX) {
-        this.startX.set(startX);
+    public DoubleProperty startXProperty() {
+        return startX;
     }
 
     public double getEndX() {
         return endX.get();
     }
 
-    public DoubleProperty endXProperty() {
-        return endX;
+    public void setEndX(final double endX) {
+        this.endX.set(endX);
     }
 
-    public void setEndX(double endX) {
-        this.endX.set(endX);
+    public DoubleProperty endXProperty() {
+        return endX;
     }
 
     public double getStartY() {
         return startY.get();
     }
 
-    public DoubleProperty startYProperty() {
-        return startY;
+    public void setStartY(final double startY) {
+        this.startY.set(startY);
     }
 
-    public void setStartY(double startY) {
-        this.startY.set(startY);
+    public DoubleProperty startYProperty() {
+        return startY;
     }
 
     public double getEndY() {
         return endY.get();
     }
 
-    public DoubleProperty endYProperty() {
-        return endY;
+    public void setEndY(final double endY) {
+        this.endY.set(endY);
     }
 
-    public void setEndY(double endY) {
-        this.endY.set(endY);
+    public DoubleProperty endYProperty() {
+        return endY;
     }
 
 }

@@ -382,7 +382,7 @@ public class QueryPane extends StackPane {
             // Find the component and run the query on that
             for (final Node child : Main.getModelCanvas().getChildren()) {
                 if (child instanceof Component) {
-                    UPPAALDriver.verify(
+                    /*UPPAALDriver.verify(
                             queryField.getText(),
                             result -> {
                                 // Handle result
@@ -407,7 +407,7 @@ public class QueryPane extends StackPane {
                             })
                             ,
                             (Component) child
-                    );
+                    );*/
 
                     // Do not run on multiple components
                     return;
