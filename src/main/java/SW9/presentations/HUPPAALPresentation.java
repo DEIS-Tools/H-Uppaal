@@ -2,6 +2,7 @@ package SW9.presentations;
 
 import SW9.controllers.HUPPAALController;
 import SW9.utility.colors.Color;
+import com.jfoenix.controls.JFXRippler;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -48,11 +49,20 @@ public class HUPPAALPresentation extends StackPane {
             initializeToolbar();
             initializeToggleQueryPaneFunctionality();
             initializeQueryDetailsDialog();
+            initializeGenerateUppaalModelButton();
 
             controller.bottomStatusBar.heightProperty().addListener((observable, oldValue, newValue) -> AnchorPane.setBottomAnchor(controller.queryPane, (Double) newValue));
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeGenerateUppaalModelButton() {
+        final Color color = Color.GREY_BLUE;
+        final Color.Intensity colorIntensity = Color.Intensity.I800;
+
+        controller.generateUppaalModel.setMaskType(JFXRippler.RipplerMask.CIRCLE);
+        controller.generateUppaalModel.setRipplerFill(color.getTextColor(colorIntensity));
     }
 
     private void initializeQueryDetailsDialog() {

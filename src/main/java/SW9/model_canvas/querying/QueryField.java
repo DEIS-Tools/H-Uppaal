@@ -46,8 +46,8 @@ public class QueryField extends Parent implements LocationAware {
 
             final Consumer<Trace> traceCallback = trace -> {
                 trace.getTransitions().forEach(transition -> {
-                            transition.getTargetLocations().forEach(Location::trace);
-                            transition.getEdges().forEach(Edge::trace);
+                            //transition.getTargetLocations().forEach(Location::trace);
+                            //transition.getEdges().forEach(Edge::trace);
                         }
                 );
             };
@@ -63,7 +63,7 @@ public class QueryField extends Parent implements LocationAware {
                 textField.setBackground(new Background(new BackgroundFill(javafx.scene.paint.Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
             };
 
-            UPPAALDriver.verify(query, success, failure, UPPAALDriver.TraceType.SOME, traceCallback, components);
+            //UPPAALDriver.verify(query, success, failure, UPPAALDriver.TraceType.SOME, traceCallback, components);
         });
     }
 

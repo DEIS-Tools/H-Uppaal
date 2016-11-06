@@ -1,7 +1,7 @@
 package SW9.backend;
 
-import SW9.model_canvas.edges.Edge;
-import SW9.model_canvas.locations.Location;
+import SW9.abstractions.Edge;
+import SW9.abstractions.Location;
 import com.uppaal.model.system.SystemEdgeSelect;
 import com.uppaal.model.system.SystemLocation;
 import com.uppaal.model.system.symbolic.SymbolicState;

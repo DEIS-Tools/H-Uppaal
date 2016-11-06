@@ -1,5 +1,6 @@
 package SW9.presentations;
 
+import SW9.NewMain;
 import SW9.abstractions.Component;
 import SW9.controllers.ComponentController;
 import SW9.utility.colors.Color;
@@ -40,6 +41,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
     }
 
     public ComponentPresentation(final Component component) {
+        NewMain.getProject().getComponents().addAll(component);
+
         final URL location = this.getClass().getResource("ComponentPresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();
@@ -147,7 +150,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
         initialLocationPresentation.setLayoutX(CORNER_SIZE / 2 + 1.5);
         initialLocationPresentation.setLayoutY(CORNER_SIZE / 2 + 1.5);
 
-            StackPane.setAlignment(initialLocationPresentation, Pos.TOP_LEFT);
+        StackPane.setAlignment(initialLocationPresentation, Pos.TOP_LEFT);
     }
 
     private void initializeFinalLocation() {

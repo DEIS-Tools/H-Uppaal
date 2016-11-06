@@ -6,6 +6,7 @@
 <?import javafx.scene.text.*?>
 <?import SW9.presentations.CanvasPresentation?>
 <?import SW9.presentations.QueryPanePresentation?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
@@ -22,7 +23,19 @@
                 <StackPane fx:id="toolbar"
                            StackPane.alignment="TOP_CENTER"
                            minHeight="56" maxHeight="56">
-                    <Label fx:id="title" text="H-UPPAAL" styleClass="title" StackPane.alignment="CENTER_LEFT"/>
+
+                    <HBox style="-fx-padding: 0 16 0 16;">
+                        <Label fx:id="title" text="H-UPPAAL" styleClass="title" minHeight="56"/>
+
+                        <Region HBox.hgrow="ALWAYS" />
+
+                        <JFXRippler fx:id="generateUppaalModel">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#generateUppaalModelClicked">
+                                <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+                    </HBox>
+
                 </StackPane>
 
                 <QueryPanePresentation

@@ -1,12 +1,16 @@
 package SW9.controllers;
 
+import SW9.NewMain;
+import SW9.backend.UPPAALDriver;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.HUPPAALPresentation;
 import SW9.presentations.QueryPanePresentation;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXTextField;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
@@ -34,6 +38,7 @@ public class HUPPAALController implements Initializable {
     public StackPane modalBar;
     public JFXTextField queryTextField;
     public JFXTextField commentTextField;
+    public JFXRippler generateUppaalModel;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -53,6 +58,20 @@ public class HUPPAALController implements Initializable {
             dialog.show();
         }));
 
+    }
+
+    @FXML
+    private void generateUppaalModelClicked() {
+        UPPAALDriver.verify("E<> true", // todo: consider creating an interface for generating the model instead of this query
+                aBoolean -> {
+                    // success
+                    System.out.println("Generated UPPAAL file!");
+                },
+                e -> {
+                    System.out.println("ERROR");
+                },
+                NewMain.getProject().getComponents()
+        );
     }
 
 }
