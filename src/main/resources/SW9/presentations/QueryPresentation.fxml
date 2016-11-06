@@ -14,13 +14,13 @@
 
     <JFXTextField id="query" HBox.hgrow="ALWAYS"
                   AnchorPane.topAnchor="8"
-                  AnchorPane.rightAnchor="56"
+                  AnchorPane.rightAnchor="128"
                   AnchorPane.leftAnchor="8"
                   style="-fx-unfocus-color:transparent;" styleClass="subhead"/>
 
     <JFXTextField id="comment" HBox.hgrow="ALWAYS"
                   AnchorPane.topAnchor="36"
-                  AnchorPane.rightAnchor="56"
+                  AnchorPane.rightAnchor="128"
                   AnchorPane.bottomAnchor="4"
                   AnchorPane.leftAnchor="8"
                   style="-fx-unfocus-color:transparent;" styleClass="caption"/>
