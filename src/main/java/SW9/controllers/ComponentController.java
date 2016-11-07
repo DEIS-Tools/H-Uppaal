@@ -81,10 +81,6 @@ public class ComponentController implements Initializable {
             newValue.xProperty().bind(root.layoutXProperty());
             newValue.yProperty().bind(root.layoutYProperty());
 
-            // Some debug values in the view todo: remove these at some point
-            x.textProperty().bind(newValue.xProperty().asString());
-            y.textProperty().bind(newValue.yProperty().asString());
-
             // Bind the declarations of the abstraction the the view
             declaration.setText(newValue.getDeclarations());
             newValue.declarationsProperty().bind(declaration.textProperty());
