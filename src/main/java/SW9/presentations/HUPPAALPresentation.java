@@ -2,14 +2,13 @@ package SW9.presentations;
 
 import SW9.controllers.HUPPAALController;
 import SW9.utility.colors.Color;
+import SW9.utility.helpers.SelectHelperNew;
 import com.jfoenix.controls.JFXRippler;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
@@ -50,6 +49,7 @@ public class HUPPAALPresentation extends StackPane {
             initializeToggleQueryPaneFunctionality();
             initializeQueryDetailsDialog();
             initializeGenerateUppaalModelButton();
+            initializeColorSelectedButton();
 
             controller.bottomStatusBar.heightProperty().addListener((observable, oldValue, newValue) -> AnchorPane.setBottomAnchor(controller.queryPane, (Double) newValue));
         } catch (final IOException ioe) {
@@ -63,6 +63,40 @@ public class HUPPAALPresentation extends StackPane {
 
         controller.generateUppaalModel.setMaskType(JFXRippler.RipplerMask.CIRCLE);
         controller.generateUppaalModel.setRipplerFill(color.getTextColor(colorIntensity));
+    }
+
+    private void initializeColorSelectedButton() {
+        final Color color = Color.GREY_BLUE;
+        final Color.Intensity colorIntensity = Color.Intensity.I800;
+
+        controller.colorSelected.setMaskType(JFXRippler.RipplerMask.CIRCLE);
+        controller.colorSelected.setRipplerFill(color.getTextColor(colorIntensity));
+
+        // The color button should only be enabled when an element is selected
+        SelectHelperNew.getSelectedElements().addListener(new ListChangeListener<SelectHelperNew.Selectable>() {
+            @Override
+            public void onChanged(final Change<? extends SelectHelperNew.Selectable> c) {
+                if (SelectHelperNew.getSelectedElements().size() > 0) {
+                    controller.colorSelected.setEnabled(true);
+
+                    final FadeTransition fadeAnimation = new FadeTransition(Duration.millis(100), controller.colorSelected);
+                    fadeAnimation.setFromValue(controller.colorSelected.getOpacity());
+                    fadeAnimation.setToValue(1);
+                    fadeAnimation.play();
+                } else {
+                    controller.colorSelected.setEnabled(false);
+
+                    final FadeTransition fadeAnimation = new FadeTransition(Duration.millis(100), controller.colorSelected);
+                    fadeAnimation.setFromValue(1);
+                    fadeAnimation.setToValue(0.3);
+                    fadeAnimation.play();
+                }
+            }
+        });
+
+        // Disable the color button
+        controller.colorSelected.setEnabled(false);
+        controller.colorSelected.setOpacity(0.3);
     }
 
     private void initializeQueryDetailsDialog() {

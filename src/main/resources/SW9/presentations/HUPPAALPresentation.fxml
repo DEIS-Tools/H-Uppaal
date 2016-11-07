@@ -3,10 +3,11 @@
 <?import com.jfoenix.controls.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <?import SW9.presentations.CanvasPresentation?>
 <?import SW9.presentations.QueryPanePresentation?>
-<?import org.kordamp.ikonli.javafx.FontIcon?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
@@ -28,6 +29,19 @@
                         <Label fx:id="title" text="H-UPPAAL" styleClass="title" minHeight="56"/>
 
                         <Region HBox.hgrow="ALWAYS" />
+
+                        <JFXRippler fx:id="colorSelected">
+
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#colorSelectedClicked">
+                                <FontIcon iconLiteral="gmi-color-lens" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region minWidth="8"/>
+                        <StackPane>
+                            <Rectangle width="1" height="32" fill="black" opacity="0.2"/>
+                        </StackPane>
+                        <Region minWidth="8"/>
 
                         <JFXRippler fx:id="generateUppaalModel">
                             <StackPane minWidth="40" minHeight="40" onMouseClicked="#generateUppaalModelClicked">

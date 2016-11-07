@@ -71,6 +71,12 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
             initializeBackground();
             initializeName();
 
+            // Re-initialize elements whenever the color updates
+            component.colorProperty().addListener(observable -> {
+                initializeFrame();
+                initializeBackground();
+            });
+
             // Make the component draggable
             DragHelper.makeDraggable(this, event -> {
                 // We can only drag using left click
@@ -136,13 +142,18 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
         controller.name.setText(component.getName());
         component.nameProperty().bind(controller.name.textProperty());
 
-        final Color color = component.getColor();
-        final Color.Intensity colorIntensity = component.getColorIntensity();
+        final Runnable updateColor = () -> {
+            final Color color = component.getColor();
+            final Color.Intensity colorIntensity = component.getColorIntensity();
 
-        // Set the text color for the label
-        controller.name.setStyle("-fx-text-fill: " + color.toHexTextColor(colorIntensity) + ";");
-        controller.name.setFocusColor(color.getTextColor(colorIntensity));
-        controller.name.setUnFocusColor(javafx.scene.paint.Color.TRANSPARENT);
+            // Set the text color for the label
+            controller.name.setStyle("-fx-text-fill: " + color.toHexTextColor(colorIntensity) + ";");
+            controller.name.setFocusColor(color.getTextColor(colorIntensity));
+            controller.name.setUnFocusColor(javafx.scene.paint.Color.TRANSPARENT);
+        };
+
+        controller.getComponent().colorProperty().addListener(observable -> updateColor.run());
+        updateColor.run();
 
         // Add a left margin of CORNER_SIZE
         controller.name.setPadding(new Insets(0, 0, 0, CORNER_SIZE));
@@ -169,19 +180,24 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
     private void initializeToolbar() {
         final Component component = controller.getComponent();
 
-        final Color color = component.getColor();
-        final Color.Intensity colorIntensity = component.getColorIntensity();
+        final Runnable updateColor = () -> {
+            final Color color = component.getColor();
+            final Color.Intensity colorIntensity = component.getColorIntensity();
 
-        // Set the background of the toolbar
-        controller.toolbar.setBackground(new Background(new BackgroundFill(
-                color.getColor(colorIntensity),
-                CornerRadii.EMPTY,
-                Insets.EMPTY
-        )));
+            // Set the background of the toolbar
+            controller.toolbar.setBackground(new Background(new BackgroundFill(
+                    color.getColor(colorIntensity),
+                    CornerRadii.EMPTY,
+                    Insets.EMPTY
+            )));
 
-        // Set the icon color and rippler color of the toggleDeclarationButton
-        controller.toggleDeclarationButton.setRipplerFill(color.getTextColor(colorIntensity));
-        ((FontIcon) controller.toggleDeclarationButton.getGraphic()).setFill(color.getTextColor(colorIntensity));
+            // Set the icon color and rippler color of the toggleDeclarationButton
+            controller.toggleDeclarationButton.setRipplerFill(color.getTextColor(colorIntensity));
+            ((FontIcon) controller.toggleDeclarationButton.getGraphic()).setFill(color.getTextColor(colorIntensity));
+        };
+
+        controller.getComponent().colorProperty().addListener(observable -> updateColor.run());
+        updateColor.run();
 
         // Set a hover effect for the controller.toggleDeclarationButton
         controller.toggleDeclarationButton.setOnMouseEntered(event -> controller.toggleDeclarationButton.setCursor(Cursor.HAND));
@@ -220,8 +236,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
         controller.line1.setStartY(0);
         controller.line1.setEndX(0);
         controller.line1.setEndY(CORNER_SIZE);
-
-        controller.line1.setFill(component.getColor().getColor(component.getColorIntensity().next(2)));
+        controller.line1.setStroke(component.getColor().getColor(component.getColorIntensity().next(2)));
         controller.line1.setStrokeWidth(2);
         StackPane.setAlignment(controller.line1, Pos.TOP_LEFT);
 
@@ -229,7 +244,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
         controller.line2.setStartY(0);
         controller.line2.setEndX(0);
         controller.line2.setEndY(CORNER_SIZE);
-        controller.line2.setFill(component.getColor().getColor(component.getColorIntensity().next(2)));
+        controller.line2.setStroke(component.getColor().getColor(component.getColorIntensity().next(2)));
         controller.line2.setStrokeWidth(2);
         StackPane.setAlignment(controller.line2, Pos.BOTTOM_RIGHT);
 

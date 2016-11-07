@@ -5,7 +5,8 @@
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="Pane"
          fx:controller="SW9.controllers.CanvasController"
-         translateY="56">
+         translateY="56"
+         onMousePressed="#canvasPressed">
 
     <ComponentPresentation layoutX="30" layoutY="30"/>
 

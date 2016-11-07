@@ -8,7 +8,9 @@ import SW9.presentations.CanvasPresentation;
 import SW9.presentations.EdgePresentation;
 import SW9.presentations.LocationPresentation;
 import SW9.utility.UndoRedoStack;
+import SW9.utility.colors.Color;
 import SW9.utility.helpers.BindingHelper;
+import SW9.utility.helpers.SelectHelperNew;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
@@ -41,7 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class ComponentController implements Initializable {
+public class ComponentController implements Initializable, SelectHelperNew.Selectable {
 
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
     private final Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
@@ -185,8 +187,12 @@ public class ComponentController implements Initializable {
     }
 
     @FXML
-    private void modelContainerOnPressed(final MouseEvent event) {
+    private void modelContainerPressed(final MouseEvent event) {
+        event.consume();
+
         final Edge unfinishedEdge = getComponent().getUnfinishedEdge();
+
+        // We are drawing an edge
         if (unfinishedEdge != null) {
             // Calculate the position for the new nail (based on the component position and the canvas mouse tracker)
             final DoubleBinding x = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty());
@@ -196,9 +202,22 @@ public class ComponentController implements Initializable {
             final Nail newNail = new Nail(x, y);
             unfinishedEdge.addNail(newNail);
         }
+
+        // We are not drawing an edge, select the element
+        else {
+            SelectHelperNew.select(this);
+        }
     }
 
     public MouseTracker getMouseTracker() {
         return mouseTracker;
+    }
+
+    @Override
+    public void color(final Color color, final Color.Intensity intensity) {
+        final Component component = getComponent();
+
+        component.setColor(color);
+        component.setColorIntensity(intensity);
     }
 }

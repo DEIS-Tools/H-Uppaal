@@ -5,6 +5,8 @@ import SW9.backend.UPPAALDriver;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.HUPPAALPresentation;
 import SW9.presentations.QueryPanePresentation;
+import SW9.utility.colors.Color;
+import SW9.utility.helpers.SelectHelperNew;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXDialog;
@@ -12,10 +14,13 @@ import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXTextField;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
@@ -39,6 +44,9 @@ public class HUPPAALController implements Initializable {
     public JFXTextField queryTextField;
     public JFXTextField commentTextField;
     public JFXRippler generateUppaalModel;
+    public JFXRippler colorSelected;
+    public TextField textFieldFix;
+    public ContextMenu contextMenu;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -72,6 +80,19 @@ public class HUPPAALController implements Initializable {
                 },
                 NewMain.getProject().getComponents()
         );
+    }
+
+    @FXML
+    private void colorSelectedClicked(final MouseEvent event) {
+        System.out.println(27);
+
+        if (SelectHelperNew.getSelectedElements().size() > 0) {
+            event.consume();
+
+            SelectHelperNew.getSelectedElements().forEach(selectable -> {
+                selectable.color(Color.AMBER, Color.Intensity.I700);
+            });
+        }
     }
 
 }
