@@ -3,6 +3,7 @@ package SW9.controllers;
 import SW9.Debug;
 import SW9.abstractions.Component;
 import SW9.abstractions.Nail;
+import SW9.presentations.CanvasPresentation;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
@@ -13,6 +14,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class NailController implements Initializable {
+
+    public static boolean nailBeingDragged = false;
 
     private final ObjectProperty<Nail> nail = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
@@ -35,6 +38,15 @@ public class NailController implements Initializable {
             // Reflect future updates from the presentation into the abstraction
             newNail.xProperty().bind(root.layoutXProperty());
             newNail.yProperty().bind(root.layoutYProperty());
+
+            root.setOnMousePressed(event -> nailBeingDragged = true);
+            root.setOnMouseReleased(event -> nailBeingDragged = false);
+
+            root.setOnMouseDragged(event -> {
+                root.setLayoutX(CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue());
+                root.setLayoutY(CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue());
+            });
+
         });
 
         // Debug visuals

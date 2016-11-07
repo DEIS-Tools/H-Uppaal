@@ -3,6 +3,7 @@ package SW9.presentations;
 import SW9.NewMain;
 import SW9.abstractions.Component;
 import SW9.controllers.ComponentController;
+import SW9.controllers.NailController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.MouseTrackable;
@@ -74,6 +75,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable {
             DragHelper.makeDraggable(this, event -> {
                 // We can only drag using left click
                 if (!event.getButton().equals(MouseButton.PRIMARY)) return false;
+
+                if(NailController.nailBeingDragged) return false;
 
                 // We cant drag if we have an unfinished edge
                 if (controller.getComponent().getUnfinishedEdge() != null) return false;
