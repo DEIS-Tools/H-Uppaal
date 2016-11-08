@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="Group"
          fx:controller="SW9.controllers.LocationController"
          fx:id="root"
-         onMouseEntered="#mouseEntered" onMouseExited="#mouseExited" onMousePressed="#mousePressed">
+         onMouseEntered="#mouseEntered" onMouseExited="#mouseExited" onMousePressed="#mousePressed"
+         onMouseClicked="#mouseClicked">
 
     <!-- Circular location -->
     <Circle fx:id="circle" radius="20" strokeType="INSIDE"/>
@@ -20,7 +24,7 @@
     <Rectangle fx:id="rectangleShakeIndicator" mouseTransparent="true" fill="white" opacity="0"/>
 
     <!-- Hexagon location -->
-    <Path fx:id="hexagon" strokeType="INSIDE" translateX="-20" translateY="-20"/>
+    <Path fx:id="octagon" strokeType="INSIDE" translateX="-20" translateY="-20"/>
     <Path fx:id="hexagonShakeIndicator" strokeType="INSIDE" translateX="-20" translateY="-20" mouseTransparent="true"
           fill="white" opacity="0"/>
 
@@ -35,5 +39,24 @@
     </Group>
 
     <Label fx:id="nameLabel" styleClass="subhead" mouseTransparent="true"/>
+
+    <StackPane fx:id="propertiesPane"
+               style="-fx-background-color:white;"
+               visible="false"
+               layoutY="-10" layoutX="-80"
+               prefWidth="160">
+
+        <VBox>
+            <JFXTextField fx:id="nameField"/>
+
+            <TextArea fx:id="invariantField"
+                      prefHeight="70"
+                      translateX="-0.5" translateY="-0.5"
+                      styleClass="caption"
+                      wrapText="true"
+                      promptText="No invariant"/>
+        </VBox>
+
+    </StackPane>
 
 </fx:root>

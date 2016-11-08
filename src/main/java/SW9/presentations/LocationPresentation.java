@@ -10,6 +10,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -58,25 +59,23 @@ public class LocationPresentation extends Group implements MouseTrackable {
             // TODO make location draggable within a component
             // TODO make creation of location possible from the mouse
 
-
             initializeTypeGraphics();
             initializeNameLabel();
 
             initializeCircle();
             initializeRectangle();
-            initializeHexagon();
+            initializeOctagon();
 
             initializeInitialAnimation();
             initializeHoverAnimationEntered();
             initializeHoverAnimationExited();
-
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
     }
 
-    private void initializeHexagon() {
+    private void initializeOctagon() {
         final MoveTo p1 = new MoveTo(0, 10);
         final LineTo p2 = new LineTo(10, 0);
         final LineTo p3 = new LineTo(30, 0);
@@ -87,30 +86,30 @@ public class LocationPresentation extends Group implements MouseTrackable {
         final LineTo p8 = new LineTo(0, 30);
         final LineTo p9 = new LineTo(0, 10);
 
-        controller.hexagon.getElements().addAll(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+        controller.octagon.getElements().addAll(p1, p2, p3, p4, p5, p6, p7, p8, p9);
         controller.hexagonShakeIndicator.getElements().addAll(p1, p2, p3, p4, p5, p6, p7, p8, p9);
 
         final Location location = controller.getLocation();
 
-        final Path hexagon = controller.hexagon;
+        final Path octagon = controller.octagon;
         final ObjectProperty<Color> color = location.colorProperty();
         final ObjectProperty<Color.Intensity> colorIntensity = location.colorIntensityProperty();
 
         // Delegate to style the label based on the color of the location
         final Consumer<Color> updateColor = (newColor) -> {
-            hexagon.setFill(newColor.getColor(colorIntensity.get()));
-            hexagon.setStroke(newColor.getColor(colorIntensity.get().next(2)));
+            octagon.setFill(newColor.getColor(colorIntensity.get()));
+            octagon.setStroke(newColor.getColor(colorIntensity.get().next(2)));
         };
 
         // Set the initial color
         updateColor.accept(color.get());
 
-        // Update the color of the hexagon when the color of the location is updated
+        // Update the color of the octagon when the color of the location is updated
         color.addListener((obs, oldColor, newColor) -> updateColor.accept(newColor));
 
-        // The hexagon shape should only be visible when the location is urgent
-        hexagon.visibleProperty().bind(location.urgencyProperty().isEqualTo(Location.Urgency.URGENT));
-        controller.hexagonShakeIndicator.visibleProperty().bind(hexagon.visibleProperty());
+        // The octagon shape should only be visible when the location is urgent
+        octagon.visibleProperty().bind(location.urgencyProperty().isEqualTo(Location.Urgency.URGENT));
+        controller.hexagonShakeIndicator.visibleProperty().bind(octagon.visibleProperty());
     }
 
     private void initializeRectangle() {
@@ -191,7 +190,26 @@ public class LocationPresentation extends Group implements MouseTrackable {
         final Color.Intensity colorIntensity = location.getColorIntensity();
 
         nameLabel.setTextFill(color.getTextColor(colorIntensity));
-        nameLabel.textProperty().bind(location.nameProperty());
+
+        final StringBinding locationNameBinder = new StringBinding() {
+            {
+                super.bind(controller.getLocation().nameProperty());
+            }
+
+            @Override
+            protected String computeValue() {
+
+                final String nameLabelStr = controller.getLocation().nameProperty().get();
+
+                if (nameLabelStr.length() > 2) {
+                    return nameLabelStr.substring(0, 2);
+                } else {
+                    return nameLabelStr;
+                }
+            }
+        };
+
+        nameLabel.textProperty().bind(locationNameBinder);
     }
 
     private void initializeCircle() {
@@ -271,7 +289,7 @@ public class LocationPresentation extends Group implements MouseTrackable {
             controller.rectangleShakeIndicator.setTranslateY(newValue.doubleValue() * -1);
         });
 
-        // Animation for hexagon shape (bind to the circle animation)
+        // Animation for octagon shape (bind to the circle animation)
         controller.hexagonShakeIndicator.opacityProperty().bind(controller.circleShakeIndicator.opacityProperty());
         controller.circleShakeIndicator.radiusProperty().addListener((observable, oldValue, newValue) -> {
             controller.hexagonShakeIndicator.scaleXProperty().set(newValue.doubleValue() / LocationPresentation.RADIUS);
