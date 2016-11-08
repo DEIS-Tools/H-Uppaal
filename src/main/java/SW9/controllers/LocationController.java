@@ -58,6 +58,7 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
     public TextArea invariantField;
     private boolean isPlaced;
     private long lastPress = 0;
+    private TimerTask reachabilityCheckTask;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -92,14 +93,18 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
         initializeReachabilityCheck();
     }
 
-    private void initializeReachabilityCheck() {
+    public void initializeReachabilityCheck() {
         final int interval = 5000; // ms
 
-        new Timer().schedule(new TimerTask() {
+        // Could not run query
+        reachabilityCheckTask = new TimerTask() {
 
             @Override
             public void run() {
                 if (getComponent() == null || getLocation() == null) return;
+
+                // The location might have been remove from the component (through ctrl + z)
+                if (!getComponent().getLocations().contains(getLocation())) return;
 
                 UPPAALDriver.verify(
                         "E<> " + getComponent().getName() + "." + getLocation().getName(),
@@ -109,6 +114,7 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
                             locationPresentation.animateShakeWarning(!result);
                         },
                         e -> {
+                            System.out.println("hsj");
                             System.out.println(e);
                             // Could not run query
                         },
@@ -116,7 +122,9 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
                 );
             }
 
-        }, 0, interval);
+        };
+
+        new Timer().schedule(reachabilityCheckTask, 0, interval);
     }
 
     public Location getLocation() {
