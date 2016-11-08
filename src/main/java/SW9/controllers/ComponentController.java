@@ -246,4 +246,14 @@ public class ComponentController implements Initializable, SelectHelperNew.Selec
     public Color.Intensity getColorIntensity() {
         return getComponent().getColorIntensity();
     }
+
+    @Override
+    public void styleSelected() {
+        ((SelectHelperNew.SelectStyleable) root).styleSelected();
+    }
+
+    @Override
+    public void styleDeselected() {
+        ((SelectHelperNew.SelectStyleable) root).styleDeselected();
+    }
 }

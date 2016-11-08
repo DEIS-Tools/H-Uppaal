@@ -13,16 +13,16 @@ public class SelectHelperNew {
         if (selectedElements.contains(selectable)) return;
 
         // Clear the list
-        selectedElements.removeIf(s -> true);
+        clearSelectedElements();
 
-        // todo: style the element
+        selectable.styleSelected();
 
         // Select the element
         selectedElements.add(selectable);
     }
 
     public static void deselect(final Selectable selectable) {
-        // todo: style the element
+        selectable.styleDeselected();
 
         // deselect the element
         selectedElements.remove(selectable);
@@ -38,7 +38,13 @@ public class SelectHelperNew {
         return selectedElements;
     }
 
-    public interface Selectable {
+    public interface SelectStyleable {
+        void styleSelected();
+
+        void styleDeselected();
+    }
+
+    public interface Selectable extends SelectStyleable {
         void color(Color color, Color.Intensity intensity);
 
         Color getColor();

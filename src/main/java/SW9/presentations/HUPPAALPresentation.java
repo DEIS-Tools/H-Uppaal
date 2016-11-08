@@ -146,6 +146,7 @@ public class HUPPAALPresentation extends StackPane {
                 });
 
                 popup.close();
+                SelectHelperNew.clearSelectedElements();
             });
 
             list.getChildren().add(child);

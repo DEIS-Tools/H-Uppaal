@@ -201,4 +201,14 @@ public class LocationController implements Initializable, SelectHelperNew.Select
     public Color.Intensity getColorIntensity() {
         return getLocation().getColorIntensity();
     }
+
+    @Override
+    public void styleSelected() {
+        ((SelectHelperNew.SelectStyleable) root).styleSelected();
+    }
+
+    @Override
+    public void styleDeselected() {
+        ((SelectHelperNew.SelectStyleable) root).styleDeselected();
+    }
 }
