@@ -85,14 +85,14 @@ public class HUPPAALPresentation extends StackPane {
         final JFXPopup popup = new JFXPopup();
 
         final ArrayList<EnabledColor> enabledColors = new ArrayList<>();
-        enabledColors.add(new EnabledColor(Color.RED, Color.Intensity.I500));
-        enabledColors.add(new EnabledColor(Color.PINK, Color.Intensity.I300));
-        enabledColors.add(new EnabledColor(Color.PURPLE, Color.Intensity.I300));
-        enabledColors.add(new EnabledColor(Color.INDIGO, Color.Intensity.I300));
-        enabledColors.add(new EnabledColor(Color.BLUE, Color.Intensity.I500));
+        enabledColors.add(new EnabledColor(Color.RED, Color.Intensity.I700));
+        enabledColors.add(new EnabledColor(Color.PINK, Color.Intensity.I500));
+        enabledColors.add(new EnabledColor(Color.PURPLE, Color.Intensity.I500));
+        enabledColors.add(new EnabledColor(Color.INDIGO, Color.Intensity.I500));
+        enabledColors.add(new EnabledColor(Color.BLUE, Color.Intensity.I600));
         enabledColors.add(new EnabledColor(Color.CYAN, Color.Intensity.I700));
         enabledColors.add(new EnabledColor(Color.GREEN, Color.Intensity.I600));
-        enabledColors.add(new EnabledColor(Color.BROWN, Color.Intensity.I300));
+        enabledColors.add(new EnabledColor(Color.BROWN, Color.Intensity.I500));
         enabledColors.add(new EnabledColor(Color.GREY_BLUE, Color.Intensity.I700));
 
         final double listWidth = 136;
