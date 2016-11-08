@@ -40,6 +40,10 @@ public class SelectHelperNew {
 
     public interface Selectable {
         void color(Color color, Color.Intensity intensity);
+
+        Color getColor();
+
+        Color.Intensity getColorIntensity();
     }
 
 }

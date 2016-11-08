@@ -31,8 +31,7 @@
                         <Region HBox.hgrow="ALWAYS" />
 
                         <JFXRippler fx:id="colorSelected">
-
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#colorSelectedClicked">
+                            <StackPane minWidth="40" minHeight="40">
                                 <FontIcon iconLiteral="gmi-color-lens" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>

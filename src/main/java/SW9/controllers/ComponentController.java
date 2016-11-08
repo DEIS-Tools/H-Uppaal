@@ -217,7 +217,17 @@ public class ComponentController implements Initializable, SelectHelperNew.Selec
     public void color(final Color color, final Color.Intensity intensity) {
         final Component component = getComponent();
 
-        component.setColor(color);
         component.setColorIntensity(intensity);
+        component.setColor(color);
+    }
+
+    @Override
+    public Color getColor() {
+        return getComponent().getColor();
+    }
+
+    @Override
+    public Color.Intensity getColorIntensity() {
+        return getComponent().getColorIntensity();
     }
 }

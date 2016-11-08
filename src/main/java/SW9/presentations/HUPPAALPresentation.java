@@ -1,8 +1,10 @@
 package SW9.presentations;
 
 import SW9.controllers.HUPPAALController;
+import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.SelectHelperNew;
+import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
 import javafx.animation.*;
 import javafx.beans.property.BooleanProperty;
@@ -11,12 +13,17 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import javafx.util.Pair;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import static javafx.scene.paint.Color.TRANSPARENT;
 
@@ -50,11 +57,118 @@ public class HUPPAALPresentation extends StackPane {
             initializeQueryDetailsDialog();
             initializeGenerateUppaalModelButton();
             initializeColorSelectedButton();
+            initializeColorSelector();
 
             controller.bottomStatusBar.heightProperty().addListener((observable, oldValue, newValue) -> AnchorPane.setBottomAnchor(controller.queryPane, (Double) newValue));
+
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeColorSelector() {
+        class EnabledColor {
+            private final Color color;
+            private final Color.Intensity intensity;
+
+            private EnabledColor(final Color color, final Color.Intensity intensity) {
+                this.color = color;
+                this.intensity = intensity;
+            }
+
+            @Override
+            public boolean equals(final Object obj) {
+                return obj instanceof EnabledColor && ((EnabledColor) obj).color.equals(this.color);
+            }
+        }
+
+        final JFXPopup popup = new JFXPopup();
+
+        final ArrayList<EnabledColor> enabledColors = new ArrayList<>();
+        enabledColors.add(new EnabledColor(Color.RED, Color.Intensity.I500));
+        enabledColors.add(new EnabledColor(Color.PINK, Color.Intensity.I300));
+        enabledColors.add(new EnabledColor(Color.PURPLE, Color.Intensity.I300));
+        enabledColors.add(new EnabledColor(Color.INDIGO, Color.Intensity.I300));
+        enabledColors.add(new EnabledColor(Color.BLUE, Color.Intensity.I500));
+        enabledColors.add(new EnabledColor(Color.CYAN, Color.Intensity.I700));
+        enabledColors.add(new EnabledColor(Color.GREEN, Color.Intensity.I600));
+        enabledColors.add(new EnabledColor(Color.BROWN, Color.Intensity.I300));
+        enabledColors.add(new EnabledColor(Color.GREY_BLUE, Color.Intensity.I700));
+
+        final double listWidth = 136;
+        final FlowPane list = new FlowPane();
+        for (final EnabledColor color : enabledColors) {
+            final Circle circle = new Circle(16, color.color.getColor(color.intensity));
+            circle.setStroke(color.color.getColor(color.intensity.next(2)));
+            circle.setStrokeWidth(1);
+
+            final StackPane child = new StackPane(circle);
+            child.setMinSize(40, 40);
+            child.setMaxSize(40, 40);
+
+            child.setOnMouseEntered(event -> {
+                final ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(100), circle);
+                scaleTransition.setFromX(circle.getScaleX());
+                scaleTransition.setFromY(circle.getScaleY());
+                scaleTransition.setToX(1.1);
+                scaleTransition.setToY(1.1);
+                scaleTransition.play();
+            });
+
+            child.setOnMouseExited(event -> {
+                final ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(100), circle);
+                scaleTransition.setFromX(circle.getScaleX());
+                scaleTransition.setFromY(circle.getScaleY());
+                scaleTransition.setToX(1.0);
+                scaleTransition.setToY(1.0);
+                scaleTransition.play();
+            });
+
+            child.setOnMouseClicked(event -> {
+                final List<Pair<SelectHelperNew.Selectable, EnabledColor>> previousColor = new ArrayList<>();
+
+                SelectHelperNew.getSelectedElements().forEach(selectable -> {
+                    previousColor.add(new Pair<>(selectable, new EnabledColor(selectable.getColor(), selectable.getColorIntensity())));
+                });
+
+                UndoRedoStack.push(() -> { // Perform
+                    SelectHelperNew.getSelectedElements().forEach(selectable -> {
+                        System.out.println(color.color);
+                        System.out.println(color.intensity);
+                        selectable.color(color.color, color.intensity);
+                    });
+                }, () -> { // Undo
+                    previousColor.forEach(selectableEnabledColorPair -> {
+                        selectableEnabledColorPair.getKey().color(selectableEnabledColorPair.getValue().color, selectableEnabledColorPair.getValue().intensity);
+                    });
+                });
+
+                popup.close();
+            });
+
+            list.getChildren().add(child);
+        }
+        list.setMinWidth(listWidth);
+        list.setMaxWidth(listWidth);
+        list.setStyle("-fx-background-color: white; -fx-padding: 8;");
+
+        popup.setContent(list);
+        popup.setPopupContainer(controller.root);
+        popup.setSource(controller.toolbar);
+
+        controller.colorSelected.setOnMouseClicked((e) -> {
+            if (SelectHelperNew.getSelectedElements().size() == 0) return;
+
+            final Bounds boundsInScreenButton = controller.colorSelected.localToScreen(controller.colorSelected.getBoundsInLocal());
+            final Bounds boundsInScreenRoot = controller.root.localToScreen(controller.root.getBoundsInLocal());
+
+            double fromLeft = 0;
+            fromLeft = boundsInScreenButton.getMinX() - boundsInScreenRoot.getMinX();
+            fromLeft -= listWidth;
+            fromLeft += boundsInScreenButton.getWidth();
+
+            popup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, fromLeft, boundsInScreenButton.getMinY() - boundsInScreenRoot.getMinY());
+        });
     }
 
     private void initializeGenerateUppaalModelButton() {
