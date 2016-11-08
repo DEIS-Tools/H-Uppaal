@@ -276,7 +276,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
 
         final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
             // Set the background color to the lightest possible version of the color
-            controller.background.setFill(component.getColor().getColor(component.getColorIntensity()));
+            controller.background.setFill(newColor.getColor(newIntensity));
         };
 
         updateColorDelegates.add(updateColor);
