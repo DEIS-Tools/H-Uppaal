@@ -32,16 +32,16 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LocationController implements Initializable, SelectHelperNew.Selectable {
+public class LocationController implements Initializable, SelectHelperNew.ColorSelectable {
 
+    private static final AtomicInteger hiddenLocationID = new AtomicInteger(0);
+    private static final long DOUBLE_PRESS_SHOW_PROPERTIES_DELAY = 500;
     private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
-
     public Group root;
     public Circle initialIndicator;
     public StackPane finalIndicator;
     public Group shakeContent;
-
     public Label nameLabel;
     public Rectangle rectangle;
     public Rectangle rectangleShakeIndicator;
@@ -49,16 +49,11 @@ public class LocationController implements Initializable, SelectHelperNew.Select
     public Circle circleShakeIndicator;
     public Path octagon;
     public Path octagonShakeIndicator;
-
     public StackPane propertiesPane;
     public JFXTextField nameField;
     public TextArea invariantField;
-
     private boolean isPlaced;
     private long lastPress = 0;
-    private static final AtomicInteger hiddenLocationID = new AtomicInteger(0);
-
-    private static final long DOUBLE_PRESS_SHOW_PROPERTIES_DELAY = 500;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -245,12 +240,12 @@ public class LocationController implements Initializable, SelectHelperNew.Select
     }
 
     @Override
-    public void styleSelected() {
-        ((SelectHelperNew.SelectStyleable) root).styleSelected();
+    public void select() {
+        ((SelectHelperNew.Selectable) root).select();
     }
 
     @Override
-    public void styleDeselected() {
-        ((SelectHelperNew.SelectStyleable) root).styleDeselected();
+    public void deselect() {
+        ((SelectHelperNew.Selectable) root).deselect();
     }
 }

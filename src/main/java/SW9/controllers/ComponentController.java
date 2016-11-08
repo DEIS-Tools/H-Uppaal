@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
-public class ComponentController implements Initializable, SelectHelperNew.Selectable {
+public class ComponentController implements Initializable, SelectHelperNew.ColorSelectable {
 
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
     private final Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
@@ -248,12 +248,21 @@ public class ComponentController implements Initializable, SelectHelperNew.Selec
     }
 
     @Override
-    public void styleSelected() {
-        ((SelectHelperNew.SelectStyleable) root).styleSelected();
+    public void select() {
+        ((SelectHelperNew.Selectable) root).select();
+
+        final Consumer<Node> sugLocations = node -> {
+            if (node instanceof LocationPresentation) {
+                SelectHelperNew.addToSelection(((LocationPresentation) node).getController());
+            }
+        };
+
+        modelContainer.getChildren().forEach(sugLocations);
+        defaultLocationsContainer.getChildren().forEach(sugLocations);
     }
 
     @Override
-    public void styleDeselected() {
-        ((SelectHelperNew.SelectStyleable) root).styleDeselected();
+    public void deselect() {
+        ((SelectHelperNew.Selectable) root).deselect();
     }
 }

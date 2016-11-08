@@ -6,23 +6,28 @@ import javafx.collections.ObservableList;
 
 public class SelectHelperNew {
 
-    private static final ObservableList<Selectable> selectedElements = FXCollections.observableArrayList();
+    private static final ObservableList<ColorSelectable> selectedElements = FXCollections.observableArrayList();
 
-    public static void select(final Selectable selectable) {
+    public static void select(final ColorSelectable selectable) {
         // Check if the element is already selected
         if (selectedElements.contains(selectable)) return;
 
         // Clear the list
         clearSelectedElements();
 
-        selectable.styleSelected();
+        addToSelection(selectable);
+    }
 
-        // Select the element
+    public static void addToSelection(final ColorSelectable selectable) {
+        // Check if the element is already selected
+        if (selectedElements.contains(selectable)) return;
+
+        selectable.select();
         selectedElements.add(selectable);
     }
 
-    public static void deselect(final Selectable selectable) {
-        selectable.styleDeselected();
+    public static void deselect(final ColorSelectable selectable) {
+        selectable.deselect();
 
         // deselect the element
         selectedElements.remove(selectable);
@@ -34,17 +39,17 @@ public class SelectHelperNew {
         }
     }
 
-    public static ObservableList<Selectable> getSelectedElements() {
+    public static ObservableList<ColorSelectable> getSelectedElements() {
         return selectedElements;
     }
 
-    public interface SelectStyleable {
-        void styleSelected();
+    public interface Selectable {
+        void select();
 
-        void styleDeselected();
+        void deselect();
     }
 
-    public interface Selectable extends SelectStyleable {
+    public interface ColorSelectable extends Selectable {
         void color(Color color, Color.Intensity intensity);
 
         Color getColor();

@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.BiConsumer;
 
-public class ComponentPresentation extends StackPane implements MouseTrackable, SelectHelperNew.SelectStyleable {
+public class ComponentPresentation extends StackPane implements MouseTrackable, SelectHelperNew.Selectable {
 
     private final static double CORNER_SIZE = 60;
 
@@ -304,12 +304,12 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
     }
 
     @Override
-    public void styleSelected() {
+    public void select() {
         updateColorDelegates.forEach(colorConsumer -> colorConsumer.accept(Color.DEEP_ORANGE, Color.Intensity.I500));
     }
 
     @Override
-    public void styleDeselected() {
+    public void deselect() {
         updateColorDelegates.forEach(colorConsumer -> {
             final Component component = controller.getComponent();
 

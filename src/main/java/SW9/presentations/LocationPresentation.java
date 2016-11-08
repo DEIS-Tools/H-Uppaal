@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public class LocationPresentation extends Group implements MouseTrackable, SelectHelperNew.SelectStyleable {
+public class LocationPresentation extends Group implements MouseTrackable, SelectHelperNew.Selectable {
 
     private static final double RADIUS = 20;
     private final LocationController controller;
@@ -371,16 +371,20 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     }
 
     @Override
-    public void styleSelected() {
+    public void select() {
         updateColorDelegates.forEach(colorConsumer -> colorConsumer.accept(Color.DEEP_ORANGE, Color.Intensity.I500));
     }
 
     @Override
-    public void styleDeselected() {
+    public void deselect() {
         updateColorDelegates.forEach(colorConsumer -> {
             final Location location = controller.getLocation();
 
             colorConsumer.accept(location.getColor(), location.getColorIntensity());
         });
+    }
+
+    public LocationController getController() {
+        return controller;
     }
 }
