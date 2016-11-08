@@ -121,8 +121,6 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
 
             Platform.runLater(finalLocationPresentation::animateIn);
         }).start());
-
-        finalLocationPresentation.shakeAnimation();
     }
 
     private void initializeName() {
