@@ -4,7 +4,12 @@ import SW9.utility.colors.Color;
 import SW9.utility.helpers.Circular;
 import javafx.beans.property.*;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Location implements Circular {
+
+    // Used to generate unique IDs
+    private static final AtomicInteger hiddenID = new AtomicInteger(0);
 
     // Verification properties
     private final StringProperty name = new SimpleStringProperty("");
@@ -19,6 +24,10 @@ public class Location implements Circular {
     private final SimpleDoubleProperty scale = new SimpleDoubleProperty(1d);
     private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.GREY_BLUE);
     private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I500);
+
+    public Location() {
+        setName("L" + hiddenID.getAndIncrement());
+    }
 
     public String getName() {
         return name.get();

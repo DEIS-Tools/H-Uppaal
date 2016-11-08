@@ -5,7 +5,12 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Component {
+
+    // Used to generate unique IDs
+    private static final AtomicInteger hiddenID = new AtomicInteger(0);
 
     // Verification properties
     private final StringProperty name;
@@ -23,6 +28,10 @@ public class Component {
     private final BooleanProperty declarationOpen = new SimpleBooleanProperty(false);
     private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.GREY_BLUE);
     private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I700);
+
+    public Component() {
+        this("Component" + hiddenID.getAndIncrement());
+    }
 
     public Component(final String name) {
         this(new SimpleStringProperty(name));

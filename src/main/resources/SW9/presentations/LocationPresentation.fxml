@@ -36,9 +36,9 @@
 
         <Circle fx:id="initialIndicator" strokeType="INSIDE" strokeWidth="2"
                 style="-fx-stroke: -white; -fx-fill: transparent;" radius="15" mouseTransparent="true"/>
-    </Group>
 
-    <Label fx:id="nameLabel" styleClass="subhead" mouseTransparent="true"/>
+        <Label fx:id="nameLabel" styleClass="subhead" mouseTransparent="true"/>
+    </Group>
 
     <StackPane fx:id="propertiesPane"
                style="-fx-background-color:white;"

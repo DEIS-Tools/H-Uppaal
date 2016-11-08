@@ -9,7 +9,6 @@ import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.helpers.SelectHelperNew;
 import SW9.utility.mouse.MouseTracker;
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -30,7 +29,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.function.BiConsumer;
 
 public class ComponentPresentation extends StackPane implements MouseTrackable, SelectHelperNew.Selectable {
@@ -43,7 +41,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
     private LocationPresentation finalLocationPresentation = null;
 
     public ComponentPresentation() {
-        this(new Component("Component" + new Random().nextInt(5000))); // todo: find a new unique component name
+        this(new Component());
     }
 
     public ComponentPresentation(final Component component) {
@@ -109,18 +107,6 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
 
         // Add the locations to the view
         controller.defaultLocationsContainer.getChildren().addAll(initialLocationPresentation, finalLocationPresentation);
-
-        ComponentPresentation.this.controller.frame.setOnMouseEntered(event -> new Thread(() -> {
-            Platform.runLater(initialLocationPresentation::animateIn);
-
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // do nothing
-            }
-
-            Platform.runLater(finalLocationPresentation::animateIn);
-        }).start());
     }
 
     private void initializeName() {

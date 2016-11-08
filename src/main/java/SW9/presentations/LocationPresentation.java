@@ -7,10 +7,7 @@ import SW9.utility.colors.Color;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.helpers.SelectHelperNew;
 import SW9.utility.mouse.MouseTracker;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
@@ -41,6 +38,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private final Timeline initialAnimation = new Timeline();
     private final Timeline hoverAnimationEntered = new Timeline();
     private final Timeline hoverAnimationExited = new Timeline();
+    private final Timeline scaleShakeIndicatorBackgroundAnimation = new Timeline();
+    private final Timeline shakeContentAnimation = new Timeline();
 
     private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
 
@@ -77,6 +76,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             initializeInitialAnimation();
             initializeHoverAnimationEntered();
             initializeHoverAnimationExited();
+            initializeShakeAnimation();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
@@ -268,10 +268,14 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     }
 
     public void animateHoverEntered() {
+        if (shakeContentAnimation.getStatus().equals(Animation.Status.RUNNING)) return;
+
         hoverAnimationEntered.play();
     }
 
     public void animateHoverExited() {
+        if (shakeContentAnimation.getStatus().equals(Animation.Status.RUNNING)) return;
+
         hoverAnimationExited.play();
     }
 
@@ -290,7 +294,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         return mouseTracker;
     }
 
-    public void shakeAnimation() {
+    private void initializeShakeAnimation() {
 
         // Animation for rectangle shape (bind to the circle animation)
         controller.rectangleShakeIndicator.opacityProperty().bind(controller.circleShakeIndicator.opacityProperty());
@@ -309,11 +313,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             controller.octagonShakeIndicator.scaleYProperty().set(newValue.doubleValue() / LocationPresentation.RADIUS);
         });
 
-
         final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
-
-        final Timeline initialAnimation = new Timeline();
-        final Timeline shakeContentAnimation = new Timeline();
 
         final KeyValue scale0x = new KeyValue(scaleXProperty(), 1, interpolator);
         final KeyValue radius0 = new KeyValue(controller.circleShakeIndicator.radiusProperty(), 0, interpolator);
@@ -329,7 +329,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         final KeyFrame kf4 = new KeyFrame(Duration.millis(3500), scale0x);
         final KeyFrame kfEnd = new KeyFrame(Duration.millis(8000), null);
 
-        initialAnimation.getKeyFrames().addAll(kf1, kf2, kf3, kf4, kfEnd);
+        scaleShakeIndicatorBackgroundAnimation.getKeyFrames().addAll(kf1, kf2, kf3, kf4, kfEnd);
 
         final KeyValue noShakeX = new KeyValue(controller.shakeContent.translateXProperty(), 0, interpolator);
         final KeyValue shakeLeftX = new KeyValue(controller.shakeContent.translateXProperty(), -1, interpolator);
@@ -363,12 +363,23 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         shakeContentAnimation.getKeyFrames().addAll(shakeFrames);
 
         shakeContentAnimation.setCycleCount(1000);
-        initialAnimation.setCycleCount(1000);
-
-        shakeContentAnimation.play();
-        initialAnimation.play();
-
+        scaleShakeIndicatorBackgroundAnimation.setCycleCount(1000);
     }
+
+    public void animateShakeWarning(final boolean start) {
+        if (start) {
+            scaleShakeIndicatorBackgroundAnimation.play();
+            shakeContentAnimation.play();
+        } else {
+            scaleShakeIndicatorBackgroundAnimation.playFromStart();
+            scaleShakeIndicatorBackgroundAnimation.stop();
+
+            controller.circleShakeIndicator.setOpacity(0);
+            shakeContentAnimation.playFromStart();
+            shakeContentAnimation.stop();
+        }
+    }
+
 
     @Override
     public void select() {

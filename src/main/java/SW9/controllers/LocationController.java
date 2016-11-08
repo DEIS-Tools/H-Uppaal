@@ -1,8 +1,10 @@
 package SW9.controllers;
 
+import SW9.NewMain;
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
+import SW9.backend.UPPAALDriver;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.LocationPresentation;
 import SW9.utility.UndoRedoStack;
@@ -30,6 +32,8 @@ import javafx.scene.shape.Rectangle;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LocationController implements Initializable, SelectHelperNew.ColorSelectable {
@@ -84,6 +88,35 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
         KeyboardTracker.registerKeybind(KeyboardTracker.HIDE_LOCATION_PROPERTY_PANE + hiddenLocationID.getAndIncrement(), new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
             propertiesPane.setVisible(false);
         }));
+
+        initializeReachabilityCheck();
+    }
+
+    private void initializeReachabilityCheck() {
+        final int interval = 5000; // ms
+
+        new Timer().schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                if (getComponent() == null || getLocation() == null) return;
+
+                UPPAALDriver.verify(
+                        "E<> " + getComponent().getName() + "." + getLocation().getName(),
+                        result -> {
+                            final LocationPresentation locationPresentation = (LocationPresentation) LocationController.this.root;
+
+                            locationPresentation.animateShakeWarning(!result);
+                        },
+                        e -> {
+                            System.out.println(e);
+                            // Could not run query
+                        },
+                        NewMain.getProject().getComponents()
+                );
+            }
+
+        }, 0, interval);
     }
 
     public Location getLocation() {
