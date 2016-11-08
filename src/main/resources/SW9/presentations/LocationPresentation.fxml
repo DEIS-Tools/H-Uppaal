@@ -25,7 +25,7 @@
 
     <!-- Hexagon location -->
     <Path fx:id="octagon" strokeType="INSIDE" translateX="-20" translateY="-20"/>
-    <Path fx:id="hexagonShakeIndicator" strokeType="INSIDE" translateX="-20" translateY="-20" mouseTransparent="true"
+    <Path fx:id="octagonShakeIndicator" strokeType="INSIDE" translateX="-20" translateY="-20" mouseTransparent="true"
           fill="white" opacity="0"/>
 
     <Group fx:id="shakeContent">

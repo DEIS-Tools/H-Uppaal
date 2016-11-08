@@ -5,6 +5,7 @@ import SW9.abstractions.Location;
 import SW9.controllers.LocationController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.MouseTrackable;
+import SW9.utility.helpers.SelectHelperNew;
 import SW9.utility.mouse.MouseTracker;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -19,14 +20,19 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiConsumer;
 
-public class LocationPresentation extends Group implements MouseTrackable {
+public class LocationPresentation extends Group implements MouseTrackable, SelectHelperNew.SelectStyleable {
 
     private static final double RADIUS = 20;
     private final LocationController controller;
@@ -35,6 +41,8 @@ public class LocationPresentation extends Group implements MouseTrackable {
     private final Timeline initialAnimation = new Timeline();
     private final Timeline hoverAnimationEntered = new Timeline();
     private final Timeline hoverAnimationExited = new Timeline();
+
+    private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
 
     public LocationPresentation(final Location location, final Component component) {
         final URL url = this.getClass().getResource("LocationPresentation.fxml");
@@ -87,29 +95,30 @@ public class LocationPresentation extends Group implements MouseTrackable {
         final LineTo p9 = new LineTo(0, 10);
 
         controller.octagon.getElements().addAll(p1, p2, p3, p4, p5, p6, p7, p8, p9);
-        controller.hexagonShakeIndicator.getElements().addAll(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+        controller.octagonShakeIndicator.getElements().addAll(p1, p2, p3, p4, p5, p6, p7, p8, p9);
 
         final Location location = controller.getLocation();
 
-        final Path octagon = controller.octagon;
         final ObjectProperty<Color> color = location.colorProperty();
         final ObjectProperty<Color.Intensity> colorIntensity = location.colorIntensityProperty();
 
         // Delegate to style the label based on the color of the location
-        final Consumer<Color> updateColor = (newColor) -> {
-            octagon.setFill(newColor.getColor(colorIntensity.get()));
-            octagon.setStroke(newColor.getColor(colorIntensity.get().next(2)));
+        final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
+            controller.octagon.setFill(newColor.getColor(newIntensity));
+            controller.octagon.setStroke(newColor.getColor(newIntensity.next(2)));
         };
 
+        updateColorDelegates.add(updateColor);
+
         // Set the initial color
-        updateColor.accept(color.get());
+        updateColor.accept(color.get(), colorIntensity.get());
 
         // Update the color of the octagon when the color of the location is updated
-        color.addListener((obs, oldColor, newColor) -> updateColor.accept(newColor));
+        color.addListener((obs, oldColor, newColor) -> updateColor.accept(newColor, colorIntensity.get()));
 
         // The octagon shape should only be visible when the location is urgent
-        octagon.visibleProperty().bind(location.urgencyProperty().isEqualTo(Location.Urgency.URGENT));
-        controller.hexagonShakeIndicator.visibleProperty().bind(octagon.visibleProperty());
+        controller.octagon.visibleProperty().bind(location.urgencyProperty().isEqualTo(Location.Urgency.URGENT));
+        controller.octagonShakeIndicator.visibleProperty().bind(controller.octagon.visibleProperty());
     }
 
     private void initializeRectangle() {
@@ -120,16 +129,18 @@ public class LocationPresentation extends Group implements MouseTrackable {
         final ObjectProperty<Color.Intensity> colorIntensity = location.colorIntensityProperty();
 
         // Delegate to style the label based on the color of the location
-        final Consumer<Color> updateColor = (newColor) -> {
-            rectangle.setFill(newColor.getColor(colorIntensity.get()));
-            rectangle.setStroke(newColor.getColor(colorIntensity.get().next(2)));
+        final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
+            rectangle.setFill(newColor.getColor(newIntensity));
+            rectangle.setStroke(newColor.getColor(newIntensity.next(2)));
         };
 
+        updateColorDelegates.add(updateColor);
+
         // Set the initial color
-        updateColor.accept(color.get());
+        updateColor.accept(color.get(), colorIntensity.get());
 
         // Update the color of the rectangle when the color of the location is updated
-        color.addListener((obs, oldColor, newColor) -> updateColor.accept(newColor));
+        color.addListener((obs, oldColor, newColor) -> updateColor.accept(newColor, colorIntensity.get()));
 
         // The rectangle shape should only be visible when the location is urgent
         rectangle.visibleProperty().bind(location.urgencyProperty().isEqualTo(Location.Urgency.COMMITTED));
@@ -220,16 +231,18 @@ public class LocationPresentation extends Group implements MouseTrackable {
         final ObjectProperty<Color.Intensity> colorIntensity = location.colorIntensityProperty();
 
         // Delegate to style the label based on the color of the location
-        final Consumer<Color> updateColor = (newColor) -> {
-            circle.setFill(newColor.getColor(colorIntensity.get()));
-            circle.setStroke(newColor.getColor(colorIntensity.get().next(2)));
+        final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
+            circle.setFill(newColor.getColor(newIntensity));
+            circle.setStroke(newColor.getColor(newIntensity.next(2)));
         };
 
+        updateColorDelegates.add(updateColor);
+
         // Set the initial color
-        updateColor.accept(color.get());
+        updateColor.accept(color.get(), colorIntensity.get());
 
         // Update the color of the circle when the color of the location is updated
-        color.addListener((obs, old, newValue) -> updateColor.accept(newValue));
+        color.addListener((obs, old, newColor) -> updateColor.accept(newColor, colorIntensity.get()));
 
         // The circle shape should only be visible when the location is urgent
         circle.visibleProperty().bind(location.urgencyProperty().isEqualTo(Location.Urgency.NORMAL));
@@ -290,10 +303,10 @@ public class LocationPresentation extends Group implements MouseTrackable {
         });
 
         // Animation for octagon shape (bind to the circle animation)
-        controller.hexagonShakeIndicator.opacityProperty().bind(controller.circleShakeIndicator.opacityProperty());
+        controller.octagonShakeIndicator.opacityProperty().bind(controller.circleShakeIndicator.opacityProperty());
         controller.circleShakeIndicator.radiusProperty().addListener((observable, oldValue, newValue) -> {
-            controller.hexagonShakeIndicator.scaleXProperty().set(newValue.doubleValue() / LocationPresentation.RADIUS);
-            controller.hexagonShakeIndicator.scaleYProperty().set(newValue.doubleValue() / LocationPresentation.RADIUS);
+            controller.octagonShakeIndicator.scaleXProperty().set(newValue.doubleValue() / LocationPresentation.RADIUS);
+            controller.octagonShakeIndicator.scaleYProperty().set(newValue.doubleValue() / LocationPresentation.RADIUS);
         });
 
 
@@ -355,5 +368,19 @@ public class LocationPresentation extends Group implements MouseTrackable {
         shakeContentAnimation.play();
         initialAnimation.play();
 
+    }
+
+    @Override
+    public void styleSelected() {
+        updateColorDelegates.forEach(colorConsumer -> colorConsumer.accept(Color.DEEP_ORANGE, Color.Intensity.I500));
+    }
+
+    @Override
+    public void styleDeselected() {
+        updateColorDelegates.forEach(colorConsumer -> {
+            final Location location = controller.getLocation();
+
+            colorConsumer.accept(location.getColor(), location.getColorIntensity());
+        });
     }
 }

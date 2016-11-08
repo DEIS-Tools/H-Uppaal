@@ -82,6 +82,8 @@ public class HUPPAALController implements Initializable {
 
     @FXML
     private void deleteSelectedClicked() {
+        if (SelectHelperNew.getSelectedElements().size() == 0) return;
+
         // Run through the selected elements and look for something that we can delete
         SelectHelperNew.getSelectedElements().forEach(selectable -> {
             if (selectable instanceof LocationController) {
@@ -111,6 +113,8 @@ public class HUPPAALController implements Initializable {
                 });
             }
         });
+
+        SelectHelperNew.clearSelectedElements();
     }
 
 }

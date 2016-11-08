@@ -48,7 +48,7 @@ public class LocationController implements Initializable, SelectHelperNew.Select
     public Circle circle;
     public Circle circleShakeIndicator;
     public Path octagon;
-    public Path hexagonShakeIndicator;
+    public Path octagonShakeIndicator;
 
     public StackPane propertiesPane;
     public JFXTextField nameField;
@@ -242,5 +242,15 @@ public class LocationController implements Initializable, SelectHelperNew.Select
     @Override
     public Color.Intensity getColorIntensity() {
         return getLocation().getColorIntensity();
+    }
+
+    @Override
+    public void styleSelected() {
+        ((SelectHelperNew.SelectStyleable) root).styleSelected();
+    }
+
+    @Override
+    public void styleDeselected() {
+        ((SelectHelperNew.SelectStyleable) root).styleDeselected();
     }
 }
