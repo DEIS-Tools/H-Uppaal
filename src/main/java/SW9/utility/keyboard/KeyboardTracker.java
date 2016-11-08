@@ -30,6 +30,8 @@ public class KeyboardTracker {
     public static final String COMPONENT_HAS_DEADLOCK = "COMPONENT_HAS_DEADLOCK";
     public static final String TESTING_BIND = "TESTING_BIND";
     public static final String TOGGLE_QUERY_PANE = "TOGGLE_QUERY_PANE";
+    public static final String HIDE_LOCATION_PROPERTY_PANE = "HIDE_LOCATION_PROPERTY_PANE";
+
     private static final Map<String, Keybind> keyMap = new HashMap<>();
     public static final EventHandler<KeyEvent> handleKeyPress = event -> {
 

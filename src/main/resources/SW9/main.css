@@ -138,7 +138,6 @@
 }
 
 .text-area .content {
-    -fx-padding: 10px;
     -fx-highlight-fill: -deep-orange-500;
     -fx-highlight-text-fill: -white;
 }

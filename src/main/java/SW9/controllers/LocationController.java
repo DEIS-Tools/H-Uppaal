@@ -3,6 +3,7 @@ package SW9.controllers;
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
+import SW9.presentations.CanvasPresentation;
 import SW9.presentations.LocationPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
@@ -10,6 +11,7 @@ import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.SelectHelperNew;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
+import com.jfoenix.controls.JFXTextField;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -17,6 +19,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
@@ -27,6 +30,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LocationController implements Initializable, SelectHelperNew.Selectable {
 
@@ -43,9 +47,18 @@ public class LocationController implements Initializable, SelectHelperNew.Select
     public Rectangle rectangleShakeIndicator;
     public Circle circle;
     public Circle circleShakeIndicator;
-    public Path hexagon;
-    public Path hexagonShakeIndicator;
+    public Path octagon;
+    public Path octagonShakeIndicator;
+
+    public StackPane propertiesPane;
+    public JFXTextField nameField;
+    public TextArea invariantField;
+
     private boolean isPlaced;
+    private long lastPress = 0;
+    private static final AtomicInteger hiddenLocationID = new AtomicInteger(0);
+
+    private static final long DOUBLE_PRESS_SHOW_PROPERTIES_DELAY = 500;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -55,10 +68,27 @@ public class LocationController implements Initializable, SelectHelperNew.Select
 
             // The scale property on the abstraction must reflect the radius in the view
             newLocation.scaleProperty().bind(root.scaleXProperty());
+
+            // initialize the name field and its bindings
+            nameField.setText(newLocation.getName());
+            newLocation.nameProperty().bind(nameField.textProperty());
+
+            // initialize the invariant field and its bindings
+            invariantField.setText(newLocation.getInvariant());
+            newLocation.invariantProperty().bind(invariantField.textProperty());
+
         });
 
         // Scale x and y 1:1 (based on the x-scale)
         root.scaleYProperty().bind(root.scaleXProperty());
+
+        // Register click listener on canvas to hide the property pane when the canvas is clicked
+        CanvasPresentation.mouseTracker.registerOnMouseClickedEventHandler(event -> propertiesPane.setVisible(false));
+
+        // Register a key-bind for hiding the property pane (using a hidden locationID)
+        KeyboardTracker.registerKeybind(KeyboardTracker.HIDE_LOCATION_PROPERTY_PANE + hiddenLocationID.getAndIncrement(), new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+            propertiesPane.setVisible(false);
+        }));
     }
 
     public Location getLocation() {
@@ -151,6 +181,19 @@ public class LocationController implements Initializable, SelectHelperNew.Select
     }
 
     @FXML
+    private void mouseClicked(final MouseEvent event) {
+        event.consume();
+        // Double clicking the location opens the properties pane
+        if(lastPress + DOUBLE_PRESS_SHOW_PROPERTIES_DELAY >= System.currentTimeMillis()) {
+            propertiesPane.setVisible(true);
+            // Place the location in front (so that the properties pane is above edges etc)
+            root.toFront();
+        } else {
+            lastPress = System.currentTimeMillis();
+        }
+    }
+
+    @FXML
     private void mousePressed(final MouseEvent event) {
         final Component component = getComponent();
 
@@ -177,7 +220,6 @@ public class LocationController implements Initializable, SelectHelperNew.Select
                 }
             }
         } else {
-
             BindingHelper.place(getLocation(), getComponent().xProperty(), getComponent().yProperty());
             isPlaced = true;
         }
