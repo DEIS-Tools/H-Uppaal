@@ -1,5 +1,6 @@
 package SW9.presentations;
 
+import SW9.controllers.CanvasController;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.MouseTrackable;
@@ -27,8 +28,11 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
 
     public static final int GRID_SIZE = 10;
     public static MouseTracker mouseTracker;
+
     private final DoubleProperty x = new SimpleDoubleProperty(0);
     private final DoubleProperty y = new SimpleDoubleProperty(0);
+
+    private final CanvasController controller;
 
     public CanvasPresentation() {
         final URL location = this.getClass().getResource("CanvasPresentation.fxml");
@@ -36,6 +40,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         final FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(location);
         fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
+
         mouseTracker = new MouseTracker(this);
 
         KeyboardTracker.registerKeybind(KeyboardTracker.UNDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN), UndoRedoStack::undo));
@@ -44,8 +49,23 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         try {
             fxmlLoader.setRoot(this);
             fxmlLoader.load(location.openStream());
+            controller = fxmlLoader.getController();
 
             initializeGrid();
+
+            widthProperty().addListener(observable -> {
+
+            });
+
+            // Center on the component
+            controller.component.heightProperty().addListener(observable -> {
+                setTranslateY(getHeight() / 2 - controller.component.getHeight() / 2);
+                setTranslateX(getWidth() / 2 - controller.component.getWidth() / 2);
+            });
+
+            // Move the component half a grid size to align it to the grid
+            controller.component.setTranslateX(GRID_SIZE / 2);
+            controller.component.setTranslateY(GRID_SIZE / 2);
 
             DragHelper.makeDraggable(this, mouseEvent -> mouseEvent.getButton().equals(MouseButton.SECONDARY));
         } catch (final IOException ioe) {

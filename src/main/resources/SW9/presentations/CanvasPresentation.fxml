@@ -7,6 +7,6 @@
          fx:controller="SW9.controllers.CanvasController"
          translateY="56">
 
-    <ComponentPresentation layoutX="30" layoutY="30"/>
+    <ComponentPresentation fx:id="component"/>
 
 </fx:root>
