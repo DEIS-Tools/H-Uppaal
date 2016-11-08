@@ -5,7 +5,9 @@ import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
 import SW9.presentations.LocationPresentation;
 import SW9.utility.UndoRedoStack;
+import SW9.utility.colors.Color;
 import SW9.utility.helpers.BindingHelper;
+import SW9.utility.helpers.SelectHelperNew;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import javafx.beans.property.ObjectProperty;
@@ -26,7 +28,7 @@ import javafx.scene.shape.Rectangle;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class LocationController implements Initializable {
+public class LocationController implements Initializable, SelectHelperNew.Selectable {
 
     private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
@@ -151,6 +153,7 @@ public class LocationController implements Initializable {
     @FXML
     private void mousePressed(final MouseEvent event) {
         final Component component = getComponent();
+
         event.consume();
         if (isPlaced) {
             final Edge unfinishedEdge = component.getUnfinishedEdge();
@@ -158,13 +161,20 @@ public class LocationController implements Initializable {
             if (unfinishedEdge != null) {
                 unfinishedEdge.setTargetLocation(getLocation());
             } else {
-                final Edge newEdge = new Edge(getLocation());
+                // If shift is being held down, start drawing a new edge
+                if (event.isShiftDown()) {
+                    final Edge newEdge = new Edge(getLocation());
 
-                UndoRedoStack.push(() -> { // Perform
-                    component.addEdge(newEdge);
-                }, () -> { // Undo
-                    component.removeEdge(newEdge);
-                });
+                    UndoRedoStack.push(() -> { // Perform
+                        component.addEdge(newEdge);
+                    }, () -> { // Undo
+                        component.removeEdge(newEdge);
+                    });
+                }
+                // Otherwise, select the location
+                else {
+                    SelectHelperNew.select(this);
+                }
             }
         } else {
 
@@ -173,4 +183,22 @@ public class LocationController implements Initializable {
         }
     }
 
+    @Override
+    public void color(final Color color, final Color.Intensity intensity) {
+        final Location location = getLocation();
+
+        // Set the color of the location
+        location.setColorIntensity(intensity);
+        location.setColor(color);
+    }
+
+    @Override
+    public Color getColor() {
+        return getLocation().getColor();
+    }
+
+    @Override
+    public Color.Intensity getColorIntensity() {
+        return getLocation().getColorIntensity();
+    }
 }

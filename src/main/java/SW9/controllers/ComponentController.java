@@ -42,6 +42,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 public class ComponentController implements Initializable, SelectHelperNew.Selectable {
 
@@ -217,6 +218,21 @@ public class ComponentController implements Initializable, SelectHelperNew.Selec
     public void color(final Color color, final Color.Intensity intensity) {
         final Component component = getComponent();
 
+        final Color componentColor = component.getColor();
+
+        final Consumer<Location> locationPainter = location -> {
+            if (!location.getColor().equals(componentColor)) return; // Do not color something of a different color
+
+            location.setColorIntensity(intensity);
+            location.setColor(color);
+        };
+
+        // Set the color for all locations that are of the same color
+        component.getLocations().forEach(locationPainter);
+        locationPainter.accept(component.getInitialLocation());
+        locationPainter.accept(component.getFinalLocation());
+
+        // Set the color of the component
         component.setColorIntensity(intensity);
         component.setColor(color);
     }
