@@ -30,6 +30,14 @@
 
                         <Region HBox.hgrow="ALWAYS" />
 
+                        <JFXRippler fx:id="deleteSelected">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#deleteSelectedClicked">
+                                <FontIcon iconLiteral="gmi-delete" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region minWidth="8"/>
+
                         <JFXRippler fx:id="colorSelected">
                             <StackPane minWidth="40" minHeight="40">
                                 <FontIcon iconLiteral="gmi-color-lens" iconSize="24" fill="white"/>

@@ -1,10 +1,14 @@
 package SW9.controllers;
 
 import SW9.NewMain;
+import SW9.abstractions.Component;
+import SW9.abstractions.Location;
 import SW9.backend.UPPAALDriver;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.HUPPAALPresentation;
 import SW9.presentations.QueryPanePresentation;
+import SW9.utility.UndoRedoStack;
+import SW9.utility.helpers.SelectHelperNew;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXDialog;
@@ -12,10 +16,8 @@ import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXTextField;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
@@ -42,8 +44,7 @@ public class HUPPAALController implements Initializable {
     public JFXTextField commentTextField;
     public JFXRippler generateUppaalModel;
     public JFXRippler colorSelected;
-    public TextField textFieldFix;
-    public ContextMenu contextMenu;
+    public JFXRippler deleteSelected;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -77,6 +78,39 @@ public class HUPPAALController implements Initializable {
                 },
                 NewMain.getProject().getComponents()
         );
+    }
+
+    @FXML
+    private void deleteSelectedClicked() {
+        // Run through the selected elements and look for something that we can delete
+        SelectHelperNew.getSelectedElements().forEach(selectable -> {
+            if (selectable instanceof LocationController) {
+                final Component component = ((LocationController) selectable).getComponent();
+                final Location location = ((LocationController) selectable).getLocation();
+                final double previousX = location.getX();
+                final double previousY = location.getY();
+
+                final Location initialLocation = component.getInitialLocation();
+                final Location finalLocation = component.getFinalLocation();
+
+                if (location.equals(initialLocation) || location.equals(finalLocation))
+                    return; // Do not delete initial or final locations
+
+                UndoRedoStack.push(() -> { // Perform
+                    // Remove the location
+                    component.getLocations().remove(location);
+                }, () -> { // Undo
+                    // Re-all the location
+                    component.getLocations().add(location);
+
+                    location.xProperty().unbind();
+                    location.xProperty().set(previousX);
+
+                    location.yProperty().unbind();
+                    location.yProperty().set(previousY);
+                });
+            }
+        });
     }
 
 }

@@ -56,8 +56,10 @@ public class HUPPAALPresentation extends StackPane {
             initializeToggleQueryPaneFunctionality();
             initializeQueryDetailsDialog();
             initializeGenerateUppaalModelButton();
-            initializeColorSelectedButton();
             initializeColorSelector();
+
+            initializeSelectDependentToolbarButton(controller.colorSelected);
+            initializeSelectDependentToolbarButton(controller.deleteSelected);
 
             controller.bottomStatusBar.heightProperty().addListener((observable, oldValue, newValue) -> AnchorPane.setBottomAnchor(controller.queryPane, (Double) newValue));
 
@@ -179,28 +181,28 @@ public class HUPPAALPresentation extends StackPane {
         controller.generateUppaalModel.setRipplerFill(color.getTextColor(colorIntensity));
     }
 
-    private void initializeColorSelectedButton() {
+    private void initializeSelectDependentToolbarButton(final JFXRippler button) {
         final Color color = Color.GREY_BLUE;
         final Color.Intensity colorIntensity = Color.Intensity.I800;
 
-        controller.colorSelected.setMaskType(JFXRippler.RipplerMask.CIRCLE);
-        controller.colorSelected.setRipplerFill(color.getTextColor(colorIntensity));
+        button.setMaskType(JFXRippler.RipplerMask.CIRCLE);
+        button.setRipplerFill(color.getTextColor(colorIntensity));
 
         // The color button should only be enabled when an element is selected
         SelectHelperNew.getSelectedElements().addListener(new ListChangeListener<SelectHelperNew.Selectable>() {
             @Override
             public void onChanged(final Change<? extends SelectHelperNew.Selectable> c) {
                 if (SelectHelperNew.getSelectedElements().size() > 0) {
-                    controller.colorSelected.setEnabled(true);
+                    button.setEnabled(true);
 
-                    final FadeTransition fadeAnimation = new FadeTransition(Duration.millis(100), controller.colorSelected);
-                    fadeAnimation.setFromValue(controller.colorSelected.getOpacity());
+                    final FadeTransition fadeAnimation = new FadeTransition(Duration.millis(100), button);
+                    fadeAnimation.setFromValue(button.getOpacity());
                     fadeAnimation.setToValue(1);
                     fadeAnimation.play();
                 } else {
-                    controller.colorSelected.setEnabled(false);
+                    button.setEnabled(false);
 
-                    final FadeTransition fadeAnimation = new FadeTransition(Duration.millis(100), controller.colorSelected);
+                    final FadeTransition fadeAnimation = new FadeTransition(Duration.millis(100), button);
                     fadeAnimation.setFromValue(1);
                     fadeAnimation.setToValue(0.3);
                     fadeAnimation.play();
@@ -209,8 +211,8 @@ public class HUPPAALPresentation extends StackPane {
         });
 
         // Disable the color button
-        controller.colorSelected.setEnabled(false);
-        controller.colorSelected.setOpacity(0.3);
+        button.setEnabled(false);
+        button.setOpacity(0.3);
     }
 
     private void initializeQueryDetailsDialog() {
