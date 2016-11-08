@@ -5,6 +5,7 @@ import SW9.abstractions.Component;
 import SW9.abstractions.Location;
 import SW9.backend.UPPAALDriver;
 import SW9.presentations.CanvasPresentation;
+import SW9.presentations.FilePanePresentation;
 import SW9.presentations.HUPPAALPresentation;
 import SW9.presentations.QueryPanePresentation;
 import SW9.utility.UndoRedoStack;
@@ -31,12 +32,13 @@ public class HUPPAALController implements Initializable {
     public StackPane root;
     public BorderPane bottomStatusBar;
     public QueryPanePresentation queryPane;
+    public FilePanePresentation filePane;
     public StackPane toolbar;
     public Label title;
     public MenuBar menuBar;
-    public Label fillerElement;
+    public Label queryPaneFillerElement;
+    public Label filePaneFillerElement;
     public CanvasPresentation canvas;
-
     public StackPane dialogContainer;
     public JFXDialog dialog;
     public StackPane modalBar;
@@ -52,6 +54,11 @@ public class HUPPAALController implements Initializable {
         // Keybind for toggling the query pane
         KeyboardTracker.registerKeybind(KeyboardTracker.TOGGLE_QUERY_PANE, new Keybind(new KeyCodeCombination(KeyCode.Q), () -> {
             ((HUPPAALPresentation) root).toggleQueryPane();
+        }));
+
+        // Keybind for toggling the file pane
+        KeyboardTracker.registerKeybind(KeyboardTracker.TOGGLE_FILE_PANE, new Keybind(new KeyCodeCombination(KeyCode.F), () -> {
+            ((HUPPAALPresentation) root).toggleFilePane();
         }));
 
         dialog.setDialogContainer(dialogContainer);

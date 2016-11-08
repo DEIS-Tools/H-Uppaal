@@ -33,9 +33,12 @@ public class HUPPAALPresentation extends StackPane {
 
     private final BooleanProperty queryPaneOpen = new SimpleBooleanProperty(false);
     private final SimpleDoubleProperty queryPaneAnimationProperty = new SimpleDoubleProperty(0);
-
+    private final BooleanProperty filePaneOpen = new SimpleBooleanProperty(false);
+    private final SimpleDoubleProperty filePaneAnimationProperty = new SimpleDoubleProperty(0);
     private Timeline closeQueryPaneAnimation;
     private Timeline openQueryPaneAnimation;
+    private Timeline closeFilePaneAnimation;
+    private Timeline openFilePaneAnimation;
 
     public HUPPAALPresentation() {
         final URL location = this.getClass().getResource("HUPPAALPresentation.fxml");
@@ -53,15 +56,15 @@ public class HUPPAALPresentation extends StackPane {
             initializeTopBar();
             initializeBottomStatusBar();
             initializeToolbar();
-            initializeToggleQueryPaneFunctionality();
             initializeQueryDetailsDialog();
             initializeGenerateUppaalModelButton();
             initializeColorSelector();
 
+            initializeToggleQueryPaneFunctionality();
+            initializeToggleFilePaneFunctionality();
+
             initializeSelectDependentToolbarButton(controller.colorSelected);
             initializeSelectDependentToolbarButton(controller.deleteSelected);
-
-            controller.bottomStatusBar.heightProperty().addListener((observable, oldValue, newValue) -> AnchorPane.setBottomAnchor(controller.queryPane, (Double) newValue));
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
@@ -249,8 +252,8 @@ public class HUPPAALPresentation extends StackPane {
 
         // Whenever the animation property changed, change the size of the filler element to push the canvas
         queryPaneAnimationProperty.addListener((observable, oldValue, newValue) -> {
-            controller.fillerElement.setMinWidth(newValue.doubleValue());
-            controller.fillerElement.setMaxWidth(newValue.doubleValue());
+            controller.queryPaneFillerElement.setMinWidth(newValue.doubleValue());
+            controller.queryPaneFillerElement.setMaxWidth(newValue.doubleValue());
         });
     }
 
@@ -280,6 +283,52 @@ public class HUPPAALPresentation extends StackPane {
         final KeyFrame kf2 = new KeyFrame(Duration.millis(200), open);
 
         closeQueryPaneAnimation.getKeyFrames().addAll(kf1, kf2);
+    }
+
+    private void initializeToggleFilePaneFunctionality() {
+        // Set the translation of the file pane to be equal to its width
+        // Will hide the element, and force it in then the left side of the border pane is enlarged
+        controller.filePane.translateXProperty().bind(controller.filePane.widthProperty().multiply(-1));
+
+        // Whenever the width of the file pane is updated, update the animations
+        controller.filePane.widthProperty().addListener((observable) -> {
+            initializeOpenFilePaneAnimation();
+            initializeCloseFilePaneAnimation();
+        });
+
+        // Whenever the animation property changed, change the size of the filler element to push the canvas
+        filePaneAnimationProperty.addListener((observable, oldValue, newValue) -> {
+            controller.filePaneFillerElement.setMinWidth(newValue.doubleValue());
+            controller.filePaneFillerElement.setMaxWidth(newValue.doubleValue());
+        });
+    }
+
+    private void initializeCloseFilePaneAnimation() {
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+
+        openFilePaneAnimation = new Timeline();
+
+        final KeyValue open = new KeyValue(filePaneAnimationProperty, controller.filePane.getWidth(), interpolator);
+        final KeyValue closed = new KeyValue(filePaneAnimationProperty, 0, interpolator);
+
+        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), open);
+        final KeyFrame kf2 = new KeyFrame(Duration.millis(200), closed);
+
+        openFilePaneAnimation.getKeyFrames().addAll(kf1, kf2);
+    }
+
+    private void initializeOpenFilePaneAnimation() {
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+
+        closeFilePaneAnimation = new Timeline();
+
+        final KeyValue closed = new KeyValue(filePaneAnimationProperty, 0, interpolator);
+        final KeyValue open = new KeyValue(filePaneAnimationProperty, controller.filePane.getWidth(), interpolator);
+
+        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), closed);
+        final KeyFrame kf2 = new KeyFrame(Duration.millis(200), open);
+
+        closeFilePaneAnimation.getKeyFrames().addAll(kf1, kf2);
     }
 
     private void initializeTopBar() {
@@ -344,5 +393,16 @@ public class HUPPAALPresentation extends StackPane {
 
         // Toggle the open state
         queryPaneOpen.set(queryPaneOpen.not().get());
+    }
+
+    public void toggleFilePane() {
+        if (filePaneOpen.get()) {
+            openFilePaneAnimation.play();
+        } else {
+            closeFilePaneAnimation.play();
+        }
+
+        // Toggle the open state
+        filePaneOpen.set(filePaneOpen.not().get());
     }
 }
