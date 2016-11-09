@@ -69,6 +69,8 @@ public class ComponentController implements Initializable, SelectHelperNew.Color
         // Register a keybind for adding new locations
         KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
             final Location newLocation = new Location();
+            newLocation.setColorIntensity(getComponent().getColorIntensity());
+            newLocation.setColor(getComponent().getColor());
 
             UndoRedoStack.push(() -> { // Perform
                 component.get().addLocation(newLocation);
