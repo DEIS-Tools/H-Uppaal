@@ -371,6 +371,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             scaleShakeIndicatorBackgroundAnimation.play();
             shakeContentAnimation.play();
         } else {
+            scaleXProperty().set(1);
             scaleShakeIndicatorBackgroundAnimation.playFromStart();
             scaleShakeIndicatorBackgroundAnimation.stop();
 

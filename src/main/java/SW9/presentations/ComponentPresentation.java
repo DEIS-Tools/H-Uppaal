@@ -145,8 +145,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
 
     private void initializeInitialLocation() {
         initialLocationPresentation.setLocation(controller.getComponent().getInitialLocation());
-        initialLocationPresentation.setLayoutX(CORNER_SIZE / 2 + 1.5);
-        initialLocationPresentation.setLayoutY(CORNER_SIZE / 2 + 1.5);
+        initialLocationPresentation.setLayoutX(CORNER_SIZE / 2 + 1);
+        initialLocationPresentation.setLayoutY(CORNER_SIZE / 2 + 1);
 
         StackPane.setAlignment(initialLocationPresentation, Pos.TOP_LEFT);
     }
@@ -155,8 +155,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         final Component component = controller.getComponent();
 
         finalLocationPresentation.setLocation(component.getFinalLocation());
-        finalLocationPresentation.setLayoutX(component.getWidth() - CORNER_SIZE / 2 - 1.5);
-        finalLocationPresentation.setLayoutY(component.getHeight() - CORNER_SIZE / 2 - 1.5);
+        finalLocationPresentation.setLayoutX(component.getWidth() - CORNER_SIZE / 2 - 1);
+        finalLocationPresentation.setLayoutY(component.getHeight() - CORNER_SIZE / 2 - 1);
 
         StackPane.setAlignment(finalLocationPresentation, Pos.BOTTOM_RIGHT);
     }
