@@ -2,12 +2,20 @@ package SW9.controllers;
 
 import SW9.Debug;
 import SW9.abstractions.Component;
+import SW9.abstractions.Edge;
+import SW9.abstractions.Location;
 import SW9.abstractions.Nail;
 import SW9.presentations.CanvasPresentation;
+import SW9.presentations.ComponentPresentation;
+import SW9.presentations.LocationPresentation;
+import SW9.utility.UndoRedoStack;
+import SW9.utility.helpers.SelectHelperNew;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 
 import java.net.URL;
@@ -23,6 +31,9 @@ public class NailController implements Initializable {
     public Group root;
     public Circle nailCircle;
     public Circle dragCircle;
+    private double previousX;
+    private double previousY;
+    private boolean wasDragged;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -38,14 +49,6 @@ public class NailController implements Initializable {
             // Reflect future updates from the presentation into the abstraction
             newNail.xProperty().bind(root.layoutXProperty());
             newNail.yProperty().bind(root.layoutYProperty());
-
-            root.setOnMousePressed(event -> nailBeingDragged = true);
-            root.setOnMouseReleased(event -> nailBeingDragged = false);
-
-            root.setOnMouseDragged(event -> {
-                root.setLayoutX(CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue());
-                root.setLayoutY(CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue());
-            });
 
         });
 
@@ -76,5 +79,75 @@ public class NailController implements Initializable {
 
     public ObjectProperty<Component> componentProperty() {
         return component;
+    }
+
+    @FXML
+    private void mousePressed(final MouseEvent event) {
+        previousX = root.getLayoutX();
+        previousY = root.getLayoutY();
+    }
+
+    @FXML
+    private void mouseDragged(final MouseEvent event) {
+
+            // Calculate the potential new x alongside min and max values
+            final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
+            final double minX = LocationPresentation.RADIUS;
+            final double maxX = getComponent().getWidth() - LocationPresentation.RADIUS;
+
+            // Drag according to min and max
+            if (newX < minX) {
+                root.setLayoutX(minX);
+            } else if (newX > maxX) {
+                root.setLayoutX(maxX);
+            } else {
+                root.setLayoutX(newX);
+            }
+
+            // Calculate the potential new y alongside min and max values
+            final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
+            final double minY = LocationPresentation.RADIUS + ComponentPresentation.TOOL_BAR_HEIGHT;
+            final double maxY = getComponent().getHeight() - LocationPresentation.RADIUS;
+
+            // Drag according to min and max
+            if (newY < minY) {
+                root.setLayoutY(minY);
+            } else if (newY > maxY) {
+                root.setLayoutY(maxY);
+            } else {
+                root.setLayoutY(newY);
+            }
+
+            // Tell the mouse release action that we can store an update
+            wasDragged = true;
+
+            nailBeingDragged = true;
+
+    }
+
+    @FXML
+    private void mouseReleased(final MouseEvent event) {
+        if (wasDragged) {
+            // Add to undo redo stack
+            final double currentX = root.getLayoutX();
+            final double currentY = root.getLayoutY();
+            final double jensX = previousX;
+            final double jensY = previousY;
+            UndoRedoStack.push(
+                    () -> {
+                        root.setLayoutX(currentX);
+                        root.setLayoutY(currentY);
+                    },
+                    () -> {
+                        root.setLayoutX(jensX);
+                        root.setLayoutY(jensY);
+                    }
+            );
+
+            // Reset the was dragged boolean
+            wasDragged = false;
+
+            nailBeingDragged = false;
+        }
     }
 }

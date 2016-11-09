@@ -6,7 +6,10 @@
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="Group"
          fx:controller="SW9.controllers.NailController"
-         fx:id="root">
+         fx:id="root"
+         onMousePressed="#mousePressed"
+         onMouseDragged="#mouseDragged"
+         onMouseReleased="#mouseReleased">
 
     <Circle fx:id="dragCircle" radius="12.5" opacity="0"/>
 
