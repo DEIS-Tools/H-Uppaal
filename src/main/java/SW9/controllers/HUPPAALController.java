@@ -9,6 +9,7 @@ import SW9.presentations.FilePanePresentation;
 import SW9.presentations.HUPPAALPresentation;
 import SW9.presentations.QueryPanePresentation;
 import SW9.utility.UndoRedoStack;
+import SW9.utility.colors.EnabledColor;
 import SW9.utility.helpers.SelectHelperNew;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
@@ -23,8 +24,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.util.Pair;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class HUPPAALController implements Initializable {
@@ -74,6 +78,28 @@ public class HUPPAALController implements Initializable {
         // Keybind for deleting the selected elements
         KeyboardTracker.registerKeybind(KeyboardTracker.DELETE_SELECTED, new Keybind(new KeyCodeCombination(KeyCode.DELETE), this::deleteSelectedClicked));
 
+        // Keybinds for coloring the selected elements
+        EnabledColor.enabledColors.forEach(enabledColor -> {
+            KeyboardTracker.registerKeybind(KeyboardTracker.COLOR_SELECTED + "_" + enabledColor.keyCode.getName(), new Keybind(new KeyCodeCombination(enabledColor.keyCode), () -> {
+                final List<Pair<SelectHelperNew.ColorSelectable, EnabledColor>> previousColor = new ArrayList<>();
+
+                SelectHelperNew.getSelectedElements().forEach(selectable -> {
+                    previousColor.add(new Pair<>(selectable, new EnabledColor(selectable.getColor(), selectable.getColorIntensity())));
+                });
+
+                UndoRedoStack.push(() -> { // Perform
+                    SelectHelperNew.getSelectedElements().forEach(selectable -> {
+                        selectable.color(enabledColor.color, enabledColor.intensity);
+                    });
+                }, () -> { // Undo
+                    previousColor.forEach(selectableEnabledColorPair -> {
+                        selectableEnabledColorPair.getKey().color(selectableEnabledColorPair.getValue().color, selectableEnabledColorPair.getValue().intensity);
+                    });
+                });
+
+                SelectHelperNew.clearSelectedElements();
+            }));
+        });
     }
 
     @FXML

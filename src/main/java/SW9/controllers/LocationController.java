@@ -122,7 +122,6 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
                             locationPresentation.animateShakeWarning(!result);
                         },
                         e -> {
-                            System.out.println("hsj");
                             System.out.println(e);
                             // Could not run query
                         },
