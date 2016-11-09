@@ -21,15 +21,6 @@ public class BindingHelper {
         subject.yProperty().bind(CanvasPresentation.mouseTracker.gridYProperty().subtract(y));
     }
 
-    public static void place(final Circular subject, final ObservableDoubleValue x, final ObservableDoubleValue y) {
-
-
-        subject.xProperty().unbind();
-        subject.yProperty().unbind();
-        subject.xProperty().set(CanvasPresentation.mouseTracker.gridXProperty().subtract(x).get());
-        subject.yProperty().set(CanvasPresentation.mouseTracker.gridYProperty().subtract(y).get());
-    }
-
     public static void bind(final Link lineSubject, final ArrowHead arrowHeadSubject, final Circular source, final Circular target) {
         BindingHelper.bind(lineSubject, source, target);
         BindingHelper.bind(arrowHeadSubject, source, target);
