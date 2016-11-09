@@ -112,7 +112,7 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
                 if (getComponent() == null || getLocation() == null) return;
 
                 // The location might have been remove from the component (through ctrl + z)
-                if (!getComponent().getLocations().contains(getLocation())) return;
+                if (getLocation().getType() == Location.Type.NORMAL && !getComponent().getLocations().contains(getLocation())) return;
 
                 UPPAALDriver.verify(
                         "E<> " + getComponent().getName() + "." + getLocation().getName(),
