@@ -77,6 +77,14 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
             invariantField.setText(newLocation.getInvariant());
             newLocation.invariantProperty().bind(invariantField.textProperty());
 
+            // If the location is not a normal location (not initial/final) make it draggable
+            if(newLocation.getType() == Location.Type.NORMAL) {
+                root.setOnMouseDragged(event -> {
+                    root.setLayoutX(CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue());
+                    root.setLayoutY(CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue());
+                });
+            }
+
         });
 
         // Scale x and y 1:1 (based on the x-scale)
@@ -256,7 +264,20 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
                 }
             }
         } else {
-            BindingHelper.place(getLocation(), getComponent().xProperty(), getComponent().yProperty());
+
+            /*subject.xProperty().unbind();
+            subject.yProperty().unbind();
+            subject.xProperty().set(CanvasPresentation.mouseTracker.gridXProperty().subtract(x).get());
+            subject.yProperty().set(CanvasPresentation.mouseTracker.gridYProperty().subtract(y).get());*/
+
+            // Unbind presentation root x and y coordinates (bind the view properly to enable dragging)
+            root.layoutXProperty().unbind();
+            root.layoutYProperty().unbind();
+
+            // Bind the location to the presentation root x and y
+            getLocation().xProperty().bind(root.layoutXProperty());
+            getLocation().yProperty().bind(root.layoutYProperty());
+
             isPlaced = true;
         }
     }
