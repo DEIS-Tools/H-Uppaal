@@ -43,11 +43,15 @@ public class Component {
         // A component must have at least one initial location
         final Location initialLocation = new Location();
         initialLocation.setType(Location.Type.INITIAL);
+        initialLocation.setColorIntensity(getColorIntensity());
+        initialLocation.setColor(getColor());
         this.initialLocation.set(initialLocation);
 
         // A component must have at least one final location
         final Location finalLocation = new Location();
         finalLocation.setType(Location.Type.FINAl);
+        finalLocation.setColorIntensity(getColorIntensity());
+        finalLocation.setColor(getColor());
         this.finalLocation.set(finalLocation);
     }
 
