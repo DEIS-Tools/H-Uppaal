@@ -6,10 +6,10 @@ import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
 import SW9.backend.UPPAALDriver;
 import SW9.presentations.CanvasPresentation;
+import SW9.presentations.ComponentPresentation;
 import SW9.presentations.LocationPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
-import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.SelectHelperNew;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
@@ -56,9 +56,15 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
     public StackPane propertiesPane;
     public JFXTextField nameField;
     public TextArea invariantField;
+
     private boolean isPlaced;
     private long lastPress = 0;
+
     private TimerTask reachabilityCheckTask;
+
+    private double previousX;
+    private double previousY;
+    private boolean wasDragged = false;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -77,13 +83,7 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
             invariantField.setText(newLocation.getInvariant());
             newLocation.invariantProperty().bind(invariantField.textProperty());
 
-            // If the location is not a normal location (not initial/final) make it draggable
-            if(newLocation.getType() == Location.Type.NORMAL) {
-                root.setOnMouseDragged(event -> {
-                    root.setLayoutX(CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue());
-                    root.setLayoutY(CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue());
-                });
-            }
+
 
         });
 
@@ -91,7 +91,7 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
         root.scaleYProperty().bind(root.scaleXProperty());
 
         // Register click listener on canvas to hide the property pane when the canvas is clicked
-        CanvasPresentation.mouseTracker.registerOnMouseClickedEventHandler(event -> propertiesPane.setVisible(false));
+        CanvasPresentation.mouseTracker.registerOnMousePressedEventHandler(event -> propertiesPane.setVisible(false));
 
         // Register a key-bind for hiding the property pane (using a hidden locationID)
         KeyboardTracker.registerKeybind(KeyboardTracker.HIDE_LOCATION_PROPERTY_PANE + hiddenLocationID.getAndIncrement(), new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
@@ -225,19 +225,6 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
     }
 
     @FXML
-    private void mouseClicked(final MouseEvent event) {
-        event.consume();
-        // Double clicking the location opens the properties pane
-        if(lastPress + DOUBLE_PRESS_SHOW_PROPERTIES_DELAY >= System.currentTimeMillis()) {
-            propertiesPane.setVisible(true);
-            // Place the location in front (so that the properties pane is above edges etc)
-            root.toFront();
-        } else {
-            lastPress = System.currentTimeMillis();
-        }
-    }
-
-    @FXML
     private void mousePressed(final MouseEvent event) {
         final Component component = getComponent();
 
@@ -262,13 +249,21 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
                 else {
                     SelectHelperNew.select(this);
                 }
+
+                // Double clicking the location opens the properties pane
+                if (lastPress + DOUBLE_PRESS_SHOW_PROPERTIES_DELAY >= System.currentTimeMillis()) {
+                    propertiesPane.setVisible(true);
+                    // Place the location in front (so that the properties pane is above edges etc)
+                    root.toFront();
+                } else {
+                    lastPress = System.currentTimeMillis();
+                }
+
+                // Update position for undo dragging
+                previousX = root.getLayoutX();
+                previousY = root.getLayoutY();
             }
         } else {
-
-            /*subject.xProperty().unbind();
-            subject.yProperty().unbind();
-            subject.xProperty().set(CanvasPresentation.mouseTracker.gridXProperty().subtract(x).get());
-            subject.yProperty().set(CanvasPresentation.mouseTracker.gridYProperty().subtract(y).get());*/
 
             // Unbind presentation root x and y coordinates (bind the view properly to enable dragging)
             root.layoutXProperty().unbind();
@@ -279,6 +274,62 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
             getLocation().yProperty().bind(root.layoutYProperty());
 
             isPlaced = true;
+        }
+    }
+
+    @FXML
+    private void mouseDragged(final MouseEvent event) {
+        // If the location is not a normal location (not initial/final) make it draggable
+        if (getLocation().getType() == Location.Type.NORMAL) {
+            final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
+            final double minX = LocationPresentation.RADIUS;
+            final double maxX = getComponent().getWidth() - LocationPresentation.RADIUS;
+            if (newX < minX) {
+                root.setLayoutX(minX);
+            } else if (newX > maxX) {
+                root.setLayoutX(maxX);
+            } else {
+                root.setLayoutX(newX);
+            }
+
+
+            final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
+            final double minY = LocationPresentation.RADIUS + ComponentPresentation.TOOL_BAR_HEIGHT;
+            final double maxY = getComponent().getHeight() - LocationPresentation.RADIUS;
+            if (newY < minY) {
+                root.setLayoutY(minY);
+            } else if (newY > maxY) {
+                root.setLayoutY(maxY);
+            } else {
+                root.setLayoutY(newY);
+            }
+
+            // Tell the mouse release action that we can store an update
+            wasDragged = true;
+        }
+    }
+
+    @FXML
+    private void mouseReleased(final MouseEvent event) {
+        if (wasDragged) {
+            // Add to undo redo stack
+            final double currentX = root.getLayoutX();
+            final double currentY = root.getLayoutY();
+            final double jensX = previousX;
+            final double jensY = previousY;
+            UndoRedoStack.push(
+                    () -> {
+                        root.setLayoutX(currentX);
+                        root.setLayoutY(currentY);
+                    },
+                    () -> {
+                        root.setLayoutX(jensX);
+                        root.setLayoutY(jensY);
+                    }
+            );
+
+            // Reset the was dragged boolean
+            wasDragged = false;
         }
     }
 

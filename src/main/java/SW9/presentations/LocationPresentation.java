@@ -31,7 +31,7 @@ import java.util.function.BiConsumer;
 
 public class LocationPresentation extends Group implements MouseTrackable, SelectHelperNew.Selectable {
 
-    private static final double RADIUS = 20;
+    public static final double RADIUS = 20;
     private final LocationController controller;
 
     private final MouseTracker mouseTracker = new MouseTracker(this);

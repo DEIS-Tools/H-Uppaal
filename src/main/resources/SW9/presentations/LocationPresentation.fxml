@@ -12,8 +12,11 @@
          type="Group"
          fx:controller="SW9.controllers.LocationController"
          fx:id="root"
-         onMouseEntered="#mouseEntered" onMouseExited="#mouseExited" onMousePressed="#mousePressed"
-         onMouseClicked="#mouseClicked">
+         onMouseEntered="#mouseEntered"
+         onMouseExited="#mouseExited"
+         onMousePressed="#mousePressed"
+         onMouseReleased="#mouseReleased"
+         onMouseDragged="#mouseDragged">
 
     <!-- Circular location -->
     <Circle fx:id="circle" radius="20" strokeType="INSIDE"/>
