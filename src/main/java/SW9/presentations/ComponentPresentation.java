@@ -33,7 +33,8 @@ import java.util.function.BiConsumer;
 
 public class ComponentPresentation extends StackPane implements MouseTrackable, SelectHelperNew.Selectable {
 
-    private final static double CORNER_SIZE = 60;
+    public final static double CORNER_SIZE = 60;
+    public static final double TOOL_BAR_HEIGHT = CORNER_SIZE / 2;
 
     private final ComponentController controller;
     private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
@@ -174,6 +175,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             // Set the icon color and rippler color of the toggleDeclarationButton
             controller.toggleDeclarationButton.setRipplerFill(newColor.getTextColor(newIntensity));
             ((FontIcon) controller.toggleDeclarationButton.getGraphic()).setFill(newColor.getTextColor(newIntensity));
+
+            controller.toolbar.setPrefHeight(TOOL_BAR_HEIGHT);
         };
 
         updateColorDelegates.add(updateColor);
