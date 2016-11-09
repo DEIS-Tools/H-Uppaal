@@ -18,29 +18,33 @@
          onMouseReleased="#mouseReleased"
          onMouseDragged="#mouseDragged">
 
-    <!-- Circular location -->
-    <Circle fx:id="circle" radius="20" strokeType="INSIDE"/>
-    <Circle fx:id="circleShakeIndicator" radius="10" mouseTransparent="true" fill="white" opacity="0"/>
+    <Group fx:id="scaleContent">
 
-    <!-- Square location -->
-    <Rectangle fx:id="rectangle" width="40" height="40" strokeType="INSIDE" translateX="-20" translateY="-20"/>
-    <Rectangle fx:id="rectangleShakeIndicator" mouseTransparent="true" fill="white" opacity="0"/>
+        <!-- Circular location -->
+        <Circle fx:id="circle" radius="20" strokeType="INSIDE"/>
+        <Circle fx:id="circleShakeIndicator" radius="10" mouseTransparent="true" fill="white" opacity="0"/>
 
-    <!-- Hexagon location -->
-    <Path fx:id="octagon" strokeType="INSIDE" translateX="-20" translateY="-20"/>
-    <Path fx:id="octagonShakeIndicator" strokeType="INSIDE" translateX="-20" translateY="-20" mouseTransparent="true"
-          fill="white" opacity="0"/>
+        <!-- Square location -->
+        <Rectangle fx:id="rectangle" width="40" height="40" strokeType="INSIDE" translateX="-20" translateY="-20"/>
+        <Rectangle fx:id="rectangleShakeIndicator" mouseTransparent="true" fill="white" opacity="0"/>
 
-    <Group fx:id="shakeContent">
-        <StackPane fx:id="finalIndicator" mouseTransparent="true" translateX="-11" translateY="-11">
-            <Line strokeWidth="2" style="-fx-stroke: white;" startX="-10" startY="-10" endX="10" endY="10"/>
-            <Line strokeWidth="2" style="-fx-stroke: white;" startX="10" startY="-10" endX="-10" endY="10"/>
-        </StackPane>
+        <!-- Hexagon location -->
+        <Path fx:id="octagon" strokeType="INSIDE" translateX="-20" translateY="-20"/>
+        <Path fx:id="octagonShakeIndicator" strokeType="INSIDE" translateX="-20" translateY="-20"
+              mouseTransparent="true" fill="white" opacity="0"/>
 
-        <Circle fx:id="initialIndicator" strokeType="INSIDE" strokeWidth="2"
-                style="-fx-stroke: -white; -fx-fill: transparent;" radius="15" mouseTransparent="true"/>
+        <Group fx:id="shakeContent">
+            <StackPane fx:id="finalIndicator" mouseTransparent="true" translateX="-11" translateY="-11">
+                <Line strokeWidth="2" style="-fx-stroke: white;" startX="-10" startY="-10" endX="10" endY="10"/>
+                <Line strokeWidth="2" style="-fx-stroke: white;" startX="10" startY="-10" endX="-10" endY="10"/>
+            </StackPane>
 
-        <Label fx:id="nameLabel" styleClass="subhead" mouseTransparent="true"/>
+            <Circle fx:id="initialIndicator" strokeType="INSIDE" strokeWidth="2"
+                    style="-fx-stroke: -white; -fx-fill: transparent;" radius="15" mouseTransparent="true"/>
+
+            <Label fx:id="nameLabel" styleClass="subhead" mouseTransparent="true"/>
+        </Group>
+
     </Group>
 
     <StackPane fx:id="propertiesPane"

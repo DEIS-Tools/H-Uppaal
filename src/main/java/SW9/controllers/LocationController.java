@@ -56,6 +56,7 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
     public StackPane propertiesPane;
     public JFXTextField nameField;
     public TextArea invariantField;
+    public Group scaleContent;
 
     private boolean isPlaced;
     private long lastPress = 0;
@@ -73,7 +74,7 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
             newLocation.radiusProperty().bind(circle.radiusProperty());
 
             // The scale property on the abstraction must reflect the radius in the view
-            newLocation.scaleProperty().bind(root.scaleXProperty());
+            scaleContent.scaleYProperty().bind(scaleContent.scaleXProperty());
 
             // initialize the name field and its bindings
             nameField.setText(newLocation.getName());
@@ -82,9 +83,6 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
             // initialize the invariant field and its bindings
             invariantField.setText(newLocation.getInvariant());
             newLocation.invariantProperty().bind(invariantField.textProperty());
-
-
-
         });
 
         // Scale x and y 1:1 (based on the x-scale)

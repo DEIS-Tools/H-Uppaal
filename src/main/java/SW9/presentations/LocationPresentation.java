@@ -4,6 +4,7 @@ import SW9.abstractions.Component;
 import SW9.abstractions.Location;
 import SW9.controllers.LocationController;
 import SW9.utility.colors.Color;
+import SW9.utility.helpers.DropShadowHelper;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.helpers.SelectHelperNew;
 import SW9.utility.mouse.MouseTracker;
@@ -40,6 +41,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private final Timeline hoverAnimationExited = new Timeline();
     private final Timeline scaleShakeIndicatorBackgroundAnimation = new Timeline();
     private final Timeline shakeContentAnimation = new Timeline();
+    private final Timeline propertiesPaneAnimationShow = new Timeline();
+    private final Timeline propertiesPaneAnimationHide = new Timeline();
 
     private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
 
@@ -77,6 +80,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             initializeHoverAnimationEntered();
             initializeHoverAnimationExited();
             initializeShakeAnimation();
+            initializePropertiesPaneAnimationShow();
+            initializePropertiesPaneAnimationHide();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
@@ -150,8 +155,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private void initializeHoverAnimationEntered() {
         final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
 
-        final KeyValue scale1x = new KeyValue(scaleXProperty(), 1, interpolator);
-        final KeyValue scale2x = new KeyValue(scaleXProperty(), 1.1, interpolator);
+        final KeyValue scale1x = new KeyValue(controller.scaleContent.scaleXProperty(), 1, interpolator);
+        final KeyValue scale2x = new KeyValue(controller.scaleContent.scaleXProperty(), 1.1, interpolator);
 
         final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale1x);
         final KeyFrame kf2 = new KeyFrame(Duration.millis(100), scale2x);
@@ -162,8 +167,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private void initializeHoverAnimationExited() {
         final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
 
-        final KeyValue scale2x = new KeyValue(scaleXProperty(), 1.1, interpolator);
-        final KeyValue scale1x = new KeyValue(scaleXProperty(), 1, interpolator);
+        final KeyValue scale2x = new KeyValue(controller.scaleContent.scaleXProperty(), 1.1, interpolator);
+        final KeyValue scale1x = new KeyValue(controller.scaleContent.scaleXProperty(), 1, interpolator);
 
         final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale2x);
         final KeyFrame kf2 = new KeyFrame(Duration.millis(100), scale1x);
@@ -173,9 +178,9 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
     private void initializeInitialAnimation() {
         final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
-        final KeyValue scale0x = new KeyValue(scaleXProperty(), 0, interpolator);
-        final KeyValue scale2x = new KeyValue(scaleXProperty(), 1.1, interpolator);
-        final KeyValue scale1x = new KeyValue(scaleXProperty(), 1, interpolator);
+        final KeyValue scale0x = new KeyValue(controller.scaleContent.scaleXProperty(), 0, interpolator);
+        final KeyValue scale2x = new KeyValue(controller.scaleContent.scaleXProperty(), 1.1, interpolator);
+        final KeyValue scale1x = new KeyValue(controller.scaleContent.scaleXProperty(), 1, interpolator);
 
         final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale0x);
         final KeyFrame kf2 = new KeyFrame(Duration.millis(200), scale2x);
@@ -315,11 +320,11 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
         final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
 
-        final KeyValue scale0x = new KeyValue(scaleXProperty(), 1, interpolator);
+        final KeyValue scale0x = new KeyValue(controller.scaleContent.scaleXProperty(), 1, interpolator);
         final KeyValue radius0 = new KeyValue(controller.circleShakeIndicator.radiusProperty(), 0, interpolator);
         final KeyValue opacity0 = new KeyValue(controller.circleShakeIndicator.opacityProperty(), 0, interpolator);
 
-        final KeyValue scale1x = new KeyValue(scaleXProperty(), 1.3, interpolator);
+        final KeyValue scale1x = new KeyValue(controller.scaleContent.scaleXProperty(), 1.3, interpolator);
         final KeyValue radius1 = new KeyValue(controller.circleShakeIndicator.radiusProperty(), controller.circle.getRadius() * 0.85, interpolator);
         final KeyValue opacity1 = new KeyValue(controller.circleShakeIndicator.opacityProperty(), 0.2, interpolator);
 
@@ -371,7 +376,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             scaleShakeIndicatorBackgroundAnimation.play();
             shakeContentAnimation.play();
         } else {
-            scaleXProperty().set(1);
+            controller.scaleContent.scaleXProperty().set(1);
             scaleShakeIndicatorBackgroundAnimation.playFromStart();
             scaleShakeIndicatorBackgroundAnimation.stop();
 
@@ -381,6 +386,40 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         }
     }
 
+    private void initializePropertiesPaneAnimationHide() {
+        controller.propertiesPane.visibleProperty().addListener((obs, oldVisibility, newVisibility) -> {
+            animatePropertiesPane(newVisibility);
+        });
+
+        controller.propertiesPane.setEffect(DropShadowHelper.generateElevationShadow(8));
+
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+
+        final KeyValue noScaleX = new KeyValue(controller.propertiesPane.scaleXProperty(), 0, interpolator);
+        final KeyValue fullScaleX = new KeyValue(controller.propertiesPane.scaleXProperty(), 1, interpolator);
+        final KeyValue noScaleY = new KeyValue(controller.propertiesPane.scaleYProperty(), 0, interpolator);
+        final KeyValue fullScaleY = new KeyValue(controller.propertiesPane.scaleYProperty(), 1, interpolator);
+
+        final KeyFrame[] shakeFrames = {
+                new KeyFrame(Duration.millis(0), noScaleX, noScaleY),
+                new KeyFrame(Duration.millis(100), fullScaleX, fullScaleY),
+        };
+
+        propertiesPaneAnimationShow.getKeyFrames().addAll(shakeFrames);
+    }
+
+    private void initializePropertiesPaneAnimationShow() {
+    }
+
+    private void animatePropertiesPane(final boolean show) {
+        if(show) {
+            System.out.println("show");
+            propertiesPaneAnimationShow.play();
+        } else {
+            System.out.println("hide");
+            propertiesPaneAnimationHide.play();
+        }
+    }
 
     @Override
     public void select() {
