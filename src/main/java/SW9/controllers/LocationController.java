@@ -280,9 +280,13 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
     private void mouseDragged(final MouseEvent event) {
         // If the location is not a normal location (not initial/final) make it draggable
         if (getLocation().getType() == Location.Type.NORMAL) {
+
+            // Calculate the potential new x alongside min and max values
             final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
             final double minX = LocationPresentation.RADIUS;
             final double maxX = getComponent().getWidth() - LocationPresentation.RADIUS;
+
+            // Drag according to min and max
             if (newX < minX) {
                 root.setLayoutX(minX);
             } else if (newX > maxX) {
@@ -291,10 +295,12 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
                 root.setLayoutX(newX);
             }
 
-
+            // Calculate the potential new y alongside min and max values
             final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
             final double minY = LocationPresentation.RADIUS + ComponentPresentation.TOOL_BAR_HEIGHT;
             final double maxY = getComponent().getHeight() - LocationPresentation.RADIUS;
+
+            // Drag according to min and max
             if (newY < minY) {
                 root.setLayoutY(minY);
             } else if (newY > maxY) {
