@@ -71,6 +71,9 @@ public class HUPPAALController implements Initializable {
             dialog.show();
         }));
 
+        // Keybind for deleting the selected elements
+        KeyboardTracker.registerKeybind(KeyboardTracker.DELETE_SELECTED, new Keybind(new KeyCodeCombination(KeyCode.DELETE), this::deleteSelectedClicked));
+
     }
 
     @FXML
