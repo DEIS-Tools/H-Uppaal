@@ -51,7 +51,6 @@
 
             <TextArea fx:id="invariantField"
                       prefHeight="70"
-                      translateX="-0.5" translateY="-0.5"
                       styleClass="caption"
                       wrapText="true"
                       promptText="No invariant"/>
