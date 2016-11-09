@@ -3,6 +3,7 @@ package SW9.presentations;
 import SW9.controllers.HUPPAALController;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
+import SW9.utility.colors.EnabledColor;
 import SW9.utility.helpers.SelectHelperNew;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
@@ -15,6 +16,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
@@ -25,6 +27,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static SW9.utility.colors.EnabledColor.enabledColors;
 import static javafx.scene.paint.Color.TRANSPARENT;
 
 public class HUPPAALPresentation extends StackPane {
@@ -72,33 +75,8 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private void initializeColorSelector() {
-        class EnabledColor {
-            private final Color color;
-            private final Color.Intensity intensity;
-
-            private EnabledColor(final Color color, final Color.Intensity intensity) {
-                this.color = color;
-                this.intensity = intensity;
-            }
-
-            @Override
-            public boolean equals(final Object obj) {
-                return obj instanceof EnabledColor && ((EnabledColor) obj).color.equals(this.color);
-            }
-        }
 
         final JFXPopup popup = new JFXPopup();
-
-        final ArrayList<EnabledColor> enabledColors = new ArrayList<>();
-        enabledColors.add(new EnabledColor(Color.RED, Color.Intensity.I700));
-        enabledColors.add(new EnabledColor(Color.PINK, Color.Intensity.I500));
-        enabledColors.add(new EnabledColor(Color.PURPLE, Color.Intensity.I500));
-        enabledColors.add(new EnabledColor(Color.INDIGO, Color.Intensity.I500));
-        enabledColors.add(new EnabledColor(Color.BLUE, Color.Intensity.I600));
-        enabledColors.add(new EnabledColor(Color.CYAN, Color.Intensity.I700));
-        enabledColors.add(new EnabledColor(Color.GREEN, Color.Intensity.I600));
-        enabledColors.add(new EnabledColor(Color.BROWN, Color.Intensity.I500));
-        enabledColors.add(new EnabledColor(Color.GREY_BLUE, Color.Intensity.I700));
 
         final double listWidth = 136;
         final FlowPane list = new FlowPane();
@@ -107,7 +85,11 @@ public class HUPPAALPresentation extends StackPane {
             circle.setStroke(color.color.getColor(color.intensity.next(2)));
             circle.setStrokeWidth(1);
 
-            final StackPane child = new StackPane(circle);
+            final Label label = new Label(color.keyCode.getName());
+            label.getStyleClass().add("subhead");
+            label.setTextFill(color.color.getTextColor(color.intensity));
+
+            final StackPane child = new StackPane(circle, label);
             child.setMinSize(40, 40);
             child.setMaxSize(40, 40);
 
