@@ -2,7 +2,6 @@ package SW9.presentations;
 
 import SW9.abstractions.Component;
 import SW9.utility.colors.Color;
-import SW9.utility.colors.EnabledColor;
 import com.jfoenix.controls.JFXRippler;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
@@ -16,7 +15,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Random;
 import java.util.function.BiConsumer;
 
 public class FilePresentation extends AnchorPane {
@@ -77,18 +75,16 @@ public class FilePresentation extends AnchorPane {
     }
 
     private void initializeIcon() {
-        final Random rng = new Random();
-
         final Circle circle = (Circle) lookup("#iconBackground");
         final FontIcon icon = (FontIcon) lookup("#icon");
 
-        final EnabledColor componentColor = EnabledColor.enabledColors.get(rng.nextInt(EnabledColor.enabledColors.size()));
+        component.get().colorProperty().addListener((obs, oldColor, newColor) -> {
+            circle.setFill(newColor.getColor(component.get().getColorIntensity()));
+            icon.setFill(newColor.getTextColor(component.get().getColorIntensity()));
+        });
 
-        final Color color = componentColor.color;
-        final Color.Intensity colorIntensity = componentColor.intensity;
-
-        circle.setFill(color.getColor(colorIntensity));
-        icon.setFill(color.getTextColor(colorIntensity));
+        circle.setFill(component.get().getColor().getColor(component.get().getColorIntensity()));
+        icon.setFill(component.get().getColor().getTextColor(component.get().getColorIntensity()));
     }
 
     private void initializeHoverEffect() {

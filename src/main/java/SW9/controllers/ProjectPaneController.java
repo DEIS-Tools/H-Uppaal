@@ -3,6 +3,7 @@ package SW9.controllers;
 import SW9.NewMain;
 import SW9.abstractions.Component;
 import SW9.presentations.FilePresentation;
+import SW9.utility.UndoRedoStack;
 import com.jfoenix.controls.JFXRippler;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -61,7 +62,13 @@ public class ProjectPaneController implements Initializable {
 
     @FXML
     private void createComponentClicked() {
-        System.out.println("createComponentClicked");
+        final Component newComponent = new Component();
+
+        UndoRedoStack.push(() -> { // Perform
+            NewMain.getProject().getComponents().add(newComponent);
+        }, () -> { // Undo
+            NewMain.getProject().getComponents().remove(newComponent);
+        });
     }
 
 }
