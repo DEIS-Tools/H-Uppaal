@@ -1,61 +1,60 @@
 package SW9.utility.helpers;
 
-import SW9.model_canvas.Removable;
-
-import java.util.ArrayList;
-import java.util.List;
+import SW9.utility.colors.Color;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class SelectHelper {
 
-    private static final ArrayList<Removable> selectedElements = new ArrayList<>();
+    private static final ObservableList<ColorSelectable> selectedElements = FXCollections.observableArrayList();
 
-    public static void makeSelectable(final Removable removable) {
-        removable.getMouseTracker().registerOnMousePressedEventHandler(event -> {
-            select(removable);
-        });
+    public static void select(final ColorSelectable selectable) {
+        // Check if the element is already selected
+        if (selectedElements.contains(selectable)) return;
+
+        // Clear the list
+        clearSelectedElements();
+
+        addToSelection(selectable);
     }
 
-    public static boolean select(final Removable removable) {
-        // Check if the select went well, if so add it to the selected list
-        if (removable.select()) {
-            clearSelectedElements(removable);
-            return true;
-        } else {
-            return false;
-        }
+    public static void addToSelection(final ColorSelectable selectable) {
+        // Check if the element is already selected
+        if (selectedElements.contains(selectable)) return;
+
+        selectable.select();
+        selectedElements.add(selectable);
     }
 
-    public static ArrayList<Removable> getSelectedElements() {
-        return selectedElements;
+    public static void deselect(final ColorSelectable selectable) {
+        selectable.deselect();
+
+        // deselect the element
+        selectedElements.remove(selectable);
     }
 
     public static void clearSelectedElements() {
-        while (!selectedElements.isEmpty()) {
-            selectedElements.get(0).deselect();
-            selectedElements.remove(0);
+        while (selectedElements.size() > 0) {
+            deselect(selectedElements.get(0));
         }
     }
 
-    public static void clearSelectedElements(final Removable exception) {
-        selectedElements.remove(exception);
-
-        clearSelectedElements();
-
-        selectedElements.add(exception);
+    public static ObservableList<ColorSelectable> getSelectedElements() {
+        return selectedElements;
     }
 
-    public static boolean isSelected(final Removable... needles) {
-        for (Removable needle : needles) {
-            if (selectedElements.contains(needle)) return true;
-        }
-        return false;
+    public interface Selectable {
+        void select();
+
+        void deselect();
     }
 
-    public static boolean isSelected(final List<? extends Removable> needles) {
-        for (Removable needle : needles) {
-            if (selectedElements.contains(needle)) return true;
-        }
-        return false;
+    public interface ColorSelectable extends Selectable {
+        void color(Color color, Color.Intensity intensity);
+
+        Color getColor();
+
+        Color.Intensity getColorIntensity();
     }
 
 }

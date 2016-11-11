@@ -2,7 +2,6 @@ package SW9;
 
 import SW9.abstractions.Project;
 import SW9.presentations.HUPPAALPresentation;
-import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import javafx.application.Application;
@@ -10,7 +9,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -18,12 +16,12 @@ import javafx.stage.StageStyle;
 import jiconfont.icons.GoogleMaterialDesignIcons;
 import jiconfont.javafx.IconFontFX;
 
-public class NewMain extends Application {
+public class HUPPAAL extends Application {
 
     private static Project project;
 
     public static void main(final String[] args) {
-        launch(NewMain.class, args);
+        launch(HUPPAAL.class, args);
     }
 
     public static Project getProject() {
@@ -70,9 +68,6 @@ public class NewMain extends Application {
 
         // Let our keyboard tracker handle all key presses
         scene.setOnKeyPressed(KeyboardTracker.handleKeyPress);
-
-        // Clear any selected elements on any mouse event
-        scene.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> SelectHelper.clearSelectedElements());
 
         // We're now ready! Let the curtains fall!
         stage.show();

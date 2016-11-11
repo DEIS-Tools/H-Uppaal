@@ -3,16 +3,13 @@ package SW9.utility.helpers;
 import SW9.model_canvas.arrow_heads.ArrowHead;
 import SW9.model_canvas.arrow_heads.ChannelReceiverArrowHead;
 import SW9.model_canvas.arrow_heads.ChannelSenderArrowHead;
-import SW9.model_canvas.locations.Location;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.Link;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ObservableDoubleValue;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
-import jiconfont.javafx.IconNode;
 
 public class BindingHelper {
 
@@ -81,35 +78,6 @@ public class BindingHelper {
         // Calculate the bindings (so that the subject will be centered on where the mouse event happened)
         subject.centerXProperty().set(target.getX());
         subject.centerYProperty().set(target.getY());
-    }
-
-    public static void bind(final Label subject, final Location target) {
-        subject.layoutXProperty().bind(new DoubleBinding() {
-            {
-                super.bind(subject.textProperty(), target.circle.centerXProperty());
-            }
-
-            @Override
-            protected double computeValue() {
-                return target.circle.getCenterX() - Location.RADIUS;
-            }
-        });
-
-        subject.layoutYProperty().bind(new DoubleBinding() {
-            {
-                super.bind(subject.textProperty(), target.circle.centerYProperty());
-            }
-
-            @Override
-            protected double computeValue() {
-                return target.circle.getCenterY() - Location.RADIUS;
-            }
-        });
-    }
-
-    public static void bind(final IconNode icon, final Location location) {
-        icon.xProperty().bind(location.xProperty().add(Location.RADIUS));
-        icon.yProperty().bind(location.yProperty().add(Location.RADIUS));
     }
 
     public static <T extends ChannelSenderArrowHead> void bind(final Link handshakeLine, final T senderArrowHead, final ChannelReceiverArrowHead receiverArrowHead) {

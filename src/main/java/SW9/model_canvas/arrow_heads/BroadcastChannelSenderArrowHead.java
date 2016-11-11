@@ -14,7 +14,7 @@ public class BroadcastChannelSenderArrowHead extends ChannelSenderArrowHead {
     public BroadcastChannelSenderArrowHead() {
         super();
 
-        addChildren(
+        getChildren().addAll(
                 initializeLargeCircle(),
                 initializeMediumCircle(),
                 initializeSmallCircle()

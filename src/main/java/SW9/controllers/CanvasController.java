@@ -2,7 +2,7 @@ package SW9.controllers;
 
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.ComponentPresentation;
-import SW9.utility.helpers.SelectHelperNew;
+import SW9.utility.helpers.SelectHelper;
 import javafx.fxml.Initializable;
 
 import java.net.URL;
@@ -16,7 +16,7 @@ public class CanvasController implements Initializable {
     public void initialize(final URL location, final ResourceBundle resources) {
         CanvasPresentation.mouseTracker.registerOnMousePressedEventHandler(event -> {
             // Deselect all elements
-            SelectHelperNew.clearSelectedElements();
+            SelectHelper.clearSelectedElements();
         });
     }
 

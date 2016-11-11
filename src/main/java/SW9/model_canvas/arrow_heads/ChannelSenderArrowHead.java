@@ -29,7 +29,7 @@ public abstract class ChannelSenderArrowHead extends ArrowHead {
 
     public ChannelSenderArrowHead() {
         super();
-        addChildren(initializeTriangle(), initializeLabel());
+        getChildren().addAll(initializeTriangle(), initializeLabel());
     }
 
     private Path initializeTriangle() {

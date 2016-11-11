@@ -1,6 +1,6 @@
 package SW9.controllers;
 
-import SW9.NewMain;
+import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
@@ -10,7 +10,7 @@ import SW9.presentations.ComponentPresentation;
 import SW9.presentations.LocationPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
-import SW9.utility.helpers.SelectHelperNew;
+import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXTextField;
@@ -36,7 +36,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LocationController implements Initializable, SelectHelperNew.ColorSelectable {
+public class LocationController implements Initializable, SelectHelper.ColorSelectable {
 
     private static final AtomicInteger hiddenLocationID = new AtomicInteger(0);
     private static final long DOUBLE_PRESS_SHOW_PROPERTIES_DELAY = 500;
@@ -123,7 +123,7 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
                             System.out.println(e);
                             // Could not run query
                         },
-                        NewMain.getProject().getComponents()
+                        HUPPAAL.getProject().getComponents()
                 );
             }
 
@@ -244,7 +244,7 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
                 }
                 // Otherwise, select the location
                 else {
-                    SelectHelperNew.select(this);
+                    SelectHelper.select(this);
                 }
 
                 // Double clicking the location opens the properties pane
@@ -357,11 +357,11 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
 
     @Override
     public void select() {
-        ((SelectHelperNew.Selectable) root).select();
+        ((SelectHelper.Selectable) root).select();
     }
 
     @Override
     public void deselect() {
-        ((SelectHelperNew.Selectable) root).deselect();
+        ((SelectHelper.Selectable) root).deselect();
     }
 }

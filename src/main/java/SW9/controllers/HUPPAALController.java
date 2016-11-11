@@ -1,6 +1,6 @@
 package SW9.controllers;
 
-import SW9.NewMain;
+import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.abstractions.Location;
 import SW9.backend.UPPAALDriver;
@@ -10,7 +10,7 @@ import SW9.presentations.ProjectPanePresentation;
 import SW9.presentations.QueryPanePresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.EnabledColor;
-import SW9.utility.helpers.SelectHelperNew;
+import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXDialog;
@@ -82,14 +82,14 @@ public class HUPPAALController implements Initializable {
         // Keybinds for coloring the selected elements
         EnabledColor.enabledColors.forEach(enabledColor -> {
             KeyboardTracker.registerKeybind(KeyboardTracker.COLOR_SELECTED + "_" + enabledColor.keyCode.getName(), new Keybind(new KeyCodeCombination(enabledColor.keyCode), () -> {
-                final List<Pair<SelectHelperNew.ColorSelectable, EnabledColor>> previousColor = new ArrayList<>();
+                final List<Pair<SelectHelper.ColorSelectable, EnabledColor>> previousColor = new ArrayList<>();
 
-                SelectHelperNew.getSelectedElements().forEach(selectable -> {
+                SelectHelper.getSelectedElements().forEach(selectable -> {
                     previousColor.add(new Pair<>(selectable, new EnabledColor(selectable.getColor(), selectable.getColorIntensity())));
                 });
 
                 UndoRedoStack.push(() -> { // Perform
-                    SelectHelperNew.getSelectedElements().forEach(selectable -> {
+                    SelectHelper.getSelectedElements().forEach(selectable -> {
                         selectable.color(enabledColor.color, enabledColor.intensity);
                     });
                 }, () -> { // Undo
@@ -98,7 +98,7 @@ public class HUPPAALController implements Initializable {
                     });
                 });
 
-                SelectHelperNew.clearSelectedElements();
+                SelectHelper.clearSelectedElements();
             }));
         });
     }
@@ -113,16 +113,16 @@ public class HUPPAALController implements Initializable {
                 e -> {
                     System.out.println("ERROR");
                 },
-                NewMain.getProject().getComponents()
+                HUPPAAL.getProject().getComponents()
         );
     }
 
     @FXML
     private void deleteSelectedClicked() {
-        if (SelectHelperNew.getSelectedElements().size() == 0) return;
+        if (SelectHelper.getSelectedElements().size() == 0) return;
 
         // Run through the selected elements and look for something that we can delete
-        SelectHelperNew.getSelectedElements().forEach(selectable -> {
+        SelectHelper.getSelectedElements().forEach(selectable -> {
             if (selectable instanceof LocationController) {
                 final Component component = ((LocationController) selectable).getComponent();
                 final Location location = ((LocationController) selectable).getLocation();
@@ -151,7 +151,7 @@ public class HUPPAALController implements Initializable {
             }
         });
 
-        SelectHelperNew.clearSelectedElements();
+        SelectHelper.clearSelectedElements();
     }
 
     @FXML

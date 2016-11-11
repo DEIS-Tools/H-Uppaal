@@ -1,13 +1,13 @@
 package SW9.model_canvas.arrow_heads;
 
-import SW9.model_canvas.Parent;
 import SW9.utility.helpers.LocationAware;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public abstract class ArrowHead extends Parent implements LocationAware {
+public abstract class ArrowHead extends Group implements LocationAware {
 
     private final DoubleProperty xProperty = new SimpleDoubleProperty(0d);
     private final DoubleProperty yProperty = new SimpleDoubleProperty(0d);
@@ -23,7 +23,7 @@ public abstract class ArrowHead extends Parent implements LocationAware {
         rotationBody.setFill(Color.TRANSPARENT);
 
         // Add the body to the head
-        addChild(rotationBody);
+        getChildren().add(rotationBody);
     }
 
     public abstract double getHeadHeight();

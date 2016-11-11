@@ -1,6 +1,6 @@
 package SW9.controllers;
 
-import SW9.NewMain;
+import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.presentations.FilePresentation;
 import SW9.utility.UndoRedoStack;
@@ -31,7 +31,7 @@ public class ProjectPaneController implements Initializable {
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        NewMain.getProject().getComponents().addListener(new ListChangeListener<Component>() {
+        HUPPAAL.getProject().getComponents().addListener(new ListChangeListener<Component>() {
             @Override
             public void onChanged(final Change<? extends Component> c) {
                 while (c.next()) {
@@ -41,7 +41,7 @@ public class ProjectPaneController implements Initializable {
             }
         });
 
-        NewMain.getProject().getComponents().forEach(this::handleAddedComponent);
+        HUPPAAL.getProject().getComponents().forEach(this::handleAddedComponent);
     }
 
     private void handleAddedComponent(final Component component) {
@@ -65,9 +65,9 @@ public class ProjectPaneController implements Initializable {
         final Component newComponent = new Component();
 
         UndoRedoStack.push(() -> { // Perform
-            NewMain.getProject().getComponents().add(newComponent);
+            HUPPAAL.getProject().getComponents().add(newComponent);
         }, () -> { // Undo
-            NewMain.getProject().getComponents().remove(newComponent);
+            HUPPAAL.getProject().getComponents().remove(newComponent);
         });
     }
 

@@ -1,13 +1,13 @@
 package SW9.presentations;
 
-import SW9.NewMain;
+import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.controllers.ComponentController;
 import SW9.controllers.NailController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.DragHelper;
 import SW9.utility.helpers.MouseTrackable;
-import SW9.utility.helpers.SelectHelperNew;
+import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public class ComponentPresentation extends StackPane implements MouseTrackable, SelectHelperNew.Selectable {
+public class ComponentPresentation extends StackPane implements MouseTrackable, SelectHelper.Selectable {
 
     public final static double CORNER_SIZE = 60;
     public static final double TOOL_BAR_HEIGHT = CORNER_SIZE / 2;
@@ -46,7 +46,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
     }
 
     public ComponentPresentation(final Component component) {
-        NewMain.getProject().getComponents().addAll(component);
+        HUPPAAL.getProject().getComponents().addAll(component);
 
         final URL location = this.getClass().getResource("ComponentPresentation.fxml");
 

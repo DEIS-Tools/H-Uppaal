@@ -2,15 +2,12 @@ package SW9.controllers;
 
 import SW9.Debug;
 import SW9.abstractions.Component;
-import SW9.abstractions.Edge;
-import SW9.abstractions.Location;
 import SW9.abstractions.Nail;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.ComponentPresentation;
 import SW9.presentations.LocationPresentation;
 import SW9.presentations.NailPresentation;
 import SW9.utility.UndoRedoStack;
-import SW9.utility.helpers.SelectHelperNew;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;

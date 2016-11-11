@@ -4,7 +4,7 @@ import SW9.controllers.HUPPAALController;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.colors.EnabledColor;
-import SW9.utility.helpers.SelectHelperNew;
+import SW9.utility.helpers.SelectHelper;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
 import javafx.animation.*;
@@ -150,14 +150,14 @@ public class HUPPAALPresentation extends StackPane {
             });
 
             child.setOnMouseClicked(event -> {
-                final List<Pair<SelectHelperNew.ColorSelectable, EnabledColor>> previousColor = new ArrayList<>();
+                final List<Pair<SelectHelper.ColorSelectable, EnabledColor>> previousColor = new ArrayList<>();
 
-                SelectHelperNew.getSelectedElements().forEach(selectable -> {
+                SelectHelper.getSelectedElements().forEach(selectable -> {
                     previousColor.add(new Pair<>(selectable, new EnabledColor(selectable.getColor(), selectable.getColorIntensity())));
                 });
 
                 UndoRedoStack.push(() -> { // Perform
-                    SelectHelperNew.getSelectedElements().forEach(selectable -> {
+                    SelectHelper.getSelectedElements().forEach(selectable -> {
                         System.out.println(color.color);
                         System.out.println(color.intensity);
                         selectable.color(color.color, color.intensity);
@@ -169,7 +169,7 @@ public class HUPPAALPresentation extends StackPane {
                 });
 
                 popup.close();
-                SelectHelperNew.clearSelectedElements();
+                SelectHelper.clearSelectedElements();
             });
 
             list.getChildren().add(child);
@@ -183,7 +183,7 @@ public class HUPPAALPresentation extends StackPane {
         popup.setSource(controller.toolbar);
 
         controller.colorSelected.setOnMouseClicked((e) -> {
-            if (SelectHelperNew.getSelectedElements().size() == 0) return;
+            if (SelectHelper.getSelectedElements().size() == 0) return;
 
             final Bounds boundsInScreenButton = controller.colorSelected.localToScreen(controller.colorSelected.getBoundsInLocal());
             final Bounds boundsInScreenRoot = controller.root.localToScreen(controller.root.getBoundsInLocal());
@@ -210,10 +210,10 @@ public class HUPPAALPresentation extends StackPane {
         initializeToolbarButton(button);
 
         // The color button should only be enabled when an element is selected
-        SelectHelperNew.getSelectedElements().addListener(new ListChangeListener<SelectHelperNew.ColorSelectable>() {
+        SelectHelper.getSelectedElements().addListener(new ListChangeListener<SelectHelper.ColorSelectable>() {
             @Override
-            public void onChanged(final Change<? extends SelectHelperNew.ColorSelectable> c) {
-                if (SelectHelperNew.getSelectedElements().size() > 0) {
+            public void onChanged(final Change<? extends SelectHelper.ColorSelectable> c) {
+                if (SelectHelper.getSelectedElements().size() > 0) {
                     button.setEnabled(true);
 
                     final FadeTransition fadeAnimation = new FadeTransition(Duration.millis(100), button);

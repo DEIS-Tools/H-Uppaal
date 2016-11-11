@@ -1,12 +1,12 @@
 package SW9.model_canvas.arrow_heads;
 
-import SW9.model_canvas.ModelCanvas;
+import SW9.presentations.CanvasPresentation;
 import javafx.scene.shape.Line;
 
 public class SimpleArrowHead extends ArrowHead {
 
-    private static final double TRIANGLE_LENGTH = ModelCanvas.GRID_SIZE * 1.5;
-    private static final double TRIANGLE_WIDTH = ModelCanvas.GRID_SIZE;
+    private static final double TRIANGLE_LENGTH = CanvasPresentation.GRID_SIZE * 1.5;
+    private static final double TRIANGLE_WIDTH = CanvasPresentation.GRID_SIZE;
 
     private Line leftArrow;
     private Line rightArrow;
@@ -14,7 +14,7 @@ public class SimpleArrowHead extends ArrowHead {
     public SimpleArrowHead() {
         super();
 
-        addChildren(initializeLeftArrow(), initializeRightArrow());
+        getChildren().addAll(initializeLeftArrow(), initializeRightArrow());
     }
 
     private Line initializeLeftArrow() {

@@ -10,7 +10,7 @@ import SW9.presentations.LocationPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.BindingHelper;
-import SW9.utility.helpers.SelectHelperNew;
+import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
-public class ComponentController implements Initializable, SelectHelperNew.ColorSelectable {
+public class ComponentController implements Initializable, SelectHelper.ColorSelectable {
 
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
     private final Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
@@ -208,7 +208,7 @@ public class ComponentController implements Initializable, SelectHelperNew.Color
 
         // We are not drawing an edge, select the element
         else {
-            SelectHelperNew.select(this);
+            SelectHelper.select(this);
         }
     }
 
@@ -251,11 +251,11 @@ public class ComponentController implements Initializable, SelectHelperNew.Color
 
     @Override
     public void select() {
-        ((SelectHelperNew.Selectable) root).select();
+        ((SelectHelper.Selectable) root).select();
 
         final Consumer<Node> sugLocations = node -> {
             if (node instanceof LocationPresentation) {
-                SelectHelperNew.addToSelection(((LocationPresentation) node).getController());
+                SelectHelper.addToSelection(((LocationPresentation) node).getController());
             }
         };
 
@@ -265,6 +265,6 @@ public class ComponentController implements Initializable, SelectHelperNew.Color
 
     @Override
     public void deselect() {
-        ((SelectHelperNew.Selectable) root).deselect();
+        ((SelectHelper.Selectable) root).deselect();
     }
 }

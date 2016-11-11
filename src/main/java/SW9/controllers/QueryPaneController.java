@@ -1,6 +1,6 @@
 package SW9.controllers;
 
-import SW9.NewMain;
+import SW9.HUPPAAL;
 import SW9.abstractions.Query;
 import SW9.abstractions.QueryState;
 import SW9.backend.UPPAALDriver;
@@ -42,7 +42,7 @@ public class QueryPaneController implements Initializable {
         addQueryButton.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> addQueryButtonPressed());
         addQueryButton.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> addQueryButtonReleased());
 
-        NewMain.getProject().getQueries().addListener(new ListChangeListener<Query>() {
+        HUPPAAL.getProject().getQueries().addListener(new ListChangeListener<Query>() {
             @Override
             public void onChanged(final Change<? extends Query> c) {
                 while (c.next()) {
@@ -60,7 +60,7 @@ public class QueryPaneController implements Initializable {
 
     @FXML
     private void addQueryButtonClicked() {
-        NewMain.getProject().getQueries().add(new Query("A[] not deadlock", "The model does not contain a deadlock", QueryState.UNKNOWN));
+        HUPPAAL.getProject().getQueries().add(new Query("A[] not deadlock", "The model does not contain a deadlock", QueryState.UNKNOWN));
     }
 
     @FXML
@@ -78,7 +78,7 @@ public class QueryPaneController implements Initializable {
         final int interval = 50;
         final int[] counter = {0};
 
-        NewMain.getProject().getQueries().forEach(query -> {
+        HUPPAAL.getProject().getQueries().forEach(query -> {
             final Timeline timeline = new Timeline(new KeyFrame(
                     Duration.millis(1 + counter[0] * interval),
                     ae -> UPPAALDriver.verify(query.getQuery(),
@@ -92,7 +92,7 @@ public class QueryPaneController implements Initializable {
                             e -> {
                                 query.setQueryState(QueryState.SYNTAX_ERROR);
                             },
-                            NewMain.getProject().getComponents()
+                            HUPPAAL.getProject().getComponents()
                     )));
             timeline.play();
 
@@ -102,6 +102,6 @@ public class QueryPaneController implements Initializable {
 
     @FXML
     private void clearAllQueriesButtonClicked() {
-        NewMain.getProject().getQueries().forEach(query -> query.setQueryState(QueryState.UNKNOWN));
+        HUPPAAL.getProject().getQueries().forEach(query -> query.setQueryState(QueryState.UNKNOWN));
     }
 }

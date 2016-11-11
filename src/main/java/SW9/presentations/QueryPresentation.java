@@ -1,6 +1,6 @@
 package SW9.presentations;
 
-import SW9.NewMain;
+import SW9.HUPPAAL;
 import SW9.abstractions.Query;
 import SW9.abstractions.QueryState;
 import SW9.backend.UPPAALDriver;
@@ -160,7 +160,7 @@ public class QueryPresentation extends AnchorPane {
                         e -> {
                             query.setQueryState(QueryState.SYNTAX_ERROR);
                         },
-                        NewMain.getProject().getComponents()
+                        HUPPAAL.getProject().getComponents()
                 );
             }
         });

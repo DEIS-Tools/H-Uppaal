@@ -1,6 +1,5 @@
 package SW9.utility.helpers;
 
-import SW9.model_canvas.ModelCanvas;
 import SW9.presentations.CanvasPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.mouse.MouseTracker;
@@ -51,7 +50,7 @@ public class DragHelper {
             event.consume();
 
             // Check if we are allowed to drag in the first place
-            if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn()) return;
+            if (!conditional.apply(event)) return;
 
             // Get the bounds (must be inside the lambda, because bounds might have changed from since we last moved the subject)
             final Bounds[] bounds = {null};
@@ -66,8 +65,8 @@ public class DragHelper {
             double y = event.getY() + dragYOffset[0];
 
             // Make coordinates snap to the grip on the canvas
-            x -= x % ModelCanvas.GRID_SIZE - (ModelCanvas.GRID_SIZE / 2);
-            y -= y % ModelCanvas.GRID_SIZE - (ModelCanvas.GRID_SIZE / 2);
+            x -= x % CanvasPresentation.GRID_SIZE - (CanvasPresentation.GRID_SIZE / 2);
+            y -= y % CanvasPresentation.GRID_SIZE - (CanvasPresentation.GRID_SIZE / 2);
 
             // If the subject has its x stringBinder bound have a parent where we can get the xProperty as well
             if (subject.xProperty().isBound()) {
@@ -112,7 +111,7 @@ public class DragHelper {
         // Register the onMouseDragged event listener if the provided conditional returns true
         mouseTracker.registerOnMousePressedEventHandler(event -> {
             // Check if we are allowed to drag in the first place
-            if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn()) return;
+            if (!conditional.apply(event)) return;
 
             hasDragged[0] = false;
 
@@ -137,7 +136,7 @@ public class DragHelper {
             event.consume();
 
             // Check if we are allowed to drag in the first place
-            if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn() || !hasDragged[0]) return;
+            if (!conditional.apply(event) || !hasDragged[0]) return;
 
             hasDragged[0] = false;
 

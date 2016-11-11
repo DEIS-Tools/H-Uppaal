@@ -6,7 +6,7 @@ import SW9.controllers.LocationController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.DropShadowHelper;
 import SW9.utility.helpers.MouseTrackable;
-import SW9.utility.helpers.SelectHelperNew;
+import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
 import javafx.animation.*;
 import javafx.beans.binding.StringBinding;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public class LocationPresentation extends Group implements MouseTrackable, SelectHelperNew.Selectable {
+public class LocationPresentation extends Group implements MouseTrackable, SelectHelper.Selectable {
 
     public static final double RADIUS = 20;
     private final LocationController controller;
