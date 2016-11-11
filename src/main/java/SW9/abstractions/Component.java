@@ -1,18 +1,23 @@
 package SW9.abstractions;
 
 import SW9.utility.colors.Color;
+import SW9.utility.serialize.Serializable;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.Expose;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Component {
+public class Component implements Serializable {
 
     // Used to generate unique IDs
     private static final AtomicInteger hiddenID = new AtomicInteger(0);
 
     // Verification properties
+    @Expose
     private final StringProperty name;
     private final StringProperty declarations = new SimpleStringProperty("");
     private final ObservableList<Location> locations = FXCollections.observableArrayList();
@@ -213,5 +218,24 @@ public class Component {
         }
 
         return null;
+    }
+
+    @Override
+    public JsonElement serialize() {
+        final JsonObject result = new JsonObject();
+
+        result.addProperty("name", getName());
+        result.addProperty("declarations", getDeclarations());
+        result.addProperty("locations", "");
+        result.addProperty("edges", "");
+
+        result.addProperty("x", getX());
+        result.addProperty("y", getY());
+        result.addProperty("width", getWidth());
+        result.addProperty("height", getHeight());
+        result.addProperty("color", "");
+        result.addProperty("colorIntensity", "");
+
+        return result;
     }
 }

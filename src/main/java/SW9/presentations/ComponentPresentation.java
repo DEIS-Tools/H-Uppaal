@@ -1,6 +1,5 @@
 package SW9.presentations;
 
-import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.controllers.ComponentController;
 import SW9.controllers.NailController;
@@ -46,8 +45,6 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
     }
 
     public ComponentPresentation(final Component component) {
-        HUPPAAL.getProject().getComponents().addAll(component);
-
         final URL location = this.getClass().getResource("ComponentPresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();

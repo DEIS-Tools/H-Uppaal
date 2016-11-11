@@ -83,6 +83,8 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width from the presentation into the abstraction
 
             // Bind the position of the abstraction to the values in the view
+            root.layoutXProperty().set(newValue.getX());
+            root.layoutYProperty().set(newValue.getY());
             newValue.xProperty().bind(root.layoutXProperty());
             newValue.yProperty().bind(root.layoutYProperty());
 

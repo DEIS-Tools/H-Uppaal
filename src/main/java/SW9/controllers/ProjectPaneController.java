@@ -37,6 +37,18 @@ public class ProjectPaneController implements Initializable {
                 while (c.next()) {
                     c.getAddedSubList().forEach(o -> handleAddedComponent(o));
                     c.getRemoved().forEach(o -> handleRemovedComponent(o));
+
+                    // We should make a new component active
+                    if (c.getRemoved().size() > 0) {
+                        if (HUPPAAL.getProject().getComponents().size() > 0) {
+                            // Find the first available component and show it instead of the removed one
+                            final Component component = HUPPAAL.getProject().getComponents().get(0);
+                            CanvasController.setActiveComponent(component);
+                        } else {
+                            // Show no components (since there are none in the project)
+                            CanvasController.setActiveComponent(null);
+                        }
+                    }
                 }
             }
         });
@@ -48,6 +60,12 @@ public class ProjectPaneController implements Initializable {
         final FilePresentation filePresentation = new FilePresentation(component);
         filesList.getChildren().add(filePresentation);
         componentPresentationMap.put(component, filePresentation);
+
+        // Open the component if the presentation is pressed
+        filePresentation.setOnMousePressed(event -> {
+            event.consume();
+            CanvasController.setActiveComponent(component);
+        });
     }
 
     private void handleRemovedComponent(final Component component) {
@@ -58,6 +76,10 @@ public class ProjectPaneController implements Initializable {
     @FXML
     private void saveProjectClicked() {
         System.out.println("saveProjectClicked");
+
+        HUPPAAL.getProject().getComponents().forEach(component -> {
+            System.out.println(component.serialize());
+        });
     }
 
     @FXML
@@ -69,6 +91,8 @@ public class ProjectPaneController implements Initializable {
         }, () -> { // Undo
             HUPPAAL.getProject().getComponents().remove(newComponent);
         }, "Created new component: " + newComponent.getName(), "add-circle");
+
+        CanvasController.setActiveComponent(newComponent);
     }
 
 }

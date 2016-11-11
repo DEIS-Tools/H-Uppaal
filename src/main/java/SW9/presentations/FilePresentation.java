@@ -71,6 +71,7 @@ public class FilePresentation extends AnchorPane {
     private void initializeFileName() {
         final Label label = (Label) lookup("#fileName");
 
+        component.get().nameProperty().addListener((obs, oldName, newName) -> label.setText(newName));
         label.setText(component.get().getName());
     }
 
