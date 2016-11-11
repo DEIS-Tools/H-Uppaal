@@ -8,6 +8,7 @@ import SW9.abstractions.Nail;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.ComponentPresentation;
 import SW9.presentations.LocationPresentation;
+import SW9.presentations.NailPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.helpers.SelectHelperNew;
 import javafx.beans.property.ObjectProperty;
@@ -92,8 +93,8 @@ public class NailController implements Initializable {
 
             // Calculate the potential new x alongside min and max values
             final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
-            final double minX = LocationPresentation.RADIUS;
-            final double maxX = getComponent().getWidth() - LocationPresentation.RADIUS;
+            final double minX = LocationPresentation.RADIUS + CanvasPresentation.GRID_SIZE;
+            final double maxX = getComponent().getWidth() - LocationPresentation.RADIUS - CanvasPresentation.GRID_SIZE;
 
             // Drag according to min and max
             if (newX < minX) {
@@ -106,8 +107,8 @@ public class NailController implements Initializable {
 
             // Calculate the potential new y alongside min and max values
             final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
-            final double minY = LocationPresentation.RADIUS + ComponentPresentation.TOOL_BAR_HEIGHT;
-            final double maxY = getComponent().getHeight() - LocationPresentation.RADIUS;
+            final double minY = NailPresentation.COLLAPSED_RADIUS + ComponentPresentation.TOOL_BAR_HEIGHT + CanvasPresentation.GRID_SIZE;
+            final double maxY = getComponent().getHeight() - NailPresentation.COLLAPSED_RADIUS - CanvasPresentation.GRID_SIZE;
 
             // Drag according to min and max
             if (newY < minY) {
