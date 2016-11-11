@@ -39,9 +39,6 @@ public class HUPPAAL extends Application {
         stage.setTitle("H-UPPAAL");
         stage.getIcons().add(new Image("SW9/uppaal.ico"));
 
-        // Start in fullscreen
-        stage.setMaximized(true);
-
         // Load the fonts required for the project
         IconFontFX.register(GoogleMaterialDesignIcons.getIconFont());
         loadFonts();
