@@ -39,10 +39,23 @@ public class FilePresentation extends AnchorPane {
             initializeFileName();
             initializeHoverEffect();
             initializeRippler();
+            initializeMoreInformationButton();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeMoreInformationButton() {
+        final JFXRippler moreInformation = (JFXRippler) lookup("#moreInformation");
+
+        moreInformation.setMaskType(JFXRippler.RipplerMask.CIRCLE);
+        moreInformation.setPosition(JFXRippler.RipplerPos.BACK);
+        moreInformation.setRipplerFill(Color.GREY_BLUE.getColor(Color.Intensity.I500));
+
+        moreInformation.setOnMousePressed(event -> {
+            event.consume();
+        });
     }
 
     private void initializeRippler() {
@@ -78,7 +91,7 @@ public class FilePresentation extends AnchorPane {
     }
 
     private void initializeHoverEffect() {
-        final FontIcon openIndicator = (FontIcon) lookup("#openIndicator");
+        final FontIcon moreInformationIcon = (FontIcon) lookup("#moreInformationIcon");
 
         final Color color = Color.GREY;
         final Color colorHovered = Color.GREY_BLUE;
@@ -100,7 +113,7 @@ public class FilePresentation extends AnchorPane {
                     new BorderWidths(0, 0, 1, 0)
             )));
 
-            openIndicator.setFill(newColor.getColor(newIntensity.next(5)));
+            moreInformationIcon.setFill(newColor.getColor(newIntensity.next(5)));
         };
 
         // Update the background when hovered

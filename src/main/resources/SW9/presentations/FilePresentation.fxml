@@ -9,7 +9,7 @@
          type="AnchorPane">
 
     <JFXRippler id="rippler" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-        <HBox style="-fx-padding: 0 16 0 16;"
+        <HBox style="-fx-padding: 0 8 0 16;"
               minHeight="48" maxHeight="48">
             <StackPane>
                 <Circle id="iconBackground" radius="16"/>
@@ -19,16 +19,19 @@
             <Region minWidth="16"/>
 
             <StackPane>
-                <Label id="fileName" text="Fil" styleClass="body1"/>
+                <Label id="fileName" styleClass="body1"/>
             </StackPane>
 
             <Region HBox.hgrow="ALWAYS"/>
 
             <Region minWidth="16"/>
 
-            <StackPane>
-                <FontIcon id="openIndicator" iconLiteral="gmi-chevron-right" iconSize="22"/>
-            </StackPane>
+            <!-- MORE INFORMATION (REFACTOR ?) -->
+            <JFXRippler id="moreInformation">
+                <StackPane minWidth="40" minHeight="40">
+                    <FontIcon id="moreInformationIcon" iconLiteral="gmi-more-vert" iconSize="24" fill="white"/>
+                </StackPane>
+            </JFXRippler>
         </HBox>
     </JFXRippler>
 

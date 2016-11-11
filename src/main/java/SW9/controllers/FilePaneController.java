@@ -71,13 +71,13 @@ public class FilePaneController implements Initializable {
     }
 
     @FXML
-    private void createComponentClicked() {
-        System.out.println("createComponentClicked");
+    private void saveProjectClicked() {
+        System.out.println("saveProjectClicked");
     }
 
     @FXML
-    private void saveProjectClicked() {
-        System.out.println("saveProjectClicked");
+    private void createComponentClicked() {
+        System.out.println("createComponentClicked");
     }
 
 }
