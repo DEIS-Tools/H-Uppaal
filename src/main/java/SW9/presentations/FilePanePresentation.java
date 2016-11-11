@@ -3,6 +3,7 @@ package SW9.presentations;
 import SW9.controllers.FilePaneController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.DropShadowHelper;
+import com.jfoenix.controls.JFXRippler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
@@ -31,6 +32,9 @@ public class FilePanePresentation extends StackPane {
             initializeRightBorder();
             initializeBackground();
             initializeToolbar();
+
+            initializeToolbarButton(controller.createComponent);
+            initializeToolbarButton(controller.saveProject);
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
@@ -76,6 +80,15 @@ public class FilePanePresentation extends StackPane {
 
         // Set the elevation of the toolbar
         controller.toolbar.setEffect(DropShadowHelper.generateElevationShadow(8));
+    }
+
+    private void initializeToolbarButton(final JFXRippler button) {
+        final Color color = Color.GREY_BLUE;
+        final Color.Intensity colorIntensity = Color.Intensity.I800;
+
+        button.setMaskType(JFXRippler.RipplerMask.CIRCLE);
+        button.setRipplerFill(color.getTextColor(colorIntensity));
+        button.setPosition(JFXRippler.RipplerPos.BACK);
     }
 
 }

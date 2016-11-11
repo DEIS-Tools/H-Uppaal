@@ -1,6 +1,8 @@
 package SW9.controllers;
 
 import SW9.presentations.FilePresentation;
+import com.jfoenix.controls.JFXRippler;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -21,6 +23,8 @@ public class FilePaneController implements Initializable {
     public Label toolbarTitle;
     public ScrollPane scrollPane;
     public VBox filesList;
+    public JFXRippler createComponent;
+    public JFXRippler saveProject;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -64,6 +68,16 @@ public class FilePaneController implements Initializable {
                 e.printStackTrace();
             }
         }
+    }
+
+    @FXML
+    private void createComponentClicked() {
+        System.out.println("createComponentClicked");
+    }
+
+    @FXML
+    private void saveProjectClicked() {
+        System.out.println("saveProjectClicked");
     }
 
 }

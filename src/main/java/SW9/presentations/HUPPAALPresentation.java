@@ -66,9 +66,6 @@ public class HUPPAALPresentation extends StackPane {
             initializeToggleQueryPaneFunctionality();
             initializeToggleFilePaneFunctionality();
 
-            initializeToolbarButton(controller.createComponent);
-            initializeToolbarButton(controller.saveComponent);
-
             initializeSelectDependentToolbarButton(controller.colorSelected);
             initializeSelectDependentToolbarButton(controller.deleteSelected);
 
@@ -105,6 +102,14 @@ public class HUPPAALPresentation extends StackPane {
                 controller.redo.setOpacity(0.3);
             }
         });
+
+        // Disable the undo button
+        controller.undo.setEnabled(false);
+        controller.undo.setOpacity(0.3);
+
+        // Disable the redo button
+        controller.redo.setEnabled(false);
+        controller.redo.setOpacity(0.3);
     }
 
     private void initializeColorSelector() {
@@ -226,7 +231,7 @@ public class HUPPAALPresentation extends StackPane {
             }
         });
 
-        // Disable the color button
+        // Disable the button
         button.setEnabled(false);
         button.setOpacity(0.3);
     }

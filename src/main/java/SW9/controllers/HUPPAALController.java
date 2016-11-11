@@ -50,8 +50,6 @@ public class HUPPAALController implements Initializable {
     public JFXRippler generateUppaalModel;
     public JFXRippler colorSelected;
     public JFXRippler deleteSelected;
-    public JFXRippler createComponent;
-    public JFXRippler saveComponent;
     public JFXRippler undo;
     public JFXRippler redo;
 
@@ -154,16 +152,6 @@ public class HUPPAALController implements Initializable {
         });
 
         SelectHelperNew.clearSelectedElements();
-    }
-
-    @FXML
-    private void createComponentClicked() {
-        System.out.println("createComponentClicked");
-    }
-
-    @FXML
-    private void saveComponentClicked() {
-        System.out.println("saveComponentClicked");
     }
 
     @FXML
