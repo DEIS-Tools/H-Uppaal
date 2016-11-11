@@ -1,5 +1,6 @@
 package SW9.controllers;
 
+import SW9.presentations.FilePresentation;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -13,7 +14,7 @@ import java.util.ResourceBundle;
 
 public class FilePaneController implements Initializable {
 
-    private static String DIRECTORY = System.getProperty("user.dir") + File.separator + "project";
+    private static final String DIRECTORY = System.getProperty("user.dir") + File.separator + "project";
 
     public StackPane root;
     public AnchorPane toolbar;
@@ -31,17 +32,16 @@ public class FilePaneController implements Initializable {
     }
 
     private void listFilesForFolder(final File folder) {
+
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
                 listFilesForFolder(fileEntry);
             } else {
-
-                String name = fileEntry.getAbsolutePath();
-                name = name.replace(DIRECTORY, "");
-
-                filesList.getChildren().add(new Label(name));
+                final FilePresentation filePresentation = new FilePresentation(fileEntry);
+                filesList.getChildren().add(filePresentation);
             }
         }
+
     }
 
     private void createFilesInProjectFolder() {
