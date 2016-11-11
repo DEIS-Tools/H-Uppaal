@@ -1,6 +1,7 @@
 package SW9.utility.mouse;
 
-import SW9.model_canvas.ModelCanvas;
+import SW9.presentations.CanvasPresentation;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
@@ -13,8 +14,6 @@ public class MouseTracker {
 
     private final DoubleProperty xProperty = new SimpleDoubleProperty(0);
     private final DoubleProperty yProperty = new SimpleDoubleProperty(0);
-    private boolean isActive = true;
-
     private final ArrayList<EventHandler<MouseEvent>> onMouseMovedEventHandlers = new ArrayList<>();
     private final ArrayList<EventHandler<MouseEvent>> onMouseClickedEventHandlers = new ArrayList<>();
     private final ArrayList<EventHandler<MouseEvent>> onMouseEnteredEventHandlers = new ArrayList<>();
@@ -22,6 +21,28 @@ public class MouseTracker {
     private final ArrayList<EventHandler<MouseEvent>> onMouseDraggedEventHandlers = new ArrayList<>();
     private final ArrayList<EventHandler<MouseEvent>> onMousePressedEventHandlers = new ArrayList<>();
     private final ArrayList<EventHandler<MouseEvent>> onMouseReleasedEventHandlers = new ArrayList<>();
+    private boolean isActive = true;
+
+    private final DoubleBinding gridX = new DoubleBinding() {
+        {
+            super.bind(xProperty());
+        }
+
+        @Override
+        protected double computeValue() {
+            return xProperty().get() - (xProperty().get() % CanvasPresentation.GRID_SIZE) + CanvasPresentation.GRID_SIZE * 0.5;
+        }
+    };
+    private final DoubleBinding gridY = new DoubleBinding() {
+        {
+            super.bind(yProperty());
+        }
+
+        @Override
+        protected double computeValue() {
+            return yProperty().get() - (yProperty().get() % CanvasPresentation.GRID_SIZE) + CanvasPresentation.GRID_SIZE * 0.5;
+        }
+    };
 
     private final EventHandler<MouseEvent> onMouseMovedEventHandler = event -> {
         if (!isActive) return;
@@ -89,9 +110,9 @@ public class MouseTracker {
         owner.setOnMouseReleased(this.onMouseReleasedEventHandler);
 
         // Register our own event handler to register mouse placement at all times
-        registerOnMouseMovedEventHandler(event -> {
-            xProperty.set(event.getX() - (event.getX() % ModelCanvas.GRID_SIZE) + (ModelCanvas.GRID_SIZE / 2));
-            yProperty.set(event.getY() - (event.getY() % ModelCanvas.GRID_SIZE) + (ModelCanvas.GRID_SIZE / 2));
+        owner.addEventFilter(MouseEvent.ANY, event -> {
+            xProperty.set(event.getX());
+            yProperty.set(event.getY());
         });
     }
 
@@ -215,4 +236,19 @@ public class MouseTracker {
         isActive = true;
     }
 
+    public double getGridX() {
+        return gridX.get();
+    }
+
+    public DoubleBinding gridXProperty() {
+        return gridX;
+    }
+
+    public double getGridY() {
+        return gridY.get();
+    }
+
+    public DoubleBinding gridYProperty() {
+        return gridY;
+    }
 }

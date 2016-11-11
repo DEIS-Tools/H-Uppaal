@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Rectangle?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         type="StackPane"
+         fx:id="root"
+         fx:controller="SW9.controllers.ComponentController">
+
+    <Rectangle fx:id="background"/>
+
+    <StackPane>
+        <Pane fx:id="modelContainer" onMousePressed="#modelContainerPressed"/>
+    </StackPane>
+
+    <BorderPane fx:id="frame" pickOnBounds="false">
+        <top>
+            <BorderPane fx:id="toolbar">
+                <center>
+                    <HBox>
+                        <StackPane>
+                            <JFXTextField fx:id="name" styleClass="subhead" translateY="1"/>
+                        </StackPane>
+                    </HBox>
+                </center>
+
+                <right>
+                    <JFXButton fx:id="toggleDeclarationButton" onMouseClicked="#toggleDeclaration">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-code" iconSize="20"/>
+                        </graphic>
+                    </JFXButton>
+                </right>
+            </BorderPane>
+        </top>
+
+        <center>
+            <TextArea fx:id="declaration"
+                      visible="false"
+                      StackPane.alignment="TOP_CENTER"
+                      styleClass="body2-mono"
+                      style="-fx-faint-focus-color: transparent; -fx-focus-color: transparent;"/>
+        </center>
+    </BorderPane>
+
+    <Line fx:id="line1"/>
+    <Line fx:id="line2"/>
+    <Pane fx:id="defaultLocationsContainer" pickOnBounds="false"/>
+
+</fx:root>

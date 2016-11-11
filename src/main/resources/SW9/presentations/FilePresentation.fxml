@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import com.jfoenix.controls.JFXRippler?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         type="AnchorPane">
+
+    <JFXRippler id="rippler" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        <HBox style="-fx-padding: 0 8 0 16;"
+              minHeight="48" maxHeight="48">
+            <StackPane>
+                <Circle id="iconBackground" radius="16"/>
+                <FontIcon id="icon" iconLiteral="gmi-description" iconSize="22"/>
+            </StackPane>
+
+            <Region minWidth="16"/>
+
+            <StackPane>
+                <Label id="fileName" styleClass="body1"/>
+            </StackPane>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Region minWidth="16"/>
+
+            <!-- MORE INFORMATION (REFACTOR ?) -->
+            <JFXRippler id="moreInformation">
+                <StackPane minWidth="40" minHeight="40">
+                    <FontIcon id="moreInformationIcon" iconLiteral="gmi-more-vert" iconSize="24" fill="white"/>
+                </StackPane>
+            </JFXRippler>
+        </HBox>
+    </JFXRippler>
+
+
+</fx:root>

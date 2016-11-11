@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXRippler?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         type="StackPane"
+         fx:id="root"
+         fx:controller="SW9.controllers.QueryPaneController"
+         minWidth="400">
+
+    <AnchorPane>
+
+        <!-- Toolbar -->
+        <AnchorPane fx:id="toolbar" minHeight="56" maxHeight="56" AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0"
+                    AnchorPane.rightAnchor="0">
+
+            <StackPane AnchorPane.leftAnchor="16" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+                <Label fx:id="toolbarTitle"
+                       styleClass="title"
+                       text="Queries"/>
+            </StackPane>
+
+            <StackPane AnchorPane.rightAnchor="16" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+                <HBox maxHeight="-Infinity">
+
+                    <JFXRippler fx:id="runAllQueriesButton">
+                        <StackPane minWidth="40" minHeight="40" onMouseClicked="#runAllQueriesButtonClicked">
+                            <FontIcon iconLiteral="gmi-play-arrow" iconSize="24" fill="white"/>
+                        </StackPane>
+                    </JFXRippler>
+
+                    <Region minWidth="8"/>
+
+                    <JFXRippler fx:id="clearAllQueriesButton">
+                        <StackPane minWidth="40" minHeight="40" onMouseClicked="#clearAllQueriesButtonClicked">
+                            <FontIcon iconLiteral="gmi-clear-all" iconSize="24" fill="white"/>
+                        </StackPane>
+                    </JFXRippler>
+
+                </HBox>
+            </StackPane>
+
+        </AnchorPane>
+
+        <ScrollPane fx:id="scrollPane"
+                    fitToHeight="true" fitToWidth="true"
+                    AnchorPane.topAnchor="56"
+                    AnchorPane.bottomAnchor="0"
+                    AnchorPane.leftAnchor="0"
+                    AnchorPane.rightAnchor="0"
+                    styleClass="edge-to-edge">
+
+            <VBox fx:id="queriesList">
+                <!-- Queries goes here -->
+            </VBox>
+
+        </ScrollPane>
+
+    </AnchorPane>
+
+    <!-- Add new query button -->
+    <JFXButton fx:id="addQueryButton"
+               styleClass="floating-action-button"
+               StackPane.alignment="BOTTOM_RIGHT"
+               translateX="-24"
+               translateY="-24"
+               onMousePressed="#addQueryButtonPressed"
+               onMouseReleased="#addQueryButtonReleased"
+               onMouseClicked="#addQueryButtonClicked">
+        <graphic>
+            <FontIcon iconLiteral="gmi-add" iconSize="24"/>
+        </graphic>
+    </JFXButton>
+
+</fx:root>

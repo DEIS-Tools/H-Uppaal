@@ -12,7 +12,7 @@ public class HandshakeChannelSenderArrowHead extends ChannelSenderArrowHead {
     public HandshakeChannelSenderArrowHead() {
         super();
 
-        addChildren(initializeHalfCircle());
+        getChildren().add(initializeHalfCircle());
     }
 
     private Path initializeHalfCircle() {

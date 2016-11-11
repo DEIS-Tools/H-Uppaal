@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.*?>
+<?import org.kordamp.ikonli.javafx.*?>
+<?import SW9.presentations.CanvasPresentation?>
+<?import SW9.presentations.ProjectPanePresentation?>
+<?import SW9.presentations.QueryPanePresentation?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         type="StackPane"
+         fx:id="root"
+         fx:controller="SW9.controllers.HUPPAALController">
+
+    <!-- Actual content of the view -->
+    <BorderPane>
+
+        <center>
+            <StackPane>
+                <CanvasPresentation fx:id="canvas"/>
+
+                <StackPane fx:id="toolbar"
+                           StackPane.alignment="TOP_CENTER"
+                           minHeight="56" maxHeight="56">
+
+                    <HBox style="-fx-padding: 0 16 0 16;">
+
+                        <!-- UNDO -->
+                        <JFXRippler fx:id="undo">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#undoClicked">
+                                <FontIcon iconLiteral="gmi-undo" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region minWidth="8"/>
+
+                        <!-- REDO -->
+                        <JFXRippler fx:id="redo">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#redoClicked">
+                                <FontIcon iconLiteral="gmi-redo" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region HBox.hgrow="ALWAYS" />
+
+                        <!-- DELETE SELECTED -->
+                        <JFXRippler fx:id="deleteSelected">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#deleteSelectedClicked">
+                                <FontIcon iconLiteral="gmi-delete" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region minWidth="8"/>
+
+                        <!-- COLOR SELECTED -->
+                        <JFXRippler fx:id="colorSelected">
+                            <StackPane minWidth="40" minHeight="40">
+                                <FontIcon iconLiteral="gmi-color-lens" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region minWidth="16"/>
+                        <StackPane>
+                            <Rectangle width="1" height="32" fill="black" opacity="0.2"/>
+                        </StackPane>
+                        <Region minWidth="16"/>
+
+                        <!-- GENERATE UPPAAL MODEL FOR PROJECT -->
+                        <JFXRippler fx:id="generateUppaalModel">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#generateUppaalModelClicked">
+                                <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+                    </HBox>
+
+                </StackPane>
+
+                <QueryPanePresentation
+                        fx:id="queryPane"
+                        StackPane.alignment="TOP_RIGHT"
+                        maxWidth="400"/>
+
+                <ProjectPanePresentation
+                        fx:id="filePane"
+                        StackPane.alignment="TOP_LEFT"
+                        maxWidth="300"/>
+            </StackPane>
+        </center>
+
+        <!-- Query pane -->
+        <right>
+            <Label fx:id="queryPaneFillerElement"/>
+        </right>
+
+        <!-- File pane -->
+        <left>
+            <Label fx:id="filePaneFillerElement"/>
+        </left>
+
+        <!-- Bottom status bar -->
+        <bottom>
+            <BorderPane fx:id="bottomStatusBar"
+                        styleClass="bottom-bar"
+                        prefHeight="24"
+                        maxHeight="24">
+
+            </BorderPane>
+        </bottom>
+
+        <top>
+            <!-- Menu bar for "file" etc (only visible on windows) -->
+            <MenuBar fx:id="menuBar">
+
+                <Menu text="File">
+                    <MenuItem text="New"/>
+                    <MenuItem text="Open"/>
+                    <MenuItem text="Save"/>
+                    <MenuItem text="Save As"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="Exit"/>
+                </Menu>
+
+                <Menu text="Edit">
+                    <MenuItem text="Copy"/>
+                    <MenuItem text="Cut"/>
+                    <MenuItem text="Paste"/>
+                </Menu>
+
+                <Menu text="Help">
+                    <MenuItem text="Search" disable="true"/>
+                    <MenuItem text="Online Manual" visible="false"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem text="About"/>
+                </Menu>
+
+            </MenuBar>
+        </top>
+
+    </BorderPane>
+
+    <!-- Dialog -->
+    <StackPane fx:id="dialogContainer" style="-fx-background-color: #0000007F;" visible="false">
+        <JFXDialog fx:id="dialog">
+
+            <VBox>
+
+                <!-- Will scale the dialod -->
+                <Region minWidth="400"/>
+
+                <StackPane fx:id="modalBar" style="-fx-background-color: -blue-grey-800;">
+
+                </StackPane>
+
+                <!-- Content -->
+                <VBox>
+
+                    <VBox style="-fx-padding: 24px;">
+                        <Text text="Detailed Query Information" styleClass="title"/>
+
+                        <Region minHeight="20"/>
+
+                        <JFXTextField fx:id="queryTextField"
+                                      text="A[] not deadlock"
+                                      styleClass="subhead" style="-fx-padding: 0;"/>
+
+                        <Region minHeight="8"/>
+
+                        <JFXTextField fx:id="commentTextField"
+                                      text="There is no deadlock in the model"
+                                      styleClass="subhead" style="-fx-padding: 0;"/>
+
+                        <Region minHeight="16"/>
+
+                        <!-- States explored -->
+                        <HBox>
+                            <Text styleClass="subhead" style="-fx-font-weight: bold;">States explored:</Text>
+                            <Region minWidth="4"/>
+                            <Text styleClass="subhead">802.102</Text>
+                        </HBox>
+
+                        <Region minHeight="4"/>
+
+                        <!-- RAM Usage -->
+                        <HBox>
+                            <Text styleClass="subhead" style="-fx-font-weight: bold;">RAM Usage:</Text>
+                            <Region minWidth="4"/>
+                            <Text styleClass="subhead">96MB / 6.327MB / 0MB</Text>
+                        </HBox>
+
+                        <Region minHeight="16"/>
+
+                    </VBox>
+
+                    <!--
+                    <Region style="-fx-background-color: -grey-100;" minHeight="1" />
+                    -->
+
+                    <JFXProgressBar/>
+
+                    <HBox style="-fx-padding: 8px;">
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <JFXButton text="Stop Query"/>
+                    </HBox>
+
+                </VBox>
+
+            </VBox>
+
+        </JFXDialog>
+    </StackPane>
+
+</fx:root>

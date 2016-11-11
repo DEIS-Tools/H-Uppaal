@@ -11,7 +11,7 @@ public class ChannelReceiverArrowHead extends ArrowHead {
         super();
 
         circle = initializeCircle();
-        addChild(circle);
+        getChildren().add(circle);
     }
 
     private Circle initializeCircle() {

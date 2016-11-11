@@ -101,8 +101,8 @@
 }
 
 .floating-action-button {
-	-fx-pref-width: 56px;
-	-fx-pref-height: 56px;
+	-fx-pref-width: 56;
+	-fx-pref-height: 56;
 	-fx-text-fill: white;
 }
 
@@ -114,4 +114,41 @@
 
 .titled-pane > .title {
     -fx-pref-height: 20;
+}
+
+.text-area {
+    -fx-background-insets: 0;
+    -fx-background-color: white white white white;
+    -fx-background-radius: 0;
+}
+
+.text-area .content {
+    -fx-background-color: white white white white;
+    -fx-background-radius: 0;
+}
+
+.text-area:focused .content {
+    -fx-background-color: white white white white;
+    -fx-background-radius: 0;
+}
+
+.text-area:focused {
+    -fx-highlight-fill: -deep-orange-500;
+    -fx-highlight-text-fill: -white;
+}
+
+.text-area .content {
+    -fx-highlight-fill: -deep-orange-500;
+    -fx-highlight-text-fill: -white;
+}
+
+.menu .label {
+    -fx-text-fill: -white;
+
+    -fx-font-family: "Roboto";
+    -fx-font-size: 13.0;
+}
+
+.menu-item .label {
+    -fx-text-fill: -black;
 }

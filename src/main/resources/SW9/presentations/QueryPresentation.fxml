@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import com.jfoenix.controls.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         type="AnchorPane">
+
+    <StackPane prefHeight="1" style="-fx-background-color:-grey-300;" AnchorPane.rightAnchor="0"
+               AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"/>
+
+    <StackPane id="stateIndicator" prefWidth="5" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+               AnchorPane.leftAnchor="0"/>
+
+    <JFXTextField id="query" HBox.hgrow="ALWAYS"
+                  AnchorPane.topAnchor="8"
+                  AnchorPane.rightAnchor="128"
+                  AnchorPane.leftAnchor="8"
+                  style="-fx-unfocus-color:transparent;" styleClass="subhead"/>
+
+    <JFXTextField id="comment" HBox.hgrow="ALWAYS"
+                  AnchorPane.topAnchor="36"
+                  AnchorPane.rightAnchor="128"
+                  AnchorPane.bottomAnchor="4"
+                  AnchorPane.leftAnchor="8"
+                  style="-fx-unfocus-color:transparent;" styleClass="caption"/>
+
+    <StackPane AnchorPane.topAnchor="8" AnchorPane.rightAnchor="8" AnchorPane.bottomAnchor="8">
+
+        <HBox>
+
+            <JFXRippler id="detailsButton" scaleX="0">
+                <StackPane minWidth="40" maxWidth="40" minHeight="40" maxHeight="40">
+                    <FontIcon id="detailsButtonIcon" iconLiteral="gmi-content-paste" iconSize="24"/>
+                </StackPane>
+            </JFXRippler>
+
+            <Region minWidth="8"/>
+
+            <StackPane>
+                <JFXSpinner id="progressIndicator" radius="20"/>
+
+                <JFXRippler id="actionButton">
+                    <StackPane minWidth="40" maxWidth="40" minHeight="40" maxHeight="40">
+                        <FontIcon id="actionButtonIcon" iconLiteral="gmi-play-arrow" iconSize="24"/>
+                    </StackPane>
+                </JFXRippler>
+            </StackPane>
+
+        </HBox>
+
+    </StackPane>
+
+
+</fx:root>

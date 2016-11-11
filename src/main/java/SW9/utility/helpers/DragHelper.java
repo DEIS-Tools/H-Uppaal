@@ -1,9 +1,11 @@
 package SW9.utility.helpers;
 
-import SW9.model_canvas.ModelCanvas;
+import SW9.presentations.CanvasPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.NumberBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
@@ -48,7 +50,7 @@ public class DragHelper {
             event.consume();
 
             // Check if we are allowed to drag in the first place
-            if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn()) return;
+            if (!conditional.apply(event)) return;
 
             // Get the bounds (must be inside the lambda, because bounds might have changed from since we last moved the subject)
             final Bounds[] bounds = {null};
@@ -63,8 +65,8 @@ public class DragHelper {
             double y = event.getY() + dragYOffset[0];
 
             // Make coordinates snap to the grip on the canvas
-            x -= x % ModelCanvas.GRID_SIZE - (ModelCanvas.GRID_SIZE / 2);
-            y -= y % ModelCanvas.GRID_SIZE - (ModelCanvas.GRID_SIZE / 2);
+            x -= x % CanvasPresentation.GRID_SIZE - (CanvasPresentation.GRID_SIZE / 2);
+            y -= y % CanvasPresentation.GRID_SIZE - (CanvasPresentation.GRID_SIZE / 2);
 
             // If the subject has its x stringBinder bound have a parent where we can get the xProperty as well
             if (subject.xProperty().isBound()) {
@@ -109,7 +111,7 @@ public class DragHelper {
         // Register the onMouseDragged event listener if the provided conditional returns true
         mouseTracker.registerOnMousePressedEventHandler(event -> {
             // Check if we are allowed to drag in the first place
-            if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn()) return;
+            if (!conditional.apply(event)) return;
 
             hasDragged[0] = false;
 
@@ -134,7 +136,7 @@ public class DragHelper {
             event.consume();
 
             // Check if we are allowed to drag in the first place
-            if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn() || !hasDragged[0]) return;
+            if (!conditional.apply(event) || !hasDragged[0]) return;
 
             hasDragged[0] = false;
 
@@ -201,9 +203,13 @@ public class DragHelper {
 
         final double[] previousXTranslation = {0d};
         final double[] previousYTranslation = {0d};
+        final BooleanProperty presWasAllowed = new SimpleBooleanProperty(false);
+        final BooleanProperty isBeingDragged = new SimpleBooleanProperty(false);
 
         mouseTracker.registerOnMousePressedEventHandler(event -> {
-            if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn()) return;
+            presWasAllowed.set(conditional.apply(event));
+            if (!presWasAllowed.get()) return;
+            isBeingDragged.set(true);
 
             dragXOffset[0] = subject.xProperty().get() - event.getScreenX();
             dragYOffset[0] = subject.yProperty().get() - event.getScreenY();
@@ -217,17 +223,33 @@ public class DragHelper {
         });
 
         mouseTracker.registerOnMouseDraggedEventHandler(event -> {
-            if (!conditional.apply(event) || ModelCanvas.edgeIsBeingDrawn()) return;
+            if (!presWasAllowed.get() || !isBeingDragged.get()) return;
 
-            subject.translateXProperty().setValue(previousXTranslation[0] + event.getScreenX() + dragXOffset[0]);
-            subject.translateYProperty().setValue(previousYTranslation[0] + event.getScreenY() + dragYOffset[0]);
+            final double newX = previousXTranslation[0] + event.getScreenX() + dragXOffset[0];
+            final double newY = previousYTranslation[0] + event.getScreenY() + dragYOffset[0];
+
+            if (subject instanceof CanvasPresentation) {
+                subject.setTranslateX(newX);
+                subject.setTranslateY(newY);
+            } else {
+                subject.xProperty().set(newX - (newX % CanvasPresentation.GRID_SIZE) + CanvasPresentation.GRID_SIZE * 0.5);
+                subject.yProperty().set(newY - (newY % CanvasPresentation.GRID_SIZE) + CanvasPresentation.GRID_SIZE * 0.5);
+            }
 
             subject.setCursor(Cursor.MOVE);
 
             event.consume();
         });
 
-        mouseTracker.registerOnMouseReleasedEventHandler(event -> subject.setCursor(Cursor.DEFAULT));
+        mouseTracker.registerOnMouseReleasedEventHandler(event -> {
+            subject.setCursor(Cursor.DEFAULT);
+            dragXOffset[0] = subject.xProperty().get() - event.getScreenX();
+            dragYOffset[0] = subject.yProperty().get() - event.getScreenY();
+
+            previousXTranslation[0] = subject.getTranslateX();
+            previousYTranslation[0] = subject.getTranslateY();
+            isBeingDragged.setValue(false);
+        });
     }
 
     public static <T extends MouseTrackable> void makeUndraggable(final T subject) {

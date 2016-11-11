@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Group?>
+<?import javafx.scene.shape.Circle?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         type="Group"
+         fx:controller="SW9.controllers.NailController"
+         fx:id="root"
+         onMousePressed="#mousePressed"
+         onMouseDragged="#mouseDragged"
+         onMouseReleased="#mouseReleased">
+
+    <Circle fx:id="dragCircle" radius="12.5" opacity="0"/>
+
+    <Circle fx:id="nailCircle"/>
+
+</fx:root>
