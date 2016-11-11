@@ -28,6 +28,19 @@
 
                     <HBox style="-fx-padding: 0 16 0 16;">
 
+                        <!-- DELETE -->
+                        <JFXRippler fx:id="delete">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#deleteClicked">
+                                <FontIcon iconLiteral="gmi-delete" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region minWidth="16"/>
+                        <StackPane>
+                            <Rectangle width="1" height="32" fill="black" opacity="0.2"/>
+                        </StackPane>
+                        <Region minWidth="16"/>
+
                         <!-- UNDO -->
                         <JFXRippler fx:id="undo">
                             <StackPane minWidth="40" minHeight="40" onMouseClicked="#undoClicked">
