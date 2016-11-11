@@ -129,17 +129,19 @@ public class NailController implements Initializable {
             // Add to undo redo stack
             final double currentX = root.getLayoutX();
             final double currentY = root.getLayoutY();
-            final double jensX = previousX;
-            final double jensY = previousY;
+            final double storePreviousX = previousX;
+            final double storePreviousY = previousY;
             UndoRedoStack.push(
                     () -> {
                         root.setLayoutX(currentX);
                         root.setLayoutY(currentY);
                     },
                     () -> {
-                        root.setLayoutX(jensX);
-                        root.setLayoutY(jensY);
-                    }
+                        root.setLayoutX(storePreviousX);
+                        root.setLayoutY(storePreviousY);
+                    },
+                    String.format("Moved nail from (%f,%f) to (%f,%f)", currentX, currentY, storePreviousX, storePreviousY),
+                    "pin-drop"
             );
 
             // Reset the was dragged boolean

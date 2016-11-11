@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 
 import java.util.EmptyStackException;
 import java.util.Stack;
+import java.util.function.BiConsumer;
 
 public class UndoRedoStack {
 
@@ -13,8 +14,15 @@ public class UndoRedoStack {
     private static final SimpleBooleanProperty canUndo = new SimpleBooleanProperty(false);
     private static final SimpleBooleanProperty canRedo = new SimpleBooleanProperty(false);
 
-    public static Command push(final Runnable perform, final Runnable undo) {
-        final Command item = new Command(perform, undo);
+    private static BiConsumer<Stack<Command>, Stack<Command>> debugRunnable = (c1, c2) -> {
+    };
+
+    public static void setDebugRunnable(final BiConsumer<Stack<Command>, Stack<Command>> debugRunnable) {
+        UndoRedoStack.debugRunnable = debugRunnable;
+    }
+
+    public static Command push(final Runnable perform, final Runnable undo, final String description, final String icon) {
+        final Command item = new Command(perform, undo, description, icon);
 
         // Empty the redo stack (new changes may be conflicting with redoing)
         while (!redoStack.isEmpty()) {
@@ -77,6 +85,8 @@ public class UndoRedoStack {
         } else {
             canRedo.set(true);
         }
+
+        debugRunnable.accept(undoStack, redoStack);
     }
 
     public static boolean canUndo() {
@@ -95,14 +105,18 @@ public class UndoRedoStack {
         return canRedo;
     }
 
-    private static class Command {
+    public static class Command {
 
         private final Runnable perform;
         private final Runnable undo;
+        private final String description;
+        private final String icon;
 
-        public Command(final Runnable perform, final Runnable undo) {
+        public Command(final Runnable perform, final Runnable undo, final String description, final String icon) {
             this.perform = perform;
             this.undo = undo;
+            this.description = description;
+            this.icon = icon;
         }
 
         public void perform() {
@@ -111,6 +125,14 @@ public class UndoRedoStack {
 
         public void undo() {
             undo.run();
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public String getIcon() {
+            return icon;
         }
     }
 }

@@ -173,7 +173,7 @@ public class DragHelper {
                     subject.yProperty().set(parent.yProperty().get() + parentYOffset[0]);
                 }
 
-            });
+            }, String.format("Dragged %s from (%f,%f) to (%f,%f)", subject.toString(), dragXOffset[0], dragYOffset[0], subject.xProperty().get(), subject.yProperty().get()), "pin-drop");
 
             subject.setCursor(Cursor.OPEN_HAND);
         });

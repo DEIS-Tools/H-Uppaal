@@ -180,13 +180,13 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                     getLocation().setUrgency(Location.Urgency.NORMAL);
                 }, () -> { // Undo
                     getLocation().setUrgency(previousUrgency);
-                });
+                }, "Made location " + getLocation().getName() + " urgent", "hourglass-full");
             } else {
                 UndoRedoStack.push(() -> { // Perform
                     getLocation().setUrgency(Location.Urgency.URGENT);
                 }, () -> { // Undo
                     getLocation().setUrgency(previousUrgency);
-                });
+                }, "Made location " + getLocation().getName() + " normal (back form urgent)", "hourglass-empty");
             }
         }));
 
@@ -199,13 +199,13 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                     getLocation().setUrgency(Location.Urgency.NORMAL);
                 }, () -> { // Undo
                     getLocation().setUrgency(previousUrgency);
-                });
+                }, "Made location " + getLocation().getName() + " committed", "hourglass-full");
             } else {
                 UndoRedoStack.push(() -> { // Perform
                     getLocation().setUrgency(Location.Urgency.COMMITTED);
                 }, () -> { // Undo
                     getLocation().setUrgency(previousUrgency);
-                });
+                }, "Made location " + getLocation().getName() + " normal (back from committed)", "hourglass-empty");
             }
 
         }));
@@ -240,7 +240,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                         component.addEdge(newEdge);
                     }, () -> { // Undo
                         component.removeEdge(newEdge);
-                    });
+                    }, "Created edge starting from location " + getLocation().getName(), "add-circle");
                 }
                 // Otherwise, select the location
                 else {
@@ -318,18 +318,15 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
             // Add to undo redo stack
             final double currentX = root.getLayoutX();
             final double currentY = root.getLayoutY();
-            final double jensX = previousX;
-            final double jensY = previousY;
-            UndoRedoStack.push(
-                    () -> {
+            final double storePreviousX = previousX;
+            final double storePreviousY = previousY;
+            UndoRedoStack.push(() -> {
                         root.setLayoutX(currentX);
                         root.setLayoutY(currentY);
-                    },
-                    () -> {
-                        root.setLayoutX(jensX);
-                        root.setLayoutY(jensY);
-                    }
-            );
+            }, () -> {
+                root.setLayoutX(storePreviousX);
+                root.setLayoutY(storePreviousY);
+            }, String.format("Moved location from (%.0f,%.0f) to (%.0f,%.0f)", currentX, currentY, storePreviousX, storePreviousY), "pin-drop");
 
             // Reset the was dragged boolean
             wasDragged = false;

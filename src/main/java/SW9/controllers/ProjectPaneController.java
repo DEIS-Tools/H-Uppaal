@@ -68,7 +68,7 @@ public class ProjectPaneController implements Initializable {
             HUPPAAL.getProject().getComponents().add(newComponent);
         }, () -> { // Undo
             HUPPAAL.getProject().getComponents().remove(newComponent);
-        });
+        }, "Created new component: " + newComponent.getName(), "add-circle");
     }
 
 }
