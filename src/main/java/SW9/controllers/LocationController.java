@@ -74,7 +74,7 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
             newLocation.radiusProperty().bind(circle.radiusProperty());
 
             // The scale property on the abstraction must reflect the radius in the view
-            scaleContent.scaleYProperty().bind(scaleContent.scaleXProperty());
+            newLocation.scaleProperty().bind(scaleContent.scaleXProperty());
 
             // initialize the name field and its bindings
             nameField.setText(newLocation.getName());
@@ -86,7 +86,7 @@ public class LocationController implements Initializable, SelectHelperNew.ColorS
         });
 
         // Scale x and y 1:1 (based on the x-scale)
-        root.scaleYProperty().bind(root.scaleXProperty());
+        scaleContent.scaleYProperty().bind(scaleContent.scaleXProperty());
 
         // Register click listener on canvas to hide the property pane when the canvas is clicked
         CanvasPresentation.mouseTracker.registerOnMousePressedEventHandler(event -> propertiesPane.setVisible(false));
