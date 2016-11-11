@@ -7,7 +7,7 @@
 <?import javafx.scene.text.*?>
 <?import org.kordamp.ikonli.javafx.*?>
 <?import SW9.presentations.CanvasPresentation?>
-<?import SW9.presentations.FilePanePresentation?>
+<?import SW9.presentations.ProjectPanePresentation?>
 <?import SW9.presentations.QueryPanePresentation?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
@@ -83,7 +83,7 @@
                         StackPane.alignment="TOP_RIGHT"
                         maxWidth="400"/>
 
-                <FilePanePresentation
+                <ProjectPanePresentation
                         fx:id="filePane"
                         StackPane.alignment="TOP_LEFT"
                         maxWidth="300"/>

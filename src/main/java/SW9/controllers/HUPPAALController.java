@@ -5,8 +5,8 @@ import SW9.abstractions.Component;
 import SW9.abstractions.Location;
 import SW9.backend.UPPAALDriver;
 import SW9.presentations.CanvasPresentation;
-import SW9.presentations.FilePanePresentation;
 import SW9.presentations.HUPPAALPresentation;
+import SW9.presentations.ProjectPanePresentation;
 import SW9.presentations.QueryPanePresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.EnabledColor;
@@ -36,7 +36,7 @@ public class HUPPAALController implements Initializable {
     public StackPane root;
     public BorderPane bottomStatusBar;
     public QueryPanePresentation queryPane;
-    public FilePanePresentation filePane;
+    public ProjectPanePresentation filePane;
     public StackPane toolbar;
     public MenuBar menuBar;
     public Label queryPaneFillerElement;

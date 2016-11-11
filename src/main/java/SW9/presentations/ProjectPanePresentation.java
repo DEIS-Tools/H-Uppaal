@@ -1,6 +1,6 @@
 package SW9.presentations;
 
-import SW9.controllers.FilePaneController;
+import SW9.controllers.ProjectPaneController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.DropShadowHelper;
 import com.jfoenix.controls.JFXRippler;
@@ -12,12 +12,12 @@ import javafx.scene.layout.*;
 import java.io.IOException;
 import java.net.URL;
 
-public class FilePanePresentation extends StackPane {
+public class ProjectPanePresentation extends StackPane {
 
-    private final FilePaneController controller;
+    private final ProjectPaneController controller;
 
-    public FilePanePresentation() {
-        final URL location = this.getClass().getResource("FilePanePresentation.fxml");
+    public ProjectPanePresentation() {
+        final URL location = this.getClass().getResource("ProjectPanePresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(location);

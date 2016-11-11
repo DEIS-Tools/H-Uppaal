@@ -17,7 +17,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
-public class FilePaneController implements Initializable {
+public class ProjectPaneController implements Initializable {
 
     private final HashMap<Component, FilePresentation> componentPresentationMap = new HashMap<>();
     public StackPane root;
