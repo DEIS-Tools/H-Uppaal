@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.*?>
-<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import org.kordamp.ikonli.javafx.*?>
 <?import SW9.presentations.CanvasPresentation?>
 <?import SW9.presentations.FilePanePresentation?>
 <?import SW9.presentations.QueryPanePresentation?>
@@ -27,10 +27,46 @@
                            minHeight="56" maxHeight="56">
 
                     <HBox style="-fx-padding: 0 16 0 16;">
-                        <Label fx:id="title" text="H-UPPAAL" styleClass="title" minHeight="56"/>
+
+                        <!-- CREATE COMPONENT -->
+                        <JFXRippler fx:id="createComponent">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#createComponentClicked">
+                                <FontIcon iconLiteral="gmi-create" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region minWidth="8"/>
+
+                        <!-- SAVE COMPONENT -->
+                        <JFXRippler fx:id="saveComponent">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#saveComponentClicked">
+                                <FontIcon iconLiteral="gmi-save" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region minWidth="8"/>
+                        <StackPane>
+                            <Rectangle width="1" height="32" fill="black" opacity="0.2"/>
+                        </StackPane>
+                        <Region minWidth="8"/>
+
+                        <!-- UNDO -->
+                        <JFXRippler fx:id="undo">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#undoClicked">
+                                <FontIcon iconLiteral="gmi-undo" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <!-- REDO -->
+                        <JFXRippler fx:id="redo">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#redoClicked">
+                                <FontIcon iconLiteral="gmi-redo" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
 
                         <Region HBox.hgrow="ALWAYS" />
 
+                        <!-- DELETE SELECTED -->
                         <JFXRippler fx:id="deleteSelected">
                             <StackPane minWidth="40" minHeight="40" onMouseClicked="#deleteSelectedClicked">
                                 <FontIcon iconLiteral="gmi-delete" iconSize="24" fill="white"/>
@@ -39,6 +75,7 @@
 
                         <Region minWidth="8"/>
 
+                        <!-- COLOR SELECTED -->
                         <JFXRippler fx:id="colorSelected">
                             <StackPane minWidth="40" minHeight="40">
                                 <FontIcon iconLiteral="gmi-color-lens" iconSize="24" fill="white"/>
@@ -51,6 +88,7 @@
                         </StackPane>
                         <Region minWidth="8"/>
 
+                        <!-- GENERATE UPPAAL MODEL FOR PROJECT -->
                         <JFXRippler fx:id="generateUppaalModel">
                             <StackPane minWidth="40" minHeight="40" onMouseClicked="#generateUppaalModelClicked">
                                 <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="white"/>

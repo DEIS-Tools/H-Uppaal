@@ -66,12 +66,45 @@ public class HUPPAALPresentation extends StackPane {
             initializeToggleQueryPaneFunctionality();
             initializeToggleFilePaneFunctionality();
 
+            initializeToolbarButton(controller.createComponent);
+            initializeToolbarButton(controller.saveComponent);
+
             initializeSelectDependentToolbarButton(controller.colorSelected);
             initializeSelectDependentToolbarButton(controller.deleteSelected);
+
+            initializeToolbarButton(controller.undo);
+            initializeToolbarButton(controller.redo);
+            initializeUndoRedoButtons();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeUndoRedoButtons() {
+        UndoRedoStack.canUndoProperty().addListener((obs, oldState, newState) -> {
+            if (newState) {
+                // Enable the undo button
+                controller.undo.setEnabled(true);
+                controller.undo.setOpacity(1);
+            } else {
+                // Disable the undo button
+                controller.undo.setEnabled(false);
+                controller.undo.setOpacity(0.3);
+            }
+        });
+
+        UndoRedoStack.canRedoProperty().addListener((obs, oldState, newState) -> {
+            if (newState) {
+                // Enable the redo button
+                controller.redo.setEnabled(true);
+                controller.redo.setOpacity(1);
+            } else {
+                // Disable the redo button
+                controller.redo.setEnabled(false);
+                controller.redo.setOpacity(0.3);
+            }
+        });
     }
 
     private void initializeColorSelector() {
@@ -169,11 +202,7 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private void initializeSelectDependentToolbarButton(final JFXRippler button) {
-        final Color color = Color.GREY_BLUE;
-        final Color.Intensity colorIntensity = Color.Intensity.I800;
-
-        button.setMaskType(JFXRippler.RipplerMask.CIRCLE);
-        button.setRipplerFill(color.getTextColor(colorIntensity));
+        initializeToolbarButton(button);
 
         // The color button should only be enabled when an element is selected
         SelectHelperNew.getSelectedElements().addListener(new ListChangeListener<SelectHelperNew.ColorSelectable>() {
@@ -200,6 +229,15 @@ public class HUPPAALPresentation extends StackPane {
         // Disable the color button
         button.setEnabled(false);
         button.setOpacity(0.3);
+    }
+
+    private void initializeToolbarButton(final JFXRippler button) {
+        final Color color = Color.GREY_BLUE;
+        final Color.Intensity colorIntensity = Color.Intensity.I800;
+
+        button.setMaskType(JFXRippler.RipplerMask.CIRCLE);
+        button.setRipplerFill(color.getTextColor(colorIntensity));
+        button.setPosition(JFXRippler.RipplerPos.BACK);
     }
 
     private void initializeQueryDetailsDialog() {
@@ -350,9 +388,6 @@ public class HUPPAALPresentation extends StackPane {
                         CornerRadii.EMPTY,
                         Insets.EMPTY)
                 ));
-
-        // Set the font color for the title
-        controller.title.setTextFill(color.getTextColor(intensity));
     }
 
     private void initializeBottomStatusBar() {

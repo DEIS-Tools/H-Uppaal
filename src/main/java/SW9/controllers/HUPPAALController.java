@@ -38,7 +38,6 @@ public class HUPPAALController implements Initializable {
     public QueryPanePresentation queryPane;
     public FilePanePresentation filePane;
     public StackPane toolbar;
-    public Label title;
     public MenuBar menuBar;
     public Label queryPaneFillerElement;
     public Label filePaneFillerElement;
@@ -51,6 +50,10 @@ public class HUPPAALController implements Initializable {
     public JFXRippler generateUppaalModel;
     public JFXRippler colorSelected;
     public JFXRippler deleteSelected;
+    public JFXRippler createComponent;
+    public JFXRippler saveComponent;
+    public JFXRippler undo;
+    public JFXRippler redo;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -151,6 +154,26 @@ public class HUPPAALController implements Initializable {
         });
 
         SelectHelperNew.clearSelectedElements();
+    }
+
+    @FXML
+    private void createComponentClicked() {
+        System.out.println("createComponentClicked");
+    }
+
+    @FXML
+    private void saveComponentClicked() {
+        System.out.println("saveComponentClicked");
+    }
+
+    @FXML
+    private void undoClicked() {
+        UndoRedoStack.undo();
+    }
+
+    @FXML
+    private void redoClicked() {
+        UndoRedoStack.redo();
     }
 
 }
