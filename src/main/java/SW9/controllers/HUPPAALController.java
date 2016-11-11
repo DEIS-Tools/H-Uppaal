@@ -96,7 +96,7 @@ public class HUPPAALController implements Initializable {
                     previousColor.forEach(selectableEnabledColorPair -> {
                         selectableEnabledColorPair.getKey().color(selectableEnabledColorPair.getValue().color, selectableEnabledColorPair.getValue().intensity);
                     });
-                });
+                }, String.format("Changed the color of %d elements to %s", previousColor.size(), enabledColor.color.name()), "color-lens");
 
                 SelectHelper.clearSelectedElements();
             }));
@@ -147,7 +147,7 @@ public class HUPPAALController implements Initializable {
 
                     location.yProperty().unbind();
                     location.yProperty().set(previousY);
-                });
+                }, String.format("Deleted %s", selectable.toString()), "delete");
             }
         });
 

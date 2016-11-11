@@ -166,7 +166,7 @@ public class HUPPAALPresentation extends StackPane {
                     previousColor.forEach(selectableEnabledColorPair -> {
                         selectableEnabledColorPair.getKey().color(selectableEnabledColorPair.getValue().color, selectableEnabledColorPair.getValue().intensity);
                     });
-                });
+                }, String.format("Changed the color of %d elements to %s", previousColor.size(), color.color.name()), "color-lens");
 
                 popup.close();
                 SelectHelper.clearSelectedElements();
