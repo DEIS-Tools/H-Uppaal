@@ -71,6 +71,15 @@ public class HUPPAAL extends Application {
         // Let our keyboard tracker handle all key presses
         scene.setOnKeyPressed(KeyboardTracker.handleKeyPress);
 
+        // Set the icon for the application
+        stage.getIcons().addAll(
+                new Image(getClass().getResource("ic_launcher/mipmap-hdpi/ic_launcher.png").toExternalForm()),
+                new Image(getClass().getResource("ic_launcher/mipmap-mdpi/ic_launcher.png").toExternalForm()),
+                new Image(getClass().getResource("ic_launcher/mipmap-xhdpi/ic_launcher.png").toExternalForm()),
+                new Image(getClass().getResource("ic_launcher/mipmap-xxhdpi/ic_launcher.png").toExternalForm()),
+                new Image(getClass().getResource("ic_launcher/mipmap-xxxhdpi/ic_launcher.png").toExternalForm())
+        );
+
         // We're now ready! Let the curtains fall!
         stage.show();
 
