@@ -1,8 +1,10 @@
 package SW9.presentations;
 
+import SW9.abstractions.Component;
 import SW9.utility.colors.Color;
 import SW9.utility.colors.EnabledColor;
 import com.jfoenix.controls.JFXRippler;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
@@ -12,7 +14,6 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Random;
@@ -20,9 +21,9 @@ import java.util.function.BiConsumer;
 
 public class FilePresentation extends AnchorPane {
 
-    private File file;
+    private final SimpleObjectProperty<Component> component = new SimpleObjectProperty<>(null);
 
-    public FilePresentation(final File file) {
+    public FilePresentation(final Component component) {
         final URL location = this.getClass().getResource("FilePresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();
@@ -33,7 +34,7 @@ public class FilePresentation extends AnchorPane {
             fxmlLoader.setRoot(this);
             fxmlLoader.load(location.openStream());
 
-            this.file = file;
+            this.component.set(component);
 
             initializeIcon();
             initializeFileName();
@@ -72,7 +73,7 @@ public class FilePresentation extends AnchorPane {
     private void initializeFileName() {
         final Label label = (Label) lookup("#fileName");
 
-        label.setText(file.getName());
+        label.setText(component.get().getName());
     }
 
     private void initializeIcon() {

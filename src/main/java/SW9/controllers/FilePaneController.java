@@ -1,7 +1,10 @@
 package SW9.controllers;
 
+import SW9.NewMain;
+import SW9.abstractions.Component;
 import SW9.presentations.FilePresentation;
 import com.jfoenix.controls.JFXRippler;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -10,14 +13,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-import java.io.*;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class FilePaneController implements Initializable {
 
-    private static final String DIRECTORY = System.getProperty("user.dir") + File.separator + "project";
-
+    private final HashMap<Component, FilePresentation> componentPresentationMap = new HashMap<>();
     public StackPane root;
     public AnchorPane toolbar;
     public Label toolbarTitle;
@@ -28,46 +30,28 @@ public class FilePaneController implements Initializable {
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+        NewMain.getProject().getComponents().addListener(new ListChangeListener<Component>() {
+            @Override
+            public void onChanged(final Change<? extends Component> c) {
+                while (c.next()) {
+                    c.getAddedSubList().forEach(o -> handleAddedComponent(o));
+                    c.getRemoved().forEach(o -> handleRemovedComponent(o));
+                }
+            }
+        });
 
-        createFilesInProjectFolder(); // todo: these files are created for testing purposes
-
-        final File folder = new File(DIRECTORY);
-        listFilesForFolder(folder);
+        NewMain.getProject().getComponents().forEach(this::handleAddedComponent);
     }
 
-    private void listFilesForFolder(final File folder) {
-
-        for (final File fileEntry : folder.listFiles()) {
-            if (fileEntry.isDirectory()) {
-                listFilesForFolder(fileEntry);
-            } else {
-                final FilePresentation filePresentation = new FilePresentation(fileEntry);
-                filesList.getChildren().add(filePresentation);
-            }
-        }
-
+    private void handleAddedComponent(final Component component) {
+        final FilePresentation filePresentation = new FilePresentation(component);
+        filesList.getChildren().add(filePresentation);
+        componentPresentationMap.put(component, filePresentation);
     }
 
-    private void createFilesInProjectFolder() {
-        final String[] files = new String[]{
-                "component0.json",
-                "component1.json",
-                "component2.json"
-        };
-
-        for (final String file : files) {
-            final File myFile = new File(DIRECTORY + File.separator + file);
-            final File parentDir = myFile.getParentFile();
-
-            // create parent dir and ancestors if necessary
-            if (!parentDir.exists()) parentDir.mkdirs();
-
-            try {
-                final Writer w = new OutputStreamWriter(new FileOutputStream(myFile), "UTF-8");
-            } catch (FileNotFoundException | UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }
+    private void handleRemovedComponent(final Component component) {
+        filesList.getChildren().remove(componentPresentationMap.get(component));
+        componentPresentationMap.remove(component);
     }
 
     @FXML
