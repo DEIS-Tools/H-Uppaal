@@ -1,9 +1,12 @@
 package SW9.presentations;
 
 import SW9.abstractions.Component;
+import SW9.controllers.CanvasController;
 import SW9.utility.colors.Color;
 import com.jfoenix.controls.JFXRippler;
+import javafx.animation.TranslateTransition;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
@@ -11,6 +14,8 @@ import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
@@ -39,10 +44,36 @@ public class FilePresentation extends AnchorPane {
             initializeHoverEffect();
             initializeRippler();
             initializeMoreInformationButton();
+            initializeActiveIndicator();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeActiveIndicator() {
+        final Rectangle activeIndicator = (Rectangle) lookup("#activeIndicator");
+
+        component.get().colorProperty().addListener((obs, oldColor, newColor) -> {
+            activeIndicator.setFill(newColor.getColor(component.get().getColorIntensity()));
+        });
+        activeIndicator.setFill(component.get().getColor().getColor(component.get().getColorIntensity().next(-3)));
+
+        final TranslateTransition animateLeft = new TranslateTransition(Duration.millis(80), activeIndicator);
+        animateLeft.setFromX(0);
+        animateLeft.setToX(-1 * activeIndicator.getWidth());
+
+        final TranslateTransition animateRight = new TranslateTransition(Duration.millis(80), activeIndicator);
+        animateRight.setFromX(-1 * activeIndicator.getWidth());
+        animateRight.setToX(0);
+
+        CanvasController.activeComponentProperty().addListener((obs, oldActiveComponent, newActiveComponent) -> {
+            if (newActiveComponent != null && component.get().equals(newActiveComponent)) {
+                animateRight.play();
+            } else if (oldActiveComponent != null && component.get().equals(oldActiveComponent)) {
+                animateLeft.play();
+            }
+        });
     }
 
     private void initializeMoreInformationButton() {
@@ -52,9 +83,7 @@ public class FilePresentation extends AnchorPane {
         moreInformation.setPosition(JFXRippler.RipplerPos.BACK);
         moreInformation.setRipplerFill(Color.GREY_BLUE.getColor(Color.Intensity.I500));
 
-        moreInformation.setOnMousePressed(event -> {
-            event.consume();
-        });
+        moreInformation.setOnMousePressed(Event::consume); // Todo: show more information. Rename etc.
     }
 
     private void initializeRippler() {
