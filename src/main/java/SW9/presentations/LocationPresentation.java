@@ -91,7 +91,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             controller.nameTag.bindToColor(location.colorProperty(), location.colorIntensityProperty());
 
             // Update the name
-            controller.nameTag.bindToString(location.nameProperty());
+            controller.nameTag.setAndBindString(location.nameProperty());
 
             // Update the position
             controller.nameTag.translateXProperty().set(controller.circle.getRadius() * 1.5);

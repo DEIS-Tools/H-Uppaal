@@ -1,6 +1,7 @@
 package SW9.presentations;
 
 import SW9.utility.colors.Color;
+import com.jfoenix.controls.JFXTextField;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
@@ -36,10 +37,22 @@ public class TagPresentation extends StackPane {
             initializeShape();
             initializeLabel();
             initializeHole();
+            initializeTextAid();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeTextAid() {
+        final JFXTextField textField = (JFXTextField) lookup("#textField");
+
+        textField.textProperty().addListener((obs, oldText, newText) -> {
+            if (newText.contains(" ")) {
+                final String updatedString = newText.replace(" ", "_");
+                textField.setText(updatedString);
+            }
+        });
     }
 
     private void initializeHole() {
@@ -57,22 +70,30 @@ public class TagPresentation extends StackPane {
 
     private void initializeLabel() {
         final Label label = (Label) lookup("#label");
+        final JFXTextField textField = (JFXTextField) lookup("#textField");
+
+        final int padding = 16 + 8 + 4;
 
         label.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
-            final double newWidth = newBounds.getWidth() + 16 + 8;
+            final double newWidth = Math.max(newBounds.getWidth(), 10);
 
-            setMinWidth(newWidth);
-            setMaxWidth(newWidth);
+            setMinWidth(newWidth + padding);
+            setMaxWidth(newWidth + padding);
 
-            l2.setX(newWidth);
-            l3.setX(newWidth);
+            textField.setMinWidth(newWidth + 4);
+            textField.setMaxWidth(newWidth + 4);
+
+            l2.setX(newWidth + padding);
+            l3.setX(newWidth + padding);
         });
+
+        label.textProperty().bind(textField.textProperty());
     }
 
     private void initializeShape() {
         final int CORNER_SIZE = 8;
 
-        final int WIDTH = 80;
+        final int WIDTH = 5000;
         final int HEIGHT = 30;
 
         final Path shape = (Path) lookup("#shape");
@@ -98,6 +119,10 @@ public class TagPresentation extends StackPane {
             final Circle hole = (Circle) lookup("#hole");
             hole.setStroke(newColor.getColor(newIntensity.next(-20).next(3)));
 
+            final JFXTextField textField = (JFXTextField) lookup("#textField");
+            textField.setUnFocusColor(TRANSPARENT);
+            textField.setFocusColor(newColor.getColor(newIntensity));
+
         };
 
         color.addListener(observable -> recolor.accept(color.get(), intensity.get()));
@@ -106,10 +131,12 @@ public class TagPresentation extends StackPane {
         recolor.accept(color.get(), intensity.get());
     }
 
-    public void bindToString(final StringProperty string) {
-        final Label label = (Label) lookup("#label");
+    public void setAndBindString(final StringProperty string) {
+        final JFXTextField textField = (JFXTextField) lookup("#textField");
 
-        label.textProperty().bind(string);
+        textField.textProperty().unbind();
+        textField.setText(string.get());
+        string.bind(textField.textProperty());
     }
 
 }

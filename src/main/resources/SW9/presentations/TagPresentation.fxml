@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Path?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
@@ -11,6 +12,9 @@
 
     <Circle id="hole" radius="4" StackPane.alignment="CENTER_LEFT" translateX="4"/>
 
-    <Label id="label" styleClass="body1" text="Test" StackPane.alignment="CENTER_LEFT" translateX="18"/>
+    <Label id="label" styleClass="body1" StackPane.alignment="CENTER_LEFT" visible="false" translateX="18"/>
+
+    <JFXTextField id="textField" styleClass="body1" StackPane.alignment="CENTER_LEFT" translateX="18" translateY="2"
+                  style="-fx-padding: 0;"/>
 
 </fx:root>
