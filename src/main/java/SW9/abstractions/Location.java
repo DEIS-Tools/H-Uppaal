@@ -1,6 +1,7 @@
 package SW9.abstractions;
 
 import SW9.utility.colors.Color;
+import SW9.utility.colors.EnabledColor;
 import SW9.utility.helpers.Circular;
 import SW9.utility.serialize.Serializable;
 import com.google.gson.Gson;
@@ -19,7 +20,6 @@ public class Location implements Circular, Serializable {
     private static final String X = "x";
     private static final String Y = "Y";
     private static final String COLOR = "color";
-    private static final String COLOR_INTENSITY = "colorIntensity";
 
     // Verification properties
     private final StringProperty name = new SimpleStringProperty("");
@@ -177,8 +177,7 @@ public class Location implements Circular, Serializable {
 
         result.addProperty(X, getX());
         result.addProperty(Y, getY());
-        result.addProperty(COLOR, "");
-        result.addProperty(COLOR_INTENSITY, "");
+        result.addProperty(COLOR, EnabledColor.getIdentifier(getColor()));
 
         return result;
     }
@@ -192,6 +191,12 @@ public class Location implements Circular, Serializable {
 
         setX(json.getAsJsonPrimitive(X).getAsDouble());
         setY(json.getAsJsonPrimitive(Y).getAsDouble());
+
+        final EnabledColor enabledColor = EnabledColor.fromIdentifier(json.getAsJsonPrimitive(COLOR).getAsString());
+        if (enabledColor != null) {
+            setColor(enabledColor.color);
+            setColorIntensity(enabledColor.intensity);
+        }
     }
 
     public enum Type {

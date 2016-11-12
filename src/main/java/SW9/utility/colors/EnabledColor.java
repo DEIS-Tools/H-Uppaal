@@ -32,6 +32,26 @@ public class EnabledColor {
         this.keyCode = keyCode;
     }
 
+    public static String getIdentifier(final Color color) {
+        for (final EnabledColor enabledColor : enabledColors) {
+            if (enabledColor.color.equals(color)) {
+                return enabledColor.keyCode.getName();
+            }
+        }
+
+        return "";
+    }
+
+    public static EnabledColor fromIdentifier(final String identifier) {
+        for (final EnabledColor enabledColor : enabledColors) {
+            if (enabledColor.keyCode.getName().equals(identifier)) {
+                return enabledColor;
+            }
+        }
+
+        return null;
+    }
+
     @Override
     public boolean equals(final Object obj) {
         return obj instanceof EnabledColor && ((EnabledColor) obj).color.equals(this.color);
