@@ -11,6 +11,7 @@ public class Nail implements Circular, Serializable {
 
     private static final String X = "x";
     private static final String Y = "Y";
+
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
@@ -60,10 +61,6 @@ public class Nail implements Circular, Serializable {
     public void setRadius(final double radius) {
         this.radius.set(radius);
     }
-
-    /*
-     * SERIALIZATION OF CLASS
-     */
 
     public DoubleProperty radiusProperty() {
         return radius;

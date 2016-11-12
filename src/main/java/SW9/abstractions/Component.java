@@ -13,8 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Component implements Serializable {
 
-    // Used to generate unique IDs
-    private static final AtomicInteger hiddenID = new AtomicInteger(0);
+    private static final AtomicInteger hiddenID = new AtomicInteger(0); // Used to generate unique IDs
+
     private static final String NAME = "name";
     private static final String DECLARATIONS = "declarations";
     private static final String LOCATIONS = "locations";
@@ -27,6 +27,7 @@ public class Component implements Serializable {
     private static final String HEIGHT = "height";
     private static final String COLOR = "color";
     private static final String COLOR_INTENSITY = "colorIntensity";
+
     // Verification properties
     @Expose
     private final StringProperty name = new SimpleStringProperty("");
@@ -178,10 +179,6 @@ public class Component implements Serializable {
     public ObjectProperty<Color> colorProperty() {
         return color;
     }
-
-    /*
-     * SERIALIZATION OF CLASS
-     */
 
     public Color.Intensity getColorIntensity() {
         return colorIntensity.get();

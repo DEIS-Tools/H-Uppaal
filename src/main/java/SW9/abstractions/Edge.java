@@ -22,6 +22,7 @@ public class Edge implements Serializable {
     private static final String UPDATE = "update";
     private static final String SYNC = "sync";
     private static final String NAILS = "nails";
+
     // Verification properties
     private final ObjectProperty<Location> sourceLocation = new SimpleObjectProperty<>();
     private final ObjectProperty<Location> targetLocation = new SimpleObjectProperty<>();
@@ -29,6 +30,7 @@ public class Edge implements Serializable {
     private final StringProperty guard = new SimpleStringProperty("");
     private final StringProperty update = new SimpleStringProperty("");
     private final StringProperty sync = new SimpleStringProperty("");
+
     // Styling properties
     private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.GREY_BLUE);
     private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I700);
@@ -122,10 +124,6 @@ public class Edge implements Serializable {
         this.color.set(color);
     }
 
-    /*
-     * SERIALIZATION OF CLASS
-     */
-
     public ObjectProperty<Color> colorProperty() {
         return color;
     }
@@ -186,7 +184,7 @@ public class Edge implements Serializable {
             }
         };
 
-        component.getLocations().forEach(setFromAndToIfMatches::accept);
+        component.getLocations().forEach(setFromAndToIfMatches);
 
         final Location initialLocation = component.getInitialLocation();
         final Location finalLocation = component.getFinalLocation();
