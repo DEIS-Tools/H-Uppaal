@@ -4,7 +4,6 @@ import SW9.utility.colors.Color;
 import SW9.utility.serialize.Serializable;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.annotations.Expose;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,13 +28,13 @@ public class Component implements Serializable {
     private static final String COLOR_INTENSITY = "colorIntensity";
 
     // Verification properties
-    @Expose
     private final StringProperty name = new SimpleStringProperty("");
     private final StringProperty declarations = new SimpleStringProperty("");
     private final ObservableList<Location> locations = FXCollections.observableArrayList();
     private final ObservableList<Edge> edges = FXCollections.observableArrayList();
     private final ObjectProperty<Location> initialLocation = new SimpleObjectProperty<>();
     private final ObjectProperty<Location> finalLocation = new SimpleObjectProperty<>();
+
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
