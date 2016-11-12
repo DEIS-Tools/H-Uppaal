@@ -2,6 +2,7 @@ package SW9.presentations;
 
 import SW9.utility.colors.Color;
 import com.jfoenix.controls.JFXTextField;
+import javafx.beans.binding.When;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
@@ -22,6 +23,7 @@ public class TagPresentation extends StackPane {
     private final static Color.Intensity backgroundColorIntensity = Color.Intensity.I50;
     private LineTo l2;
     private LineTo l3;
+    private String placeholder;
 
     public TagPresentation() {
         final URL location = this.getClass().getResource("TagPresentation.fxml");
@@ -37,7 +39,6 @@ public class TagPresentation extends StackPane {
             initializeShape();
             initializeLabel();
             initializeHole();
-            initializeTextAid();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
@@ -71,28 +72,43 @@ public class TagPresentation extends StackPane {
     private void initializeLabel() {
         final Label label = (Label) lookup("#label");
         final JFXTextField textField = (JFXTextField) lookup("#textField");
+        final Path shape = (Path) lookup("#shape");
 
         final int padding = 16 + 8 + 4;
 
         label.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
             final double newWidth = Math.max(newBounds.getWidth(), 10);
 
-            setMinWidth(newWidth + padding);
-            setMaxWidth(newWidth + padding);
-
             textField.setMinWidth(newWidth + 4);
             textField.setMaxWidth(newWidth + 4);
 
             l2.setX(newWidth + padding);
             l3.setX(newWidth + padding);
+
+            setMinWidth(newWidth + padding);
+            setMaxWidth(newWidth + padding);
+
+            if (getWidth() > 5000) {
+                setWidth(5);
+            }
+
+            // Fixes the jumping of the shape when the text field is empty
+            if (textField.getText().isEmpty()) {
+                shape.setLayoutX(0);
+            }
         });
 
-        label.textProperty().bind(textField.textProperty());
+        label.textProperty().bind(new When(textField.textProperty().isNotEmpty()).then(textField.textProperty()).otherwise(textField.promptTextProperty()));
+
+        textField.focusedProperty().addListener((obs, oldFocused, newFocused) -> {
+            if (!newFocused && textField.getText().isEmpty()) {
+                setOpacity(0);
+            }
+        });
     }
 
     private void initializeShape() {
         final int CORNER_SIZE = 8;
-
         final int WIDTH = 5000;
         final int HEIGHT = 30;
 
@@ -139,4 +155,19 @@ public class TagPresentation extends StackPane {
         string.bind(textField.textProperty());
     }
 
+    public void setPlaceholder(final String placeholder) {
+        final JFXTextField textField = (JFXTextField) lookup("#textField");
+
+        textField.setPromptText(placeholder);
+    }
+
+    public void replaceSpace() {
+        initializeTextAid();
+    }
+
+    public boolean textFieldIsFocused() {
+        final JFXTextField textField = (JFXTextField) lookup("#textField");
+
+        return textField.isFocused();
+    }
 }

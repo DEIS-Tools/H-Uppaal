@@ -53,6 +53,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public TextArea invariantField;
     public Group scaleContent;
     public TagPresentation nameTag;
+    public TagPresentation invariantTag;
 
     private boolean isPlaced;
     private long lastPress = 0;
@@ -205,6 +206,8 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
             }
 
         }));
+
+        hiddenAreaEntered();
     }
 
     @FXML
@@ -215,6 +218,8 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
         KeyboardTracker.unregisterKeybind(KeyboardTracker.MAKE_LOCATION_URGENT);
         KeyboardTracker.unregisterKeybind(KeyboardTracker.MAKE_LOCATION_COMMITTED);
+
+        hiddenAreaExited();
     }
 
     @FXML
@@ -326,6 +331,18 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
             // Reset the was dragged boolean
             wasDragged = false;
+        }
+    }
+
+    @FXML
+    private void hiddenAreaEntered() {
+        invariantTag.setOpacity(1);
+    }
+
+    @FXML
+    private void hiddenAreaExited() {
+        if (getLocation().getInvariant().equals("")) {
+            invariantTag.setOpacity(0);
         }
     }
 

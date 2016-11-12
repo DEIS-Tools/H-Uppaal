@@ -3,7 +3,7 @@
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.Group?>
+<?import javafx.scene.*?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.*?>
@@ -13,6 +13,15 @@
          type="Group"
          fx:controller="SW9.controllers.LocationController"
          fx:id="root">
+
+    <Group onMouseEntered="#hiddenAreaEntered"
+           onMouseExited="#hiddenAreaExited">
+
+        <Circle radius="50" opacity="0.2" style="-fx-background-color: brown;"/>
+
+        <TagPresentation fx:id="invariantTag" translateX="100"/>
+
+    </Group>
 
     <TagPresentation fx:id="nameTag" translateX="100"/>
 

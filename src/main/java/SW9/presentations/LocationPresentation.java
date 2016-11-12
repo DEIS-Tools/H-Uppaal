@@ -72,6 +72,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             initializeCircle();
 
             initializeNameTag();
+            initializeInvariantTag();
 
             initializeInitialAnimation();
             initializeHoverAnimationEntered();
@@ -98,8 +99,49 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             controller.nameTag.translateYProperty().bind(controller.nameTag.heightProperty().divide(-2));
         };
 
+        controller.nameTag.replaceSpace();
+
         controller.locationProperty().addListener(observable -> updateNameTag.accept(controller.getLocation()));
         updateNameTag.accept(controller.getLocation());
+    }
+
+    private void initializeInvariantTag() {
+        final Consumer<Location> updateInvariantTag = location -> {
+            // Update the color
+            controller.invariantTag.bindToColor(location.colorProperty(), location.colorIntensityProperty());
+
+            // Update the invariant
+            controller.invariantTag.setAndBindString(location.invariantProperty());
+
+            // Update the placeholder
+            controller.invariantTag.setPlaceholder("No invariant");
+
+            // Update the position
+            controller.invariantTag.translateXProperty().set(controller.circle.getRadius() * 1.5);
+            controller.invariantTag.translateYProperty().bind(controller.invariantTag.heightProperty().add(controller.invariantTag.heightProperty().divide(-2)));
+
+            final Consumer<String> updateVisibility = (invariant) -> {
+                if (invariant.equals("")) {
+                    controller.invariantTag.setOpacity(0);
+                } else {
+                    controller.invariantTag.setOpacity(1);
+                }
+            };
+
+            location.invariantProperty().addListener((obs, oldInvariant, newInvariant) -> updateVisibility.accept(newInvariant));
+            updateVisibility.accept(location.getInvariant());
+        };
+
+        controller.invariantTag.opacityProperty().addListener((obs, oldOpacity, newOpacity) -> {
+            if (newOpacity.doubleValue() < 1) {
+                if (controller.invariantTag.textFieldIsFocused()) {
+                    controller.invariantTag.setOpacity(1);
+                }
+            }
+        });
+
+        controller.locationProperty().addListener(observable -> updateInvariantTag.accept(controller.getLocation()));
+        updateInvariantTag.accept(controller.getLocation());
     }
 
     private void initializeHoverAnimationEntered() {
