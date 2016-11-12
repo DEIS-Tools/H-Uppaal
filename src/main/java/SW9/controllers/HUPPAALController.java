@@ -20,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.BorderPane;
@@ -53,6 +54,7 @@ public class HUPPAALController implements Initializable {
     public JFXRippler undo;
     public JFXRippler redo;
     public JFXRippler delete;
+    public ImageView logo;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {

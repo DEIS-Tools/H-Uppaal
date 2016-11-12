@@ -1,5 +1,6 @@
 package SW9.presentations;
 
+import SW9.HUPPAAL;
 import SW9.controllers.CanvasController;
 import SW9.controllers.HUPPAALController;
 import SW9.utility.UndoRedoStack;
@@ -18,6 +19,7 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
@@ -76,9 +78,18 @@ public class HUPPAALPresentation extends StackPane {
 
             initializeDeleteButton();
 
+            initializeLogo();
+
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeLogo() {
+        final Color color = Color.GREY_BLUE;
+        final Color.Intensity colorIntensity = Color.Intensity.I800;
+
+        controller.logo.setImage(new Image(HUPPAAL.class.getResource("ic_launcher/mipmap-mdpi/ic_launcher.png").toExternalForm()));
     }
 
     private void initializeDeleteButton() {
