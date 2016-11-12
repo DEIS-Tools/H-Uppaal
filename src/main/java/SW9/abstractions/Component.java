@@ -281,7 +281,6 @@ public class Component implements Serializable {
 
         json.getAsJsonArray(EDGES).forEach(jsonElement -> {
             final Edge newEdge = new Edge((JsonObject) jsonElement, this);
-            System.out.println(newEdge.getTargetLocation());
             edges.add(newEdge);
         });
     }

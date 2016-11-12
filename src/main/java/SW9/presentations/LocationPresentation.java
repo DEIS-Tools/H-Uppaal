@@ -413,10 +413,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
     private void animatePropertiesPane(final boolean show) {
         if(show) {
-            System.out.println("show");
             propertiesPaneAnimationShow.play();
         } else {
-            System.out.println("hide");
             propertiesPaneAnimationHide.play();
         }
     }

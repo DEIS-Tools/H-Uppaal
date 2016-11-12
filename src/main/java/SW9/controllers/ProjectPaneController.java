@@ -82,8 +82,6 @@ public class ProjectPaneController implements Initializable {
 
     @FXML
     private void saveProjectClicked() {
-        System.out.println("saveProjectClicked");
-
         // Clear the project folder
         try {
             FileUtils.cleanDirectory(new File("project"));

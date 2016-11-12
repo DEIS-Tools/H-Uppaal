@@ -184,8 +184,6 @@ public class HUPPAALPresentation extends StackPane {
 
                 UndoRedoStack.push(() -> { // Perform
                     SelectHelper.getSelectedElements().forEach(selectable -> {
-                        System.out.println(color.color);
-                        System.out.println(color.intensity);
                         selectable.color(color.color, color.intensity);
                     });
                 }, () -> { // Undo

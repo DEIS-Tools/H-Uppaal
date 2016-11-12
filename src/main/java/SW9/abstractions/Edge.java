@@ -186,10 +186,7 @@ public class Edge implements Serializable {
             }
         };
 
-        component.getLocations().forEach(location -> {
-            setFromAndToIfMatches.accept(location);
-            System.out.println(location.getName());
-        });
+        component.getLocations().forEach(setFromAndToIfMatches::accept);
 
         final Location initialLocation = component.getInitialLocation();
         final Location finalLocation = component.getFinalLocation();

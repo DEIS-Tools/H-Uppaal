@@ -86,8 +86,6 @@ public class HUPPAAL extends Application {
         // Load the project from disk
         final File projectFolder = new File("project");
         for (final File file : projectFolder.listFiles()) {
-            System.out.println(file);
-
             final Scanner scanner = new Scanner(file);
             final String fileContent = scanner.useDelimiter("\\A").next();
             scanner.close(); // Put this call in a finally block
