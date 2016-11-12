@@ -173,6 +173,8 @@ public class HUPPAALController implements Initializable {
 
         final Component activeComponent = CanvasController.getActiveComponent();
 
+        if (activeComponent == null) return;
+
         UndoRedoStack.push(() -> { // Perform
             HUPPAAL.getProject().getComponents().remove(activeComponent);
         }, () -> { // Undo
