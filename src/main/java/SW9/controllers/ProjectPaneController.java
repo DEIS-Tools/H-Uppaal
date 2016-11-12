@@ -6,6 +6,7 @@ import SW9.presentations.FilePresentation;
 import SW9.utility.UndoRedoStack;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.jfoenix.controls.JFXRippler;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -101,6 +102,23 @@ public class ProjectPaneController implements Initializable {
                 e.printStackTrace();
             }
         });
+
+        final JsonArray queries = new JsonArray();
+        HUPPAAL.getProject().getQueries().forEach(query -> {
+            queries.add(query.serialize());
+        });
+
+        final Writer writer;
+        try {
+            writer = new FileWriter("project/Queries.json");
+            final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+            gson.toJson(queries, writer);
+            writer.close();
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @FXML

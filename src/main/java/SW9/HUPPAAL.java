@@ -2,10 +2,12 @@ package SW9;
 
 import SW9.abstractions.Component;
 import SW9.abstractions.Project;
+import SW9.abstractions.Query;
 import SW9.presentations.HUPPAALPresentation;
 import SW9.presentations.UndoRedoHistoryPresentation;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import javafx.application.Application;
@@ -91,10 +93,17 @@ public class HUPPAAL extends Application {
             scanner.close(); // Put this call in a finally block
 
             final JsonParser parser = new JsonParser();
-            final JsonObject object = parser.parse(fileContent).getAsJsonObject();
+            final JsonElement element = parser.parse(fileContent);
 
-            final Component componentFromFile = new Component(object);
-            getProject().getComponents().add(componentFromFile);
+            if (file.getName().equals("Queries.json")) {
+                element.getAsJsonArray().forEach(jsonElement -> {
+                    final Query newQuery = new Query((JsonObject) jsonElement);
+                    getProject().getQueries().add(newQuery);
+                });
+            } else {
+                final Component componentFromFile = new Component(element.getAsJsonObject());
+                getProject().getComponents().add(componentFromFile);
+            }
         }
 
         // We're now ready! Let the curtains fall!

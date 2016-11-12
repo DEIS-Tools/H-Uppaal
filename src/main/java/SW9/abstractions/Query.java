@@ -8,18 +8,21 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class Query implements Serializable {
-    private final ObjectProperty<QueryState> queryState;
-    private final StringProperty query;
-    private final StringProperty comment;
+    private static final String QUERY = "query";
+    private static final String COMMENT = "comment";
+
+    private final ObjectProperty<QueryState> queryState = new SimpleObjectProperty<>(QueryState.UNKNOWN);
+    private final StringProperty query = new SimpleStringProperty("");
+    private final StringProperty comment = new SimpleStringProperty("");
 
     public Query(final String query, final String comment, final QueryState queryState) {
-        this(new SimpleStringProperty(query), new SimpleStringProperty(comment), new SimpleObjectProperty<>(queryState));
+        this.query.set(query);
+        this.comment.set(comment);
+        this.queryState.set(queryState);
     }
 
-    Query(final StringProperty query, final StringProperty comment, final ObjectProperty<QueryState> queryState) {
-        this.query = query;
-        this.comment = comment;
-        this.queryState = queryState;
+    public Query(final JsonObject jsonElement) {
+        deserialize(jsonElement);
     }
 
     public QueryState getQueryState() {
@@ -60,11 +63,17 @@ public class Query implements Serializable {
 
     @Override
     public JsonObject serialize() {
-        return null;
+        final JsonObject result = new JsonObject();
+
+        result.addProperty(QUERY, getQuery());
+        result.addProperty(COMMENT, getComment());
+
+        return result;
     }
 
     @Override
-    public void deserialize(JsonObject json) {
-
+    public void deserialize(final JsonObject json) {
+        setQuery(json.getAsJsonPrimitive(QUERY).getAsString());
+        setComment(json.getAsJsonPrimitive(COMMENT).getAsString());
     }
 }
