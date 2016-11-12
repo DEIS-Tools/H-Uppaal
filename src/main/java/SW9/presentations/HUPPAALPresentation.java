@@ -86,9 +86,6 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private void initializeLogo() {
-        final Color color = Color.GREY_BLUE;
-        final Color.Intensity colorIntensity = Color.Intensity.I800;
-
         controller.logo.setImage(new Image(HUPPAAL.class.getResource("ic_launcher/mipmap-mdpi/ic_launcher.png").toExternalForm()));
     }
 
