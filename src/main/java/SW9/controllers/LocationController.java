@@ -54,6 +54,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public Group scaleContent;
     public TagPresentation nameTag;
     public TagPresentation invariantTag;
+    public Circle hiddenAreaCircle;
 
     private boolean isPlaced;
     private long lastPress = 0;

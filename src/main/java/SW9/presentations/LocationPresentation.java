@@ -1,5 +1,6 @@
 package SW9.presentations;
 
+import SW9.Debug;
 import SW9.abstractions.Component;
 import SW9.abstractions.Location;
 import SW9.controllers.LocationController;
@@ -81,9 +82,16 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             initializePropertiesPaneAnimationShow();
             initializePropertiesPaneAnimationHide();
 
+            initializeHiddenAreaCircle();
+
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeHiddenAreaCircle() {
+        controller.hiddenAreaCircle.opacityProperty().bind(Debug.hoverableAreaOpacity);
+        controller.hiddenAreaCircle.setFill(Debug.hoverableAreaColor.getColor(Debug.hoverableAreaColorIntensity));
     }
 
     private void initializeNameTag() {

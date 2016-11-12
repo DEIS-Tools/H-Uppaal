@@ -17,7 +17,7 @@
     <Group onMouseEntered="#hiddenAreaEntered"
            onMouseExited="#hiddenAreaExited">
 
-        <Circle radius="50" opacity="0.2" style="-fx-background-color: brown;"/>
+        <Circle fx:id="hiddenAreaCircle" radius="50"/>
 
         <TagPresentation fx:id="invariantTag" translateX="100"/>
 
