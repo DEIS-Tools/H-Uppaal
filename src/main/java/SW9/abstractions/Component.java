@@ -1,6 +1,7 @@
 package SW9.abstractions;
 
 import SW9.utility.colors.Color;
+import SW9.utility.colors.EnabledColor;
 import SW9.utility.serialize.Serializable;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -253,8 +254,7 @@ public class Component implements Serializable {
         result.addProperty(Y, getY());
         result.addProperty(WIDTH, getWidth());
         result.addProperty(HEIGHT, getHeight());
-        result.addProperty(COLOR, "");
-        result.addProperty(COLOR_INTENSITY, "");
+        result.addProperty(COLOR, EnabledColor.getIdentifier(getColor()));
 
         return result;
     }
@@ -279,5 +279,16 @@ public class Component implements Serializable {
             final Edge newEdge = new Edge((JsonObject) jsonElement, this);
             edges.add(newEdge);
         });
+
+        setX(json.getAsJsonPrimitive(X).getAsDouble());
+        setY(json.getAsJsonPrimitive(Y).getAsDouble());
+        setWidth(json.getAsJsonPrimitive(WIDTH).getAsDouble());
+        setHeight(json.getAsJsonPrimitive(HEIGHT).getAsDouble());
+
+        final EnabledColor enabledColor = EnabledColor.fromIdentifier(json.getAsJsonPrimitive(COLOR).getAsString());
+        if (enabledColor != null) {
+            setColor(enabledColor.color);
+            setColorIntensity(enabledColor.intensity);
+        }
     }
 }
