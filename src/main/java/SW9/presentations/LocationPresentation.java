@@ -194,15 +194,19 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         final Color.Intensity colorIntensity = location.getColorIntensity();
 
         urgencyLabel.setTextFill(color.getTextColor(colorIntensity));
-        location.urgencyProperty().addListener((obs, oldUrgency, newUrgency) -> {
-            if (newUrgency.equals(Location.Urgency.NORMAL)) {
+
+        final Consumer<Location.Urgency> updateUrgencyLabel = urgency -> {
+            if (urgency.equals(Location.Urgency.NORMAL)) {
                 urgencyLabel.setText("");
-            } else if (newUrgency.equals(Location.Urgency.URGENT)) {
+            } else if (urgency.equals(Location.Urgency.URGENT)) {
                 urgencyLabel.setText("U");
-            } else if (newUrgency.equals(Location.Urgency.COMMITTED)) {
+            } else if (urgency.equals(Location.Urgency.COMMITTED)) {
                 urgencyLabel.setText("C");
             }
-        });
+        };
+
+        location.urgencyProperty().addListener((obs, oldUrgency, newUrgency) -> updateUrgencyLabel.accept(newUrgency));
+        updateUrgencyLabel.accept(controller.getLocation().getUrgency());
     }
 
     private void initializeCircle() {
