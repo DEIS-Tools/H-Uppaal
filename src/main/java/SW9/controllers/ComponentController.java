@@ -79,29 +79,31 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             }, "Added new location: " + newLocation.getName(), "add-circle");
         }));
 
-        component.addListener((observable, oldValue, newValue) -> {
+        component.addListener((obs, oldComponent, newComponent) -> {
             // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width from the presentation into the abstraction
 
             // Bind the position of the abstraction to the values in the view
-            root.layoutXProperty().set(newValue.getX());
-            root.layoutYProperty().set(newValue.getY());
-            newValue.xProperty().bind(root.layoutXProperty());
-            newValue.yProperty().bind(root.layoutYProperty());
+            root.layoutXProperty().set(newComponent.getX());
+            root.layoutYProperty().set(newComponent.getY());
+            newComponent.xProperty().bind(root.layoutXProperty());
+            newComponent.yProperty().bind(root.layoutYProperty());
 
             // Bind the declarations of the abstraction the the view
-            declaration.setText(newValue.getDeclarations());
-            newValue.declarationsProperty().bind(declaration.textProperty());
+            declaration.setText(newComponent.getDeclarations());
+            newComponent.declarationsProperty().bind(declaration.textProperty());
 
-            newValue.getEdges().addListener(new ListChangeListener<Edge>() {
+            final Consumer<Edge> handleAddedEdge = edge -> {
+                final EdgePresentation edgePresentation = new EdgePresentation(edge, newComponent);
+                edgePresentationMap.put(edge, edgePresentation);
+                modelContainer.getChildren().add(edgePresentation);
+            };
+
+            newComponent.getEdges().addListener(new ListChangeListener<Edge>() {
                 @Override
                 public void onChanged(final Change<? extends Edge> c) {
                     if (c.next()) {
                         // Edges are added to the component
-                        c.getAddedSubList().forEach(edge -> {
-                            final EdgePresentation edgePresentation = new EdgePresentation(edge, newValue);
-                            edgePresentationMap.put(edge, edgePresentation);
-                            modelContainer.getChildren().add(edgePresentation);
-                        });
+                        c.getAddedSubList().forEach(handleAddedEdge::accept);
 
                         // Edges are removed from the component
                         c.getRemoved().forEach(edge -> {
@@ -113,22 +115,28 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 }
             });
 
-            newValue.getLocations().addListener(new ListChangeListener<Location>() {
+            newComponent.getEdges().forEach(handleAddedEdge);
+
+            final Consumer<Location> handleAddedLocation = (loc) -> {
+                // Create a new presentation, and register it on the map
+                final LocationPresentation newLocationPresentation = new LocationPresentation(loc, getComponent());
+                locationPresentationMap.put(loc, newLocationPresentation);
+
+                // Add it to the view
+                modelContainer.getChildren().add(newLocationPresentation);
+
+                // Bind the newly created location to the mouse
+                if (loc.getX() == 0) {
+                    BindingHelper.bind(loc, getComponent().xProperty(), getComponent().yProperty());
+                }
+            };
+
+            newComponent.getLocations().addListener(new ListChangeListener<Location>() {
                 @Override
                 public void onChanged(final Change<? extends Location> c) {
                     if (c.next()) {
                         // Locations are added to the component
-                        c.getAddedSubList().forEach(location -> {
-                            // Create a new presentation, and register it on the map
-                            final LocationPresentation newLocationPresentation = new LocationPresentation(location, getComponent());
-                            locationPresentationMap.put(location, newLocationPresentation);
-
-                            // Add it to the view
-                            modelContainer.getChildren().add(newLocationPresentation);
-
-                            // Bind the newly created location to the mouse
-                            BindingHelper.bind(location, getComponent().xProperty(), getComponent().yProperty());
-                        });
+                        c.getAddedSubList().forEach(handleAddedLocation);
 
                         // Locations are removed from the component
                         c.getRemoved().forEach(location -> {
@@ -139,6 +147,8 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                     }
                 }
             });
+
+            newComponent.getLocations().forEach(handleAddedLocation);
         });
 
         // The root view have been inflated, initialize the mouse tracker on it

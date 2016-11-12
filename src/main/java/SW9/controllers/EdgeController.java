@@ -8,6 +8,7 @@ import SW9.presentations.CanvasPresentation;
 import SW9.presentations.Link;
 import SW9.presentations.NailPresentation;
 import SW9.utility.helpers.BindingHelper;
+import SW9.utility.helpers.Circular;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -122,7 +123,7 @@ public class EdgeController implements Initializable {
             });
 
             component.addListener((obsComponent, oldComponent, newComponent) -> {
-                if (newEdge.getNails().isEmpty()) {
+                if (newEdge.getNails().isEmpty() && newEdge.getTargetLocation() == null) {
                     final Link link = new Link();
                     links.add(link);
 
@@ -131,6 +132,27 @@ public class EdgeController implements Initializable {
 
                     // Bind the first link and the arrowhead from the source location to the mouse
                     BindingHelper.bind(link, simpleArrowHead, newEdge.getSourceLocation(), newComponent.xProperty(), newComponent.yProperty());
+                } else if (newEdge.getTargetLocation() != null) {
+
+                    edgeRoot.getChildren().add(simpleArrowHead);
+
+                    final Circular[] previous = {newEdge.getSourceLocation()};
+
+                    newEdge.getNails().forEach(nail -> {
+                        final Link link = new Link();
+                        links.add(link);
+
+                        edgeRoot.getChildren().addAll(link, new NailPresentation(nail, getComponent()));
+                        BindingHelper.bind(link, previous[0], nail);
+
+                        previous[0] = nail;
+                    });
+
+                    final Link link = new Link();
+                    links.add(link);
+
+                    edgeRoot.getChildren().add(link);
+                    BindingHelper.bind(link, simpleArrowHead, previous[0], newEdge.getTargetLocation());
                 }
 
                 // Changes are made to the nails list
