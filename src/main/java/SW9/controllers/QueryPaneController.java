@@ -60,7 +60,7 @@ public class QueryPaneController implements Initializable {
 
     @FXML
     private void addQueryButtonClicked() {
-        HUPPAAL.getProject().getQueries().add(new Query("A[] not deadlock", "The model does not contain a deadlock", QueryState.UNKNOWN));
+        HUPPAAL.getProject().getQueries().add(new Query("", "", QueryState.UNKNOWN));
     }
 
     @FXML
