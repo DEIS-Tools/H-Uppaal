@@ -8,6 +8,7 @@ import SW9.backend.UPPAALDriver;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.ComponentPresentation;
 import SW9.presentations.LocationPresentation;
+import SW9.presentations.TagPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.SelectHelper;
@@ -27,8 +28,6 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Rectangle;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -46,17 +45,14 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public Circle initialIndicator;
     public StackPane finalIndicator;
     public Group shakeContent;
-    public Label nameLabel;
-    public Rectangle rectangle;
-    public Rectangle rectangleShakeIndicator;
+    public Label urgencyLabel;
     public Circle circle;
     public Circle circleShakeIndicator;
-    public Path octagon;
-    public Path octagonShakeIndicator;
     public StackPane propertiesPane;
     public JFXTextField nameField;
     public TextArea invariantField;
     public Group scaleContent;
+    public TagPresentation nameTag;
 
     private boolean isPlaced;
     private long lastPress = 0;

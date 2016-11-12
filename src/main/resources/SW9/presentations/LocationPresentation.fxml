@@ -7,31 +7,25 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.*?>
+<?import SW9.presentations.TagPresentation?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="Group"
          fx:controller="SW9.controllers.LocationController"
-         fx:id="root"
-         onMouseEntered="#mouseEntered"
-         onMouseExited="#mouseExited"
-         onMousePressed="#mousePressed"
-         onMouseReleased="#mouseReleased"
-         onMouseDragged="#mouseDragged">
+         fx:id="root">
 
-    <Group fx:id="scaleContent">
+    <TagPresentation fx:id="nameTag" translateX="100"/>
+
+    <Group fx:id="scaleContent"
+           onMouseEntered="#mouseEntered"
+           onMouseExited="#mouseExited"
+           onMousePressed="#mousePressed"
+           onMouseReleased="#mouseReleased"
+           onMouseDragged="#mouseDragged">
 
         <!-- Circular location -->
         <Circle fx:id="circle" radius="20" strokeType="INSIDE"/>
         <Circle fx:id="circleShakeIndicator" radius="10" mouseTransparent="true" fill="white" opacity="0"/>
-
-        <!-- Square location -->
-        <Rectangle fx:id="rectangle" width="40" height="40" strokeType="INSIDE" translateX="-20" translateY="-20"/>
-        <Rectangle fx:id="rectangleShakeIndicator" mouseTransparent="true" fill="white" opacity="0"/>
-
-        <!-- Hexagon location -->
-        <Path fx:id="octagon" strokeType="INSIDE" translateX="-20" translateY="-20"/>
-        <Path fx:id="octagonShakeIndicator" strokeType="INSIDE" translateX="-20" translateY="-20"
-              mouseTransparent="true" fill="white" opacity="0"/>
 
         <Group fx:id="shakeContent">
             <StackPane fx:id="finalIndicator" mouseTransparent="true" translateX="-11" translateY="-11">
@@ -42,7 +36,7 @@
             <Circle fx:id="initialIndicator" strokeType="INSIDE" strokeWidth="2"
                     style="-fx-stroke: -white; -fx-fill: transparent;" radius="15" mouseTransparent="true"/>
 
-            <Label fx:id="nameLabel" styleClass="subhead" mouseTransparent="true"/>
+            <Label fx:id="urgencyLabel" styleClass="subhead" mouseTransparent="true"/>
         </Group>
 
     </Group>
