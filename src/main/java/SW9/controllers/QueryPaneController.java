@@ -56,6 +56,10 @@ public class QueryPaneController implements Initializable {
                 }
             }
         });
+
+        for (final Query newQuery : HUPPAAL.getProject().getQueries()) {
+            queriesList.getChildren().add(new QueryPresentation(newQuery));
+        }
     }
 
     @FXML
