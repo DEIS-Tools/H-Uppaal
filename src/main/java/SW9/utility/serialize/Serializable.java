@@ -1,10 +1,12 @@
 package SW9.utility.serialize;
 
 
-import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 public interface Serializable {
 
-    JsonElement serialize();
+    JsonObject serialize();
+
+    void deserialize(JsonObject json);
 
 }

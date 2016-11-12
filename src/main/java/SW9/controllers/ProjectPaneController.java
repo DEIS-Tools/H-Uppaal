@@ -4,6 +4,8 @@ import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.presentations.FilePresentation;
 import SW9.utility.UndoRedoStack;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jfoenix.controls.JFXRippler;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -13,7 +15,12 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
@@ -77,8 +84,24 @@ public class ProjectPaneController implements Initializable {
     private void saveProjectClicked() {
         System.out.println("saveProjectClicked");
 
+        // Clear the project folder
+        try {
+            FileUtils.cleanDirectory(new File("project"));
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+
         HUPPAAL.getProject().getComponents().forEach(component -> {
-            System.out.println(component.serialize());
+            try {
+                final Writer writer = new FileWriter(String.format("project/%s.json", component.getName()));
+                final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+                gson.toJson(component.serialize(), writer);
+
+                writer.close();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
         });
     }
 

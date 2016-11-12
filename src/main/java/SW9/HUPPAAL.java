@@ -1,10 +1,13 @@
 package SW9;
 
+import SW9.abstractions.Component;
 import SW9.abstractions.Project;
 import SW9.presentations.HUPPAALPresentation;
 import SW9.presentations.UndoRedoHistoryPresentation;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -16,6 +19,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import jiconfont.icons.GoogleMaterialDesignIcons;
 import jiconfont.javafx.IconFontFX;
+
+import java.io.File;
+import java.util.Scanner;
 
 public class HUPPAAL extends Application {
 
@@ -76,6 +82,22 @@ public class HUPPAAL extends Application {
                 new Image(getClass().getResource("ic_launcher/mipmap-xxhdpi/ic_launcher.png").toExternalForm()),
                 new Image(getClass().getResource("ic_launcher/mipmap-xxxhdpi/ic_launcher.png").toExternalForm())
         );
+
+        // Load the project from disk
+        final File projectFolder = new File("project");
+        for (final File file : projectFolder.listFiles()) {
+            System.out.println(file);
+
+            final Scanner scanner = new Scanner(file);
+            final String fileContent = scanner.useDelimiter("\\A").next();
+            scanner.close(); // Put this call in a finally block
+
+            final JsonParser parser = new JsonParser();
+            final JsonObject object = parser.parse(fileContent).getAsJsonObject();
+
+            final Component componentFromFile = new Component(object);
+            getProject().getComponents().add(componentFromFile);
+        }
 
         // We're now ready! Let the curtains fall!
         stage.show();

@@ -1,12 +1,16 @@
 package SW9.abstractions;
 
 import SW9.utility.helpers.Circular;
+import SW9.utility.serialize.Serializable;
+import com.google.gson.JsonObject;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 
-public class Nail implements Circular {
+public class Nail implements Circular, Serializable {
 
+    private static final String X = "x";
+    private static final String Y = "Y";
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
@@ -19,6 +23,10 @@ public class Nail implements Circular {
     public Nail(final double x, final double y) {
         this.x.setValue(x);
         this.y.setValue(y);
+    }
+
+    public Nail(final JsonObject jsonObject) {
+        deserialize(jsonObject);
     }
 
     public double getX() {
@@ -53,6 +61,10 @@ public class Nail implements Circular {
         this.radius.set(radius);
     }
 
+    /*
+     * SERIALIZATION OF CLASS
+     */
+
     public DoubleProperty radiusProperty() {
         return radius;
     }
@@ -60,5 +72,21 @@ public class Nail implements Circular {
     @Override
     public DoubleProperty scaleProperty() {
         return new SimpleDoubleProperty(1d);
+    }
+
+    @Override
+    public JsonObject serialize() {
+        final JsonObject result = new JsonObject();
+
+        result.addProperty(X, getX());
+        result.addProperty(Y, getY());
+
+        return result;
+    }
+
+    @Override
+    public void deserialize(final JsonObject json) {
+        setX(json.getAsJsonPrimitive(X).getAsDouble());
+        setY(json.getAsJsonPrimitive(Y).getAsDouble());
     }
 }

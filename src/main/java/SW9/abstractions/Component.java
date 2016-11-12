@@ -2,7 +2,7 @@ package SW9.abstractions;
 
 import SW9.utility.colors.Color;
 import SW9.utility.serialize.Serializable;
-import com.google.gson.JsonElement;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import javafx.beans.property.*;
@@ -15,16 +15,26 @@ public class Component implements Serializable {
 
     // Used to generate unique IDs
     private static final AtomicInteger hiddenID = new AtomicInteger(0);
-
+    private static final String NAME = "name";
+    private static final String DECLARATIONS = "declarations";
+    private static final String LOCATIONS = "locations";
+    private static final String INITIAL_LOCATION = "initialLocation";
+    private static final String FINAL_LOCATION = "finalLocation";
+    private static final String EDGES = "edges";
+    private static final String X = "x";
+    private static final String Y = "y";
+    private static final String WIDTH = "width";
+    private static final String HEIGHT = "height";
+    private static final String COLOR = "color";
+    private static final String COLOR_INTENSITY = "colorIntensity";
     // Verification properties
     @Expose
-    private final StringProperty name;
+    private final StringProperty name = new SimpleStringProperty("");
     private final StringProperty declarations = new SimpleStringProperty("");
     private final ObservableList<Location> locations = FXCollections.observableArrayList();
     private final ObservableList<Edge> edges = FXCollections.observableArrayList();
     private final ObjectProperty<Location> initialLocation = new SimpleObjectProperty<>();
     private final ObjectProperty<Location> finalLocation = new SimpleObjectProperty<>();
-
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
@@ -39,11 +49,7 @@ public class Component implements Serializable {
     }
 
     public Component(final String name) {
-        this(new SimpleStringProperty(name));
-    }
-
-    public Component(final StringProperty name) {
-        this.name = name;
+        setName(name);
 
         // A component must have at least one initial location
         final Location initialLocation = new Location();
@@ -58,6 +64,11 @@ public class Component implements Serializable {
         finalLocation.setColorIntensity(getColorIntensity());
         finalLocation.setColor(getColor());
         this.finalLocation.set(finalLocation);
+    }
+
+    public Component(final JsonObject object) {
+        hiddenID.incrementAndGet();
+        deserialize(object);
     }
 
     public String getName() {
@@ -168,6 +179,10 @@ public class Component implements Serializable {
         return color;
     }
 
+    /*
+     * SERIALIZATION OF CLASS
+     */
+
     public Color.Intensity getColorIntensity() {
         return colorIntensity.get();
     }
@@ -221,21 +236,53 @@ public class Component implements Serializable {
     }
 
     @Override
-    public JsonElement serialize() {
+    public JsonObject serialize() {
         final JsonObject result = new JsonObject();
 
-        result.addProperty("name", getName());
-        result.addProperty("declarations", getDeclarations());
-        result.addProperty("locations", "");
-        result.addProperty("edges", "");
+        result.addProperty(NAME, getName());
+        result.addProperty(DECLARATIONS, getDeclarations());
 
-        result.addProperty("x", getX());
-        result.addProperty("y", getY());
-        result.addProperty("width", getWidth());
-        result.addProperty("height", getHeight());
-        result.addProperty("color", "");
-        result.addProperty("colorIntensity", "");
+        final JsonArray locations = new JsonArray();
+        getLocations().forEach(location -> locations.add(location.serialize()));
+        result.add(LOCATIONS, locations);
+
+        result.add(INITIAL_LOCATION, getInitialLocation().serialize());
+        result.add(FINAL_LOCATION, getFinalLocation().serialize());
+
+        final JsonArray edges = new JsonArray();
+        getEdges().forEach(edge -> edges.add(edge.serialize()));
+        result.add(EDGES, edges);
+
+        result.addProperty(X, getX());
+        result.addProperty(Y, getY());
+        result.addProperty(WIDTH, getWidth());
+        result.addProperty(HEIGHT, getHeight());
+        result.addProperty(COLOR, "");
+        result.addProperty(COLOR_INTENSITY, "");
 
         return result;
+    }
+
+    @Override
+    public void deserialize(final JsonObject json) {
+        setName(json.getAsJsonPrimitive(NAME).getAsString());
+        setDeclarations(json.getAsJsonPrimitive(DECLARATIONS).getAsString());
+
+        json.getAsJsonArray(LOCATIONS).forEach(jsonElement -> {
+            final Location newLocation = new Location((JsonObject) jsonElement);
+            locations.add(newLocation);
+        });
+
+        final Location newInitialLocation = new Location(json.getAsJsonObject(INITIAL_LOCATION));
+        setInitialLocation(newInitialLocation);
+
+        final Location newFinalLocation = new Location(json.getAsJsonObject(FINAL_LOCATION));
+        setFinalLocation(newFinalLocation);
+
+        json.getAsJsonArray(EDGES).forEach(jsonElement -> {
+            final Edge newEdge = new Edge((JsonObject) jsonElement, this);
+            System.out.println(newEdge.getTargetLocation());
+            edges.add(newEdge);
+        });
     }
 }

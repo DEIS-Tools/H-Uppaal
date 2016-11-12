@@ -2,21 +2,30 @@ package SW9.abstractions;
 
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.Circular;
+import SW9.utility.serialize.Serializable;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import javafx.beans.property.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Location implements Circular {
+public class Location implements Circular, Serializable {
 
     // Used to generate unique IDs
     private static final AtomicInteger hiddenID = new AtomicInteger(0);
-
+    private static final String NAME = "name";
+    private static final String INVARIANT = "invariant";
+    private static final String TYPE = "type";
+    private static final String URGENCY = "urgency";
+    private static final String X = "x";
+    private static final String Y = "Y";
+    private static final String COLOR = "color";
+    private static final String COLOR_INTENSITY = "colorIntensity";
     // Verification properties
     private final StringProperty name = new SimpleStringProperty("");
     private final StringProperty invariant = new SimpleStringProperty("");
     private final ObjectProperty<Type> type = new SimpleObjectProperty<>(Type.NORMAL);
     private final ObjectProperty<Urgency> urgency = new SimpleObjectProperty<>(Urgency.NORMAL);
-
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
@@ -27,6 +36,11 @@ public class Location implements Circular {
 
     public Location() {
         setName("L" + hiddenID.getAndIncrement());
+    }
+
+    public Location(final JsonObject jsonObject) {
+        hiddenID.incrementAndGet();
+        deserialize(jsonObject);
     }
 
     public String getName() {
@@ -125,6 +139,10 @@ public class Location implements Circular {
         return colorIntensity;
     }
 
+    /*
+     * SERIALIZATION OF CLASS
+     */
+
     public double getRadius() {
         return radius.get();
     }
@@ -151,12 +169,40 @@ public class Location implements Circular {
         return scale;
     }
 
+    @Override
+    public JsonObject serialize() {
+        final JsonObject result = new JsonObject();
+
+        result.addProperty(NAME, getName());
+        result.addProperty(INVARIANT, getInvariant());
+        result.add(TYPE, new Gson().toJsonTree(getType(), Type.class));
+        result.add(URGENCY, new Gson().toJsonTree(getUrgency(), Urgency.class));
+
+        result.addProperty(X, getX());
+        result.addProperty(Y, getY());
+        result.addProperty(COLOR, "");
+        result.addProperty(COLOR_INTENSITY, "");
+
+        return result;
+    }
+
+    @Override
+    public void deserialize(final JsonObject json) {
+        setName(json.getAsJsonPrimitive(NAME).getAsString());
+        setInvariant(json.getAsJsonPrimitive(INVARIANT).getAsString());
+        setType(new Gson().fromJson(json.getAsJsonPrimitive(TYPE), Type.class));
+        setUrgency(new Gson().fromJson(json.getAsJsonPrimitive(URGENCY), Urgency.class));
+
+        setX(json.getAsJsonPrimitive(X).getAsDouble());
+        setY(json.getAsJsonPrimitive(Y).getAsDouble());
+    }
+
     public enum Type {
-        NORMAL, INITIAL, FINAl;
+        NORMAL, INITIAL, FINAl
     }
 
     public enum Urgency {
-        NORMAL, URGENT, COMMITTED;
+        NORMAL, URGENT, COMMITTED
     }
 
 }
