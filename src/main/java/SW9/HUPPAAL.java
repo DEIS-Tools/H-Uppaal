@@ -85,8 +85,11 @@ public class HUPPAAL extends Application {
                 new Image(getClass().getResource("ic_launcher/mipmap-xxxhdpi/ic_launcher.png").toExternalForm())
         );
 
-        // Load the project from disk
+        // Make sure that the project directory exists
         final File projectFolder = new File("project");
+        projectFolder.mkdir();
+
+        // Load the project from disk
         for (final File file : projectFolder.listFiles()) {
             final Scanner scanner = new Scanner(file);
             final String fileContent = scanner.useDelimiter("\\A").next();
