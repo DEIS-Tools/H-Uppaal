@@ -11,8 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Location implements Circular, Serializable {
 
-    // Used to generate unique IDs
-    private static final AtomicInteger hiddenID = new AtomicInteger(0);
+    private static final AtomicInteger hiddenID = new AtomicInteger(0); // Used to generate unique IDs
     private static final String NAME = "name";
     private static final String INVARIANT = "invariant";
     private static final String TYPE = "type";
@@ -21,11 +20,13 @@ public class Location implements Circular, Serializable {
     private static final String Y = "Y";
     private static final String COLOR = "color";
     private static final String COLOR_INTENSITY = "colorIntensity";
+
     // Verification properties
     private final StringProperty name = new SimpleStringProperty("");
     private final StringProperty invariant = new SimpleStringProperty("");
     private final ObjectProperty<Type> type = new SimpleObjectProperty<>(Type.NORMAL);
     private final ObjectProperty<Urgency> urgency = new SimpleObjectProperty<>(Urgency.NORMAL);
+
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
@@ -138,10 +139,6 @@ public class Location implements Circular, Serializable {
     public ObjectProperty<Color.Intensity> colorIntensityProperty() {
         return colorIntensity;
     }
-
-    /*
-     * SERIALIZATION OF CLASS
-     */
 
     public double getRadius() {
         return radius.get();
