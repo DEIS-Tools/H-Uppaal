@@ -23,7 +23,6 @@ public class TagPresentation extends StackPane {
     private final static Color.Intensity backgroundColorIntensity = Color.Intensity.I50;
     private LineTo l2;
     private LineTo l3;
-    private String placeholder;
 
     public TagPresentation() {
         final URL location = this.getClass().getResource("TagPresentation.fxml");
