@@ -327,24 +327,14 @@ public enum Color {
         return colorMap.get(intensity).getTextColor();
     }
 
+    public String getTextColorRgbaString(final Intensity intensity) {
+        return colorMap.get(intensity).getTextColorRgbaString();
+    }
+
     public java.awt.Color toAwtColor(final Intensity intensity) {
         return new java.awt.Color((int) (getColor(intensity).getRed() * 255),
                 (int) (getColor(intensity).getGreen() * 255),
                 (int) (getColor(intensity).getBlue() * 255));
-    }
-
-    public String toHexColor(final Intensity intensity) {
-        return "#" + Integer.toHexString(toAwtColor(intensity).getRGB()).substring(2);
-    }
-
-    public java.awt.Color toAwtTextColor(final Intensity intensity) {
-        return new java.awt.Color((int) (getTextColor(intensity).getRed() * 255),
-                (int) (getTextColor(intensity).getGreen() * 255),
-                (int) (getTextColor(intensity).getBlue() * 255));
-    }
-
-    public String toHexTextColor(final Intensity intensity) {
-        return "#" + Integer.toHexString(toAwtTextColor(intensity).getRGB()).substring(2);
     }
 
     public enum Intensity {
@@ -399,10 +389,14 @@ public enum Color {
 
     private static class ColorParser {
 
+        private final String colorHex;
+        private final String textColorRgbaString;
         private final javafx.scene.paint.Color color;
         private final javafx.scene.paint.Color textColor;
 
         public ColorParser(final String color, final String textColor) {
+            colorHex = color;
+            textColorRgbaString = textColor;
             this.color = javafx.scene.paint.Color.web(color);
             this.textColor = javafx.scene.paint.Color.web(textColor);
         }
@@ -414,6 +408,8 @@ public enum Color {
         protected javafx.scene.paint.Color getTextColor() {
             return textColor;
         }
+
+        protected String getTextColorRgbaString() {return textColorRgbaString; }
 
     }
 

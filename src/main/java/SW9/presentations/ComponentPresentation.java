@@ -128,7 +128,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             final Color.Intensity colorIntensity = component.getColorIntensity();
 
             // Set the text color for the label
-            controller.name.setStyle("-fx-text-fill: " + color.toHexTextColor(colorIntensity) + ";");
+            controller.name.setStyle("-fx-text-fill: " + color.getTextColorRgbaString(colorIntensity) + ";");
             controller.name.setFocusColor(color.getTextColor(colorIntensity));
             controller.name.setUnFocusColor(javafx.scene.paint.Color.TRANSPARENT);
         };
