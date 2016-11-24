@@ -20,10 +20,11 @@
         <Circle fx:id="hiddenAreaCircle" radius="50"/>
 
         <TagPresentation fx:id="invariantTag" translateX="100"/>
-
+        
+        <TagPresentation fx:id="nameTag" translateX="100"/>
     </Group>
 
-    <TagPresentation fx:id="nameTag" translateX="100"/>
+
 
     <Group fx:id="scaleContent"
            onMouseEntered="#mouseEntered"

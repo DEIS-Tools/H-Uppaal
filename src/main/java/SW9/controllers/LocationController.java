@@ -310,12 +310,17 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     @FXML
     private void hiddenAreaEntered() {
         invariantTag.setOpacity(1);
+        nameTag.setOpacity(1);
     }
 
     @FXML
     private void hiddenAreaExited() {
         if (getLocation().getInvariant().equals("")) {
             invariantTag.setOpacity(0);
+        }
+
+        if(getLocation().getNickname().equals("")) {
+            nameTag.setOpacity(0);
         }
     }
 

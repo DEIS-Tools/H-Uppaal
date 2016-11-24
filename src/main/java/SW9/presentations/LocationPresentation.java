@@ -129,19 +129,43 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     }
 
     private void initializeNameTag() {
+
+        controller.nameTag.replaceSpace();
+
         final Consumer<Location> updateNameTag = location -> {
             // Update the color
             controller.nameTag.bindToColor(location.colorProperty(), location.colorIntensityProperty());
 
-            // Update the name
+            // Update the invariant
             controller.nameTag.setAndBindString(location.nicknameProperty());
+
+            // Update the placeholder
+            controller.nameTag.setPlaceholder("No name");
 
             // Update the position
             controller.nameTag.translateXProperty().set(controller.circle.getRadius() * 1.5);
-            controller.nameTag.translateYProperty().bind(controller.nameTag.heightProperty().divide(-2));
+            controller.nameTag.translateYProperty().bind(controller.invariantTag.heightProperty().divide(-2));
+
+
+            final Consumer<String> updateVisibility = (nickname) -> {
+                if (nickname.equals("")) {
+                    controller.nameTag.setOpacity(0);
+                } else {
+                    controller.nameTag.setOpacity(1);
+                }
+            };
+
+            location.nicknameProperty().addListener((obs, oldNickname, newNickname) -> updateVisibility.accept(newNickname));
+            updateVisibility.accept(location.getNickname());
         };
 
-        controller.nameTag.replaceSpace();
+        controller.nameTag.opacityProperty().addListener((obs, oldOpacity, newOpacity) -> {
+            if (newOpacity.doubleValue() < 1) {
+                if (controller.nameTag.textFieldIsFocused()) {
+                    controller.nameTag.setOpacity(1);
+                }
+            }
+        });
 
         controller.locationProperty().addListener(observable -> updateNameTag.accept(controller.getLocation()));
         updateNameTag.accept(controller.getLocation());
