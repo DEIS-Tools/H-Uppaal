@@ -76,7 +76,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 component.get().addLocation(newLocation);
             }, () -> { // Undo
                 component.get().removeLocation(newLocation);
-            }, "Added new location: " + newLocation.getName(), "add-circle");
+            }, "Added new location: " + newLocation.getNickname(), "add-circle");
         }));
 
         component.addListener((obs, oldComponent, newComponent) -> {

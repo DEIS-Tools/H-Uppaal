@@ -13,7 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Location implements Circular, Serializable {
 
     private static final AtomicInteger hiddenID = new AtomicInteger(0); // Used to generate unique IDs
-    private static final String NAME = "name";
+    private static final String NICKNAME = "nickname";
+    private static final String ID = "id";
     private static final String INVARIANT = "invariant";
     private static final String TYPE = "type";
     private static final String URGENCY = "urgency";
@@ -22,7 +23,8 @@ public class Location implements Circular, Serializable {
     private static final String COLOR = "color";
 
     // Verification properties
-    private final StringProperty name = new SimpleStringProperty("");
+    private final StringProperty nickname = new SimpleStringProperty("");
+    private final StringProperty id = new SimpleStringProperty("");
     private final StringProperty invariant = new SimpleStringProperty("");
     private final ObjectProperty<Type> type = new SimpleObjectProperty<>(Type.NORMAL);
     private final ObjectProperty<Urgency> urgency = new SimpleObjectProperty<>(Urgency.NORMAL);
@@ -36,7 +38,7 @@ public class Location implements Circular, Serializable {
     private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I500);
 
     public Location() {
-        setName("L" + hiddenID.getAndIncrement());
+        setId("L" + hiddenID.getAndIncrement());
     }
 
     public Location(final JsonObject jsonObject) {
@@ -44,16 +46,28 @@ public class Location implements Circular, Serializable {
         deserialize(jsonObject);
     }
 
-    public String getName() {
-        return name.get();
+    public String getNickname() {
+        return nickname.get();
     }
 
-    public void setName(final String name) {
-        this.name.set(name);
+    public void setNickname(final String nickname) {
+        this.nickname.set(nickname);
     }
 
-    public StringProperty nameProperty() {
-        return name;
+    public StringProperty nicknameProperty() {
+        return nickname;
+    }
+
+    public String getId() {
+        return id.get();
+    }
+
+    public StringProperty idProperty() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id.set(id);
     }
 
     public String getInvariant() {
@@ -169,8 +183,8 @@ public class Location implements Circular, Serializable {
     @Override
     public JsonObject serialize() {
         final JsonObject result = new JsonObject();
-
-        result.addProperty(NAME, getName());
+        result.addProperty(ID, getId());
+        result.addProperty(NICKNAME, getNickname());
         result.addProperty(INVARIANT, getInvariant());
         result.add(TYPE, new Gson().toJsonTree(getType(), Type.class));
         result.add(URGENCY, new Gson().toJsonTree(getUrgency(), Urgency.class));
@@ -184,7 +198,8 @@ public class Location implements Circular, Serializable {
 
     @Override
     public void deserialize(final JsonObject json) {
-        setName(json.getAsJsonPrimitive(NAME).getAsString());
+        setId(json.getAsJsonPrimitive(ID).getAsString());
+        setNickname(json.getAsJsonPrimitive(NICKNAME).getAsString());
         setInvariant(json.getAsJsonPrimitive(INVARIANT).getAsString());
         setType(new Gson().fromJson(json.getAsJsonPrimitive(TYPE), Type.class));
         setUrgency(new Gson().fromJson(json.getAsJsonPrimitive(URGENCY), Urgency.class));

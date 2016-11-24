@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 
 public class LocationPresentation extends Group implements MouseTrackable, SelectHelper.Selectable {
 
-    public static final double RADIUS = 20;
+    public static final double RADIUS = 15;
     public static final double INITIAL_RADIUS = RADIUS / 4 * 3;
     private final LocationController controller;
 
@@ -72,6 +72,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             // TODO make location draggable within a component
             // TODO make creation of location possible from the mouse
 
+            initializeIdLabel();
+
             initializeTypeGraphics();
 
             initializeCircle();
@@ -99,13 +101,42 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         controller.hiddenAreaCircle.setFill(Debug.hoverableAreaColor.getColor(Debug.hoverableAreaColorIntensity));
     }
 
+    private void initializeIdLabel() {
+        final Location location = controller.getLocation();
+
+
+        final Label idLabel = controller.idLabel;
+
+        idLabel.textProperty().bind((location.idProperty()));
+
+        // Center align the label
+        idLabel.widthProperty().addListener((obsWidth, oldWidth, newWidth) -> idLabel.translateXProperty().set(newWidth.doubleValue() / -2));
+        idLabel.heightProperty().addListener((obsHeight, oldHeight, newHeight) -> idLabel.translateYProperty().set(newHeight.doubleValue() / -2));
+
+        final ObjectProperty<Color> color = location.colorProperty();
+        final ObjectProperty<Color.Intensity> colorIntensity = location.colorIntensityProperty();
+
+        // Delegate to style the label based on the color of the location
+        final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
+            idLabel.setTextFill(newColor.getTextColor(newIntensity));
+        };
+
+        updateColorDelegates.add(updateColor);
+
+        // Set the initial color
+        updateColor.accept(color.get(), colorIntensity.get());
+
+        // Update the color of the circle when the color of the location is updated
+        color.addListener((obs, old, newColor) -> updateColor.accept(newColor, colorIntensity.get()));
+    }
+
     private void initializeNameTag() {
         final Consumer<Location> updateNameTag = location -> {
             // Update the color
             controller.nameTag.bindToColor(location.colorProperty(), location.colorIntensityProperty());
 
             // Update the name
-            controller.nameTag.setAndBindString(location.nameProperty());
+            controller.nameTag.setAndBindString(location.nicknameProperty());
 
             // Update the position
             controller.nameTag.translateXProperty().set(controller.circle.getRadius() * 1.5);

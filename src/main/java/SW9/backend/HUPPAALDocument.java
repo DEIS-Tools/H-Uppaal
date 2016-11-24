@@ -107,8 +107,8 @@ public class HUPPAALDocument {
         template.insert(uLocation, null);
 
         // Set name of the location
-        if (hLocation.getName() != null) {
-            uLocation.setProperty("name", hLocation.getName());
+        if (hLocation.getNickname() != null) {
+            uLocation.setProperty("name", hLocation.getNickname());
         } else {
             uLocation.setProperty("name", fallbackName);
         }

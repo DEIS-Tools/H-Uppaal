@@ -156,8 +156,8 @@ public class Edge implements Serializable {
     public JsonObject serialize() {
         final JsonObject result = new JsonObject();
 
-        result.addProperty(SOURCE_LOCATION, getSourceLocation().getName());
-        result.addProperty(TARGET_LOCATION, getTargetLocation().getName());
+        result.addProperty(SOURCE_LOCATION, getSourceLocation().getNickname());
+        result.addProperty(TARGET_LOCATION, getTargetLocation().getNickname());
         result.addProperty(SELECT, getSelect());
         result.addProperty(GUARD, getGuard());
         result.addProperty(UPDATE, getUpdate());
@@ -177,9 +177,9 @@ public class Edge implements Serializable {
 
     public void deserialize(final JsonObject json, final Component component) {
         final Consumer<Location> setFromAndToIfMatches = (location) -> {
-            if (location.getName().equals(json.getAsJsonPrimitive(SOURCE_LOCATION).getAsString())) {
+            if (location.getNickname().equals(json.getAsJsonPrimitive(SOURCE_LOCATION).getAsString())) {
                 setSourceLocation(location);
-            } else if (location.getName().equals(json.getAsJsonPrimitive(TARGET_LOCATION).getAsString())) {
+            } else if (location.getNickname().equals(json.getAsJsonPrimitive(TARGET_LOCATION).getAsString())) {
                 setTargetLocation(location);
             }
         };

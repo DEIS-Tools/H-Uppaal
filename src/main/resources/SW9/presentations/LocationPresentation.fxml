@@ -47,6 +47,8 @@
 
             <!-- The initial indicator -->
             <Path fx:id="initialIndicator" strokeType="INSIDE" strokeWidth="2"  style="-fx-stroke: -white; -fx-fill: transparent;" mouseTransparent="true"/>
+
+            <Label fx:id="idLabel" styleClass="caption" mouseTransparent="true"/>
         </Group>
 
     </Group>

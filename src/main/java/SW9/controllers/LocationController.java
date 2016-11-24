@@ -56,6 +56,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public TagPresentation invariantTag;
     public Circle hiddenAreaCircle;
     public Path locationShape;
+    public Label idLabel;
 
     private boolean isPlaced;
     private long lastPress = 0;
@@ -76,8 +77,8 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
             newLocation.scaleProperty().bind(scaleContent.scaleXProperty());
 
             // initialize the name field and its bindings
-            nameField.setText(newLocation.getName());
-            newLocation.nameProperty().bind(nameField.textProperty());
+            nameField.setText(newLocation.getNickname());
+            newLocation.nicknameProperty().bind(nameField.textProperty());
 
             // initialize the invariant field and its bindings
             invariantField.setText(newLocation.getInvariant());
@@ -112,7 +113,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                 if (getLocation().getType() == Location.Type.NORMAL && !getComponent().getLocations().contains(getLocation())) return;
 
                 UPPAALDriver.verify(
-                        "E<> " + getComponent().getName() + "." + getLocation().getName(),
+                        "E<> " + getComponent().getName() + "." + getLocation().getNickname(),
                         result -> {
                             final LocationPresentation locationPresentation = (LocationPresentation) LocationController.this.root;
 
@@ -179,13 +180,13 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                     getLocation().setUrgency(Location.Urgency.NORMAL);
                 }, () -> { // Undo
                     getLocation().setUrgency(previousUrgency);
-                }, "Made location " + getLocation().getName() + " urgent", "hourglass-full");
+                }, "Made location " + getLocation().getNickname() + " urgent", "hourglass-full");
             } else {
                 UndoRedoStack.push(() -> { // Perform
                     getLocation().setUrgency(Location.Urgency.URGENT);
                 }, () -> { // Undo
                     getLocation().setUrgency(previousUrgency);
-                }, "Made location " + getLocation().getName() + " normal (back form urgent)", "hourglass-empty");
+                }, "Made location " + getLocation().getNickname() + " normal (back form urgent)", "hourglass-empty");
             }
         }));
 
@@ -198,13 +199,13 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                     getLocation().setUrgency(Location.Urgency.NORMAL);
                 }, () -> { // Undo
                     getLocation().setUrgency(previousUrgency);
-                }, "Made location " + getLocation().getName() + " committed", "hourglass-full");
+                }, "Made location " + getLocation().getNickname() + " committed", "hourglass-full");
             } else {
                 UndoRedoStack.push(() -> { // Perform
                     getLocation().setUrgency(Location.Urgency.COMMITTED);
                 }, () -> { // Undo
                     getLocation().setUrgency(previousUrgency);
-                }, "Made location " + getLocation().getName() + " normal (back from committed)", "hourglass-empty");
+                }, "Made location " + getLocation().getNickname() + " normal (back from committed)", "hourglass-empty");
             }
 
         }));
@@ -243,7 +244,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                         component.addEdge(newEdge);
                     }, () -> { // Undo
                         component.removeEdge(newEdge);
-                    }, "Created edge starting from location " + getLocation().getName(), "add-circle");
+                    }, "Created edge starting from location " + getLocation().getNickname(), "add-circle");
                 }
                 // Otherwise, select the location
                 else {
