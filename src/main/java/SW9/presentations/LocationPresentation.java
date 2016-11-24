@@ -223,7 +223,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
         final Location location = controller.getLocation();
 
-        location.urgencyProperty().addListener((obsUrgency, oldUrgency, newUrgency) -> {
+
+        BiConsumer<Location.Urgency, Location.Urgency> updateUrgencies = (oldUrgency, newUrgency) -> {
             final Transition toUrgent = new Transition() {
                 {
                     setCycleDuration(Duration.millis(200));
@@ -246,7 +247,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
                 }
             };
 
-            if(oldUrgency.equals(Location.Urgency.NORMAL)) {
+            if(oldUrgency.equals(Location.Urgency.NORMAL) && !newUrgency.equals(Location.Urgency.NORMAL)) {
                 toUrgent.play();
 
             } else if(newUrgency.equals(Location.Urgency.NORMAL)) {
@@ -258,8 +259,13 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             } else {
                 path.setStrokeWidth(1);
             }
+        };
 
+        location.urgencyProperty().addListener((obsUrgency, oldUrgency, newUrgency) -> {
+            updateUrgencies.accept(oldUrgency, newUrgency);
         });
+
+        updateUrgencies.accept(Location.Urgency.NORMAL, location.getUrgency());
 
         // Update the colors
         final ObjectProperty<Color> color = location.colorProperty();
