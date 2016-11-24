@@ -86,8 +86,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             initializeHoverAnimationEntered();
             initializeHoverAnimationExited();
             initializeShakeAnimation();
-            initializePropertiesPaneAnimationShow();
-            initializePropertiesPaneAnimationHide();
 
             initializeHiddenAreaCircle();
 
@@ -229,6 +227,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         final Location location = controller.getLocation();
 
         final Circle circle = controller.circle;
+        circle.setRadius(RADIUS);
         final ObjectProperty<Color> color = location.colorProperty();
         final ObjectProperty<Color.Intensity> colorIntensity = location.colorIntensityProperty();
 
@@ -430,39 +429,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             controller.circleShakeIndicator.setOpacity(0);
             shakeContentAnimation.playFromStart();
             shakeContentAnimation.stop();
-        }
-    }
-
-    private void initializePropertiesPaneAnimationHide() {
-        controller.propertiesPane.visibleProperty().addListener((obs, oldVisibility, newVisibility) -> {
-            animatePropertiesPane(newVisibility);
-        });
-
-        controller.propertiesPane.setEffect(DropShadowHelper.generateElevationShadow(8));
-
-        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
-
-        final KeyValue noScaleX = new KeyValue(controller.propertiesPane.scaleXProperty(), 0, interpolator);
-        final KeyValue fullScaleX = new KeyValue(controller.propertiesPane.scaleXProperty(), 1, interpolator);
-        final KeyValue noScaleY = new KeyValue(controller.propertiesPane.scaleYProperty(), 0, interpolator);
-        final KeyValue fullScaleY = new KeyValue(controller.propertiesPane.scaleYProperty(), 1, interpolator);
-
-        final KeyFrame[] shakeFrames = {
-                new KeyFrame(Duration.millis(0), noScaleX, noScaleY),
-                new KeyFrame(Duration.millis(100), fullScaleX, fullScaleY),
-        };
-
-        propertiesPaneAnimationShow.getKeyFrames().addAll(shakeFrames);
-    }
-
-    private void initializePropertiesPaneAnimationShow() {
-    }
-
-    private void animatePropertiesPane(final boolean show) {
-        if(show) {
-            propertiesPaneAnimationShow.play();
-        } else {
-            propertiesPaneAnimationHide.play();
         }
     }
 

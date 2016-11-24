@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Location implements Circular, Serializable {
 
-    private static final AtomicInteger hiddenID = new AtomicInteger(0); // Used to generate unique IDs
+    private static final AtomicInteger hiddenID = new AtomicInteger(10); // Used to generate unique IDs
     private static final String NICKNAME = "nickname";
     private static final String ID = "id";
     private static final String INVARIANT = "invariant";

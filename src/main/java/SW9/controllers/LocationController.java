@@ -38,8 +38,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class LocationController implements Initializable, SelectHelper.ColorSelectable {
 
-    private static final AtomicInteger hiddenLocationID = new AtomicInteger(0);
-    private static final long DOUBLE_PRESS_SHOW_PROPERTIES_DELAY = 500;
     private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
     public Group root;
@@ -48,9 +46,6 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public Group shakeContent;
     public Circle circle;
     public Circle circleShakeIndicator;
-    public StackPane propertiesPane;
-    public JFXTextField nameField;
-    public TextArea invariantField;
     public Group scaleContent;
     public TagPresentation nameTag;
     public TagPresentation invariantTag;
@@ -59,7 +54,6 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public Label idLabel;
 
     private boolean isPlaced;
-    private long lastPress = 0;
 
     private TimerTask reachabilityCheckTask;
 
@@ -75,26 +69,11 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
             // The scale property on the abstraction must reflect the radius in the view
             newLocation.scaleProperty().bind(scaleContent.scaleXProperty());
-
-            // initialize the name field and its bindings
-            nameField.setText(newLocation.getNickname());
-            newLocation.nicknameProperty().bind(nameField.textProperty());
-
-            // initialize the invariant field and its bindings
-            invariantField.setText(newLocation.getInvariant());
-            newLocation.invariantProperty().bind(invariantField.textProperty());
         });
 
         // Scale x and y 1:1 (based on the x-scale)
         scaleContent.scaleYProperty().bind(scaleContent.scaleXProperty());
 
-        // Register click listener on canvas to hide the property pane when the canvas is clicked
-        CanvasPresentation.mouseTracker.registerOnMousePressedEventHandler(event -> propertiesPane.setVisible(false));
-
-        // Register a key-bind for hiding the property pane (using a hidden locationID)
-        KeyboardTracker.registerKeybind(KeyboardTracker.HIDE_LOCATION_PROPERTY_PANE + hiddenLocationID.getAndIncrement(), new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
-            propertiesPane.setVisible(false);
-        }));
 
         initializeReachabilityCheck();
     }
@@ -249,15 +228,6 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                 // Otherwise, select the location
                 else {
                     SelectHelper.select(this);
-                }
-
-                // Double clicking the location opens the properties pane
-                if (lastPress + DOUBLE_PRESS_SHOW_PROPERTIES_DELAY >= System.currentTimeMillis()) {
-                    propertiesPane.setVisible(true);
-                    // Place the location in front (so that the properties pane is above edges etc)
-                    root.toFront();
-                } else {
-                    lastPress = System.currentTimeMillis();
                 }
 
                 // Update position for undo dragging

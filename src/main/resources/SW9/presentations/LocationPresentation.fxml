@@ -33,7 +33,7 @@
            onMouseDragged="#mouseDragged">
 
         <!-- Circular location -->
-        <Circle fx:id="circle" radius="20" strokeType="INSIDE" opacity="0"/>
+        <Circle fx:id="circle" strokeType="INSIDE" opacity="0"/>
         <Circle fx:id="circleShakeIndicator" radius="10" mouseTransparent="true" fill="white" opacity="0"/>
 
         <!-- The transformable location shape -->
@@ -41,34 +41,16 @@
 
         <Group fx:id="shakeContent">
             <StackPane fx:id="finalIndicator" mouseTransparent="true" translateX="-11" translateY="-11">
-                <Line strokeWidth="2" style="-fx-stroke: white;" startX="-10" startY="-10" endX="10" endY="10"/>
-                <Line strokeWidth="2" style="-fx-stroke: white;" startX="10" startY="-10" endX="-10" endY="10"/>
+                <Line style="-fx-stroke: white;" startX="10" startY="-10" endX="-10" endY="10"/>
+                <Line style="-fx-stroke: white;" startX="-10" startY="-10" endX="10" endY="10"/>
             </StackPane>
 
             <!-- The initial indicator -->
-            <Path fx:id="initialIndicator" strokeType="INSIDE" strokeWidth="2"  style="-fx-stroke: -white; -fx-fill: transparent;" mouseTransparent="true"/>
+            <Path fx:id="initialIndicator" strokeType="INSIDE"  style="-fx-stroke: -white; -fx-fill: transparent;" mouseTransparent="true"/>
 
-            <Label fx:id="idLabel" styleClass="caption" mouseTransparent="true"/>
+            <Label fx:id="idLabel" styleClass="sub-caption" mouseTransparent="true"/>
         </Group>
 
     </Group>
-
-    <StackPane fx:id="propertiesPane"
-               style="-fx-background-color:white;"
-               visible="false"
-               layoutY="-10" layoutX="-80"
-               prefWidth="160">
-
-        <VBox>
-            <JFXTextField fx:id="nameField"/>
-
-            <TextArea fx:id="invariantField"
-                      prefHeight="70"
-                      styleClass="caption"
-                      wrapText="true"
-                      promptText="No invariant"/>
-        </VBox>
-
-    </StackPane>
 
 </fx:root>
