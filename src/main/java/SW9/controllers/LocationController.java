@@ -113,7 +113,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                 if (getLocation().getType() == Location.Type.NORMAL && !getComponent().getLocations().contains(getLocation())) return;
 
                 UPPAALDriver.verify(
-                        "E<> " + getComponent().getName() + "." + getLocation().getNickname(),
+                        "E<> " + getComponent().getName() + "." + getLocation().getId(),
                         result -> {
                             final LocationPresentation locationPresentation = (LocationPresentation) LocationController.this.root;
 
