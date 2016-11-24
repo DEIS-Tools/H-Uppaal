@@ -28,6 +28,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Path;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -42,10 +43,9 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
     public Group root;
-    public Circle initialIndicator;
+    public Path initialIndicator;
     public StackPane finalIndicator;
     public Group shakeContent;
-    public Label urgencyLabel;
     public Circle circle;
     public Circle circleShakeIndicator;
     public StackPane propertiesPane;
@@ -55,6 +55,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public TagPresentation nameTag;
     public TagPresentation invariantTag;
     public Circle hiddenAreaCircle;
+    public Path locationShape;
 
     private boolean isPlaced;
     private long lastPress = 0;

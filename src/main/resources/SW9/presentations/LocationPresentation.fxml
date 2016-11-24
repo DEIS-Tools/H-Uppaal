@@ -33,8 +33,11 @@
            onMouseDragged="#mouseDragged">
 
         <!-- Circular location -->
-        <Circle fx:id="circle" radius="20" strokeType="INSIDE"/>
+        <Circle fx:id="circle" radius="20" strokeType="INSIDE" opacity="0"/>
         <Circle fx:id="circleShakeIndicator" radius="10" mouseTransparent="true" fill="white" opacity="0"/>
+
+        <!-- The transformable location shape -->
+        <Path fx:id="locationShape" strokeType="INSIDE"/>
 
         <Group fx:id="shakeContent">
             <StackPane fx:id="finalIndicator" mouseTransparent="true" translateX="-11" translateY="-11">
@@ -42,10 +45,8 @@
                 <Line strokeWidth="2" style="-fx-stroke: white;" startX="10" startY="-10" endX="-10" endY="10"/>
             </StackPane>
 
-            <Circle fx:id="initialIndicator" strokeType="INSIDE" strokeWidth="2"
-                    style="-fx-stroke: -white; -fx-fill: transparent;" radius="15" mouseTransparent="true"/>
-
-            <Label fx:id="urgencyLabel" styleClass="subhead" mouseTransparent="true"/>
+            <!-- The initial indicator -->
+            <Path fx:id="initialIndicator" strokeType="INSIDE" strokeWidth="2"  style="-fx-stroke: -white; -fx-fill: transparent;" mouseTransparent="true"/>
         </Group>
 
     </Group>

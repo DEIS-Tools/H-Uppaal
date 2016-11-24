@@ -10,15 +10,17 @@ import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
 import javafx.animation.*;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Circle;
+import javafx.scene.shape.*;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -31,6 +33,7 @@ import java.util.function.Consumer;
 public class LocationPresentation extends Group implements MouseTrackable, SelectHelper.Selectable {
 
     public static final double RADIUS = 20;
+    public static final double INITIAL_RADIUS = RADIUS / 4 * 3;
     private final LocationController controller;
 
     private final MouseTracker mouseTracker = new MouseTracker(this);
@@ -43,6 +46,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private final Timeline propertiesPaneAnimationHide = new Timeline();
 
     private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
+    private final DoubleProperty animation = new SimpleDoubleProperty(0);
+    private final DoubleBinding reverseAnimation = new SimpleDoubleProperty(1).subtract(animation);
 
     public LocationPresentation(final Location location, final Component component) {
         final URL url = this.getClass().getResource("LocationPresentation.fxml");
@@ -68,9 +73,9 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             // TODO make creation of location possible from the mouse
 
             initializeTypeGraphics();
-            initializeUrgencyLabel();
 
             initializeCircle();
+            initializeLocationShape();
 
             initializeNameTag();
             initializeInvariantTag();
@@ -189,34 +194,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         initialAnimation.getKeyFrames().addAll(kf1, kf2, kf3);
     }
 
-    private void initializeUrgencyLabel() {
-        final Location location = controller.getLocation();
-
-        final Label urgencyLabel = controller.urgencyLabel;
-
-        // Center align the label
-        urgencyLabel.widthProperty().addListener((obsWidth, oldWidth, newWidth) -> urgencyLabel.translateXProperty().set(newWidth.doubleValue() / -2));
-        urgencyLabel.heightProperty().addListener((obsHeight, oldHeight, newHeight) -> urgencyLabel.translateYProperty().set(newHeight.doubleValue() / -2));
-
-        final Color color = location.getColor();
-        final Color.Intensity colorIntensity = location.getColorIntensity();
-
-        urgencyLabel.setTextFill(color.getTextColor(colorIntensity));
-
-        final Consumer<Location.Urgency> updateUrgencyLabel = urgency -> {
-            if (urgency.equals(Location.Urgency.NORMAL)) {
-                urgencyLabel.setText("");
-            } else if (urgency.equals(Location.Urgency.URGENT)) {
-                urgencyLabel.setText("U");
-            } else if (urgency.equals(Location.Urgency.COMMITTED)) {
-                urgencyLabel.setText("C");
-            }
-        };
-
-        location.urgencyProperty().addListener((obs, oldUrgency, newUrgency) -> updateUrgencyLabel.accept(newUrgency));
-        updateUrgencyLabel.accept(controller.getLocation().getUrgency());
-    }
-
     private void initializeCircle() {
         final Location location = controller.getLocation();
 
@@ -239,11 +216,77 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         color.addListener((obs, old, newColor) -> updateColor.accept(newColor, colorIntensity.get()));
     }
 
+    private void initializeLocationShape() {
+        final Path path = controller.locationShape;
+
+        initializeLocationShape(path, RADIUS);
+
+        final Location location = controller.getLocation();
+
+        location.urgencyProperty().addListener((obsUrgency, oldUrgency, newUrgency) -> {
+            final Transition toUrgent = new Transition() {
+                {
+                    setCycleDuration(Duration.millis(200));
+                }
+
+                @Override
+                protected void interpolate(final double frac) {
+                    animation.set(frac);
+                }
+            };
+
+            final Transition toNormal = new Transition() {
+                {
+                    setCycleDuration(Duration.millis(200));
+                }
+
+                @Override
+                protected void interpolate(final double frac) {
+                    animation.set(1-frac);
+                }
+            };
+
+            if(oldUrgency.equals(Location.Urgency.NORMAL)) {
+                toUrgent.play();
+
+            } else if(newUrgency.equals(Location.Urgency.NORMAL)) {
+                toNormal.play();
+            }
+
+            if(newUrgency.equals(Location.Urgency.COMMITTED)) {
+                path.setStrokeWidth(3);
+            } else {
+                path.setStrokeWidth(1);
+            }
+
+        });
+
+        // Update the colors
+        final ObjectProperty<Color> color = location.colorProperty();
+        final ObjectProperty<Color.Intensity> colorIntensity = location.colorIntensityProperty();
+
+        // Delegate to style the label based on the color of the location
+        final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
+            path.setFill(newColor.getColor(newIntensity));
+            path.setStroke(newColor.getColor(newIntensity.next(2)));
+        };
+
+        updateColorDelegates.add(updateColor);
+
+        // Set the initial color
+        updateColor.accept(color.get(), colorIntensity.get());
+
+        // Update the color of the circle when the color of the location is updated
+        color.addListener((obs, old, newColor) -> updateColor.accept(newColor, colorIntensity.get()));
+    }
+
     private void initializeTypeGraphics() {
         final Location location = controller.getLocation();
 
-        final Circle initialIndicator = controller.initialIndicator;
+        final Path initialIndicator = controller.initialIndicator;
         final StackPane finalIndicator = controller.finalIndicator;
+
+        initializeLocationShape(initialIndicator, INITIAL_RADIUS);
 
         initialIndicator.visibleProperty().bind(new When(location.typeProperty().isEqualTo(Location.Type.INITIAL)).then(true).otherwise(false));
         finalIndicator.visibleProperty().bind(new When(location.typeProperty().isEqualTo(Location.Type.FINAl)).then(true).otherwise(false));
@@ -402,5 +445,81 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
     public LocationController getController() {
         return controller;
+    }
+
+    private void initializeLocationShape(final Path locationShape, final double radius) {
+        final double c = 0.551915024494;
+        final double circleToOctagonLineRatio = 0.35;
+
+        final MoveTo moveTo = new MoveTo();
+        moveTo.xProperty().bind(animation.multiply(circleToOctagonLineRatio * radius));
+        moveTo.yProperty().set(radius);
+
+        final CubicCurveTo cc1 = new CubicCurveTo();
+        cc1.controlX1Property().bind(reverseAnimation.multiply(c * radius).add(animation.multiply(circleToOctagonLineRatio * radius)));
+        cc1.controlY1Property().bind(reverseAnimation.multiply(radius).add(animation.multiply(radius)));
+        cc1.controlX2Property().bind(reverseAnimation.multiply(radius).add(animation.multiply(radius)));
+        cc1.controlY2Property().bind(reverseAnimation.multiply(c * radius).add(animation.multiply(circleToOctagonLineRatio * radius)));
+        cc1.setX(radius);
+        cc1.yProperty().bind(animation.multiply(circleToOctagonLineRatio * radius));
+
+
+        final LineTo lineTo1 = new LineTo();
+        lineTo1.xProperty().bind(cc1.xProperty());
+        lineTo1.yProperty().bind(cc1.yProperty().multiply(-1));
+
+        final CubicCurveTo cc2 = new CubicCurveTo();
+        cc2.controlX1Property().bind(cc1.controlX2Property());
+        cc2.controlY1Property().bind(cc1.controlY2Property().multiply(-1));
+        cc2.controlX2Property().bind(cc1.controlX1Property());
+        cc2.controlY2Property().bind(cc1.controlY1Property().multiply(-1));
+        cc2.xProperty().bind(moveTo.xProperty());
+        cc2.yProperty().bind(moveTo.yProperty().multiply(-1));
+
+
+        final LineTo lineTo2 = new LineTo();
+        lineTo2.xProperty().bind(cc2.xProperty().multiply(-1));
+        lineTo2.yProperty().bind(cc2.yProperty());
+
+        final CubicCurveTo cc3 = new CubicCurveTo();
+        cc3.controlX1Property().bind(cc2.controlX2Property().multiply(-1));
+        cc3.controlY1Property().bind(cc2.controlY2Property());
+        cc3.controlX2Property().bind(cc2.controlX1Property().multiply(-1));
+        cc3.controlY2Property().bind(cc2.controlY1Property());
+        cc3.xProperty().bind(lineTo1.xProperty().multiply(-1));
+        cc3.yProperty().bind(lineTo1.yProperty());
+
+
+        final LineTo lineTo3 = new LineTo();
+        lineTo3.xProperty().bind(cc3.xProperty());
+        lineTo3.yProperty().bind(cc3.yProperty().multiply(-1));
+
+        final CubicCurveTo cc4 = new CubicCurveTo();
+        cc4.controlX1Property().bind(cc3.controlX2Property());
+        cc4.controlY1Property().bind(cc3.controlY2Property().multiply(-1));
+        cc4.controlX2Property().bind(cc3.controlX1Property());
+        cc4.controlY2Property().bind(cc3.controlY1Property().multiply(-1));
+        cc4.xProperty().bind(lineTo2.xProperty());
+        cc4.yProperty().bind(lineTo2.yProperty().multiply(-1));
+
+
+        final LineTo lineTo4 = new LineTo();
+        lineTo4.xProperty().bind(moveTo.xProperty());
+        lineTo4.yProperty().bind(moveTo.yProperty());
+
+
+        locationShape.getElements().add(moveTo);
+        locationShape.getElements().add(cc1);
+
+        locationShape.getElements().add(lineTo1);
+        locationShape.getElements().add(cc2);
+
+        locationShape.getElements().add(lineTo2);
+        locationShape.getElements().add(cc3);
+
+        locationShape.getElements().add(lineTo3);
+        locationShape.getElements().add(cc4);
+
+        locationShape.getElements().add(lineTo4);
     }
 }
