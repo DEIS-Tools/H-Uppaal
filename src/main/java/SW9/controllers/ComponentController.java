@@ -96,6 +96,19 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 final EdgePresentation edgePresentation = new EdgePresentation(edge, newComponent);
                 edgePresentationMap.put(edge, edgePresentation);
                 modelContainer.getChildren().add(edgePresentation);
+
+                final Consumer<Location> updateMouseTransparency = (newTargetLocation) -> {
+                    if (newTargetLocation == null) {
+                        edgePresentation.setMouseTransparent(true);
+                    } else {
+                        edgePresentation.setMouseTransparent(false);
+                    }
+                };
+
+                updateMouseTransparency.accept(edge.getTargetLocation());
+                edge.targetLocationProperty().addListener((obs1, oldTargetLocation, newTargetLocation) -> {
+                    updateMouseTransparency.accept(newTargetLocation);
+                });
             };
 
             newComponent.getEdges().addListener(new ListChangeListener<Edge>() {
