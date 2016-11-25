@@ -9,12 +9,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.*;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.function.BiConsumer;
 
+import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 import static javafx.scene.paint.Color.TRANSPARENT;
 
 public class TagPresentation extends StackPane {
@@ -37,7 +40,6 @@ public class TagPresentation extends StackPane {
 
             initializeShape();
             initializeLabel();
-            initializeHole();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
@@ -55,25 +57,12 @@ public class TagPresentation extends StackPane {
         });
     }
 
-    private void initializeHole() {
-        final Path shape = (Path) lookup("#shape");
-        final Circle hole = (Circle) lookup("#hole");
-
-        hole.setFill(TRANSPARENT);
-        hole.setStrokeWidth(2);
-
-        final Circle innerHole = new Circle(4 + hole.getRadius(), l3.getY() / 2, hole.getRadius());
-
-        final Shape mask = Path.subtract(shape, innerHole);
-        shape.setClip(mask);
-    }
-
     private void initializeLabel() {
         final Label label = (Label) lookup("#label");
         final JFXTextField textField = (JFXTextField) lookup("#textField");
         final Path shape = (Path) lookup("#shape");
 
-        final int padding = 16 + 8 + 4;
+        final int padding = 8 + 4;
 
         label.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
             final double newWidth = Math.max(newBounds.getWidth(), 10);
@@ -86,6 +75,9 @@ public class TagPresentation extends StackPane {
 
             setMinWidth(newWidth + padding);
             setMaxWidth(newWidth + padding);
+
+            textField.setMinHeight(GRID_SIZE * 2);
+            textField.setMaxHeight(GRID_SIZE * 2);
 
             if (getWidth() > 5000) {
                 setWidth(5);
@@ -107,22 +99,19 @@ public class TagPresentation extends StackPane {
     }
 
     private void initializeShape() {
-        final int CORNER_SIZE = 8;
         final int WIDTH = 5000;
-        final int HEIGHT = 30;
+        final int HEIGHT = GRID_SIZE * 2;
 
         final Path shape = (Path) lookup("#shape");
 
-        final MoveTo start = new MoveTo(0, CORNER_SIZE);
+        final MoveTo start = new MoveTo(0, 0);
 
-        final LineTo l1 = new LineTo(CORNER_SIZE, 0);
         l2 = new LineTo(WIDTH, 0);
         l3 = new LineTo(WIDTH, HEIGHT);
-        final LineTo l4 = new LineTo(CORNER_SIZE, HEIGHT);
-        final LineTo l5 = new LineTo(0, HEIGHT - CORNER_SIZE);
-        final LineTo l6 = new LineTo(0, CORNER_SIZE);
+        final LineTo l4 = new LineTo(0, HEIGHT);
+        final LineTo l6 = new LineTo(0, 0);
 
-        shape.getElements().addAll(start, l1, l2, l3, l4, l5, l6);
+        shape.getElements().addAll(start, l2, l3, l4, l6);
 
         shape.setFill(backgroundColor.getColor(backgroundColorIntensity));
         shape.setStroke(backgroundColor.getColor(backgroundColorIntensity.next(5)));
@@ -130,9 +119,6 @@ public class TagPresentation extends StackPane {
 
     public void bindToColor(final ObjectProperty<Color> color, final ObjectProperty<Color.Intensity> intensity) {
         final BiConsumer<Color, Color.Intensity> recolor = (newColor, newIntensity) -> {
-
-            final Circle hole = (Circle) lookup("#hole");
-            hole.setStroke(newColor.getColor(newIntensity.next(-20).next(3)));
 
             final JFXTextField textField = (JFXTextField) lookup("#textField");
             textField.setUnFocusColor(TRANSPARENT);
