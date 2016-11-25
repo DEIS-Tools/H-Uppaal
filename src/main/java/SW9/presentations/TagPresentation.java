@@ -7,6 +7,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.LineTo;
@@ -61,6 +62,8 @@ public class TagPresentation extends StackPane {
         final Label label = (Label) lookup("#label");
         final JFXTextField textField = (JFXTextField) lookup("#textField");
         final Path shape = (Path) lookup("#shape");
+
+        textField.setPadding(new Insets(2, 0, 0, 0));
 
         final int padding = 8 + 4;
 
@@ -118,11 +121,26 @@ public class TagPresentation extends StackPane {
     }
 
     public void bindToColor(final ObjectProperty<Color> color, final ObjectProperty<Color.Intensity> intensity) {
+        bindToColor(color, intensity, false);
+    }
+
+    public void bindToColor(final ObjectProperty<Color> color, final ObjectProperty<Color.Intensity> intensity, final boolean doColorBackground) {
         final BiConsumer<Color, Color.Intensity> recolor = (newColor, newIntensity) -> {
 
             final JFXTextField textField = (JFXTextField) lookup("#textField");
             textField.setUnFocusColor(TRANSPARENT);
             textField.setFocusColor(newColor.getColor(newIntensity));
+
+            if (doColorBackground) {
+                final Path shape = (Path) lookup("#shape");
+                shape.setFill(newColor.getColor(newIntensity.next(-1)));
+                shape.setStroke(newColor.getColor(newIntensity.next(-1).next(2)));
+
+                textField.setStyle("-fx-prompt-text-fill: rgba(255, 255, 255, 0.6); -fx-text-fill: " + newColor.getTextColorRgbaString(newIntensity) + ";");
+                textField.setFocusColor(newColor.getTextColor(newIntensity));
+            } else {
+                textField.setStyle("-fx-prompt-text-fill: rgba(0, 0, 0, 0.6);");
+            }
 
         };
 

@@ -12,7 +12,6 @@
     <Label id="label" styleClass="sub-caption" StackPane.alignment="CENTER_LEFT" visible="false"/>
 
     <JFXTextField id="textField" styleClass="sub-caption" StackPane.alignment="CENTER_LEFT"
-                  translateX="4"
-                  style="-fx-padding: 2 0 0 0;"/>
+                  translateX="4"/>
 
 </fx:root>

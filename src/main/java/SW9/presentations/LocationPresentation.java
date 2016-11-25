@@ -5,7 +5,6 @@ import SW9.abstractions.Component;
 import SW9.abstractions.Location;
 import SW9.controllers.LocationController;
 import SW9.utility.colors.Color;
-import SW9.utility.helpers.DropShadowHelper;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
@@ -134,7 +133,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
         final Consumer<Location> updateNameTag = location -> {
             // Update the color
-            controller.nameTag.bindToColor(location.colorProperty(), location.colorIntensityProperty());
+            controller.nameTag.bindToColor(location.colorProperty(), location.colorIntensityProperty(), true);
 
             // Update the invariant
             controller.nameTag.setAndBindString(location.nicknameProperty());
