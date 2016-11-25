@@ -69,8 +69,6 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
         final Color color = Color.DEEP_ORANGE;
         final Color.Intensity intensity = Color.Intensity.I500;
 
-        System.out.println("hej");
-
         // Set the color
         controller.nailCircle.setFill(color.getColor(intensity));
         controller.nailCircle.setStroke(color.getColor(intensity.next(2)));
@@ -79,8 +77,6 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
     @Override
     public void deselect() {
         final Component component = controller.getComponent();
-
-        System.out.println("deselect");
 
         // Set the color
         controller.nailCircle.setFill(component.getColor().getColor(component.getColorIntensity()));
