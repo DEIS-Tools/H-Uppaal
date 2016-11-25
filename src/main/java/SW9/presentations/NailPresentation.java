@@ -4,6 +4,7 @@ import SW9.abstractions.Component;
 import SW9.abstractions.Nail;
 import SW9.controllers.NailController;
 import SW9.utility.colors.Color;
+import SW9.utility.helpers.SelectHelper;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
@@ -11,7 +12,7 @@ import javafx.scene.Group;
 import java.io.IOException;
 import java.net.URL;
 
-public class NailPresentation extends Group {
+public class NailPresentation extends Group implements SelectHelper.Selectable {
 
     public static final double COLLAPSED_RADIUS = 2d;
     public static final double HOVERED_RADIUS = 7d;
@@ -38,6 +39,7 @@ public class NailPresentation extends Group {
             controller.setNail(nail);
 
             initializeNailCircle();
+
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
@@ -60,5 +62,28 @@ public class NailPresentation extends Group {
 
         // Initialize the color of the nail
         updateNailColor.run();
+    }
+
+    @Override
+    public void select() {
+        final Color color = Color.DEEP_ORANGE;
+        final Color.Intensity intensity = Color.Intensity.I500;
+
+        System.out.println("hej");
+
+        // Set the color
+        controller.nailCircle.setFill(color.getColor(intensity));
+        controller.nailCircle.setStroke(color.getColor(intensity.next(2)));
+    }
+
+    @Override
+    public void deselect() {
+        final Component component = controller.getComponent();
+
+        System.out.println("deselect");
+
+        // Set the color
+        controller.nailCircle.setFill(component.getColor().getColor(component.getColorIntensity()));
+        controller.nailCircle.setStroke(component.getColor().getColor(component.getColorIntensity().next(2)));
     }
 }

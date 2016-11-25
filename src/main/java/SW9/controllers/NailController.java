@@ -8,6 +8,8 @@ import SW9.presentations.ComponentPresentation;
 import SW9.presentations.LocationPresentation;
 import SW9.presentations.NailPresentation;
 import SW9.utility.UndoRedoStack;
+import SW9.utility.colors.Color;
+import SW9.utility.helpers.SelectHelper;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -19,7 +21,7 @@ import javafx.scene.shape.Circle;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class NailController implements Initializable {
+public class NailController implements Initializable, SelectHelper.ColorSelectable {
 
     public static boolean nailBeingDragged = false;
 
@@ -83,6 +85,8 @@ public class NailController implements Initializable {
     private void mousePressed(final MouseEvent event) {
         previousX = root.getLayoutX();
         previousY = root.getLayoutY();
+
+        SelectHelper.select(this);
     }
 
     @FXML
@@ -149,5 +153,30 @@ public class NailController implements Initializable {
 
             nailBeingDragged = false;
         }
+    }
+
+    @Override
+    public void color(final Color color, final Color.Intensity intensity) {
+        // Do nothing. A nail cannot be colored, but can be colored as selected
+    }
+
+    @Override
+    public Color getColor() {
+        return getComponent().getColor();
+    }
+
+    @Override
+    public Color.Intensity getColorIntensity() {
+        return getComponent().getColorIntensity();
+    }
+
+    @Override
+    public void select() {
+        ((SelectHelper.Selectable) root).select();
+    }
+
+    @Override
+    public void deselect() {
+        ((SelectHelper.Selectable) root).deselect();
     }
 }

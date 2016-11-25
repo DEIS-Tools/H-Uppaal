@@ -230,15 +230,16 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             final Nail newNail = new Nail(x, y);
             unfinishedEdge.addNail(newNail);
         }
-
-        // We are not drawing an edge, select the element
-        else {
-            SelectHelper.select(this);
-        }
     }
 
     public MouseTracker getMouseTracker() {
         return mouseTracker;
+    }
+
+    @FXML
+    public void toolbarPressed() {
+        // Make the component selected when pressing the toolbar
+        SelectHelper.select(this);
     }
 
     @Override

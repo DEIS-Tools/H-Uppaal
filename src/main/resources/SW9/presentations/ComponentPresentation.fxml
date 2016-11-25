@@ -20,7 +20,7 @@
 
     <BorderPane fx:id="frame" pickOnBounds="false">
         <top>
-            <BorderPane fx:id="toolbar">
+            <BorderPane fx:id="toolbar" onMousePressed="#toolbarPressed">
                 <center>
                     <HBox>
                         <StackPane>
