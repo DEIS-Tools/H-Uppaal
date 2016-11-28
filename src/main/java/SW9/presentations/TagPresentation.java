@@ -1,18 +1,25 @@
 package SW9.presentations;
 
+import SW9.abstractions.Component;
+import SW9.abstractions.Location;
+import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import com.jfoenix.controls.JFXTextField;
+import javafx.animation.PauseTransition;
 import javafx.beans.binding.When;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,9 +32,15 @@ public class TagPresentation extends StackPane {
 
     private final static Color backgroundColor = Color.GREY;
     private final static Color.Intensity backgroundColorIntensity = Color.Intensity.I50;
+
+    private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
+    private final ObjectProperty<Location> location = new SimpleObjectProperty<>(null);
+
     private LineTo l2;
     private LineTo l3;
-
+    private double previousX;
+    private double previousY;
+    private boolean wasDragged;
     public TagPresentation() {
         final URL location = this.getClass().getResource("TagPresentation.fxml");
 
@@ -63,15 +76,19 @@ public class TagPresentation extends StackPane {
         final JFXTextField textField = (JFXTextField) lookup("#textField");
         final Path shape = (Path) lookup("#shape");
 
-        textField.setPadding(new Insets(2, 0, 0, 0));
+        final Insets insets = new Insets(2, 2, 0, 2);
+        textField.setPadding(insets);
+        label.setPadding(insets);
 
-        final int padding = 8 + 4;
+        final int padding = 0;
 
         label.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
-            final double newWidth = Math.max(newBounds.getWidth(), 10);
+            double newWidth = Math.max(newBounds.getWidth(), 10);
+            final double res = GRID_SIZE * 2 - (newWidth % (GRID_SIZE * 2));
+            newWidth += res;
 
-            textField.setMinWidth(newWidth + 4);
-            textField.setMaxWidth(newWidth + 4);
+            textField.setMinWidth(newWidth);
+            textField.setMaxWidth(newWidth);
 
             l2.setX(newWidth + padding);
             l3.setX(newWidth + padding);
@@ -82,8 +99,18 @@ public class TagPresentation extends StackPane {
             textField.setMinHeight(GRID_SIZE * 2);
             textField.setMaxHeight(GRID_SIZE * 2);
 
-            if (getWidth() > 5000) {
-                setWidth(5);
+            textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue) {
+                    shape.setTranslateY(0);
+                    textField.setTranslateY(0);
+                }
+            });
+
+            if (getWidth() >= 1000) {
+                setWidth(newWidth);
+                setHeight(GRID_SIZE * 2);
+                shape.setTranslateY(-2);
+                textField.setTranslateY(-2);
             }
 
             // Fixes the jumping of the shape when the text field is empty
@@ -117,7 +144,62 @@ public class TagPresentation extends StackPane {
         shape.getElements().addAll(start, l2, l3, l4, l6);
 
         shape.setFill(backgroundColor.getColor(backgroundColorIntensity));
-        shape.setStroke(backgroundColor.getColor(backgroundColorIntensity.next(5)));
+        shape.setStroke(backgroundColor.getColor(backgroundColorIntensity.next(2)));
+
+        final JFXTextField textField = (JFXTextField) lookup("#textField");
+        shape.setCursor(Cursor.OPEN_HAND);
+
+        shape.setOnMousePressed(event -> {
+            previousX = getTranslateX();
+            previousY = getTranslateY();
+        });
+
+        shape.setOnMouseDragged(event -> {
+            final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).subtract(getLocation().xProperty()).doubleValue() - getMinWidth() / 2;
+            setTranslateX(newX);
+
+            final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).subtract(getLocation().yProperty()).doubleValue() - getHeight() / 2;
+            setTranslateY(newY);
+
+            // Tell the mouse release action that we can store an update
+            wasDragged = true;
+        });
+
+        shape.setOnMouseReleased(event -> {
+            if (wasDragged) {
+                // Add to undo redo stack
+                final double currentX = getTranslateX();
+                final double currentY = getTranslateY();
+                final double storePreviousX = previousX;
+                final double storePreviousY = previousY;
+                UndoRedoStack.push(
+                        () -> {
+                            setTranslateX(currentX);
+                            setTranslateY(currentY);
+                        },
+                        () -> {
+                            setTranslateX(storePreviousX);
+                            setTranslateY(storePreviousY);
+                        },
+                        String.format("Moved tag from (%f,%f) to (%f,%f)", currentX, currentY, storePreviousX, storePreviousY),
+                        "pin-drop"
+                );
+
+                // Reset the was dragged boolean
+                wasDragged = false;
+            } else {
+                textField.setMouseTransparent(false);
+                shape.setCursor(Cursor.TEXT);
+
+                final PauseTransition wait = new PauseTransition(Duration.seconds(3));
+                wait.setOnFinished((e) -> {
+                    textField.setMouseTransparent(true);
+                    shape.setCursor(Cursor.OPEN_HAND);
+                });
+                wait.play();
+            }
+
+        });
     }
 
     public void bindToColor(final ObjectProperty<Color> color, final ObjectProperty<Color.Intensity> intensity) {
@@ -172,5 +254,29 @@ public class TagPresentation extends StackPane {
         final JFXTextField textField = (JFXTextField) lookup("#textField");
 
         return textField.isFocused();
+    }
+
+    public Component getComponent() {
+        return component.get();
+    }
+
+    public void setComponent(final Component component) {
+        this.component.set(component);
+    }
+
+    public ObjectProperty<Component> componentProperty() {
+        return component;
+    }
+
+    public Location getLocation() {
+        return location.get();
+    }
+
+    public void setLocation(final Location location) {
+        this.location.set(location);
+    }
+
+    public ObjectProperty<Location> locationProperty() {
+        return location;
     }
 }

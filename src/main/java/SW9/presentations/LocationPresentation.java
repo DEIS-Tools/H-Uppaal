@@ -154,7 +154,12 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             location.nicknameProperty().addListener((obs, oldNickname, newNickname) -> updateVisibility.accept(newNickname));
             updateVisibility.accept(location.getNickname());
 
+            controller.nameTag.setComponent(controller.getComponent());
+            controller.nameTag.setLocation(location);
             BindingHelper.bind(controller.nameTagLine, controller.nameTag);
+
+            controller.invariantTag.setComponent(controller.getComponent());
+            controller.invariantTag.setLocation(location);
             BindingHelper.bind(controller.invariantTagLine, controller.invariantTag);
         };
 
@@ -180,10 +185,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
             // Update the placeholder
             controller.invariantTag.setPlaceholder("No invariant");
-
-            // Update the position
-            controller.invariantTag.translateXProperty().set(controller.circle.getRadius() * 1.5);
-            controller.invariantTag.translateYProperty().bind(controller.invariantTag.heightProperty().add(controller.invariantTag.heightProperty().divide(-2)));
 
             final Consumer<String> updateVisibility = (invariant) -> {
                 if (invariant.equals("")) {
