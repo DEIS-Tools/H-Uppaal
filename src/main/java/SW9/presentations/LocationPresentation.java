@@ -80,7 +80,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             initializeLocationShape();
 
             initializeNameTag();
-            initializeInvariantTag();
+            //initializeInvariantTag();
 
             initializeInitialAnimation();
             initializeHoverAnimationEntered();
@@ -132,18 +132,21 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
         controller.nameTag.replaceSpace();
 
-        final Consumer<Location> updateNameTag = location -> {
+        final Consumer<Location> updateTags = location -> {
             // Update the color
             controller.nameTag.bindToColor(location.colorProperty(), location.colorIntensityProperty(), true);
+            controller.invariantTag.bindToColor(location.colorProperty(), location.colorIntensityProperty(), false);
 
             // Update the invariant
             controller.nameTag.setAndBindString(location.nicknameProperty());
+            controller.invariantTag.setAndBindString(location.invariantProperty());
 
             // Update the placeholder
             controller.nameTag.setPlaceholder("No name");
+            controller.invariantTag.setPlaceholder("No invariant");
 
-            // Update the nickname
-            final Consumer<String> updateVisibility = (nickname) -> {
+            // Set the visibility of the name tag depending on the nickname
+            final Consumer<String> updateVisibilityFromNickName = (nickname) -> {
                 if (nickname.equals("")) {
                     controller.nameTag.setOpacity(0);
                 } else {
@@ -151,8 +154,20 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
                 }
             };
 
-            location.nicknameProperty().addListener((obs, oldNickname, newNickname) -> updateVisibility.accept(newNickname));
-            updateVisibility.accept(location.getNickname());
+            location.nicknameProperty().addListener((obs, oldNickname, newNickname) -> updateVisibilityFromNickName.accept(newNickname));
+            updateVisibilityFromNickName.accept(location.getNickname());
+
+            // Set the visibility of the invariant tag depending on the invariant
+            final Consumer<String> updateVisibilityFromInvariant = (invariant) -> {
+                if (invariant.equals("")) {
+                    controller.invariantTag.setOpacity(0);
+                } else {
+                    controller.invariantTag.setOpacity(1);
+                }
+            };
+
+            location.invariantProperty().addListener((obs, oldInvariant, newInvariant) -> updateVisibilityFromInvariant.accept(newInvariant));
+            updateVisibilityFromInvariant.accept(location.getInvariant());
 
             controller.nameTag.setComponent(controller.getComponent());
             controller.nameTag.setLocation(location);
@@ -163,6 +178,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             BindingHelper.bind(controller.invariantTagLine, controller.invariantTag);
         };
 
+        // Show and hide the name tag properly
         controller.nameTag.opacityProperty().addListener((obs, oldOpacity, newOpacity) -> {
             if (newOpacity.doubleValue() < 1) {
                 if (controller.nameTag.textFieldIsFocused()) {
@@ -171,8 +187,21 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             }
         });
 
-        controller.locationProperty().addListener(observable -> updateNameTag.accept(controller.getLocation()));
-        updateNameTag.accept(controller.getLocation());
+        // Show and hide the invariant tag properly
+        controller.invariantTag.opacityProperty().addListener((obs, oldOpacity, newOpacity) -> {
+            if (newOpacity.doubleValue() < 1) {
+                if (controller.invariantTag.textFieldIsFocused()) {
+                    controller.invariantTag.setOpacity(1);
+                }
+            }
+        });
+
+        // Update the tags when the location updates
+        controller.locationProperty().addListener(observable -> updateTags.accept(controller.getLocation()));
+
+        // Initialize the tags from the current location
+        updateTags.accept(controller.getLocation());
+
     }
 
     private void initializeInvariantTag() {

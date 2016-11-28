@@ -317,10 +317,14 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     private void hiddenAreaExited() {
         if (getLocation().getInvariant().equals("")) {
             invariantTag.setOpacity(0);
+        } else {
+            invariantTag.setOpacity(1);
         }
 
         if(getLocation().getNickname().equals("")) {
             nameTag.setOpacity(0);
+        } else {
+            nameTag.setOpacity(1);
         }
     }
 
