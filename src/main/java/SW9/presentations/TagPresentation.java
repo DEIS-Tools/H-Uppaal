@@ -99,8 +99,8 @@ public class TagPresentation extends StackPane {
             textField.setMinHeight(GRID_SIZE * 2);
             textField.setMaxHeight(GRID_SIZE * 2);
 
-            textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue) {
+            textField.focusedProperty().addListener((observable, oldFocused, newFocused) -> {
+                if (newFocused) {
                     shape.setTranslateY(0);
                     textField.setTranslateY(0);
                 }
