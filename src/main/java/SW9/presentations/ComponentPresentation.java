@@ -30,9 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import static SW9.presentations.CanvasPresentation.GRID_SIZE;
+import static javafx.scene.shape.StrokeType.INSIDE;
+
 public class ComponentPresentation extends StackPane implements MouseTrackable, SelectHelper.Selectable {
 
-    public final static double CORNER_SIZE = 60;
+    public final static double CORNER_SIZE = 4 * GRID_SIZE;
     public static final double TOOL_BAR_HEIGHT = CORNER_SIZE / 2;
 
     private final ComponentController controller;
@@ -136,8 +139,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         controller.getComponent().colorProperty().addListener(observable -> updateColor.run());
         updateColor.run();
 
-        // Add a left margin of CORNER_SIZE
-        controller.name.setPadding(new Insets(0, 0, 0, CORNER_SIZE));
+        // Center the text vertically and aff a left padding of CORNER_SIZE
+        controller.name.setPadding(new Insets(2, 0, 0, CORNER_SIZE));
     }
 
     private void initializeInitialLocation() {
@@ -175,9 +178,9 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
 
             // Set the icon color and rippler color of the toggleDeclarationButton
             controller.toggleDeclarationButton.setRipplerFill(newColor.getTextColor(newIntensity));
-            ((FontIcon) controller.toggleDeclarationButton.getGraphic()).setFill(newColor.getTextColor(newIntensity));
 
             controller.toolbar.setPrefHeight(TOOL_BAR_HEIGHT);
+            controller.toggleDeclarationButton.setBackground(Background.EMPTY);
         };
 
         updateColorDelegates.add(updateColor);

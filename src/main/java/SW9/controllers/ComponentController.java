@@ -15,6 +15,7 @@ import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXTextField;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
@@ -52,7 +53,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     public BorderPane toolbar;
     public Rectangle background;
     public TextArea declaration;
-    public JFXButton toggleDeclarationButton;
+    public JFXRippler toggleDeclarationButton;
     public BorderPane frame;
     public JFXTextField name;
     public StackPane root;
