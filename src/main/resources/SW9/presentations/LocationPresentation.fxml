@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.*?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.*?>
 <?import SW9.presentations.TagPresentation?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
@@ -19,9 +16,11 @@
 
         <Circle fx:id="hiddenAreaCircle" radius="50"/>
 
+        <Line fx:id="invariantTagLine" mouseTransparent="true"/>
         <TagPresentation fx:id="invariantTag" translateX="100"/>
-        
-        <TagPresentation fx:id="nameTag" translateX="100"/>
+
+        <Line fx:id="nameTagLine" mouseTransparent="true"/>
+        <TagPresentation fx:id="nameTag" translateX="100" translateY="-50"/>
     </Group>
 
 

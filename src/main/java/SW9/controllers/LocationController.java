@@ -14,7 +14,6 @@ import SW9.utility.colors.Color;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
-import com.jfoenix.controls.JFXTextField;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -22,19 +21,18 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Path;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class LocationController implements Initializable, SelectHelper.ColorSelectable {
 
@@ -52,6 +50,8 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public Circle hiddenAreaCircle;
     public Path locationShape;
     public Label idLabel;
+    public Line nameTagLine;
+    public Line invariantTagLine;
 
     private boolean isPlaced;
 

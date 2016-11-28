@@ -5,13 +5,23 @@ import SW9.model_canvas.arrow_heads.ChannelReceiverArrowHead;
 import SW9.model_canvas.arrow_heads.ChannelSenderArrowHead;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.Link;
+import SW9.presentations.TagPresentation;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 
 public class BindingHelper {
+
+    public static void bind(final Line subject, final TagPresentation target) {
+        subject.startXProperty().set(0);
+        subject.startYProperty().set(0);
+        subject.endXProperty().bind(target.translateXProperty().add(target.minWidthProperty().divide(2)));
+        subject.endYProperty().bind(target.translateYProperty().add(target.heightProperty().divide(2)));
+        subject.opacityProperty().bind(target.opacityProperty());
+    }
 
     public static void bind(final Circular subject, final ObservableDoubleValue x, final ObservableDoubleValue y) {
         subject.xProperty().bind(CanvasPresentation.mouseTracker.gridXProperty().subtract(x));

@@ -5,6 +5,7 @@ import SW9.abstractions.Component;
 import SW9.abstractions.Location;
 import SW9.controllers.LocationController;
 import SW9.utility.colors.Color;
+import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
@@ -141,11 +142,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             // Update the placeholder
             controller.nameTag.setPlaceholder("No name");
 
-            // Update the position
-            controller.nameTag.translateXProperty().set(controller.circle.getRadius() * 1.5);
-            controller.nameTag.translateYProperty().bind(controller.invariantTag.heightProperty().divide(-2));
-
-
+            // Update the nickname
             final Consumer<String> updateVisibility = (nickname) -> {
                 if (nickname.equals("")) {
                     controller.nameTag.setOpacity(0);
@@ -156,6 +153,9 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
             location.nicknameProperty().addListener((obs, oldNickname, newNickname) -> updateVisibility.accept(newNickname));
             updateVisibility.accept(location.getNickname());
+
+            BindingHelper.bind(controller.nameTagLine, controller.nameTag);
+            BindingHelper.bind(controller.invariantTagLine, controller.invariantTag);
         };
 
         controller.nameTag.opacityProperty().addListener((obs, oldOpacity, newOpacity) -> {
