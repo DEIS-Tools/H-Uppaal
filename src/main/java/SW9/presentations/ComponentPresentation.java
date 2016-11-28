@@ -227,24 +227,24 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             controller.line1.setStartY(0);
             controller.line1.setEndX(0);
             controller.line1.setEndY(CORNER_SIZE);
-            controller.line1.setStroke(newColor.getColor(newIntensity));
-            controller.line1.setStrokeWidth(2);
+            controller.line1.setStroke(newColor.getColor(newIntensity.next(2)));
+            controller.line1.setStrokeWidth(1.25);
             StackPane.setAlignment(controller.line1, Pos.TOP_LEFT);
 
             controller.line2.setStartX(CORNER_SIZE);
             controller.line2.setStartY(0);
             controller.line2.setEndX(0);
             controller.line2.setEndY(CORNER_SIZE);
-            controller.line2.setStroke(newColor.getColor(newIntensity));
-            controller.line2.setStrokeWidth(2);
+            controller.line2.setStroke(newColor.getColor(newIntensity.next(2)));
+            controller.line2.setStrokeWidth(1.25);
             StackPane.setAlignment(controller.line2, Pos.BOTTOM_RIGHT);
 
             // Set the stroke color to two shades darker
             controller.frame.setBorder(new Border(new BorderStroke(
-                    newColor.getColor(newIntensity),
+                    newColor.getColor(newIntensity.next(2)),
                     BorderStrokeStyle.SOLID,
                     CornerRadii.EMPTY,
-                    new BorderWidths(2),
+                    new BorderWidths(1),
                     Insets.EMPTY
             )));
         };
