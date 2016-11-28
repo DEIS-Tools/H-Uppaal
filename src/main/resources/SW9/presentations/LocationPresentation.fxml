@@ -23,8 +23,6 @@
         <TagPresentation fx:id="nameTag" translateX="100" translateY="-50"/>
     </Group>
 
-
-
     <Group fx:id="scaleContent"
            onMouseEntered="#mouseEntered"
            onMouseExited="#mouseExited"
