@@ -17,10 +17,10 @@
         <Circle fx:id="hiddenAreaCircle" radius="50"/>
 
         <Line fx:id="invariantTagLine" mouseTransparent="true"/>
-        <TagPresentation fx:id="invariantTag" translateX="100"/>
+        <TagPresentation fx:id="invariantTag" translateX="30" translateY="20"/>
 
         <Line fx:id="nameTagLine" mouseTransparent="true"/>
-        <TagPresentation fx:id="nameTag" translateX="100" translateY="-50"/>
+        <TagPresentation fx:id="nameTag" translateX="30" translateY="-10"/>
     </Group>
 
     <Group fx:id="scaleContent"
