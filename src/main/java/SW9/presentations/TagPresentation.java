@@ -23,6 +23,7 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
@@ -242,7 +243,6 @@ public class TagPresentation extends StackPane {
 
     public void setPlaceholder(final String placeholder) {
         final JFXTextField textField = (JFXTextField) lookup("#textField");
-
         textField.setPromptText(placeholder);
     }
 
