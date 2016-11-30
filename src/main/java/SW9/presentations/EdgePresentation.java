@@ -74,20 +74,20 @@ public class EdgePresentation extends Group {
             final double m = (y2 - y1) / (x2 - x1);
             final double angle = Math.atan(m);
 
-            final double jensHypo = GRID_SIZE + index * GRID_SIZE * 2;
-            final double jensY = Math.cos(angle) * jensHypo;
-            final double jensX = Math.sqrt(Math.pow(jensHypo, 2) - Math.pow(jensY, 2));
+            final double hype = GRID_SIZE + index * GRID_SIZE * 2;
+            final double w = Math.cos(angle) * hype;
+            final double h = Math.sqrt(Math.pow(hype, 2) - Math.pow(w, 2));
 
             if (x1 > x2) {
-                container.setLayoutX(x1 + jensY * -1);
+                container.setLayoutX(x1 + w * -1);
             } else {
-                container.setLayoutX(x1 + jensY);
+                container.setLayoutX(x1 + w);
             }
 
             if (y1 > y2) {
-                container.setLayoutY(y1 + jensX * -1);
+                container.setLayoutY(y1 + h * -1);
             } else {
-                container.setLayoutY(y1 + jensX);
+                container.setLayoutY(y1 + h);
             }
         };
 
