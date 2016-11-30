@@ -66,6 +66,10 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     public Label x;
     public Label y;
     public Pane defaultLocationsContainer;
+    public Rectangle topAnchor;
+    public Rectangle rightAnchor;
+    public Rectangle bottomAnchor;
+    public Rectangle leftAnchor;
     private MouseTracker mouseTracker;
     private double previousX;
     private double previousY;
@@ -343,6 +347,11 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             wasDragged = false;
 
         }
+    }
+
+    @FXML
+    public void leftAnchorPressed(final MouseEvent event) {
+        System.out.println("JADA");
     }
 
     @Override

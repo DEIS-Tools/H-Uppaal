@@ -3,8 +3,7 @@
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.Line?>
-<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.shape.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
@@ -12,7 +11,7 @@
          fx:id="root"
          fx:controller="SW9.controllers.ComponentController">
 
-    <Rectangle fx:id="background"/>
+    <Rectangle fx:id="background" StackPane.alignment="TOP_LEFT"/>
 
     <StackPane>
         <Pane fx:id="modelContainer" onMousePressed="#modelContainerPressed"/>
@@ -52,5 +51,8 @@
     <Line fx:id="line1"/>
     <Line fx:id="line2"/>
     <Pane fx:id="defaultLocationsContainer" pickOnBounds="false"/>
+
+    <Rectangle fx:id="bottomAnchor" StackPane.alignment="BOTTOM_LEFT"/>
+    <Rectangle fx:id="rightAnchor" StackPane.alignment="TOP_RIGHT"/>
 
 </fx:root>

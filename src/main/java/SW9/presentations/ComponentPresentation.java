@@ -9,6 +9,7 @@ import SW9.utility.mouse.MouseTracker;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
@@ -58,21 +59,91 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             setMaxWidth(component.getWidth());
             setMinHeight(component.getHeight());
             setMaxHeight(component.getHeight());
+            minHeightProperty().bind(component.heightProperty());
+            maxHeightProperty().bind(component.heightProperty());
+            minWidthProperty().bind(component.widthProperty());
+            maxWidthProperty().bind(component.widthProperty());
 
             controller = fxmlLoader.getController();
             controller.setComponent(component);
 
             initializeDefaultLocationsContainer();
-            initializeToolbar();
-            initializeFrame();
-            initializeInitialLocation();
-            initializeFinalLocation();
-            initializeBackground();
-            initializeName();
+
+            // Initializer methods that is sensitive to width and height
+            final Runnable onUpdateSize = () -> {
+                initializeToolbar();
+                initializeFrame();
+                initializeInitialLocation();
+                initializeFinalLocation();
+                initializeBackground();
+                initializeName();
+            };
+
+            onUpdateSize.run();
+
+            initializeDragAnchors();
+
+            // Re run initialisation on update of width and height property
+            component.widthProperty().addListener(observable -> {
+                onUpdateSize.run();
+            });
+            component.heightProperty().addListener(observable -> {
+                onUpdateSize.run();
+            });
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeDragAnchors() {
+
+        final Component component = controller.getComponent();
+
+
+        // Bottom anchor
+        final Rectangle bottomAnchor = controller.bottomAnchor;
+
+        // Bind the place and size of bottom anchor
+        bottomAnchor.widthProperty().bind(component.widthProperty().subtract(CORNER_SIZE));
+        bottomAnchor.setHeight(5);
+
+        final DoubleProperty prevY = new SimpleDoubleProperty();
+        final DoubleProperty prevHeight = new SimpleDoubleProperty();
+
+        bottomAnchor.setOnMousePressed(event -> {
+            prevY.set(event.getScreenY());
+            prevHeight.set(component.getHeight());
+        });
+
+        bottomAnchor.setOnMouseDragged(event -> {
+            final double diff = event.getScreenY() - prevY.get();
+            component.setHeight(Math.max(prevHeight.get() + diff, GRID_SIZE * 10));
+        });
+
+        // Right anchor
+        final Rectangle rightAnchor = controller.rightAnchor;
+
+        // Bind the place and size of bottom anchor
+        rightAnchor.setWidth(5);
+        rightAnchor.heightProperty().bind(component.heightProperty().subtract(CORNER_SIZE));
+
+        final DoubleProperty prevX = new SimpleDoubleProperty();
+        final DoubleProperty prevWidth = new SimpleDoubleProperty();
+
+        rightAnchor.setOnMousePressed(event -> {
+            prevX.set(event.getScreenX());
+            prevWidth.set(component.getWidth());
+        });
+
+        rightAnchor.setOnMouseDragged(event -> {
+            final double diff = event.getScreenX() - prevX.get();
+            component.setWidth(Math.max(prevWidth.get() + diff, GRID_SIZE * 10));
+        });
+
+
+
+
     }
 
     private void initializeDefaultLocationsContainer() {
