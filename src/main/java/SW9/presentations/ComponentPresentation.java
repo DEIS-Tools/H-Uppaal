@@ -1,5 +1,6 @@
 package SW9.presentations;
 
+import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.controllers.ComponentController;
 import SW9.utility.colors.Color;
@@ -9,6 +10,7 @@ import SW9.utility.mouse.MouseTracker;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
@@ -70,8 +72,23 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             initializeBackground();
             initializeName();
 
-            /*final SubComponentPresentation subComponentPresentation = new SubComponentPresentation(HUPPAAL.getProject().getComponents().get(2));
-            getChildren().add(subComponentPresentation);*/
+
+            // TODO FJERN DET HER JENS PÅ SIGT
+            BooleanProperty testAdderBoolean = new SimpleBooleanProperty(true);
+            HUPPAAL.getProject().getComponents().addListener(new ListChangeListener<Component>() {
+                @Override
+                public void onChanged(Change<? extends Component> c) {
+                    while (c.next()) {
+
+                        if (HUPPAAL.getProject().getComponents().size() > 1 && testAdderBoolean.get()) {
+                            final SubComponentPresentation subComponentPresentation = new SubComponentPresentation(HUPPAAL.getProject().getComponents().get(2));
+                            getChildren().add(subComponentPresentation);
+                            testAdderBoolean.set(false);
+                        }
+                    }
+                }
+            });
+
 
 
         } catch (final IOException ioe) {
