@@ -53,7 +53,6 @@ public class EdgePresentation extends Group {
     }
 
     private void initializeEdgeProperties() {
-        final Component component = this.component.get();
         initializeProperty(controller.selectContainer, controller.selectCircle, controller.selectLabel, 1);
         initializeProperty(controller.guardContainer, controller.guardCircle, controller.guardLabel, 2);
         initializeProperty(controller.syncContainer, controller.syncCircle, controller.syncLabel, 3);
@@ -90,9 +89,6 @@ public class EdgePresentation extends Group {
             } else {
                 container.setLayoutY(y1 + jensX);
             }
-
-
-            System.out.println(Math.toDegrees(angle));
         };
 
         edge.sourceLocationProperty().addListener(observable -> {
