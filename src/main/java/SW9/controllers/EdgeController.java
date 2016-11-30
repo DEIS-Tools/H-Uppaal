@@ -21,6 +21,9 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -35,6 +38,18 @@ public class EdgeController implements Initializable {
     private final SimpleBooleanProperty isHoveringEdge = new SimpleBooleanProperty(false);
     private final SimpleIntegerProperty timeHoveringEdge = new SimpleIntegerProperty(0);
     public Group edgeRoot;
+    public Label selectLabel;
+    public Label guardLabel;
+    public Label syncLabel;
+    public Label updateLabel;
+    public StackPane selectContainer;
+    public StackPane guardContainer;
+    public StackPane syncContainer;
+    public StackPane updateContainer;
+    public Circle selectCircle;
+    public Circle guardCircle;
+    public Circle syncCircle;
+    public Circle updateCircle;
     private Runnable collapseNail;
     private Thread runningThread;
 
