@@ -8,27 +8,27 @@
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="Group"
          fx:controller="SW9.controllers.EdgeController"
-         fx:id="edgeRoot"
          onMouseEntered="#edgeEntered"
          onMouseExited="#edgeExited"
          mouseTransparent="true">
 
-    <StackPane fx:id="selectContainer">
+    <Group fx:id="edgeRoot"/>
+
+    <StackPane fx:id="selectContainer" translateX="-8" translateY="-8">
         <Circle radius="8" fx:id="selectCircle" strokeType="INSIDE"/>
         <Label styleClass="edge-property" text="A" fx:id="selectLabel" />
     </StackPane>
-    <StackPane fx:id="guardContainer">
+    <StackPane fx:id="guardContainer" translateX="-8" translateY="-8">
         <Circle radius="8" fx:id="guardCircle" strokeType="INSIDE"/>
         <Label styleClass="edge-property" text="B" fx:id="guardLabel" />
     </StackPane>
-    <StackPane fx:id="syncContainer">
+    <StackPane fx:id="syncContainer" translateX="-8" translateY="-8">
         <Circle radius="8" fx:id="syncCircle" strokeType="INSIDE"/>
         <Label styleClass="edge-property" text="C" fx:id="syncLabel" />
     </StackPane>
-    <StackPane fx:id="updateContainer">
+    <StackPane fx:id="updateContainer" translateX="-8" translateY="-8">
         <Circle radius="8" fx:id="updateCircle" strokeType="INSIDE"/>
         <Label styleClass="edge-property" text="D" fx:id="updateLabel" />
     </StackPane>
-
 
 </fx:root>

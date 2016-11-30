@@ -8,10 +8,9 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
-import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
-import javafx.scene.layout.*;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 
 import java.io.IOException;
@@ -80,10 +79,20 @@ public class EdgePresentation extends Group {
             final double jensY = Math.cos(angle) * jensHypo;
             final double jensX = Math.sqrt(Math.pow(jensHypo, 2) - Math.pow(jensY, 2));
 
-            container.setLayoutX(x1 + jensY);
-            container.setLayoutY(y1 + jensX);
+            if (x1 > x2) {
+                container.setLayoutX(x1 + jensY * -1);
+            } else {
+                container.setLayoutX(x1 + jensY);
+            }
 
-            System.out.println(angle);
+            if (y1 > y2) {
+                container.setLayoutY(y1 + jensX * -1);
+            } else {
+                container.setLayoutY(y1 + jensX);
+            }
+
+
+            System.out.println(Math.toDegrees(angle));
         };
 
         edge.sourceLocationProperty().addListener(observable -> {
