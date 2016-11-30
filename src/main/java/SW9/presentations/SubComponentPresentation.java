@@ -1,11 +1,9 @@
 package SW9.presentations;
 
-import SW9.HUPPAAL;
 import SW9.abstractions.Component;
-import SW9.controllers.ComponentController;
+import SW9.controllers.SubComponentController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.MouseTrackable;
-import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -14,7 +12,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
@@ -27,24 +24,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import static SW9.presentations.CanvasPresentation.GRID_SIZE;
+import static SW9.presentations.ComponentPresentation.CORNER_SIZE;
+import static SW9.presentations.ComponentPresentation.TOOL_BAR_HEIGHT;
 
-public class ComponentPresentation extends StackPane implements MouseTrackable, SelectHelper.Selectable {
+public class SubComponentPresentation extends StackPane implements MouseTrackable {
 
-    public final static double CORNER_SIZE = 4 * GRID_SIZE;
-    public static final double TOOL_BAR_HEIGHT = CORNER_SIZE / 2;
-
-    private final ComponentController controller;
+    private final SubComponentController controller;
     private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
     private LocationPresentation initialLocationPresentation = null;
     private LocationPresentation finalLocationPresentation = null;
 
-    public ComponentPresentation() {
-        this(new Component());
-    }
-
-    public ComponentPresentation(final Component component) {
-        final URL location = this.getClass().getResource("ComponentPresentation.fxml");
+    public SubComponentPresentation(final Component component) {
+        final URL location = this.getClass().getResource("SubComponentPresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(location);
@@ -54,11 +45,11 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             fxmlLoader.setRoot(this);
             fxmlLoader.load(location.openStream());
 
-            // Set the width and the height of the view to the values in the abstraction
-            setMinWidth(component.getWidth());
-            setMaxWidth(component.getWidth());
-            setMinHeight(component.getHeight());
-            setMaxHeight(component.getHeight());
+            // Todo: Set height and width of the sub component
+            setMinWidth(CORNER_SIZE * 5);
+            setMaxWidth(CORNER_SIZE * 5);
+            setMinHeight(CORNER_SIZE * 2);
+            setMaxHeight(CORNER_SIZE * 2);
 
             controller = fxmlLoader.getController();
             controller.setComponent(component);
@@ -71,9 +62,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             initializeBackground();
             initializeName();
 
-            final SubComponentPresentation subComponentPresentation = new SubComponentPresentation(HUPPAAL.getProject().getComponents().get(2));
-            getChildren().add(subComponentPresentation);
-
+            // todo: make draggable
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
@@ -147,8 +136,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         finalLocationPresentation.setLocation(component.getFinalLocation());
         finalLocationPresentation.layoutXProperty().unbind();
         finalLocationPresentation.layoutYProperty().unbind();
-        finalLocationPresentation.setLayoutX(component.getWidth() - CORNER_SIZE / 2 - 1);
-        finalLocationPresentation.setLayoutY(component.getHeight() - CORNER_SIZE / 2 - 1);
+        finalLocationPresentation.setLayoutX(getMinWidth() - CORNER_SIZE / 2 - 1);
+        finalLocationPresentation.setLayoutY(getMinHeight() - CORNER_SIZE / 2 - 1);
 
         StackPane.setAlignment(finalLocationPresentation, Pos.BOTTOM_RIGHT);
     }
@@ -164,29 +153,19 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
                     Insets.EMPTY
             )));
 
-            // Set the icon color and rippler color of the toggleDeclarationButton
-            controller.toggleDeclarationButton.setRipplerFill(newColor.getTextColor(newIntensity));
-
             controller.toolbar.setPrefHeight(TOOL_BAR_HEIGHT);
-            controller.toggleDeclarationButton.setBackground(Background.EMPTY);
         };
-
-        updateColorDelegates.add(updateColor);
 
         controller.getComponent().colorProperty().addListener(observable -> updateColor.accept(component.getColor(), component.getColorIntensity()));
 
         updateColor.accept(component.getColor(), component.getColorIntensity());
-
-        // Set a hover effect for the controller.toggleDeclarationButton
-        controller.toggleDeclarationButton.setOnMouseEntered(event -> controller.toggleDeclarationButton.setCursor(Cursor.HAND));
-        controller.toggleDeclarationButton.setOnMouseExited(event -> controller.toggleDeclarationButton.setCursor(Cursor.DEFAULT));
     }
 
     private void initializeFrame() {
         final Component component = controller.getComponent();
 
         final Shape[] mask = new Shape[1];
-        final Rectangle rectangle = new Rectangle(component.getWidth(), component.getHeight());
+        final Rectangle rectangle = new Rectangle(getMinWidth(), getMinHeight());
 
         // Generate first corner (to subtract)
         final Polygon corner1 = new Polygon(
@@ -197,9 +176,9 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
 
         // Generate second corner (to subtract)
         final Polygon corner2 = new Polygon(
-                component.getWidth(), component.getHeight(),
-                component.getWidth() - CORNER_SIZE - 2, component.getHeight(),
-                component.getWidth(), component.getHeight() - CORNER_SIZE - 2
+                getMinWidth(), getMinHeight(),
+                getMinWidth() - CORNER_SIZE - 2, getMinHeight(),
+                getMinWidth(), getMinHeight() - CORNER_SIZE - 2
         );
 
         final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
@@ -250,8 +229,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         final Component component = controller.getComponent();
 
         // Bind the background width and height to the values in the model
-        controller.background.widthProperty().bind(component.widthProperty());
-        controller.background.heightProperty().bind(component.heightProperty());
+        controller.background.widthProperty().bind(minWidthProperty());
+        controller.background.heightProperty().bind(minHeightProperty());
 
         final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
             // Set the background color to the lightest possible version of the color
@@ -280,19 +259,5 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
     @Override
     public MouseTracker getMouseTracker() {
         return controller.getMouseTracker();
-    }
-
-    @Override
-    public void select() {
-        updateColorDelegates.forEach(colorConsumer -> colorConsumer.accept(Color.DEEP_ORANGE, Color.Intensity.I500));
-    }
-
-    @Override
-    public void deselect() {
-        updateColorDelegates.forEach(colorConsumer -> {
-            final Component component = controller.getComponent();
-
-            colorConsumer.accept(component.getColor(), component.getColorIntensity());
-        });
     }
 }

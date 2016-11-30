@@ -67,6 +67,8 @@ public class EdgePresentation extends Group {
         label.setTextFill(Color.GREY.getTextColor(Color.Intensity.I50));
 
         final Runnable updatePlacement = () -> {
+
+            if (edge.getTargetLocation() == null) return;
             final double x1 = edge.getSourceLocation().getX();
             final double x2 = edge.getTargetLocation().getX();
             final double y1 = edge.getSourceLocation().getY();
@@ -104,6 +106,7 @@ public class EdgePresentation extends Group {
         edge.getSourceLocation().xProperty().addListener(obs -> updatePlacement.run());
         edge.getSourceLocation().yProperty().addListener(obs -> updatePlacement.run());
 
+        if (edge.getTargetLocation() == null) return;
         edge.getTargetLocation().xProperty().addListener(obs -> updatePlacement.run());
         edge.getTargetLocation().yProperty().addListener(obs -> updatePlacement.run());
 

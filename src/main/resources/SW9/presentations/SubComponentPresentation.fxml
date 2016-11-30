@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Rectangle?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         type="StackPane"
+         fx:id="root"
+         fx:controller="SW9.controllers.SubComponentController">
+
+    <Rectangle fx:id="background"/>
+
+    <StackPane>
+        <Pane fx:id="modelContainer" onMousePressed="#modelContainerPressed"/>
+    </StackPane>
+
+    <BorderPane fx:id="frame" pickOnBounds="false">
+        <top>
+            <BorderPane fx:id="toolbar">
+                <center>
+                    <HBox>
+                        <StackPane>
+                            <JFXTextField fx:id="name" styleClass="sub-caption" translateY="1"/>
+                        </StackPane>
+                    </HBox>
+                </center>
+            </BorderPane>
+        </top>
+    </BorderPane>
+
+    <Line fx:id="line1"/>
+    <Line fx:id="line2"/>
+    <Pane fx:id="defaultLocationsContainer" pickOnBounds="false"/>
+
+</fx:root>

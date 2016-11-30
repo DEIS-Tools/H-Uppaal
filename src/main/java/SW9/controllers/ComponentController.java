@@ -14,7 +14,6 @@ import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
-import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXTextField;
 import javafx.animation.Interpolator;
@@ -64,6 +63,9 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     public Label y;
     public Pane defaultLocationsContainer;
     private MouseTracker mouseTracker;
+    private double previousX;
+    private double previousY;
+    private boolean wasDragged;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -238,9 +240,57 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     }
 
     @FXML
-    public void toolbarPressed() {
+    public void toolbarPressed(final MouseEvent event) {
+        event.consume();
+
         // Make the component selected when pressing the toolbar
         SelectHelper.select(this);
+
+        previousX = root.getLayoutX();
+        previousY = root.getLayoutY();
+    }
+
+    @FXML
+    public void toolbarDragged() {
+        // Calculate the potential new x alongside min and max values
+        final double newX = CanvasPresentation.mouseTracker.getGridX();
+        root.setLayoutX(newX);
+
+
+        // Calculate the potential new y alongside min and max values
+        final double newY = CanvasPresentation.mouseTracker.getGridY();
+        root.setLayoutY(newY);
+
+        // Tell the mouse release action that we can store an update
+        wasDragged = true;
+
+    }
+
+    @FXML
+    public void toolbarReleased() {
+        if (wasDragged) {
+            // Add to undo redo stack
+            final double currentX = root.getLayoutX();
+            final double currentY = root.getLayoutY();
+            final double storePreviousX = previousX;
+            final double storePreviousY = previousY;
+            UndoRedoStack.push(
+                    () -> {
+                        root.setLayoutX(currentX);
+                        root.setLayoutY(currentY);
+                    },
+                    () -> {
+                        root.setLayoutX(storePreviousX);
+                        root.setLayoutY(storePreviousY);
+                    },
+                    String.format("Moved nail from (%f,%f) to (%f,%f)", currentX, currentY, storePreviousX, storePreviousY),
+                    "pin-drop"
+            );
+
+            // Reset the was dragged boolean
+            wasDragged = false;
+
+        }
     }
 
     @Override

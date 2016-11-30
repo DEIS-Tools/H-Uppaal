@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXRippler?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.Rectangle?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
-<?import com.jfoenix.controls.JFXRippler?>
-<?import javafx.scene.shape.Circle?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
@@ -22,7 +20,8 @@
 
     <BorderPane fx:id="frame" pickOnBounds="false">
         <top>
-            <BorderPane fx:id="toolbar" onMousePressed="#toolbarPressed">
+            <BorderPane fx:id="toolbar" onMousePressed="#toolbarPressed" onMouseDragged="#toolbarDragged"
+                        onMouseReleased="#toolbarReleased">
                 <center>
                     <HBox>
                         <StackPane>

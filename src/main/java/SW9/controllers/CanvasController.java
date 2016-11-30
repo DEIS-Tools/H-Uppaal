@@ -4,24 +4,10 @@ import SW9.abstractions.Component;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.ComponentPresentation;
 import SW9.utility.helpers.SelectHelper;
-import SW9.utility.keyboard.Keybind;
-import SW9.utility.keyboard.KeyboardTracker;
-import javafx.animation.Transition;
-import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.CubicCurveTo;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.util.Duration;
 import javafx.util.Pair;
 
 import java.net.URL;
@@ -71,8 +57,8 @@ public class CanvasController implements Initializable {
                 root.setTranslateX(restoreCoordinates.getKey());
                 root.setTranslateY(restoreCoordinates.getValue());
             } else {
-                root.setTranslateX(GRID_SIZE * 5 + GRID_SIZE / 2 + 4);
-                root.setTranslateY(GRID_SIZE * 10 + GRID_SIZE / 2);
+                root.setTranslateX(GRID_SIZE * 5);
+                root.setTranslateY(GRID_SIZE * 10);
             }
 
             final ComponentPresentation newComponentPresentation = new ComponentPresentation(newComponent);
