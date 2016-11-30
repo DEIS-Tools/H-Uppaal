@@ -80,6 +80,14 @@ public class HUPPAALPresentation extends StackPane {
 
             initializeLogo();
 
+            // Open the file panel initially
+            final BooleanProperty ranInitialToggle = new SimpleBooleanProperty(false);
+            controller.filePane.widthProperty().addListener((observable) -> {
+                if (ranInitialToggle.get()) return;
+                toggleFilePane();
+                ranInitialToggle.set(true);
+            });
+
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
