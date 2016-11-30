@@ -32,8 +32,9 @@ public class KeyboardTracker {
     public static final String TOGGLE_QUERY_PANE = "TOGGLE_QUERY_PANE";
     public static final String TOGGLE_FILE_PANE = "TOGGLE_FILE_PANE";
     public static final String HIDE_LOCATION_PROPERTY_PANE = "HIDE_LOCATION_PROPERTY_PANE";
-    public static final String COLOR_SELECTED = "COLOR_SELECTED";
+    public static final String ADD_NEW_COMPONENT = "ADD_NEW_COMPONENT";
 
+    public static final String COLOR_SELECTED = "COLOR_SELECTED";
     private static final Map<String, Keybind> keyMap = new HashMap<>();
     public static final EventHandler<KeyEvent> handleKeyPress = event -> {
 

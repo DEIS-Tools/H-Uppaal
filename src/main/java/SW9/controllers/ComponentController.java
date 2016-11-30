@@ -1,5 +1,6 @@
 package SW9.controllers;
 
+import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
@@ -7,6 +8,7 @@ import SW9.abstractions.Nail;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.EdgePresentation;
 import SW9.presentations.LocationPresentation;
+import SW9.presentations.SubComponentPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.BindingHelper;
@@ -49,6 +51,8 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
     private final Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
     private final Map<Location, LocationPresentation> locationPresentationMap = new HashMap<>();
+    private final Map<Component, SubComponentPresentation> subComponentPresentationMap = new HashMap<>();
+
     public BorderPane toolbar;
     public Rectangle background;
     public TextArea declaration;
@@ -82,9 +86,20 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             }, "Added new location: " + newLocation.getNickname(), "add-circle");
         }));
 
+        KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_COMPONENT, new Keybind(new KeyCodeCombination(KeyCode.K), () -> {
+            final Component thirdComp = HUPPAAL.getProject().getComponents().get(2);
+            UndoRedoStack.push(() -> { // Perform
+                        component.get().addSubComponent(thirdComp);
+                    }, () -> { // Undo
+                        component.get().removeSubComponent(thirdComp);
+                    },
+                    "Added subcomponent to " + component.getName() + "-component",
+                    "add-circle");
+        }));
+
+
         component.addListener((obs, oldComponent, newComponent) -> {
             // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width from the presentation into the abstraction
-
             // Bind the position of the abstraction to the values in the view
             root.layoutXProperty().set(newComponent.getX());
             root.layoutYProperty().set(newComponent.getY());
@@ -95,80 +110,117 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             declaration.setText(newComponent.getDeclarations());
             newComponent.declarationsProperty().bind(declaration.textProperty());
 
-            final Consumer<Edge> handleAddedEdge = edge -> {
-                final EdgePresentation edgePresentation = new EdgePresentation(edge, newComponent);
-                edgePresentationMap.put(edge, edgePresentation);
-                modelContainer.getChildren().add(edgePresentation);
-
-                final Consumer<Location> updateMouseTransparency = (newTargetLocation) -> {
-                    if (newTargetLocation == null) {
-                        edgePresentation.setMouseTransparent(true);
-                    } else {
-                        edgePresentation.setMouseTransparent(false);
-                    }
-                };
-
-                updateMouseTransparency.accept(edge.getTargetLocation());
-                edge.targetLocationProperty().addListener((obs1, oldTargetLocation, newTargetLocation) -> {
-                    updateMouseTransparency.accept(newTargetLocation);
-                });
-            };
-
-            newComponent.getEdges().addListener(new ListChangeListener<Edge>() {
-                @Override
-                public void onChanged(final Change<? extends Edge> c) {
-                    if (c.next()) {
-                        // Edges are added to the component
-                        c.getAddedSubList().forEach(handleAddedEdge::accept);
-
-                        // Edges are removed from the component
-                        c.getRemoved().forEach(edge -> {
-                            final EdgePresentation edgePresentation = edgePresentationMap.get(edge);
-                            modelContainer.getChildren().remove(edgePresentation);
-                            edgePresentationMap.remove(edge);
-                        });
-                    }
-                }
-            });
-
-            newComponent.getEdges().forEach(handleAddedEdge);
-
-            final Consumer<Location> handleAddedLocation = (loc) -> {
-                // Create a new presentation, and register it on the map
-                final LocationPresentation newLocationPresentation = new LocationPresentation(loc, getComponent());
-                locationPresentationMap.put(loc, newLocationPresentation);
-
-                // Add it to the view
-                modelContainer.getChildren().add(newLocationPresentation);
-
-                // Bind the newly created location to the mouse
-                if (loc.getX() == 0) {
-                    BindingHelper.bind(loc, getComponent().xProperty(), getComponent().yProperty());
-                }
-            };
-
-            newComponent.getLocations().addListener(new ListChangeListener<Location>() {
-                @Override
-                public void onChanged(final Change<? extends Location> c) {
-                    if (c.next()) {
-                        // Locations are added to the component
-                        c.getAddedSubList().forEach(handleAddedLocation);
-
-                        // Locations are removed from the component
-                        c.getRemoved().forEach(location -> {
-                            final LocationPresentation locationPresentation = locationPresentationMap.get(location);
-                            modelContainer.getChildren().remove(locationPresentation);
-                            locationPresentationMap.remove(location);
-                        });
-                    }
-                }
-            });
-
-            newComponent.getLocations().forEach(handleAddedLocation);
+            initializeEdgeHandling(newComponent);
+            initializeLocationHandling(newComponent);
+            initializeSubComponentHandling(newComponent);
         });
 
         // The root view have been inflated, initialize the mouse tracker on it
         mouseTracker = new MouseTracker(root);
+    }
+
+    private void initializeLocationHandling(final Component newComponent) {
+        final Consumer<Location> handleAddedLocation = (loc) -> {
+            // Create a new presentation, and register it on the map
+            final LocationPresentation newLocationPresentation = new LocationPresentation(loc, getComponent());
+            locationPresentationMap.put(loc, newLocationPresentation);
+
+            // Add it to the view
+            modelContainer.getChildren().add(newLocationPresentation);
+
+            // Bind the newly created location to the mouse
+            if (loc.getX() == 0) {
+                BindingHelper.bind(loc, getComponent().xProperty(), getComponent().yProperty());
+            }
+        };
+
+        newComponent.getLocations().addListener(new ListChangeListener<Location>() {
+            @Override
+            public void onChanged(final Change<? extends Location> c) {
+                if (c.next()) {
+                    // Locations are added to the component
+                    c.getAddedSubList().forEach(handleAddedLocation);
+
+                    // Locations are removed from the component
+                    c.getRemoved().forEach(location -> {
+                        final LocationPresentation locationPresentation = locationPresentationMap.get(location);
+                        modelContainer.getChildren().remove(locationPresentation);
+                        locationPresentationMap.remove(location);
+                    });
+                }
+            }
+        });
+
+        newComponent.getLocations().forEach(handleAddedLocation);
+    }
+
+    private void initializeEdgeHandling(final Component newComponent) {
+        final Consumer<Edge> handleAddedEdge = edge -> {
+            final EdgePresentation edgePresentation = new EdgePresentation(edge, newComponent);
+            edgePresentationMap.put(edge, edgePresentation);
+            modelContainer.getChildren().add(edgePresentation);
+
+            final Consumer<Location> updateMouseTransparency = (newTargetLocation) -> {
+                if (newTargetLocation == null) {
+                    edgePresentation.setMouseTransparent(true);
+                } else {
+                    edgePresentation.setMouseTransparent(false);
+                }
+            };
+
+            updateMouseTransparency.accept(edge.getTargetLocation());
+            edge.targetLocationProperty().addListener((obs1, oldTargetLocation, newTargetLocation) -> {
+                updateMouseTransparency.accept(newTargetLocation);
+            });
+        };
+
+
+        // React on addition of edges to the component
+        newComponent.getEdges().addListener(new ListChangeListener<Edge>() {
+            @Override
+            public void onChanged(final Change<? extends Edge> c) {
+                if (c.next()) {
+                    // Edges are added to the component
+                    c.getAddedSubList().forEach(handleAddedEdge::accept);
+
+                    // Edges are removed from the component
+                    c.getRemoved().forEach(edge -> {
+                        final EdgePresentation edgePresentation = edgePresentationMap.get(edge);
+                        modelContainer.getChildren().remove(edgePresentation);
+                        edgePresentationMap.remove(edge);
+                    });
+                }
+            }
+        });
+
+        newComponent.getEdges().forEach(handleAddedEdge);
+    }
+
+    private void initializeSubComponentHandling(final Component newComponent) {
+        final Consumer<Component> handleAddedSubComponent = component -> {
+            final SubComponentPresentation subComponentPresentation = new SubComponentPresentation(component);
+            subComponentPresentationMap.put(component, subComponentPresentation);
+            modelContainer.getChildren().add(subComponentPresentation);
+        };
+
+        // React on addition of edges to the component
+        newComponent.getSubComponents().addListener(new ListChangeListener<Component>() {
+            @Override
+            public void onChanged(final Change<? extends Component> c) {
+                if (c.next()) {
+                    // SubComponents are added to the component
+                    c.getAddedSubList().forEach(handleAddedSubComponent::accept);
+
+                    // SubComponents are removed from the component
+                    c.getRemoved().forEach(subComponent -> {
+                        final SubComponentPresentation subComponentPresentation = subComponentPresentationMap.get(subComponent);
+                        modelContainer.getChildren().remove(subComponentPresentation);
+                    });
+                }
+            }
+        });
+
+        newComponent.getSubComponents().forEach(handleAddedSubComponent);
     }
 
     public void toggleDeclaration(final MouseEvent mouseEvent) {

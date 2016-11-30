@@ -108,19 +108,12 @@ public class HUPPAALController implements Initializable {
             }));
         });
 
-        // Select the first component in the project
-        if (HUPPAAL.getProject().getComponents().size() > 0) {
-
-        }
-
         final BooleanProperty hasChanged = new SimpleBooleanProperty(false);
 
         HUPPAAL.getProject().getComponents().addListener(new ListChangeListener<Component>() {
             @Override
-            public void onChanged(Change<? extends Component> c) {
+            public void onChanged(final Change<? extends Component> c) {
                 if (!hasChanged.get()) {
-
-                    System.out.println(HUPPAAL.getProject().getComponents().size());
                     CanvasController.setActiveComponent(HUPPAAL.getProject().getComponents().get(0));
                     hasChanged.set(true);
                 }

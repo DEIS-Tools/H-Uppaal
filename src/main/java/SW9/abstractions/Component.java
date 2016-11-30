@@ -36,15 +36,17 @@ public class Component implements Serializable {
     private final ObjectProperty<Location> initialLocation = new SimpleObjectProperty<>();
     private final ObjectProperty<Location> finalLocation = new SimpleObjectProperty<>();
 
+    private final ObservableList<Component> subComponents = FXCollections.observableArrayList();
+
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
+
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
     private final DoubleProperty width = new SimpleDoubleProperty(450d);
     private final DoubleProperty height = new SimpleDoubleProperty(600d);
     private final BooleanProperty declarationOpen = new SimpleBooleanProperty(false);
     private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.GREY_BLUE);
     private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I700);
-
     public Component() {
         this("Component" + hiddenID.getAndIncrement());
     }
@@ -222,6 +224,18 @@ public class Component implements Serializable {
 
     public ObjectProperty<Location> finalLocationProperty() {
         return finalLocation;
+    }
+
+    public ObservableList<Component> getSubComponents() {
+        return subComponents;
+    }
+
+    public boolean addSubComponent(final Component component) {
+        return subComponents.add(component);
+    }
+
+    public boolean removeSubComponent(final Component component) {
+        return subComponents.remove(component);
     }
 
     public Edge getUnfinishedEdge() {
