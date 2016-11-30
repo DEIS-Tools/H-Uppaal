@@ -1,6 +1,5 @@
 package SW9.presentations;
 
-import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.controllers.ComponentController;
 import SW9.utility.colors.Color;
@@ -71,8 +70,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             initializeBackground();
             initializeName();
 
-            final SubComponentPresentation subComponentPresentation = new SubComponentPresentation(HUPPAAL.getProject().getComponents().get(2));
-            getChildren().add(subComponentPresentation);
+            /*final SubComponentPresentation subComponentPresentation = new SubComponentPresentation(HUPPAAL.getProject().getComponents().get(2));
+            getChildren().add(subComponentPresentation);*/
 
 
         } catch (final IOException ioe) {

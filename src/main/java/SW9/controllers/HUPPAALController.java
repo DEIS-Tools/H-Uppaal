@@ -16,6 +16,9 @@ import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXTextField;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -103,6 +106,25 @@ public class HUPPAALController implements Initializable {
 
                 SelectHelper.clearSelectedElements();
             }));
+        });
+
+        // Select the first component in the project
+        if (HUPPAAL.getProject().getComponents().size() > 0) {
+
+        }
+
+        final BooleanProperty hasChanged = new SimpleBooleanProperty(false);
+
+        HUPPAAL.getProject().getComponents().addListener(new ListChangeListener<Component>() {
+            @Override
+            public void onChanged(Change<? extends Component> c) {
+                if (!hasChanged.get()) {
+
+                    System.out.println(HUPPAAL.getProject().getComponents().size());
+                    CanvasController.setActiveComponent(HUPPAAL.getProject().getComponents().get(0));
+                    hasChanged.set(true);
+                }
+            }
         });
     }
 

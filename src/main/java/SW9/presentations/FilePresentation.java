@@ -67,13 +67,22 @@ public class FilePresentation extends AnchorPane {
         animateRight.setFromX(-1 * activeIndicator.getWidth());
         animateRight.setToX(0);
 
-        CanvasController.activeComponentProperty().addListener((obs, oldActiveComponent, newActiveComponent) -> {
+        final BiConsumer<Component, Component> updateActiveComponent = (oldActiveComponent, newActiveComponent) -> {
             if (newActiveComponent != null && component.get().equals(newActiveComponent)) {
                 animateRight.play();
             } else if (oldActiveComponent != null && component.get().equals(oldActiveComponent)) {
                 animateLeft.play();
+            } else if (oldActiveComponent == null && !component.get().equals(newActiveComponent)) {
+                animateLeft.play();
             }
+        };
+
+        CanvasController.activeComponentProperty().addListener((obs, oldActiveComponent, newActiveComponent) -> {
+            updateActiveComponent.accept(oldActiveComponent, newActiveComponent);
         });
+
+        // Indicate the initially active component as opened
+        updateActiveComponent.accept(null, CanvasController.getActiveComponent());
     }
 
     private void initializeMoreInformationButton() {
