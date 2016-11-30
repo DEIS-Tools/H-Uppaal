@@ -2,6 +2,7 @@ package SW9.presentations;
 
 import SW9.abstractions.Component;
 import SW9.controllers.ComponentController;
+import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.helpers.SelectHelper;
@@ -97,12 +98,13 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
     }
 
     private void initializeDragAnchors() {
-
         final Component component = controller.getComponent();
-
+        final BooleanProperty wasResized = new SimpleBooleanProperty(false);
 
         // Bottom anchor
         final Rectangle bottomAnchor = controller.bottomAnchor;
+
+        bottomAnchor.setCursor(Cursor.S_RESIZE);
 
         // Bind the place and size of bottom anchor
         bottomAnchor.widthProperty().bind(component.widthProperty().subtract(CORNER_SIZE));
@@ -117,12 +119,34 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         });
 
         bottomAnchor.setOnMouseDragged(event -> {
-            final double diff = event.getScreenY() - prevY.get();
+            double diff = event.getScreenY() - prevY.get();
+            diff -= diff % GRID_SIZE;
             component.setHeight(Math.max(prevHeight.get() + diff, GRID_SIZE * 10));
+            wasResized.set(true);
+        });
+
+        bottomAnchor.setOnMouseReleased(event -> {
+            if (!wasResized.get()) return;
+            final double previousHeight = prevHeight.doubleValue();
+            final double currentHeight = component.getHeight();
+
+            // If no difference do not save change
+            if (previousHeight == currentHeight) return;
+
+            UndoRedoStack.push(() -> { // Perform
+                        component.setHeight(currentHeight);
+                    }, () -> { // Undo
+                        component.setHeight(previousHeight);
+                    },
+                    "Component height resized", "settings-overscan");
+
+            wasResized.set(false);
         });
 
         // Right anchor
         final Rectangle rightAnchor = controller.rightAnchor;
+
+        rightAnchor.setCursor(Cursor.E_RESIZE);
 
         // Bind the place and size of bottom anchor
         rightAnchor.setWidth(5);
@@ -137,12 +161,29 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         });
 
         rightAnchor.setOnMouseDragged(event -> {
-            final double diff = event.getScreenX() - prevX.get();
+            double diff = event.getScreenX() - prevX.get();
+            diff -= diff % GRID_SIZE;
             component.setWidth(Math.max(prevWidth.get() + diff, GRID_SIZE * 10));
+            wasResized.set(true);
         });
 
+        rightAnchor.setOnMouseReleased(event -> {
+            if (!wasResized.get()) return;
+            final double previousWidth = prevWidth.doubleValue();
+            final double currentWidth = component.getWidth();
 
+            // If no difference do not save change
+            if (previousWidth == currentWidth) return;
 
+            UndoRedoStack.push(() -> { // Perform
+                        component.setWidth(currentWidth);
+                    }, () -> { // Undo
+                        component.setWidth(previousWidth);
+                    },
+                    "Component width resized", "settings-overscan");
+
+            wasResized.set(false);
+        });
 
     }
 
