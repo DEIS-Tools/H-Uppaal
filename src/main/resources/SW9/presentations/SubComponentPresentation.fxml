@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.Rectangle?>
@@ -23,7 +23,7 @@
                 <center>
                     <HBox>
                         <StackPane>
-                            <JFXTextField fx:id="name" styleClass="sub-caption" translateY="1"/>
+                            <Label fx:id="name" styleClass="sub-caption" translateY="-2"/>
                         </StackPane>
                     </HBox>
                 </center>

@@ -2,7 +2,6 @@ package SW9.controllers;
 
 import SW9.abstractions.Component;
 import SW9.utility.mouse.MouseTracker;
-import com.jfoenix.controls.JFXTextField;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -24,7 +23,7 @@ public class SubComponentController implements Initializable {
     public BorderPane toolbar;
     public Rectangle background;
     public BorderPane frame;
-    public JFXTextField name;
+    public Label name;
     public StackPane root;
     public Pane modelContainer;
     public Line line1;

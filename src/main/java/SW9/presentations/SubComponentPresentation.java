@@ -109,8 +109,6 @@ public class SubComponentPresentation extends StackPane implements MouseTrackabl
 
             // Set the text color for the label
             controller.name.setStyle("-fx-text-fill: " + color.getTextColorRgbaString(colorIntensity) + ";");
-            controller.name.setFocusColor(color.getTextColor(colorIntensity));
-            controller.name.setUnFocusColor(javafx.scene.paint.Color.TRANSPARENT);
         };
 
         controller.getComponent().colorProperty().addListener(observable -> updateColor.run());
