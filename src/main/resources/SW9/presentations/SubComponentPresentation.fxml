@@ -7,17 +7,20 @@
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
          fx:id="root"
-         translateY="80"
-         translateX="80"
+         onMousePressed="#mousePressed"
+         onMouseDragged="#mouseDragged"
+         onMouseReleased="#mouseReleased"
+         layoutX="80"
+         layoutY="80"
          fx:controller="SW9.controllers.SubComponentController">
 
     <Rectangle fx:id="background"/>
 
     <StackPane>
-        <Pane fx:id="modelContainer" onMousePressed="#modelContainerPressed"/>
+        <Pane fx:id="modelContainer"/>
     </StackPane>
 
-    <BorderPane fx:id="frame" pickOnBounds="false">
+    <BorderPane fx:id="frame">
         <top>
             <BorderPane fx:id="toolbar">
                 <center>
@@ -33,6 +36,6 @@
 
     <Line fx:id="line1"/>
     <Line fx:id="line2"/>
-    <Pane fx:id="defaultLocationsContainer" pickOnBounds="false"/>
+    <Pane fx:id="defaultLocationsContainer"/>
 
 </fx:root>

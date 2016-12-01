@@ -1,7 +1,8 @@
 package SW9.controllers;
 
 import SW9.abstractions.Component;
-import SW9.utility.mouse.MouseTracker;
+import SW9.presentations.CanvasPresentation;
+import SW9.utility.UndoRedoStack;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -31,16 +32,16 @@ public class SubComponentController implements Initializable {
     public Label x;
     public Label y;
     public Pane defaultLocationsContainer;
-    private MouseTracker mouseTracker;
+
+    private double previousX;
+    private double previousY;
+    private boolean wasDragged;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         component.addListener((obs, oldComponent, newComponent) -> {
-            // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width from the presentation into the abstraction
+            // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width fromP the presentation into the abstraction
         });
-
-        // The root view have been inflated, initialize the mouse tracker on it
-        mouseTracker = new MouseTracker(root);
     }
 
     public Component getComponent() {
@@ -56,13 +57,55 @@ public class SubComponentController implements Initializable {
     }
 
     @FXML
-    private void modelContainerPressed(final MouseEvent event) {
-        event.consume();
+    private void mousePressed(final MouseEvent event) {
+        previousX = root.getLayoutX();
+        previousY = root.getLayoutY();
 
-        // Todo: Select the component
+        System.out.println("PRESSED");
+
+        // TODO make selectable
     }
 
-    public MouseTracker getMouseTracker() {
-        return mouseTracker;
+    @FXML
+    private void mouseDragged(final MouseEvent event) {
+
+        // Calculate the potential new x alongside min and max values
+        final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
+
+        root.setLayoutX(newX);
+
+        // Calculate the potential new y alongside min and max values
+        final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
+
+        root.setLayoutY(newY);
+
+        // Tell the mouse release action that we can store an update
+        wasDragged = true;
+    }
+
+    @FXML
+    private void mouseReleased(final MouseEvent event) {
+        if (wasDragged) {
+            // Add to undo redo stack
+            final double currentX = root.getLayoutX();
+            final double currentY = root.getLayoutY();
+            final double storePreviousX = previousX;
+            final double storePreviousY = previousY;
+            UndoRedoStack.push(
+                    () -> {
+                        root.setLayoutX(currentX);
+                        root.setLayoutY(currentY);
+                    },
+                    () -> {
+                        root.setLayoutX(storePreviousX);
+                        root.setLayoutY(storePreviousY);
+                    },
+                    String.format("Moved nail from (%f,%f) to (%f,%f)", currentX, currentY, storePreviousX, storePreviousY),
+                    "pin-drop"
+            );
+
+            // Reset the was dragged boolean
+            wasDragged = false;
+        }
     }
 }

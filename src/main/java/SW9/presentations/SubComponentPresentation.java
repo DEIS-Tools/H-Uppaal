@@ -3,10 +3,7 @@ package SW9.presentations;
 import SW9.abstractions.Component;
 import SW9.controllers.SubComponentController;
 import SW9.utility.colors.Color;
-import SW9.utility.helpers.MouseTrackable;
-import SW9.utility.mouse.MouseTracker;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
@@ -27,7 +24,7 @@ import java.util.function.BiConsumer;
 import static SW9.presentations.ComponentPresentation.CORNER_SIZE;
 import static SW9.presentations.ComponentPresentation.TOOL_BAR_HEIGHT;
 
-public class SubComponentPresentation extends StackPane implements MouseTrackable {
+public class SubComponentPresentation extends StackPane {
 
     private final SubComponentController controller;
     private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
@@ -242,20 +239,5 @@ public class SubComponentPresentation extends StackPane implements MouseTrackabl
         });
 
         updateColor.accept(component.getColor(), component.getColorIntensity());
-    }
-
-    @Override
-    public DoubleProperty xProperty() {
-        return layoutXProperty();
-    }
-
-    @Override
-    public DoubleProperty yProperty() {
-        return layoutYProperty();
-    }
-
-    @Override
-    public MouseTracker getMouseTracker() {
-        return controller.getMouseTracker();
     }
 }
