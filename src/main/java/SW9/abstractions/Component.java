@@ -35,18 +35,18 @@ public class Component implements Serializable {
     private final ObservableList<Edge> edges = FXCollections.observableArrayList();
     private final ObjectProperty<Location> initialLocation = new SimpleObjectProperty<>();
     private final ObjectProperty<Location> finalLocation = new SimpleObjectProperty<>();
-
     private final ObservableList<Component> subComponents = FXCollections.observableArrayList();
+    private final BooleanProperty isMain = new SimpleBooleanProperty(false);
 
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
-
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
     private final DoubleProperty width = new SimpleDoubleProperty(450d);
     private final DoubleProperty height = new SimpleDoubleProperty(600d);
     private final BooleanProperty declarationOpen = new SimpleBooleanProperty(false);
     private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.GREY_BLUE);
     private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I700);
+
     public Component() {
         this("Component" + hiddenID.getAndIncrement());
     }
@@ -244,6 +244,18 @@ public class Component implements Serializable {
         }
 
         return null;
+    }
+
+    public boolean isIsMain() {
+        return isMain.get();
+    }
+
+    public BooleanProperty isMainProperty() {
+        return isMain;
+    }
+
+    public void setIsMain(boolean isMain) {
+        this.isMain.set(isMain);
     }
 
     @Override

@@ -1,12 +1,12 @@
 package SW9.presentations;
 
+import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.controllers.CanvasController;
 import SW9.utility.colors.Color;
 import com.jfoenix.controls.JFXRippler;
 import javafx.animation.TranslateTransition;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
@@ -41,7 +41,7 @@ public class FilePresentation extends AnchorPane {
 
             initializeIcon();
             initializeFileName();
-            initializeHoverEffect();
+            initializeColors();
             initializeRippler();
             initializeMoreInformationButton();
             initializeActiveIndicator();
@@ -92,7 +92,9 @@ public class FilePresentation extends AnchorPane {
         moreInformation.setPosition(JFXRippler.RipplerPos.BACK);
         moreInformation.setRipplerFill(Color.GREY_BLUE.getColor(Color.Intensity.I500));
 
-        moreInformation.setOnMousePressed(Event::consume); // Todo: show more information. Rename etc.
+        moreInformation.setOnMousePressed((mouseEvent) -> {
+            component.get().setIsMain(true);
+        });
     }
 
     private void initializeRippler() {
@@ -100,6 +102,7 @@ public class FilePresentation extends AnchorPane {
 
         final Color color = Color.GREY_BLUE;
         final Color.Intensity colorIntensity = Color.Intensity.I400;
+
 
         rippler.setMaskType(JFXRippler.RipplerMask.RECT);
         rippler.setRipplerFill(color.getColor(colorIntensity));
@@ -126,7 +129,7 @@ public class FilePresentation extends AnchorPane {
         icon.setFill(component.get().getColor().getTextColor(component.get().getColorIntensity()));
     }
 
-    private void initializeHoverEffect() {
+    private void initializeColors() {
         final FontIcon moreInformationIcon = (FontIcon) lookup("#moreInformationIcon");
 
         final Color color = Color.GREY;
@@ -154,12 +157,28 @@ public class FilePresentation extends AnchorPane {
 
         // Update the background when hovered
         setOnMouseEntered(event -> {
-            setBackground.accept(colorHovered, colorIntensityHovered);
+            if(CanvasController.getActiveComponent().equals(component.get())) {
+                setBackground.accept(component.get().getColor(), component.get().getColorIntensity().next(-10).next(2));
+            } else {
+                setBackground.accept(colorHovered, colorIntensityHovered);
+            }
             setCursor(Cursor.HAND);
         });
         setOnMouseExited(event -> {
-            setBackground.accept(color, colorIntensity);
+            if(CanvasController.getActiveComponent().equals(component.get())) {
+                setBackground.accept(component.get().getColor(), component.get().getColorIntensity().next(-10).next(1));
+            } else {
+                setBackground.accept(color, colorIntensity);
+            }
             setCursor(Cursor.DEFAULT);
+        });
+
+        CanvasController.activeComponentProperty().addListener((obs, oldActiveComponent, newActiveComponent) -> {
+            if(newActiveComponent.equals(component.get())) {
+                setBackground.accept(component.get().getColor(), component.get().getColorIntensity().next(-10).next(0));
+            } else {
+                setBackground.accept(color, colorIntensity);
+            }
         });
 
         // Update the background initially
