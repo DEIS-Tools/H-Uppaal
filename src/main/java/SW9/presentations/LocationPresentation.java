@@ -49,7 +49,14 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private final DoubleProperty animation = new SimpleDoubleProperty(0);
     private final DoubleBinding reverseAnimation = new SimpleDoubleProperty(1).subtract(animation);
 
+    private final boolean interactable;
+
     public LocationPresentation(final Location location, final Component component) {
+        this(location, component, true);
+    }
+
+    public LocationPresentation(final Location location, final Component component, final boolean interactable) {
+        this.interactable = interactable;
         final URL url = this.getClass().getResource("LocationPresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();
@@ -79,7 +86,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             initializeCircle();
             initializeLocationShape();
 
-            initializeNameTag();
+            initializeTags();
             //initializeInvariantTag();
 
             initializeInitialAnimation();
@@ -128,7 +135,12 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         color.addListener((obs, old, newColor) -> updateColor.accept(newColor, colorIntensity.get()));
     }
 
-    private void initializeNameTag() {
+    private void initializeTags() {
+        if(!interactable) {
+            controller.nameTag.setVisible(false);
+            controller.invariantTag.setVisible(false);
+            return;
+        }
 
         controller.nameTag.replaceSpace();
 
@@ -202,41 +214,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         // Initialize the tags from the current location
         updateTags.accept(controller.getLocation());
 
-    }
-
-    private void initializeInvariantTag() {
-        final Consumer<Location> updateInvariantTag = location -> {
-            // Update the color
-            controller.invariantTag.bindToColor(location.colorProperty(), location.colorIntensityProperty());
-
-            // Update the invariant
-            controller.invariantTag.setAndBindString(location.invariantProperty());
-
-            // Update the placeholder
-            controller.invariantTag.setPlaceholder("No invariant");
-
-            final Consumer<String> updateVisibility = (invariant) -> {
-                if (invariant.equals("")) {
-                    controller.invariantTag.setOpacity(0);
-                } else {
-                    controller.invariantTag.setOpacity(1);
-                }
-            };
-
-            location.invariantProperty().addListener((obs, oldInvariant, newInvariant) -> updateVisibility.accept(newInvariant));
-            updateVisibility.accept(location.getInvariant());
-        };
-
-        controller.invariantTag.opacityProperty().addListener((obs, oldOpacity, newOpacity) -> {
-            if (newOpacity.doubleValue() < 1) {
-                if (controller.invariantTag.textFieldIsFocused()) {
-                    controller.invariantTag.setOpacity(1);
-                }
-            }
-        });
-
-        controller.locationProperty().addListener(observable -> updateInvariantTag.accept(controller.getLocation()));
-        updateInvariantTag.accept(controller.getLocation());
     }
 
     private void initializeHoverAnimationEntered() {
@@ -390,13 +367,14 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     }
 
     public void animateHoverEntered() {
-        if (shakeContentAnimation.getStatus().equals(Animation.Status.RUNNING)) return;
+
+        if (shakeContentAnimation.getStatus().equals(Animation.Status.RUNNING) || !interactable) return;
 
         hoverAnimationEntered.play();
     }
 
     public void animateHoverExited() {
-        if (shakeContentAnimation.getStatus().equals(Animation.Status.RUNNING)) return;
+        if (shakeContentAnimation.getStatus().equals(Animation.Status.RUNNING) || !interactable) return;
 
         hoverAnimationExited.play();
     }
@@ -414,6 +392,10 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     @Override
     public MouseTracker getMouseTracker() {
         return mouseTracker;
+    }
+
+    public boolean isInteractable() {
+        return interactable;
     }
 
     private void initializeShakeAnimation() {

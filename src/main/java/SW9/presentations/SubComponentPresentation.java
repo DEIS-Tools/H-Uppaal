@@ -80,8 +80,8 @@ public class SubComponentPresentation extends StackPane implements MouseTrackabl
 
         // Instantiate views for the initial and final location
         final Component component = controller.getComponent();
-        initialLocationPresentation = new LocationPresentation(component.getInitialLocation(), component);
-        finalLocationPresentation = new LocationPresentation(component.getFinalLocation(), component);
+        initialLocationPresentation = new LocationPresentation(component.getInitialLocation(), component, false);
+        finalLocationPresentation = new LocationPresentation(component.getFinalLocation(), component, false);
 
         // Add the locations to the view
         controller.defaultLocationsContainer.getChildren().addAll(initialLocationPresentation, finalLocationPresentation);

@@ -146,9 +146,13 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
     @FXML
     private void mouseEntered() {
+        final LocationPresentation locationPresentation = (LocationPresentation) this.root;
+
+        if(!locationPresentation.isInteractable()) return;
+
         circle.setCursor(Cursor.HAND);
 
-        ((LocationPresentation) root).animateHoverEntered();
+        locationPresentation.animateHoverEntered();
 
         // Keybind for making location urgent
         KeyboardTracker.registerKeybind(KeyboardTracker.MAKE_LOCATION_URGENT, new Keybind(new KeyCodeCombination(KeyCode.U), () -> {
@@ -194,9 +198,12 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
     @FXML
     private void mouseExited() {
+        final LocationPresentation locationPresentation = (LocationPresentation) this.root;
+        if(!locationPresentation.isInteractable()) return;
+
         circle.setCursor(Cursor.DEFAULT);
 
-        ((LocationPresentation) root).animateHoverExited();
+        locationPresentation.animateHoverExited();
 
         KeyboardTracker.unregisterKeybind(KeyboardTracker.MAKE_LOCATION_URGENT);
         KeyboardTracker.unregisterKeybind(KeyboardTracker.MAKE_LOCATION_COMMITTED);
@@ -227,7 +234,9 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                 }
                 // Otherwise, select the location
                 else {
-                    SelectHelper.select(this);
+                    if(((LocationPresentation) root).isInteractable()) {
+                        SelectHelper.select(this);
+                    }
                 }
 
                 // Update position for undo dragging
