@@ -61,8 +61,6 @@ public class SubComponentController implements Initializable {
         previousX = root.getLayoutX();
         previousY = root.getLayoutY();
 
-        System.out.println("PRESSED");
-
         // TODO make selectable
     }
 
