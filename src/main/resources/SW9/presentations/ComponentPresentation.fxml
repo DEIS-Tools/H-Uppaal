@@ -19,8 +19,7 @@
 
     <BorderPane fx:id="frame" pickOnBounds="false">
         <top>
-            <BorderPane fx:id="toolbar" onMousePressed="#toolbarPressed" onMouseDragged="#toolbarDragged"
-                        onMouseReleased="#toolbarReleased">
+            <BorderPane fx:id="toolbar">
                 <center>
                     <HBox>
                         <StackPane>

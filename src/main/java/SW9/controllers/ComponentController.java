@@ -12,6 +12,7 @@ import SW9.presentations.SubComponentPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.BindingHelper;
+import SW9.utility.helpers.NewDragHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
@@ -66,14 +67,9 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     public Label x;
     public Label y;
     public Pane defaultLocationsContainer;
-    public Rectangle topAnchor;
     public Rectangle rightAnchor;
     public Rectangle bottomAnchor;
-    public Rectangle leftAnchor;
     private MouseTracker mouseTracker;
-    private double previousX;
-    private double previousY;
-    private boolean wasDragged;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -225,6 +221,8 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         });
 
         newComponent.getSubComponents().forEach(handleAddedSubComponent);
+
+        makeDraggable();
     }
 
     public void toggleDeclaration(final MouseEvent mouseEvent) {
@@ -295,65 +293,6 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         return mouseTracker;
     }
 
-    @FXML
-    public void toolbarPressed(final MouseEvent event) {
-        event.consume();
-
-        // Make the component selected when pressing the toolbar
-        SelectHelper.select(this);
-
-        previousX = root.getLayoutX();
-        previousY = root.getLayoutY();
-    }
-
-    @FXML
-    public void toolbarDragged() {
-        // Calculate the potential new x alongside min and max values
-        final double newX = CanvasPresentation.mouseTracker.getGridX();
-        root.setLayoutX(newX);
-
-
-        // Calculate the potential new y alongside min and max values
-        final double newY = CanvasPresentation.mouseTracker.getGridY();
-        root.setLayoutY(newY);
-
-        // Tell the mouse release action that we can store an update
-        wasDragged = true;
-
-    }
-
-    @FXML
-    public void toolbarReleased() {
-        if (wasDragged) {
-            // Add to undo redo stack
-            final double currentX = root.getLayoutX();
-            final double currentY = root.getLayoutY();
-            final double storePreviousX = previousX;
-            final double storePreviousY = previousY;
-            UndoRedoStack.push(
-                    () -> {
-                        root.setLayoutX(currentX);
-                        root.setLayoutY(currentY);
-                    },
-                    () -> {
-                        root.setLayoutX(storePreviousX);
-                        root.setLayoutY(storePreviousY);
-                    },
-                    String.format("Moved nail from (%f,%f) to (%f,%f)", currentX, currentY, storePreviousX, storePreviousY),
-                    "pin-drop"
-            );
-
-            // Reset the was dragged boolean
-            wasDragged = false;
-
-        }
-    }
-
-    @FXML
-    public void leftAnchorPressed(final MouseEvent event) {
-        System.out.println("JADA");
-    }
-
     @Override
     public void color(final Color color, final Color.Intensity intensity) {
         final Component component = getComponent();
@@ -404,5 +343,18 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     @Override
     public void deselect() {
         ((SelectHelper.Selectable) root).deselect();
+    }
+
+    private void makeDraggable() {
+
+        NewDragHelper.makeDraggable(
+                root,
+                toolbar,
+                () -> CanvasPresentation.mouseTracker.getGridX(),
+                () -> CanvasPresentation.mouseTracker.getGridY(),
+                () -> SelectHelper.select(this),
+                () -> {},
+                () -> {}
+        );
     }
 }
