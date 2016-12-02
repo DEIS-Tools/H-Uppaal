@@ -378,7 +378,10 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 toolbar,
                 () -> CanvasPresentation.mouseTracker.getGridX(),
                 () -> CanvasPresentation.mouseTracker.getGridY(),
-                (event) -> SelectHelper.select(this),
+                (event) -> {
+                    event.consume();
+                    SelectHelper.select(this);
+                },
                 () -> {},
                 () -> {}
         );
