@@ -79,6 +79,11 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             newLocation.setColorIntensity(getComponent().getColorIntensity());
             newLocation.setColor(getComponent().getColor());
 
+            KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+                component.get().removeLocation(newLocation);
+                UndoRedoStack.forget();
+            }));
+
             UndoRedoStack.push(() -> { // Perform
                 component.get().addLocation(newLocation);
             }, () -> { // Undo

@@ -30,7 +30,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Path;
 
 import java.net.URL;
-import java.security.Key;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -222,13 +221,13 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
             if (unfinishedEdge != null) {
                 unfinishedEdge.setTargetLocation(getLocation());
-                KeyboardTracker.unregisterKeybind(KeyboardTracker.ABADONDON_EDGE);
+                KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_EDGE);
             } else {
                 // If shift is being held down, start drawing a new edge
                 if (event.isShiftDown()) {
                     final Edge newEdge = new Edge(getLocation());
 
-                    KeyboardTracker.registerKeybind(KeyboardTracker.ABADONDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+                    KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
                         component.removeEdge(newEdge);
                         UndoRedoStack.forget();
                     }));
@@ -261,6 +260,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
             getLocation().yProperty().bind(root.layoutYProperty());
 
             isPlaced = true;
+            KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_LOCATION);
         }
     }
 
