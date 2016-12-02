@@ -293,7 +293,6 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         return mouseTracker;
     }
 
-
     @Override
     public void color(final Color color, final Color.Intensity intensity) {
         final Component component = getComponent();
