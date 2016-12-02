@@ -259,7 +259,9 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
             getLocation().xProperty().bind(root.layoutXProperty());
             getLocation().yProperty().bind(root.layoutYProperty());
 
+            // Notify that the location was placed
             isPlaced = true;
+            ComponentController.setPlacingLocation(false);
             KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_LOCATION);
         }
     }

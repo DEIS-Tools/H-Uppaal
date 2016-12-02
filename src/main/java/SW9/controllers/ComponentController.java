@@ -71,11 +71,34 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     public Rectangle bottomAnchor;
     private MouseTracker mouseTracker;
 
+    public static boolean isPlacingLocation() {
+        return placingLocation;
+    }
+
+    public static void setPlacingLocation(boolean placingLocation) {
+        ComponentController.placingLocation = placingLocation;
+    }
+
+    private static boolean placingLocation = false;
+
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+
         // Register a keybind for adding new locations
         KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
+            if(placingLocation) return;
+
             final Location newLocation = new Location();
+            placingLocation = true;
+
+            CanvasController.activeComponentProperty().addListener((observable, oldValue, newValue) -> {
+                if(!newValue.equals(getComponent())) {
+                    component.get().removeLocation(newLocation);
+                    placingLocation = false;
+                    UndoRedoStack.forget();
+                }
+            });
+
             newLocation.setColorIntensity(getComponent().getColorIntensity());
             newLocation.setColor(getComponent().getColor());
 
