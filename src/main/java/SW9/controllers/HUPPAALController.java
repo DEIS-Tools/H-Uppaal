@@ -2,6 +2,7 @@ package SW9.controllers;
 
 import SW9.HUPPAAL;
 import SW9.abstractions.Component;
+import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
 import SW9.backend.UPPAALDriver;
 import SW9.presentations.CanvasPresentation;
@@ -165,6 +166,17 @@ public class HUPPAALController implements Initializable {
 
                     location.yProperty().unbind();
                     location.yProperty().set(previousY);
+                }, String.format("Deleted %s", selectable.toString()), "delete");
+            } else if (selectable instanceof EdgeController) {
+                final Component component = ((EdgeController) selectable).getComponent();
+                final Edge edge = ((EdgeController) selectable).getEdge();
+
+                UndoRedoStack.push(() -> { // Perform
+                    // Remove the edge
+                    component.getEdges().remove(edge);
+                }, () -> { // Undo
+                    // Re-all the edge
+                    component.getEdges().add(edge);
                 }, String.format("Deleted %s", selectable.toString()), "delete");
             }
         });
