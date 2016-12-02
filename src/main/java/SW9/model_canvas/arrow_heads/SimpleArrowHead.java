@@ -1,9 +1,11 @@
 package SW9.model_canvas.arrow_heads;
 
 import SW9.presentations.CanvasPresentation;
+import SW9.utility.colors.Color;
+import SW9.utility.helpers.SelectHelper;
 import javafx.scene.shape.Line;
 
-public class SimpleArrowHead extends ArrowHead {
+public class SimpleArrowHead extends ArrowHead implements SelectHelper.Selectable {
 
     private static final double TRIANGLE_LENGTH = CanvasPresentation.GRID_SIZE * 1.5;
     private static final double TRIANGLE_WIDTH = CanvasPresentation.GRID_SIZE;
@@ -68,4 +70,15 @@ public class SimpleArrowHead extends ArrowHead {
         rightArrow.getStyleClass().remove("selected");
     }
 
+    @Override
+    public void select() {
+        leftArrow.setStroke(Color.DEEP_ORANGE.getColor(Color.Intensity.I500));
+        rightArrow.setStroke(Color.DEEP_ORANGE.getColor(Color.Intensity.I500));
+    }
+
+    @Override
+    public void deselect() {
+        leftArrow.setStroke(Color.GREY.getColor(Color.Intensity.I900));
+        rightArrow.setStroke(Color.GREY.getColor(Color.Intensity.I900));
+    }
 }

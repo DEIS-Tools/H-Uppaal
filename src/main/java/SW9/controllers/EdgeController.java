@@ -7,8 +7,10 @@ import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.Link;
 import SW9.presentations.NailPresentation;
+import SW9.utility.colors.Color;
 import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.Circular;
+import SW9.utility.helpers.SelectHelper;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -19,9 +21,11 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
@@ -30,7 +34,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-public class EdgeController implements Initializable {
+public class EdgeController implements Initializable, SelectHelper.ColorSelectable {
     private final ArrayList<Link> links = new ArrayList<>();
     private final ObjectProperty<Edge> edge = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
@@ -263,4 +267,45 @@ public class EdgeController implements Initializable {
         isHoveringEdge.set(false);
     }
 
+    @FXML
+    public void edgePressed(final MouseEvent event) {
+        SelectHelper.select(this);
+    }
+
+    @Override
+    public void color(final Color color, final Color.Intensity intensity) {
+        final Edge edge = getEdge();
+
+        // Set the color of the edge
+        edge.setColorIntensity(intensity);
+        edge.setColor(color);
+    }
+
+    @Override
+    public Color getColor() {
+        return getEdge().getColor();
+    }
+
+    @Override
+    public Color.Intensity getColorIntensity() {
+        return getEdge().getColorIntensity();
+    }
+
+    @Override
+    public void select() {
+        edgeRoot.getChildren().forEach(node -> {
+            if (node instanceof SelectHelper.Selectable) {
+                ((SelectHelper.Selectable) node).select();
+            }
+        });
+    }
+
+    @Override
+    public void deselect() {
+        edgeRoot.getChildren().forEach(node -> {
+            if (node instanceof SelectHelper.Selectable) {
+                ((SelectHelper.Selectable) node).deselect();
+            }
+        });
+    }
 }
