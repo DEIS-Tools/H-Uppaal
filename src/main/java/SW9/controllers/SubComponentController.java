@@ -2,13 +2,11 @@ package SW9.controllers;
 
 import SW9.abstractions.Component;
 import SW9.presentations.CanvasPresentation;
-import SW9.utility.UndoRedoStack;
+import SW9.utility.helpers.NewDragHelper;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -21,6 +19,9 @@ import java.util.ResourceBundle;
 public class SubComponentController implements Initializable {
 
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
+
+    private final ObjectProperty<Component> parentComponent = new SimpleObjectProperty<>(null);
+
     public BorderPane toolbar;
     public Rectangle background;
     public BorderPane frame;
@@ -32,16 +33,28 @@ public class SubComponentController implements Initializable {
     public Label x;
     public Label y;
     public Pane defaultLocationsContainer;
-
     private double previousX;
+
     private double previousY;
     private boolean wasDragged;
-
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         component.addListener((obs, oldComponent, newComponent) -> {
             // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width fromP the presentation into the abstraction
         });
+
+        makeDraggable();
+    }
+
+    private void makeDraggable() {
+
+
+        NewDragHelper.makeDraggable(
+                root,
+                () -> CanvasPresentation.mouseTracker.gridXProperty().subtract(getParentComponent().xProperty()).get(),
+                () -> CanvasPresentation.mouseTracker.gridYProperty().subtract(getParentComponent().yProperty()).get()
+        );
+
     }
 
     public Component getComponent() {
@@ -56,54 +69,15 @@ public class SubComponentController implements Initializable {
         return component;
     }
 
-    @FXML
-    private void mousePressed(final MouseEvent event) {
-        previousX = root.getLayoutX();
-        previousY = root.getLayoutY();
-
-        // TODO make selectable
+    public Component getParentComponent() {
+        return parentComponent.get();
     }
 
-    @FXML
-    private void mouseDragged(final MouseEvent event) {
-
-        // Calculate the potential new x alongside min and max values
-        final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
-
-        root.setLayoutX(newX);
-
-        // Calculate the potential new y alongside min and max values
-        final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
-
-        root.setLayoutY(newY);
-
-        // Tell the mouse release action that we can store an update
-        wasDragged = true;
+    public ObjectProperty<Component> parentComponentProperty() {
+        return parentComponent;
     }
 
-    @FXML
-    private void mouseReleased(final MouseEvent event) {
-        if (wasDragged) {
-            // Add to undo redo stack
-            final double currentX = root.getLayoutX();
-            final double currentY = root.getLayoutY();
-            final double storePreviousX = previousX;
-            final double storePreviousY = previousY;
-            UndoRedoStack.push(
-                    () -> {
-                        root.setLayoutX(currentX);
-                        root.setLayoutY(currentY);
-                    },
-                    () -> {
-                        root.setLayoutX(storePreviousX);
-                        root.setLayoutY(storePreviousY);
-                    },
-                    String.format("Moved nail from (%f,%f) to (%f,%f)", currentX, currentY, storePreviousX, storePreviousY),
-                    "pin-drop"
-            );
-
-            // Reset the was dragged boolean
-            wasDragged = false;
-        }
+    public void setParentComponent(final Component parentComponent) {
+        this.parentComponent.set(parentComponent);
     }
 }

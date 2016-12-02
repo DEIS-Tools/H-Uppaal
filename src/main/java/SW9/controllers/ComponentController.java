@@ -202,7 +202,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
     private void initializeSubComponentHandling(final Component newComponent) {
         final Consumer<Component> handleAddedSubComponent = component -> {
-            final SubComponentPresentation subComponentPresentation = new SubComponentPresentation(component);
+            final SubComponentPresentation subComponentPresentation = new SubComponentPresentation(component, getComponent());
             subComponentPresentationMap.put(component, subComponentPresentation);
             modelContainer.getChildren().add(subComponentPresentation);
         };
