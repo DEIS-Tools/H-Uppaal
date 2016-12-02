@@ -110,5 +110,7 @@ public class EdgePresentation extends Group {
         edge.getTargetLocation().xProperty().addListener(obs -> updatePlacement.run());
         edge.getTargetLocation().yProperty().addListener(obs -> updatePlacement.run());
 
+        updatePlacement.run();
+
     }
 }
