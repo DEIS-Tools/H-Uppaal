@@ -7,9 +7,6 @@
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
          fx:id="root"
-         onMousePressed="#mousePressed"
-         onMouseDragged="#mouseDragged"
-         onMouseReleased="#mouseReleased"
          layoutX="80"
          layoutY="80"
          fx:controller="SW9.controllers.SubComponentController">

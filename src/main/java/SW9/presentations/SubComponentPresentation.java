@@ -31,7 +31,7 @@ public class SubComponentPresentation extends StackPane {
     private LocationPresentation initialLocationPresentation = null;
     private LocationPresentation finalLocationPresentation = null;
 
-    public SubComponentPresentation(final Component component) {
+    public SubComponentPresentation(final Component component, final Component parentComponent) {
         final URL location = this.getClass().getResource("SubComponentPresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();
@@ -50,6 +50,7 @@ public class SubComponentPresentation extends StackPane {
 
             controller = fxmlLoader.getController();
             controller.setComponent(component);
+            controller.setParentComponent(parentComponent);
 
             initializeDefaultLocationsContainer();
             initializeToolbar();
