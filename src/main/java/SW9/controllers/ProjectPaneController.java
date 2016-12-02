@@ -23,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
@@ -36,9 +37,13 @@ public class ProjectPaneController implements Initializable {
     public VBox filesList;
     public JFXRippler createComponent;
     public JFXRippler saveProject;
+    public VBox mainComponentContainer;
+
+    private Component mainComponent = null;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+
         HUPPAAL.getProject().getComponents().addListener(new ListChangeListener<Component>() {
             @Override
             public void onChanged(final Change<? extends Component> c) {
@@ -57,11 +62,21 @@ public class ProjectPaneController implements Initializable {
                             CanvasController.setActiveComponent(null);
                         }
                     }
+
+                    // Sort the children alphabetically
+                    sortPresentations();
                 }
             }
         });
 
         HUPPAAL.getProject().getComponents().forEach(this::handleAddedComponent);
+    }
+
+    private void sortPresentations() {
+        final ArrayList<Component> sortedComponentList = new ArrayList<>();
+        componentPresentationMap.keySet().forEach(sortedComponentList::add);
+        sortedComponentList.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
+        sortedComponentList.forEach(component -> componentPresentationMap.get(component).toFront());
     }
 
     private void handleAddedComponent(final Component component) {
@@ -73,6 +88,35 @@ public class ProjectPaneController implements Initializable {
         filePresentation.setOnMousePressed(event -> {
             event.consume();
             CanvasController.setActiveComponent(component);
+        });
+
+        component.nameProperty().addListener(obs -> sortPresentations());
+
+        component.isMainProperty().addListener((obs, oldIsMain, newIsMain) -> {
+            // Clear out the mainComponentContainer
+            mainComponentContainer.getChildren().removeAll();
+
+            // Remove the new active component from the list view
+            final FilePresentation newActiveFilePresentation = componentPresentationMap.get(component);
+            filesList.getChildren().remove(newActiveFilePresentation);
+
+            // Add it to the mainComponentContainer
+            mainComponentContainer.getChildren().add(newActiveFilePresentation);
+
+            if (mainComponent != null) {
+                // Re-add the old component to the list view
+                final FilePresentation oldActiveFilePresentation = componentPresentationMap.get(mainComponent);
+                filesList.getChildren().add(oldActiveFilePresentation);
+
+                // The old main component can not be main component any longer
+                mainComponent.setIsMain(false);
+            }
+
+            // Update the new main component
+            mainComponent = component;
+
+            // Sort the list
+            sortPresentations();
         });
     }
 

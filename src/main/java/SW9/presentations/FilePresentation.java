@@ -1,11 +1,9 @@
 package SW9.presentations;
 
-import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.controllers.CanvasController;
 import SW9.utility.colors.Color;
 import com.jfoenix.controls.JFXRippler;
-import javafx.animation.TranslateTransition;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
@@ -14,8 +12,6 @@ import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
-import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
@@ -44,45 +40,10 @@ public class FilePresentation extends AnchorPane {
             initializeColors();
             initializeRippler();
             initializeMoreInformationButton();
-            initializeActiveIndicator();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
-    }
-
-    private void initializeActiveIndicator() {
-        final Rectangle activeIndicator = (Rectangle) lookup("#activeIndicator");
-
-        component.get().colorProperty().addListener((obs, oldColor, newColor) -> {
-            activeIndicator.setFill(newColor.getColor(component.get().getColorIntensity()));
-        });
-        activeIndicator.setFill(component.get().getColor().getColor(component.get().getColorIntensity().next(-3)));
-
-        final TranslateTransition animateLeft = new TranslateTransition(Duration.millis(80), activeIndicator);
-        animateLeft.setFromX(0);
-        animateLeft.setToX(-1 * activeIndicator.getWidth());
-
-        final TranslateTransition animateRight = new TranslateTransition(Duration.millis(80), activeIndicator);
-        animateRight.setFromX(-1 * activeIndicator.getWidth());
-        animateRight.setToX(0);
-
-        final BiConsumer<Component, Component> updateActiveComponent = (oldActiveComponent, newActiveComponent) -> {
-            if (newActiveComponent != null && component.get().equals(newActiveComponent)) {
-                animateRight.play();
-            } else if (oldActiveComponent != null && component.get().equals(oldActiveComponent)) {
-                animateLeft.play();
-            } else if (oldActiveComponent == null && !component.get().equals(newActiveComponent)) {
-                animateLeft.play();
-            }
-        };
-
-        CanvasController.activeComponentProperty().addListener((obs, oldActiveComponent, newActiveComponent) -> {
-            updateActiveComponent.accept(oldActiveComponent, newActiveComponent);
-        });
-
-        // Indicate the initially active component as opened
-        updateActiveComponent.accept(null, CanvasController.getActiveComponent());
     }
 
     private void initializeMoreInformationButton() {
@@ -127,16 +88,23 @@ public class FilePresentation extends AnchorPane {
 
         circle.setFill(component.get().getColor().getColor(component.get().getColorIntensity()));
         icon.setFill(component.get().getColor().getTextColor(component.get().getColorIntensity()));
+
+        component.get().isMainProperty().addListener((obs, oldIsMain, newIsMain) -> {
+            if (newIsMain) {
+                icon.setIconLiteral("gmi-star");
+                icon.setIconSize(22);
+            } else {
+                icon.setIconLiteral("gmi-description");
+                icon.setIconSize(22);
+            }
+        });
     }
 
     private void initializeColors() {
         final FontIcon moreInformationIcon = (FontIcon) lookup("#moreInformationIcon");
 
-        final Color color = Color.GREY;
-        final Color colorHovered = Color.GREY_BLUE;
-
-        final Color.Intensity colorIntensity = Color.Intensity.I200;
-        final Color.Intensity colorIntensityHovered = Color.Intensity.I100;
+        final Color color = Color.GREY_BLUE;
+        final Color.Intensity colorIntensity = Color.Intensity.I50;
 
         final BiConsumer<Color, Color.Intensity> setBackground = (newColor, newIntensity) -> {
             setBackground(new Background(new BackgroundFill(
@@ -158,15 +126,15 @@ public class FilePresentation extends AnchorPane {
         // Update the background when hovered
         setOnMouseEntered(event -> {
             if(CanvasController.getActiveComponent().equals(component.get())) {
-                setBackground.accept(component.get().getColor(), component.get().getColorIntensity().next(-10).next(2));
+                setBackground.accept(color, colorIntensity.next(2));
             } else {
-                setBackground.accept(colorHovered, colorIntensityHovered);
+                setBackground.accept(color, colorIntensity.next());
             }
             setCursor(Cursor.HAND);
         });
         setOnMouseExited(event -> {
             if(CanvasController.getActiveComponent().equals(component.get())) {
-                setBackground.accept(component.get().getColor(), component.get().getColorIntensity().next(-10).next(1));
+                setBackground.accept(color, colorIntensity.next(1));
             } else {
                 setBackground.accept(color, colorIntensity);
             }
@@ -175,7 +143,7 @@ public class FilePresentation extends AnchorPane {
 
         CanvasController.activeComponentProperty().addListener((obs, oldActiveComponent, newActiveComponent) -> {
             if(newActiveComponent.equals(component.get())) {
-                setBackground.accept(component.get().getColor(), component.get().getColorIntensity().next(-10).next(0));
+                setBackground.accept(color, colorIntensity.next(2));
             } else {
                 setBackground.accept(color, colorIntensity);
             }
