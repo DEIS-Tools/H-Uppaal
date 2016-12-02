@@ -151,8 +151,9 @@ public class HUPPAALController implements Initializable {
                 final Location initialLocation = component.getInitialLocation();
                 final Location finalLocation = component.getFinalLocation();
 
-                if (location.equals(initialLocation) || location.equals(finalLocation))
+                if (location.equals(initialLocation) || location.equals(finalLocation)) {
                     return; // Do not delete initial or final locations
+                }
 
                 UndoRedoStack.push(() -> { // Perform
                     // Remove the location
