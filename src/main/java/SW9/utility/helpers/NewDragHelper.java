@@ -1,6 +1,7 @@
 package SW9.utility.helpers;
 
 import SW9.presentations.CanvasPresentation;
+import SW9.presentations.ComponentPresentation;
 import SW9.utility.UndoRedoStack;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -10,16 +11,19 @@ import javafx.scene.Node;
 
 import java.util.function.Supplier;
 
+import static SW9.presentations.CanvasPresentation.GRID_SIZE;
+
 public class NewDragHelper {
 
-    public static void makeDraggable(final Node node,
+    public static void makeDraggable(final Node dragSubject,
                                      final Supplier<Double> newX,
                                      final Supplier<Double> newY) {
-        NewDragHelper.makeDraggable(node,newX, newY, () -> {},() -> {},() -> {});
+        NewDragHelper.makeDraggable(dragSubject, dragSubject, newX, newY, () -> {},() -> {},() -> {});
     }
 
 
-    public static void makeDraggable(final Node node,
+    public static void makeDraggable(final Node dragSubject,
+                                     final Node mouseSubject,
                                      final Supplier<Double> newX,
                                      final Supplier<Double> newY,
                                      final Runnable pressed,
@@ -32,39 +36,45 @@ public class NewDragHelper {
         final DoubleProperty xDiff = new SimpleDoubleProperty();
         final DoubleProperty yDiff = new SimpleDoubleProperty();
 
-        node.setOnMousePressed(event -> {
-            previousX.set(node.getLayoutX());
-            previousY.set(node.getLayoutY());
+        mouseSubject.setOnMousePressed(event -> {
+            previousX.set(dragSubject.getLayoutX());
+            previousY.set(dragSubject.getLayoutY());
             xDiff.set(event.getX());
             yDiff.set(event.getY());
             pressed.run();
         });
 
-        node.setOnMouseDragged(event -> {
+        mouseSubject.setOnMouseDragged(event -> {
             final double unRoundedX = newX.get() - xDiff.get();
             final double unRoundedY = newY.get() - yDiff.get();
-            node.setLayoutX(unRoundedX - unRoundedX % CanvasPresentation.GRID_SIZE);
-            node.setLayoutY(unRoundedY - unRoundedY % CanvasPresentation.GRID_SIZE);
+            double finalNewX = unRoundedX - unRoundedX % GRID_SIZE;
+            double finalNewY = unRoundedY - unRoundedY % GRID_SIZE;
+            if(dragSubject instanceof ComponentPresentation) {
+                finalNewX -= 0.5 * GRID_SIZE;
+                finalNewY -= 0.5 * GRID_SIZE;
+            }
+            dragSubject.setLayoutX(finalNewX);
+            dragSubject.setLayoutY(finalNewY);
 
             wasDragged.set(true);
             dragged.run();
         });
 
-        node.setOnMouseReleased(event -> {
-            final double currentX = node.getLayoutX();
-            final double currentY = node.getLayoutY();
+        mouseSubject.setOnMouseReleased(event -> {
+            final double currentX = dragSubject.getLayoutX();
+            final double currentY = dragSubject.getLayoutY();
             final double storePreviousX = previousX.get();
             final double storePreviousY = previousY.get();
             UndoRedoStack.push(
                     () -> {
-                        node.setLayoutX(currentX);
-                        node.setLayoutY(currentY);
+                        dragSubject.setLayoutX(currentX);
+                        dragSubject.setLayoutY(currentY);
                     },
                     () -> {
-                        node.setLayoutX(storePreviousX);
-                        node.setLayoutY(storePreviousY);
+                        dragSubject.setLayoutX(storePreviousX);
+                        dragSubject.setLayoutY(storePreviousY);
                     },
-                    String.format("Moved " + node.getClass() +" from (%f,%f) to (%f,%f)", currentX, currentY, storePreviousX, storePreviousY),
+                    String.format("Moved " + dragSubject.getClass() +" from (%f,%f) to (%f,%f)", currentX, currentY, storePreviousX, storePreviousY),
                     "pin-drop"
             );
 

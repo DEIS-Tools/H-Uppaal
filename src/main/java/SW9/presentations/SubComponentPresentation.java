@@ -3,6 +3,8 @@ package SW9.presentations;
 import SW9.abstractions.Component;
 import SW9.controllers.SubComponentController;
 import SW9.utility.colors.Color;
+import SW9.utility.helpers.NewDragHelper;
+import SW9.utility.helpers.SelectHelper;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
@@ -20,6 +22,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import static SW9.presentations.ComponentPresentation.CORNER_SIZE;
 import static SW9.presentations.ComponentPresentation.TOOL_BAR_HEIGHT;

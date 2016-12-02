@@ -30,9 +30,6 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
     public Group root;
     public Circle nailCircle;
     public Circle dragCircle;
-    private double previousX;
-    private double previousY;
-    private boolean wasDragged;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -93,6 +90,7 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
         };
 
         NewDragHelper.makeDraggable(
+                root,
                 root,
                 supplyX,
                 supplyY,
