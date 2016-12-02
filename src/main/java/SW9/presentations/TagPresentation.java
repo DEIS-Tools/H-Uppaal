@@ -23,7 +23,6 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
@@ -77,7 +76,7 @@ public class TagPresentation extends StackPane {
         final JFXTextField textField = (JFXTextField) lookup("#textField");
         final Path shape = (Path) lookup("#shape");
 
-        final Insets insets = new Insets(2, 2, 0, 2);
+        final Insets insets = new Insets(-1, 2, 0, 2);
         textField.setPadding(insets);
         label.setPadding(insets);
 
@@ -97,8 +96,8 @@ public class TagPresentation extends StackPane {
             setMinWidth(newWidth + padding);
             setMaxWidth(newWidth + padding);
 
-            textField.setMinHeight(GRID_SIZE * 2);
-            textField.setMaxHeight(GRID_SIZE * 2);
+            textField.setMinHeight(GRID_SIZE * 1.5);
+            textField.setMaxHeight(GRID_SIZE * 1.5);
 
             textField.focusedProperty().addListener((observable, oldFocused, newFocused) -> {
                 if (newFocused) {
@@ -131,7 +130,7 @@ public class TagPresentation extends StackPane {
 
     private void initializeShape() {
         final int WIDTH = 5000;
-        final int HEIGHT = GRID_SIZE * 2;
+        final double HEIGHT = GRID_SIZE * 1.5;
 
         final Path shape = (Path) lookup("#shape");
 
