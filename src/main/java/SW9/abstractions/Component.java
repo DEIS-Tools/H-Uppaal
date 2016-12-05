@@ -9,6 +9,8 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Component implements Serializable {
@@ -120,6 +122,18 @@ public class Component implements Serializable {
 
     public boolean removeEdge(final Edge edge) {
         return edges.remove(edge);
+    }
+
+    public List<Edge> getRelatedEdges(final Location location) {
+        final ArrayList<Edge> relatedEdges = new ArrayList<>();
+
+        edges.forEach(edge -> {
+            if(location.equals(edge.getSourceLocation()) ||location.equals(edge.getTargetLocation())) {
+                relatedEdges.add(edge);
+            }
+        });
+
+        return relatedEdges;
     }
 
     public double getX() {

@@ -8,6 +8,7 @@ import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.Link;
 import SW9.presentations.NailPresentation;
+import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.Circular;
@@ -126,8 +127,6 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
             while (change.next()) {
                 // There were added some nails
                 change.getAddedSubList().forEach(newNail -> {
-                    System.out.println("her");
-
                     // Create a new nail presentation based on the abstraction added to the list
                     final NailPresentation newNailPresentation = new NailPresentation(newNail, newEdge, newComponent);
                     nailNailPresentationMap.put(newNail, newNailPresentation);
@@ -302,18 +301,22 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
         links.addListener(new ListChangeListener<Link>() {
             @Override
             public void onChanged(Change<? extends Link> c) {
-                links.forEach((link) -> {
-                    link.setOnMousePressed(event -> {
-                        if (event.isShiftDown()) {
+                links.forEach((link) -> link.setOnMousePressed(event -> {
+                    if (event.isShiftDown()) {
+                        final double nailX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
+                        final double nailY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
 
-                            final double nailX = event.getX() - event.getX() % CanvasPresentation.GRID_SIZE;
-                            final double nailY = event.getY() - event.getX() % CanvasPresentation.GRID_SIZE;
+                        final Nail newNail = new Nail(nailX, nailY);
 
-                            getEdge().insertNailAt(new Nail(nailX, nailY), links.indexOf(link));
-                        }
+                        UndoRedoStack.push(
+                                ()-> getEdge().insertNailAt(newNail, links.indexOf(link)),
+                                ()-> getEdge().removeNail(newNail),
+                                "Nail added",
+                                "add-circle"
+                        );
 
-                    });
-                });
+                    }
+                }));
             }
         });
     }

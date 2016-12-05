@@ -116,10 +116,12 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public void setLocation(final Location location) {
         this.location.set(location);
 
-        if (location.getType().equals(Location.Type.NORMAL)) {
+        if (ComponentController.isPlacingLocation()) {
             root.layoutXProperty().bind(location.xProperty());
             root.layoutYProperty().bind(location.yProperty());
         } else {
+            root.setLayoutX(location.getX());
+            root.setLayoutY(location.getY());
             location.xProperty().bind(root.layoutXProperty());
             location.yProperty().bind(root.layoutYProperty());
             root.setPlaced(true);

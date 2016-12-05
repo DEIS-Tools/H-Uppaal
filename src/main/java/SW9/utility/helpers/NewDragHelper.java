@@ -69,18 +69,21 @@ public class NewDragHelper {
             final double currentY = dragSubject.getLayoutY();
             final double storePreviousX = previousX.get();
             final double storePreviousY = previousY.get();
-            UndoRedoStack.push(
-                    () -> {
-                        dragSubject.setLayoutX(currentX);
-                        dragSubject.setLayoutY(currentY);
-                    },
-                    () -> {
-                        dragSubject.setLayoutX(storePreviousX);
-                        dragSubject.setLayoutY(storePreviousY);
-                    },
-                    String.format("Moved " + dragSubject.getClass() +" from (%f,%f) to (%f,%f)", currentX, currentY, storePreviousX, storePreviousY),
-                    "pin-drop"
-            );
+
+            if(currentX != storePreviousX || currentY != storePreviousY) {
+                UndoRedoStack.push(
+                        () -> {
+                            dragSubject.setLayoutX(currentX);
+                            dragSubject.setLayoutY(currentY);
+                        },
+                        () -> {
+                            dragSubject.setLayoutX(storePreviousX);
+                            dragSubject.setLayoutY(storePreviousY);
+                        },
+                        String.format("Moved " + dragSubject.getClass() + " from (%f,%f) to (%f,%f)", currentX, currentY, storePreviousX, storePreviousY),
+                        "pin-drop"
+                );
+            }
 
             // Reset the was dragged boolean
             wasDragged.set(false);
