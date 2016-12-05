@@ -111,8 +111,12 @@ public class MouseTracker {
 
         // Register our own event handler to register mouse placement at all times
         owner.addEventFilter(MouseEvent.ANY, event -> {
-            xProperty.set(event.getX());
-            yProperty.set(event.getY());
+            if(!Double.isNaN(event.getX())) {
+                xProperty.set(event.getX());
+            }
+            if(!Double.isNaN(event.getY())) {
+                yProperty.set(event.getY());
+            }
         });
     }
 
