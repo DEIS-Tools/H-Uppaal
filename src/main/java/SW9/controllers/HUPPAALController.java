@@ -146,8 +146,6 @@ public class HUPPAALController implements Initializable {
             if (selectable instanceof LocationController) {
                 final Component component = ((LocationController) selectable).getComponent();
                 final Location location = ((LocationController) selectable).getLocation();
-                final double previousX = location.getX();
-                final double previousY = location.getY();
 
                 final Location initialLocation = component.getInitialLocation();
                 final Location finalLocation = component.getFinalLocation();
@@ -156,18 +154,17 @@ public class HUPPAALController implements Initializable {
                     return; // Do not delete initial or final locations
                 }
 
+                final List<Edge> relatedEdges = component.getRelatedEdges(location);
+
                 UndoRedoStack.push(() -> { // Perform
                     // Remove the location
                     component.getLocations().remove(location);
+                    relatedEdges.forEach(component::removeEdge);
                 }, () -> { // Undo
                     // Re-all the location
                     component.getLocations().add(location);
+                    relatedEdges.forEach(component::addEdge);
 
-                    location.xProperty().unbind();
-                    location.xProperty().set(previousX);
-
-                    location.yProperty().unbind();
-                    location.yProperty().set(previousY);
                 }, String.format("Deleted %s", selectable.toString()), "delete");
             } else if (selectable instanceof EdgeController) {
                 final Component component = ((EdgeController) selectable).getComponent();
