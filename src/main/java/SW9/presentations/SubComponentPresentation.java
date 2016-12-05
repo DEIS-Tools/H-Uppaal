@@ -3,8 +3,6 @@ package SW9.presentations;
 import SW9.abstractions.Component;
 import SW9.controllers.SubComponentController;
 import SW9.utility.colors.Color;
-import SW9.utility.helpers.NewDragHelper;
-import SW9.utility.helpers.SelectHelper;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +20,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
 import static SW9.presentations.ComponentPresentation.CORNER_SIZE;
 import static SW9.presentations.ComponentPresentation.TOOL_BAR_HEIGHT;
@@ -186,7 +183,6 @@ public class SubComponentPresentation extends StackPane {
             mask[0] = Path.subtract(mask[0], corner2);
             controller.frame.setClip(mask[0]);
             controller.background.setClip(Path.union(mask[0], mask[0]));
-            controller.background.setOpacity(0.5);
 
             // Bind the missing lines that we cropped away
             controller.line1.setStartX(CORNER_SIZE);
@@ -233,7 +229,7 @@ public class SubComponentPresentation extends StackPane {
 
         final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
             // Set the background color to the lightest possible version of the color
-            controller.background.setFill(newColor.getColor(newIntensity));
+            controller.background.setFill(newColor.getColor(newIntensity.next(-20)));
         };
 
         updateColorDelegates.add(updateColor);
