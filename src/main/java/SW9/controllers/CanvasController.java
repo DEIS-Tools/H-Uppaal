@@ -63,6 +63,7 @@ public class CanvasController implements Initializable {
 
             final ComponentPresentation newComponentPresentation = new ComponentPresentation(newComponent);
             root.getChildren().add(newComponentPresentation);
+            root.requestFocus();
         });
 
     }
