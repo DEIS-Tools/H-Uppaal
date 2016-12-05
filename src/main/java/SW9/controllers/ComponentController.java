@@ -49,11 +49,11 @@ import java.util.function.Consumer;
 
 public class ComponentController implements Initializable, SelectHelper.ColorSelectable {
 
+    private static boolean placingLocation = false;
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
     private final Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
     private final Map<Location, LocationPresentation> locationPresentationMap = new HashMap<>();
     private final Map<Component, SubComponentPresentation> subComponentPresentationMap = new HashMap<>();
-
     public BorderPane toolbar;
     public Rectangle background;
     public TextArea declaration;
@@ -78,8 +78,6 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     public static void setPlacingLocation(boolean placingLocation) {
         ComponentController.placingLocation = placingLocation;
     }
-
-    private static boolean placingLocation = false;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -380,7 +378,10 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 toolbar,
                 () -> CanvasPresentation.mouseTracker.getGridX(),
                 () -> CanvasPresentation.mouseTracker.getGridY(),
-                () -> SelectHelper.select(this),
+                (event) -> {
+                    event.consume();
+                    SelectHelper.select(this);
+                },
                 () -> {},
                 () -> {}
         );

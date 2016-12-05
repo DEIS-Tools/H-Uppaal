@@ -94,7 +94,10 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
                 root,
                 supplyX,
                 supplyY,
-                () -> SelectHelper.select(this),
+                (event) -> {
+                    event.consume();
+                    SelectHelper.select(this);
+                },
                 () -> nailBeingDragged = true,
                 () -> nailBeingDragged =false
         );

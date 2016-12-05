@@ -19,6 +19,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.*;
 import javafx.util.Duration;
@@ -112,6 +113,12 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
         final Label idLabel = controller.idLabel;
 
+        final DropShadow ds = new DropShadow();
+        ds.setRadius(2);
+        ds.setSpread(1);
+
+        idLabel.setEffect(ds);
+
         idLabel.textProperty().bind((location.idProperty()));
 
         // Center align the label
@@ -124,6 +131,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         // Delegate to style the label based on the color of the location
         final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
             idLabel.setTextFill(newColor.getTextColor(newIntensity));
+            ds.setColor(newColor.getColor(newIntensity));
         };
 
         updateColorDelegates.add(updateColor);

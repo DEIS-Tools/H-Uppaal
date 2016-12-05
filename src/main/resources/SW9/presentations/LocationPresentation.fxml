@@ -39,9 +39,9 @@
         <Path fx:id="locationShape" strokeType="INSIDE"/>
 
         <Group fx:id="shakeContent">
-            <StackPane fx:id="finalIndicator" mouseTransparent="true" translateX="-11" translateY="-11">
-                <Line style="-fx-stroke: white;" startX="10" startY="-10" endX="-10" endY="10"/>
-                <Line style="-fx-stroke: white;" startX="-10" startY="-10" endX="10" endY="10"/>
+            <StackPane fx:id="finalIndicator" mouseTransparent="true" translateX="-8" translateY="-8">
+                <Line style="-fx-stroke: white;" startX="8" startY="-8" endX="-8" endY="8"/>
+                <Line style="-fx-stroke: white;" startX="-8" startY="-8" endX="8" endY="8"/>
             </StackPane>
 
             <!-- The initial indicator -->

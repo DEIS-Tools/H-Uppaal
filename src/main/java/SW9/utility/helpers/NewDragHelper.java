@@ -1,6 +1,5 @@
 package SW9.utility.helpers;
 
-import SW9.presentations.CanvasPresentation;
 import SW9.presentations.ComponentPresentation;
 import SW9.utility.UndoRedoStack;
 import javafx.beans.property.BooleanProperty;
@@ -8,7 +7,9 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
@@ -18,7 +19,10 @@ public class NewDragHelper {
     public static void makeDraggable(final Node dragSubject,
                                      final Supplier<Double> newX,
                                      final Supplier<Double> newY) {
-        NewDragHelper.makeDraggable(dragSubject, dragSubject, newX, newY, () -> {},() -> {},() -> {});
+        NewDragHelper.makeDraggable(dragSubject, dragSubject, newX, newY, (event) -> {
+        }, () -> {
+        }, () -> {
+        });
     }
 
 
@@ -26,7 +30,7 @@ public class NewDragHelper {
                                      final Node mouseSubject,
                                      final Supplier<Double> newX,
                                      final Supplier<Double> newY,
-                                     final Runnable pressed,
+                                     final Consumer<MouseEvent> pressed,
                                      final Runnable dragged,
                                      final Runnable released) {
         final DoubleProperty previousX = new SimpleDoubleProperty();
@@ -41,7 +45,7 @@ public class NewDragHelper {
             previousY.set(dragSubject.getLayoutY());
             xDiff.set(event.getX());
             yDiff.set(event.getY());
-            pressed.run();
+            pressed.accept(event);
         });
 
         mouseSubject.setOnMouseDragged(event -> {
