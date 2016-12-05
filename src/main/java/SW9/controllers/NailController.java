@@ -2,6 +2,7 @@ package SW9.controllers;
 
 import SW9.Debug;
 import SW9.abstractions.Component;
+import SW9.abstractions.Edge;
 import SW9.abstractions.Nail;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.ComponentPresentation;
@@ -24,8 +25,9 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
 
     public static boolean nailBeingDragged = false;
 
-    private final ObjectProperty<Nail> nail = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
+    private final ObjectProperty<Edge> edge = new SimpleObjectProperty<>();
+    private final ObjectProperty<Nail> nail = new SimpleObjectProperty<>();
 
     public Group root;
     public Circle nailCircle;
@@ -125,6 +127,18 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
 
     public ObjectProperty<Component> componentProperty() {
         return component;
+    }
+
+    public Edge getEdge() {
+        return edge.get();
+    }
+
+    public ObjectProperty<Edge> edgeProperty() {
+        return edge;
+    }
+
+    public void setEdge(final Edge edge) {
+        this.edge.set(edge);
     }
 
 

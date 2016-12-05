@@ -4,6 +4,7 @@ import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
+import SW9.abstractions.Nail;
 import SW9.backend.UPPAALDriver;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.HUPPAALPresentation;
@@ -179,6 +180,11 @@ public class HUPPAALController implements Initializable {
                     // Re-all the edge
                     component.getEdges().add(edge);
                 }, String.format("Deleted %s", selectable.toString()), "delete");
+            } else if(selectable instanceof NailController) {
+                final NailController nailController = (NailController) selectable;
+                final Edge edge = nailController.getEdge();
+                final Nail nail = nailController.getNail();
+                edge.removeNail(nail);
             }
         });
 
