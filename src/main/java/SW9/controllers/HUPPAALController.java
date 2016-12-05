@@ -184,7 +184,13 @@ public class HUPPAALController implements Initializable {
                 final NailController nailController = (NailController) selectable;
                 final Edge edge = nailController.getEdge();
                 final Nail nail = nailController.getNail();
-                edge.removeNail(nail);
+                final int index = edge.getNails().indexOf(nail);
+                UndoRedoStack.push(
+                        ()-> edge.removeNail(nail),
+                        ()-> edge.insertNailAt(nail,index),
+                        "Nail removed",
+                        "add-circle"
+                );
             }
         });
 
