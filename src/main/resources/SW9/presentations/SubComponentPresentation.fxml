@@ -11,7 +11,7 @@
          layoutY="80"
          fx:controller="SW9.controllers.SubComponentController">
 
-    <Rectangle fx:id="background"/>
+    <Rectangle fx:id="background" fill="#ffffff"/>
 
     <StackPane>
         <Pane fx:id="modelContainer"/>
@@ -29,6 +29,11 @@
                 </center>
             </BorderPane>
         </top>
+
+        <center>
+            <Label wrapText="true" maxWidth="120" style="caption"
+                   text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque lectus odio, dapibus eget leo at, ornare pellentesque purus. Nam imperdiet mattis semper. Nullam urna ex, venenatis quis lacus at, ultrices ornare mauris."/>
+        </center>
     </BorderPane>
 
     <Line fx:id="line1"/>

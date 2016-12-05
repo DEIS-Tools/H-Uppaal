@@ -54,6 +54,7 @@ public class FilePresentation extends AnchorPane {
         moreInformation.setRipplerFill(Color.GREY_BLUE.getColor(Color.Intensity.I500));
 
         moreInformation.setOnMousePressed((mouseEvent) -> {
+            mouseEvent.consume();
             component.get().setIsMain(true);
         });
     }
