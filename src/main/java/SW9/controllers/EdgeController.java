@@ -126,8 +126,6 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
             while (change.next()) {
                 // There were added some nails
                 change.getAddedSubList().forEach(newNail -> {
-                    System.out.println("her");
-
                     // Create a new nail presentation based on the abstraction added to the list
                     final NailPresentation newNailPresentation = new NailPresentation(newNail, newEdge, newComponent);
                     nailNailPresentationMap.put(newNail, newNailPresentation);
