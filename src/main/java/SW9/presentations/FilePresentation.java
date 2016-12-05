@@ -53,10 +53,10 @@ public class FilePresentation extends AnchorPane {
         moreInformation.setPosition(JFXRippler.RipplerPos.BACK);
         moreInformation.setRipplerFill(Color.GREY_BLUE.getColor(Color.Intensity.I500));
 
-        moreInformation.setOnMousePressed((mouseEvent) -> {
+        /*moreInformation.setOnMousePressed((mouseEvent) -> {
             mouseEvent.consume();
             component.get().setIsMain(true);
-        });
+        });*/
     }
 
     private void initializeRippler() {
@@ -152,6 +152,14 @@ public class FilePresentation extends AnchorPane {
 
         // Update the background initially
         setBackground.accept(color, colorIntensity);
+    }
+
+    public Component getComponent() {
+        return component.get();
+    }
+
+    public SimpleObjectProperty<Component> componentProperty() {
+        return component;
     }
 
 }
