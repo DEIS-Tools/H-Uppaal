@@ -148,6 +148,10 @@ public class Edge implements Serializable {
         return nails.add(nail);
     }
 
+    public void insertNailAt(final Nail nail, final int index) {
+        nails.add(index, nail);
+    }
+
     public boolean removeNail(final Nail nail) {
         return nails.remove(nail);
     }
