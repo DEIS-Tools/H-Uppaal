@@ -224,7 +224,10 @@ public class HUPPAALPresentation extends StackPane {
             fromLeft = boundsInScreenButton.getMinX() - boundsInScreenRoot.getMinX();
             fromLeft -= listWidth;
             fromLeft += boundsInScreenButton.getWidth();
-            fromLeft -= controller.filePane.getWidth();
+            if (!filePaneOpen.get()) {
+                fromLeft -= controller.filePane.getWidth();
+                System.out.println(controller.filePane.getWidth());
+            }
 
             popup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, fromLeft, boundsInScreenButton.getMinY() - boundsInScreenRoot.getMinY());
         });
