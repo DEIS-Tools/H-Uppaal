@@ -154,8 +154,9 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             // Add it to the view
             modelContainer.getChildren().add(newLocationPresentation);
 
-            // Bind the newly created location to the mouse
+            // Bind the newly created location to the mouse and tell the ui that it is not placed yet
             if (loc.getX() == 0) {
+                newLocationPresentation.setPlaced(false);
                 BindingHelper.bind(loc, getComponent().xProperty(), getComponent().yProperty());
             }
         };

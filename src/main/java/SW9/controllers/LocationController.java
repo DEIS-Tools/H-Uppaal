@@ -38,7 +38,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
     private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
-    public Group root;
+    public LocationPresentation root;
     public Path initialIndicator;
     public StackPane finalIndicator;
     public Group shakeContent;
@@ -52,8 +52,6 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public Label idLabel;
     public Line nameTagLine;
     public Line invariantTagLine;
-
-    private boolean isPlaced;
 
     private TimerTask reachabilityCheckTask;
 
@@ -124,7 +122,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
         } else {
             location.xProperty().bind(root.layoutXProperty());
             location.yProperty().bind(root.layoutYProperty());
-            isPlaced = true;
+            root.setPlaced(true);
         }
     }
 
@@ -216,7 +214,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
         final Component component = getComponent();
 
         event.consume();
-        if (isPlaced) {
+        if (root.isPlaced()) {
             final Edge unfinishedEdge = component.getUnfinishedEdge();
 
             if (unfinishedEdge != null) {
@@ -260,7 +258,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
             getLocation().yProperty().bind(root.layoutYProperty());
 
             // Notify that the location was placed
-            isPlaced = true;
+            root.setPlaced(true);
             ComponentController.setPlacingLocation(false);
             KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_LOCATION);
         }

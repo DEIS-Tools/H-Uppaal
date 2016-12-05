@@ -52,6 +52,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
     private final boolean interactable;
 
+    private boolean isPlaced = true;
+
     public LocationPresentation(final Location location, final Component component) {
         this(location, component, true);
     }
@@ -400,6 +402,14 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     @Override
     public MouseTracker getMouseTracker() {
         return mouseTracker;
+    }
+
+    public boolean isPlaced() {
+        return isPlaced;
+    }
+
+    public void setPlaced(boolean placed) {
+        isPlaced = placed;
     }
 
     public boolean isInteractable() {

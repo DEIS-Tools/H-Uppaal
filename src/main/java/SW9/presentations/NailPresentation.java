@@ -1,6 +1,8 @@
 package SW9.presentations;
 
 import SW9.abstractions.Component;
+import SW9.abstractions.Edge;
+import SW9.abstractions.Location;
 import SW9.abstractions.Nail;
 import SW9.controllers.NailController;
 import SW9.utility.colors.Color;
@@ -19,7 +21,7 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
 
     private final NailController controller;
 
-    public NailPresentation(final Nail nail, final Component component) {
+    public NailPresentation(final Nail nail, final Edge edge,final Component component) {
         final URL url = this.getClass().getResource("NailPresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();
@@ -35,7 +37,10 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
             // Bind the component with the one of the controller
             controller.setComponent(component);
 
-            // Bind the component with the one of the controller
+            // Bind the edge with the one of the controller
+            controller.setEdge(edge);
+
+            // Bind the nail with the one of the controller
             controller.setNail(nail);
 
             initializeNailCircle();

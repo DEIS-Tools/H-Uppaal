@@ -2,6 +2,7 @@ package SW9.controllers;
 
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
+import SW9.abstractions.Location;
 import SW9.abstractions.Nail;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.presentations.CanvasPresentation;
@@ -19,6 +20,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -30,8 +32,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class EdgeController implements Initializable, SelectHelper.ColorSelectable {
@@ -57,8 +62,193 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
     private Runnable collapseNail;
     private Thread runningThread;
 
+    private final Map<Nail, NailPresentation> nailNailPresentationMap = new HashMap<>();
+
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+        initializeNailCollapse();
+
+        edge.addListener((obsEdge, oldEdge, newEdge) -> {
+            newEdge.targetLocationProperty().addListener(getNewTargetLocationListener(newEdge));
+            component.addListener(getComponentChangeListener(newEdge));
+        });
+
+        initializeLinksListener();
+
+    }
+
+    private ChangeListener<Component> getComponentChangeListener(final Edge newEdge) {
+        return (obsComponent, oldComponent, newComponent) -> {
+            if (newEdge.getNails().isEmpty() && newEdge.getTargetLocation() == null) {
+                final Link link = new Link();
+                links.add(link);
+
+                // Add the link and its arrowhead to the view
+                edgeRoot.getChildren().addAll(link, simpleArrowHead);
+
+                // Bind the first link and the arrowhead from the source location to the mouse
+                BindingHelper.bind(link, simpleArrowHead, newEdge.getSourceLocation(), newComponent.xProperty(), newComponent.yProperty());
+            } else if (newEdge.getTargetLocation() != null) {
+
+                edgeRoot.getChildren().add(simpleArrowHead);
+
+                final Circular[] previous = {newEdge.getSourceLocation()};
+
+                newEdge.getNails().forEach(nail -> {
+                    final Link link = new Link();
+                    links.add(link);
+
+
+                    final NailPresentation nailPresentation = new NailPresentation(nail, newEdge, getComponent());
+                    nailNailPresentationMap.put(nail, nailPresentation);
+
+                    edgeRoot.getChildren().addAll(link, nailPresentation);
+                    BindingHelper.bind(link, previous[0], nail);
+
+                    previous[0] = nail;
+                });
+
+                final Link link = new Link();
+                links.add(link);
+
+                edgeRoot.getChildren().add(link);
+                BindingHelper.bind(link, simpleArrowHead, previous[0], newEdge.getTargetLocation());
+            }
+
+            // Changes are made to the nails list
+            newEdge.getNails().addListener(getNailsChangeListener(newEdge, newComponent));
+
+        };
+    }
+
+    private ListChangeListener<Nail> getNailsChangeListener(final Edge newEdge, final Component newComponent) {
+        return change -> {
+            while (change.next()) {
+                // There were added some nails
+                change.getAddedSubList().forEach(newNail -> {
+                    System.out.println("her");
+
+                    // Create a new nail presentation based on the abstraction added to the list
+                    final NailPresentation newNailPresentation = new NailPresentation(newNail, newEdge, newComponent);
+                    nailNailPresentationMap.put(newNail, newNailPresentation);
+
+                    edgeRoot.getChildren().addAll(newNailPresentation);
+
+                    if (newEdge.getTargetLocation() != null) {
+                        final int indexOfNewNail = edge.get().getNails().indexOf(newNail);
+
+                        final Link newLink = new Link();
+                        final Link pressedLink = links.get(indexOfNewNail);
+                        links.add(indexOfNewNail, newLink);
+
+                        edgeRoot.getChildren().addAll(newLink);
+
+                        Circular oldStart = getEdge().getSourceLocation();
+                        Circular oldEnd = getEdge().getTargetLocation();
+
+                        if (indexOfNewNail != 0) {
+                            oldStart = getEdge().getNails().get(indexOfNewNail - 1);
+                        }
+
+                        if (indexOfNewNail != getEdge().getNails().size() - 1) {
+                            oldEnd = getEdge().getNails().get(indexOfNewNail + 1);
+                        }
+
+                        BindingHelper.bind(newLink, oldStart, newNail);
+
+                        if (oldEnd.equals(getEdge().getTargetLocation())) {
+                            BindingHelper.bind(pressedLink, simpleArrowHead, newNail, oldEnd);
+                        } else {
+                            BindingHelper.bind(pressedLink, newNail, oldEnd);
+                        }
+
+                    } else {
+                        // The previous last link must end in the new nail
+                        final Link lastLink = links.get(links.size() - 1);
+
+                        // If the nail is the first in the list, bind it to the source location
+                        // otherwise, bind it the the previous nail
+                        final int nailIndex = edge.get().getNails().indexOf(newNail);
+                        if (nailIndex == 0) {
+                            BindingHelper.bind(lastLink, newEdge.getSourceLocation(), newNail);
+                        } else {
+                            final Nail previousNail = edge.get().getNails().get(nailIndex - 1);
+                            BindingHelper.bind(lastLink, previousNail, newNail);
+                        }
+
+                        // Create a new link that will bind from the new nail to the mouse
+                        final Link newLink = new Link();
+                        links.add(newLink);
+                        BindingHelper.bind(newLink, simpleArrowHead, newNail, newComponent.xProperty(), newComponent.yProperty());
+                        edgeRoot.getChildren().add(newLink);
+                    }
+                });
+
+                change.getRemoved().forEach(removedNail -> {
+                    final int removedIndex = change.getFrom();
+                    final NailPresentation removedNailPresentation = nailNailPresentationMap.remove(removedNail);
+                    final Link danglingLink = links.get(removedIndex + 1);
+                    edgeRoot.getChildren().remove(removedNailPresentation);
+                    edgeRoot.getChildren().remove(links.get(removedIndex));
+
+                    Circular newFrom = getEdge().getSourceLocation();
+                    Circular newTo = getEdge().getTargetLocation();
+
+                    if(removedIndex > 0) {
+                        newFrom = getEdge().getNails().get(removedIndex - 1);
+                    }
+
+                    if(removedIndex -1 != getEdge().getNails().size() - 1) {
+                        newTo = getEdge().getNails().get(removedIndex);
+                    }
+
+                    if(newTo.equals(getEdge().getTargetLocation())) {
+                        BindingHelper.bind(danglingLink, simpleArrowHead, newFrom, newTo);
+                    } else {
+                        BindingHelper.bind(danglingLink, newFrom, newTo);
+                    }
+
+
+                    links.remove(removedIndex);
+                });
+            }
+        };
+    }
+
+    private ChangeListener<Location> getNewTargetLocationListener(final Edge newEdge) {
+        // When the target location is set, finish drawing the edge
+        return (obsTargetLocation, oldTargetLocation, newTargetLocation) -> {
+
+            // If the nails list is empty, directly connect the source and target locations
+            // otherwise, bind the line from the last nail to the target location
+            final Link lastLink = links.get(links.size() - 1);
+            final ObservableList<Nail> nails = getEdge().getNails();
+            if (nails.size() == 0) {
+                // Check if the source and target locations are the same, if they are, add two new helper nails
+                if (newEdge.getSourceLocation().equals(newTargetLocation)) {
+                    final Nail nail1 = new Nail(newTargetLocation.xProperty().add(5 * CanvasPresentation.GRID_SIZE), newTargetLocation.yProperty().add(3 * CanvasPresentation.GRID_SIZE));
+                    final Nail nail2 = new Nail(newTargetLocation.xProperty().add(3 * CanvasPresentation.GRID_SIZE), newTargetLocation.yProperty().add(5 * CanvasPresentation.GRID_SIZE));
+
+                    // Add the nails to the nails collection (will draw links between them)
+                    nails.addAll(nail1, nail2);
+
+                    // Find the new last link (updated by adding nails to the collection) and bind it from the last nail to the target location
+                    final Link newLastLink = links.get(links.size() - 1);
+                    BindingHelper.bind(newLastLink, simpleArrowHead, nail2, newTargetLocation);
+                } else {
+                    BindingHelper.bind(lastLink, simpleArrowHead, newEdge.getSourceLocation(), newTargetLocation);
+                }
+            } else {
+                final Nail lastNail = nails.get(nails.size() - 1);
+                BindingHelper.bind(lastLink, simpleArrowHead, lastNail, newTargetLocation);
+            }
+
+            // When the target location is set the
+            edgeRoot.setMouseTransparent(false);
+        };
+    }
+
+    private void initializeNailCollapse() {
         collapseNail = () -> {
             final int interval = 50;
 
@@ -106,144 +296,6 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
                 e.printStackTrace();
             }
         };
-
-        edge.addListener((obsEdge, oldEdge, newEdge) -> {
-
-            // When the target location is set, finish drawing the edge
-            newEdge.targetLocationProperty().addListener((obsTargetLocation, oldTargetLocation, newTargetLocation) -> {
-                // TODO: Check if the source location is the same as the target location
-
-                // If the nails list is empty, directly connect the source and target locations
-                // otherwise, bind the line from the last nail to the target location
-                final Link lastLink = links.get(links.size() - 1);
-                final ObservableList<Nail> nails = getEdge().getNails();
-                if (nails.size() == 0) {
-                    // Check if the source and target locations are the same, if they are, add two new helper nails
-                    if (newEdge.getSourceLocation().equals(newTargetLocation)) {
-                        final Nail nail1 = new Nail(newTargetLocation.xProperty().add(5 * CanvasPresentation.GRID_SIZE), newTargetLocation.yProperty().add(3 * CanvasPresentation.GRID_SIZE));
-                        final Nail nail2 = new Nail(newTargetLocation.xProperty().add(3 * CanvasPresentation.GRID_SIZE), newTargetLocation.yProperty().add(5 * CanvasPresentation.GRID_SIZE));
-
-                        // Add the nails to the nails collection (will draw links between them)
-                        nails.addAll(nail1, nail2);
-
-                        // Find the new last link (updated by adding nails to the collection) and bind it from the last nail to the target location
-                        final Link newLastLink = links.get(links.size() - 1);
-                        BindingHelper.bind(newLastLink, simpleArrowHead, nail2, newTargetLocation);
-                    } else {
-                        BindingHelper.bind(lastLink, simpleArrowHead, newEdge.getSourceLocation(), newTargetLocation);
-                    }
-                } else {
-                    final Nail lastNail = nails.get(nails.size() - 1);
-                    BindingHelper.bind(lastLink, simpleArrowHead, lastNail, newTargetLocation);
-                }
-
-                // When the target location is set the
-                edgeRoot.setMouseTransparent(false);
-            });
-
-            component.addListener((obsComponent, oldComponent, newComponent) -> {
-                if (newEdge.getNails().isEmpty() && newEdge.getTargetLocation() == null) {
-                    final Link link = new Link();
-                    links.add(link);
-
-                    // Add the link and its arrowhead to the view
-                    edgeRoot.getChildren().addAll(link, simpleArrowHead);
-
-                    // Bind the first link and the arrowhead from the source location to the mouse
-                    BindingHelper.bind(link, simpleArrowHead, newEdge.getSourceLocation(), newComponent.xProperty(), newComponent.yProperty());
-                } else if (newEdge.getTargetLocation() != null) {
-
-                    edgeRoot.getChildren().add(simpleArrowHead);
-
-                    final Circular[] previous = {newEdge.getSourceLocation()};
-
-                    newEdge.getNails().forEach(nail -> {
-                        final Link link = new Link();
-                        links.add(link);
-
-                        edgeRoot.getChildren().addAll(link, new NailPresentation(nail, getComponent()));
-                        BindingHelper.bind(link, previous[0], nail);
-
-                        previous[0] = nail;
-                    });
-
-                    final Link link = new Link();
-                    links.add(link);
-
-                    edgeRoot.getChildren().add(link);
-                    BindingHelper.bind(link, simpleArrowHead, previous[0], newEdge.getTargetLocation());
-                }
-
-                // Changes are made to the nails list
-                newEdge.getNails().addListener(new ListChangeListener<Nail>() {
-                    @Override
-                    public void onChanged(final Change<? extends Nail> change) {
-                        while (change.next()) {
-                            // There were added some nails
-                            change.getAddedSubList().forEach(nail -> {
-
-                                // Create a new nail presentation based on the abstraction added to the list
-                                final NailPresentation newNail = new NailPresentation(nail, newComponent);
-                                edgeRoot.getChildren().addAll(newNail);
-
-                                if (newEdge.getTargetLocation() != null) {
-                                    final int indexOfNewNail = edge.get().getNails().indexOf(nail);
-
-                                    final Link newLink = new Link();
-                                    final Link pressedLink = links.get(indexOfNewNail);
-                                    links.add(indexOfNewNail, newLink);
-
-                                    edgeRoot.getChildren().addAll(newLink);
-
-                                    Circular oldStart = getEdge().getSourceLocation();
-                                    Circular oldEnd = getEdge().getTargetLocation();
-
-                                    if (indexOfNewNail != 0) {
-                                        oldStart = getEdge().getNails().get(indexOfNewNail - 1);
-                                    }
-
-                                    if (indexOfNewNail != getEdge().getNails().size() - 1) {
-                                        oldEnd = getEdge().getNails().get(indexOfNewNail + 1);
-                                    }
-
-                                    BindingHelper.bind(newLink, oldStart, nail);
-
-                                    if (oldEnd.equals(getEdge().getTargetLocation())) {
-                                        BindingHelper.bind(pressedLink, simpleArrowHead, nail, oldEnd);
-                                    } else {
-                                        BindingHelper.bind(pressedLink, nail, oldEnd);
-                                    }
-
-                                } else {
-                                    // The previous last link must end in the new nail
-                                    final Link lastLink = links.get(links.size() - 1);
-
-                                    // If the nail is the first in the list, bind it to the source location
-                                    // otherwise, bind it the the previous nail
-                                    final int nailIndex = edge.get().getNails().indexOf(nail);
-                                    if (nailIndex == 0) {
-                                        BindingHelper.bind(lastLink, newEdge.getSourceLocation(), nail);
-                                    } else {
-                                        final Nail previousNail = edge.get().getNails().get(nailIndex - 1);
-                                        BindingHelper.bind(lastLink, previousNail, nail);
-                                    }
-
-                                    // Create a new link that will bind from the new nail to the mouse
-                                    final Link newLink = new Link();
-                                    links.add(newLink);
-                                    BindingHelper.bind(newLink, simpleArrowHead, nail, newComponent.xProperty(), newComponent.yProperty());
-                                    edgeRoot.getChildren().add(newLink);
-                                }
-                            });
-                        }
-                    }
-                });
-
-            });
-        });
-
-        initializeLinksListener();
-
     }
 
     private void initializeLinksListener() {
