@@ -1,7 +1,6 @@
 package SW9.presentations;
 
 import SW9.HUPPAAL;
-import SW9.controllers.CanvasController;
 import SW9.controllers.HUPPAALController;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
@@ -76,8 +75,6 @@ public class HUPPAALPresentation extends StackPane {
             initializeToolbarButton(controller.redo);
             initializeUndoRedoButtons();
 
-            initializeDeleteButton();
-
             initializeLogo();
 
             // Open the file panel initially
@@ -95,21 +92,6 @@ public class HUPPAALPresentation extends StackPane {
 
     private void initializeLogo() {
         controller.logo.setImage(new Image(HUPPAAL.class.getResource("ic_launcher/mipmap-mdpi/ic_launcher.png").toExternalForm()));
-    }
-
-    private void initializeDeleteButton() {
-        initializeToolbarButton(controller.delete);
-        CanvasController.activeComponentProperty().addListener((obs, oldComponent, newComponent) -> {
-            if (newComponent == null) {
-                controller.delete.setEnabled(false);
-                controller.delete.setOpacity(0.3);
-            } else {
-                controller.delete.setEnabled(true);
-                controller.delete.setOpacity(1);
-            }
-        });
-        controller.delete.setEnabled(false);
-        controller.delete.setOpacity(0.3);
     }
 
     private void initializeUndoRedoButtons() {

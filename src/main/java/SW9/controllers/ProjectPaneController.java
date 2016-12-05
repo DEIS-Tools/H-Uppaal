@@ -5,11 +5,13 @@ import SW9.abstractions.Component;
 import SW9.presentations.FilePresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
+import SW9.utility.colors.EnabledColor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
+import javafx.animation.ScaleTransition;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ListChangeListener;
@@ -20,7 +22,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.util.Duration;
 import javafx.util.Pair;
 import org.apache.commons.io.FileUtils;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -36,6 +40,7 @@ import java.util.ResourceBundle;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import static SW9.utility.colors.EnabledColor.enabledColors;
 import static javafx.scene.paint.Color.TRANSPARENT;
 
 public class ProjectPaneController implements Initializable {
@@ -246,6 +251,71 @@ public class ProjectPaneController implements Initializable {
                 includeInPeriodicCheck.set(didIncludeInPeriodicCheck);
             }, "Component " + component.getName() + " is included in periodic check: " + !didIncludeInPeriodicCheck, "search");
         });
+
+        addSpacer.run();
+
+        /*
+         * COLOR SELECTOR
+         */
+        final FlowPane flowPane = new FlowPane();
+        flowPane.setStyle("-fx-padding: 0 8 0 8");
+
+        for (final EnabledColor color : enabledColors) {
+            final Circle circle = new Circle(16, color.color.getColor(color.intensity));
+            circle.setStroke(color.color.getColor(color.intensity.next(2)));
+            circle.setStrokeWidth(1);
+
+            final Label label = new Label(color.keyCode.getName());
+            label.getStyleClass().add("subhead");
+            label.setTextFill(color.color.getTextColor(color.intensity));
+
+            final StackPane child = new StackPane(circle, label);
+            child.setMinSize(40, 40);
+            child.setMaxSize(40, 40);
+
+            child.setOnMouseEntered(event -> {
+                final ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(100), circle);
+                scaleTransition.setFromX(circle.getScaleX());
+                scaleTransition.setFromY(circle.getScaleY());
+                scaleTransition.setToX(1.1);
+                scaleTransition.setToY(1.1);
+                scaleTransition.play();
+            });
+
+            child.setOnMouseExited(event -> {
+                final ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(100), circle);
+                scaleTransition.setFromX(circle.getScaleX());
+                scaleTransition.setFromY(circle.getScaleY());
+                scaleTransition.setToX(1.0);
+                scaleTransition.setToY(1.0);
+                scaleTransition.play();
+            });
+
+            child.setOnMouseClicked(event -> {
+                event.consume();
+
+                final Component component = filePresentation.getComponent();
+
+                // Only color the component if the user chooses a new color
+                if (component.getColor().equals(color.color)) return;
+
+                final Color previousColor = component.getColor();
+                final Color.Intensity previousColorIntensity = component.getColorIntensity();
+
+                UndoRedoStack.push(() -> { // Perform
+                    component.setColor(color.color);
+                    component.setColorIntensity(color.intensity);
+                }, () -> { // Undo
+                    component.setColor(previousColor);
+                    component.setColorIntensity(previousColorIntensity);
+                }, String.format("Changed the color of component %s to %s", component.getName(), color.color.name()), "color-lens");
+
+            });
+
+            flowPane.getChildren().add(child);
+        }
+
+        list.getChildren().add(flowPane);
 
         addSpacer.run();
 

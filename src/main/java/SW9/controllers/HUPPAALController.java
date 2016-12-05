@@ -58,7 +58,6 @@ public class HUPPAALController implements Initializable {
     public JFXRippler deleteSelected;
     public JFXRippler undo;
     public JFXRippler redo;
-    public JFXRippler delete;
     public ImageView logo;
 
     @Override
@@ -202,23 +201,6 @@ public class HUPPAALController implements Initializable {
     @FXML
     private void redoClicked() {
         UndoRedoStack.redo();
-    }
-
-    @FXML
-    private void deleteClicked() {
-        // todo: add a confirmation dialog
-
-        final Component activeComponent = CanvasController.getActiveComponent();
-
-        if (activeComponent == null) return;
-
-        UndoRedoStack.push(() -> { // Perform
-            HUPPAAL.getProject().getComponents().remove(activeComponent);
-        }, () -> { // Undo
-            HUPPAAL.getProject().getComponents().add(activeComponent);
-            CanvasController.setActiveComponent(activeComponent);
-        }, String.format("Deleted component %s", activeComponent.getName()), "delete");
-
     }
 
 }
