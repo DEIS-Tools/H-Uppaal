@@ -253,7 +253,11 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
                 links.forEach((link) -> {
                     link.setOnMousePressed(event -> {
                         if (event.isShiftDown()) {
-                            getEdge().insertNailAt(new Nail(event.getX(), event.getY()), links.indexOf(link));
+
+                            final double nailX = event.getX() - event.getX() % CanvasPresentation.GRID_SIZE;
+                            final double nailY = event.getY() - event.getX() % CanvasPresentation.GRID_SIZE;
+
+                            getEdge().insertNailAt(new Nail(nailX, nailY), links.indexOf(link));
                         }
 
                     });
