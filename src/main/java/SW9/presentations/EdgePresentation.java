@@ -67,6 +67,8 @@ public class EdgePresentation extends Group {
         label.setTextFill(Color.GREY.getTextColor(Color.Intensity.I50));
 
         final Runnable updatePlacement = () -> {
+            // todo: calculate the placement differently if source = target
+            if (edge.getSourceLocation().equals(edge.getTargetLocation())) return;
 
             if (edge.getTargetLocation() == null) return;
             final double x1 = edge.getSourceLocation().getX();
