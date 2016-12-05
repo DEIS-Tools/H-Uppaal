@@ -19,6 +19,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -31,11 +32,10 @@ import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class EdgeController implements Initializable, SelectHelper.ColorSelectable {
-    private final ArrayList<Link> links = new ArrayList<>();
+    private final ObservableList<Link> links = FXCollections.observableArrayList();
     private final ObjectProperty<Edge> edge = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
     private final SimpleArrowHead simpleArrowHead = new SimpleArrowHead();
@@ -181,28 +181,59 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
                         while (change.next()) {
                             // There were added some nails
                             change.getAddedSubList().forEach(nail -> {
+
                                 // Create a new nail presentation based on the abstraction added to the list
                                 final NailPresentation newNail = new NailPresentation(nail, newComponent);
                                 edgeRoot.getChildren().addAll(newNail);
 
-                                // The previous last link must end in the new nail
-                                final Link lastLink = links.get(links.size() - 1);
+                                if (newEdge.getTargetLocation() != null) {
+                                    final int indexOfNewNail = edge.get().getNails().indexOf(nail);
 
-                                // If the nail is the first in the list, bind it to the source location
-                                // otherwise, bind it the the previous nail
-                                final int nailIndex = edge.get().getNails().indexOf(nail);
-                                if (nailIndex == 0) {
-                                    BindingHelper.bind(lastLink, newEdge.getSourceLocation(), nail);
+                                    final Link newLink = new Link();
+                                    final Link pressedLink = links.get(indexOfNewNail);
+                                    links.add(indexOfNewNail, newLink);
+
+                                    edgeRoot.getChildren().addAll(newLink);
+
+                                    Circular oldStart = getEdge().getSourceLocation();
+                                    Circular oldEnd = getEdge().getTargetLocation();
+
+                                    if (indexOfNewNail != 0) {
+                                        oldStart = getEdge().getNails().get(indexOfNewNail - 1);
+                                    }
+
+                                    if (indexOfNewNail != getEdge().getNails().size() - 1) {
+                                        oldEnd = getEdge().getNails().get(indexOfNewNail + 1);
+                                    }
+
+                                    BindingHelper.bind(newLink, oldStart, nail);
+
+                                    if (oldEnd.equals(getEdge().getTargetLocation())) {
+                                        BindingHelper.bind(pressedLink, simpleArrowHead, nail, oldEnd);
+                                    } else {
+                                        BindingHelper.bind(pressedLink, nail, oldEnd);
+                                    }
+
                                 } else {
-                                    final Nail previousNail = edge.get().getNails().get(nailIndex - 1);
-                                    BindingHelper.bind(lastLink, previousNail, nail);
-                                }
+                                    // The previous last link must end in the new nail
+                                    final Link lastLink = links.get(links.size() - 1);
 
-                                // Create a new link that will bind from the new nail to the mouse
-                                final Link newLink = new Link();
-                                links.add(newLink);
-                                BindingHelper.bind(newLink, simpleArrowHead, nail, newComponent.xProperty(), newComponent.yProperty());
-                                edgeRoot.getChildren().add(newLink);
+                                    // If the nail is the first in the list, bind it to the source location
+                                    // otherwise, bind it the the previous nail
+                                    final int nailIndex = edge.get().getNails().indexOf(nail);
+                                    if (nailIndex == 0) {
+                                        BindingHelper.bind(lastLink, newEdge.getSourceLocation(), nail);
+                                    } else {
+                                        final Nail previousNail = edge.get().getNails().get(nailIndex - 1);
+                                        BindingHelper.bind(lastLink, previousNail, nail);
+                                    }
+
+                                    // Create a new link that will bind from the new nail to the mouse
+                                    final Link newLink = new Link();
+                                    links.add(newLink);
+                                    BindingHelper.bind(newLink, simpleArrowHead, nail, newComponent.xProperty(), newComponent.yProperty());
+                                    edgeRoot.getChildren().add(newLink);
+                                }
                             });
                         }
                     }
@@ -211,6 +242,24 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
             });
         });
 
+        initializeLinksListener();
+
+    }
+
+    private void initializeLinksListener() {
+        links.addListener(new ListChangeListener<Link>() {
+            @Override
+            public void onChanged(Change<? extends Link> c) {
+                links.forEach((link) -> {
+                    link.setOnMousePressed(event -> {
+                        if (event.isShiftDown()) {
+                            getEdge().insertNailAt(new Nail(event.getX(), event.getY()), links.indexOf(link));
+                        }
+
+                    });
+                });
+            }
+        });
     }
 
     public Edge getEdge() {
@@ -269,7 +318,9 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
 
     @FXML
     public void edgePressed(final MouseEvent event) {
-        SelectHelper.select(this);
+        if (!event.isShiftDown()) {
+            SelectHelper.select(this);
+        }
     }
 
     @Override
