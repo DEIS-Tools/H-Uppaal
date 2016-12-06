@@ -57,8 +57,8 @@ public class CanvasController implements Initializable {
                 root.setTranslateX(restoreCoordinates.getKey());
                 root.setTranslateY(restoreCoordinates.getValue());
             } else {
-                root.setTranslateX(GRID_SIZE * 5);
-                root.setTranslateY(GRID_SIZE * 10);
+                root.setTranslateX(GRID_SIZE * 3);
+                root.setTranslateY(GRID_SIZE * 8);
             }
 
             final ComponentPresentation newComponentPresentation = new ComponentPresentation(newComponent);
