@@ -114,17 +114,6 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             }, "Added new location: " + newLocation.getNickname(), "add-circle");
         }));
 
-        KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_COMPONENT, new Keybind(new KeyCodeCombination(KeyCode.K), () -> {
-            final Component thirdComp = HUPPAAL.getProject().getComponents().get(2);
-            UndoRedoStack.push(() -> { // Perform
-                        component.get().addSubComponent(thirdComp);
-                    }, () -> { // Undo
-                        component.get().removeSubComponent(thirdComp);
-                    },
-                    "Added subcomponent to " + component.getName() + "-component",
-                    "add-circle");
-        }));
-
 
         component.addListener((obs, oldComponent, newComponent) -> {
             // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width from the presentation into the abstraction
@@ -186,29 +175,19 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             dropDownMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 230, true);
 
             final DropDownMenu subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
-            subMenu.addClickableListElement("Component 1", event -> {
-            });
-            subMenu.addClickableListElement("Component 2", event -> {
-            });
-            subMenu.addClickableListElement("Component 1", event -> {
-            });
-            subMenu.addClickableListElement("Component 2", event -> {
-            });
-            subMenu.addClickableListElement("Component 1", event -> {
-            });
-            subMenu.addClickableListElement("Component 2", event -> {
-            });
-            subMenu.addClickableListElement("Component 1", event -> {
-            });
-            subMenu.addClickableListElement("Component 2", event -> {
-            });
-            subMenu.addClickableListElement("Component 1", event -> {
-            });
-            subMenu.addClickableListElement("Component 2", event -> {
-            });
-            subMenu.addClickableListElement("Component 1", event -> {
-            });
-            subMenu.addClickableListElement("Component 2", event -> {
+            HUPPAAL.getProject().getComponents().forEach(c -> {
+                if (!c.equals(component)) {
+                    subMenu.addClickableListElement(c.getName(), event -> {
+                        dropDownMenu.close();
+
+                        // Add a new sub-component
+                        UndoRedoStack.push(() -> { // Perform
+                            component.addSubComponent(c);
+                        }, () -> { // Undo
+                            component.removeSubComponent(c);
+                        }, "Added sub-component '" + c.getName() + "' to component '" + component.getName() + "'", "add-circle");
+                    });
+                }
             });
 
             dropDownMenu.addSubMenu("Add subcomponent", subMenu);
@@ -220,6 +199,13 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
         component.addListener((obs, oldComponent, newComponent) -> {
             initializeDropDownMenu.accept(newComponent);
+        });
+
+        HUPPAAL.getProject().getComponents().addListener(new ListChangeListener<Component>() {
+            @Override
+            public void onChanged(final Change<? extends Component> c) {
+                initializeDropDownMenu.accept(getComponent());
+            }
         });
 
         initializeDropDownMenu.accept(getComponent());
