@@ -139,6 +139,21 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             initializeEdgeHandling(newComponent);
             initializeLocationHandling(newComponent);
             initializeSubComponentHandling(newComponent);
+
+            // When we update the color of the component, also update the color of the initial and final locations if the colors are the same
+            newComponent.colorProperty().addListener((obs1, oldColor, newColor) -> {
+                final Location initialLocation = newComponent.getInitialLocation();
+                if (initialLocation.getColor().equals(oldColor)) {
+                    initialLocation.setColor(newColor);
+                    initialLocation.setColorIntensity(newComponent.getColorIntensity());
+                }
+
+                final Location finalLocation = newComponent.getFinalLocation();
+                if (finalLocation.getColor().equals(oldColor)) {
+                    finalLocation.setColor(newColor);
+                    finalLocation.setColorIntensity(newComponent.getColorIntensity());
+                }
+            });
         });
 
         // The root view have been inflated, initialize the mouse tracker on it
