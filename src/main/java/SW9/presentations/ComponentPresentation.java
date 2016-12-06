@@ -1,6 +1,7 @@
 package SW9.presentations;
 
 import SW9.abstractions.Component;
+import SW9.controllers.CanvasController;
 import SW9.controllers.ComponentController;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
@@ -236,6 +237,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
 
         // Center the text vertically and aff a left padding of CORNER_SIZE
         controller.name.setPadding(new Insets(2, 0, 0, CORNER_SIZE));
+        controller.name.setOnKeyPressed(CanvasController.getEnterKeyHandler());
     }
 
     private void initializeInitialLocation() {
@@ -287,6 +289,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         // Set a hover effect for the controller.toggleDeclarationButton
         controller.toggleDeclarationButton.setOnMouseEntered(event -> controller.toggleDeclarationButton.setCursor(Cursor.HAND));
         controller.toggleDeclarationButton.setOnMouseExited(event -> controller.toggleDeclarationButton.setCursor(Cursor.DEFAULT));
+
     }
 
     private void initializeFrame() {
