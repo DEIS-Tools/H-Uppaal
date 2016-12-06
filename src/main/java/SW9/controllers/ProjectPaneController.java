@@ -5,15 +5,11 @@ import SW9.abstractions.Component;
 import SW9.presentations.DropDownMenu;
 import SW9.presentations.FilePresentation;
 import SW9.utility.UndoRedoStack;
-import SW9.utility.colors.Color;
-import SW9.utility.colors.EnabledColor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
-import javafx.animation.ScaleTransition;
-import javafx.beans.binding.When;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -21,13 +17,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
-import javafx.util.Duration;
 import org.apache.commons.io.FileUtils;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -37,8 +29,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ResourceBundle;
-
-import static SW9.utility.colors.EnabledColor.enabledColors;
 
 public class ProjectPaneController implements Initializable {
 
@@ -95,7 +85,7 @@ public class ProjectPaneController implements Initializable {
     private void initializeColorSelector(final FilePresentation filePresentation) {
         final JFXRippler moreInformation = (JFXRippler) filePresentation.lookup("#moreInformation");
         final int listWidth = 230;
-        final DropDownMenu moreInformationDropDown = new DropDownMenu(root, moreInformation, listWidth);
+        final DropDownMenu moreInformationDropDown = new DropDownMenu(root, moreInformation, listWidth, true);
 
         moreInformationDropDown.addListElement("Configuration");
 
@@ -135,67 +125,7 @@ public class ProjectPaneController implements Initializable {
         /*
          * COLOR SELECTOR
          */
-        final FlowPane flowPane = new FlowPane();
-        flowPane.setStyle("-fx-padding: 0 8 0 8");
-
-        for (final EnabledColor color : enabledColors) {
-            final Circle circle = new Circle(16, color.color.getColor(color.intensity));
-            circle.setStroke(color.color.getColor(color.intensity.next(2)));
-            circle.setStrokeWidth(1);
-
-            final FontIcon icon = new FontIcon();
-            icon.setIconLiteral("gmi-done");
-            icon.setFill(color.color.getTextColor(color.intensity));
-            icon.setIconSize(20);
-            icon.visibleProperty().bind(new When(filePresentation.getComponent().colorProperty().isEqualTo(color.color)).then(true).otherwise(false));
-
-            final StackPane child = new StackPane(circle, icon);
-            child.setMinSize(40, 40);
-            child.setMaxSize(40, 40);
-
-            child.setOnMouseEntered(event -> {
-                final ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(100), circle);
-                scaleTransition.setFromX(circle.getScaleX());
-                scaleTransition.setFromY(circle.getScaleY());
-                scaleTransition.setToX(1.1);
-                scaleTransition.setToY(1.1);
-                scaleTransition.play();
-            });
-
-            child.setOnMouseExited(event -> {
-                final ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(100), circle);
-                scaleTransition.setFromX(circle.getScaleX());
-                scaleTransition.setFromY(circle.getScaleY());
-                scaleTransition.setToX(1.0);
-                scaleTransition.setToY(1.0);
-                scaleTransition.play();
-            });
-
-            child.setOnMouseClicked(event -> {
-                event.consume();
-
-                final Component component = filePresentation.getComponent();
-
-                // Only color the component if the user chooses a new color
-                if (component.getColor().equals(color.color)) return;
-
-                final Color previousColor = component.getColor();
-                final Color.Intensity previousColorIntensity = component.getColorIntensity();
-
-                UndoRedoStack.push(() -> { // Perform
-                    component.setColorIntensity(color.intensity);
-                    component.setColor(color.color);
-                }, () -> { // Undo
-                    component.setColorIntensity(previousColorIntensity);
-                    component.setColor(previousColor);
-                }, String.format("Changed the color of component %s to %s", component.getName(), color.color.name()), "color-lens");
-
-            });
-
-            flowPane.getChildren().add(child);
-        }
-
-        moreInformationDropDown.addCustomChild(flowPane);
+        moreInformationDropDown.addColorPicker(filePresentation.getComponent());
 
         moreInformationDropDown.addSpacerElement();
 
