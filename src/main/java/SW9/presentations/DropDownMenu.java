@@ -139,7 +139,6 @@ public class DropDownMenu {
 
         // When the rippler is pressed, run the provided consumer.
         clickListenerFix.setOnMousePressed(event -> {
-            System.out.println(event);
             mouseEventConsumer.accept(event);
             event.consume();
         });
