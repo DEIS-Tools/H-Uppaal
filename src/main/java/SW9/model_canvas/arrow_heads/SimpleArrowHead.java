@@ -1,7 +1,6 @@
 package SW9.model_canvas.arrow_heads;
 
 import SW9.presentations.CanvasPresentation;
-import SW9.utility.colors.Color;
 import SW9.utility.helpers.SelectHelper;
 import javafx.scene.shape.Line;
 
@@ -72,13 +71,13 @@ public class SimpleArrowHead extends ArrowHead implements SelectHelper.Selectabl
 
     @Override
     public void select() {
-        leftArrow.setStroke(Color.DEEP_ORANGE.getColor(Color.Intensity.I500));
-        rightArrow.setStroke(Color.DEEP_ORANGE.getColor(Color.Intensity.I500));
+        leftArrow.setStroke(SelectHelper.getNormalColor());
+        rightArrow.setStroke(SelectHelper.getNormalColor());
     }
 
     @Override
     public void deselect() {
-        leftArrow.setStroke(Color.GREY.getColor(Color.Intensity.I900));
-        rightArrow.setStroke(Color.GREY.getColor(Color.Intensity.I900));
+        leftArrow.setStroke(SelectHelper.getBorderColor());
+        rightArrow.setStroke(SelectHelper.getBorderColor());
     }
 }
