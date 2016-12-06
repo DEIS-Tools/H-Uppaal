@@ -39,6 +39,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 public class EdgeController implements Initializable, SelectHelper.ColorSelectable {
     private final ObservableList<Link> links = FXCollections.observableArrayList();
@@ -62,8 +63,10 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
     public Circle updateCircle;
     private Runnable collapseNail;
     private Thread runningThread;
+    private Consumer<Nail> enlargeNail;
 
     private final Map<Nail, NailPresentation> nailNailPresentationMap = new HashMap<>();
+    private Consumer<Nail> shrinkNail;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -161,6 +164,10 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
                             BindingHelper.bind(pressedLink, newNail, oldEnd);
                         }
 
+                        if(isHoveringEdge.get()) {
+                            enlargeNail.accept(newNail);
+                        }
+
                     } else {
                         // The previous last link must end in the new nail
                         final Link lastLink = links.get(links.size() - 1);
@@ -248,6 +255,35 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
     }
 
     private void initializeNailCollapse() {
+        enlargeNail = nail -> {
+            final Timeline animation = new Timeline();
+
+            final KeyValue radius0 = new KeyValue(nail.radiusProperty(), NailPresentation.COLLAPSED_RADIUS);
+            final KeyValue radius2 = new KeyValue(nail.radiusProperty(), NailPresentation.HOVERED_RADIUS * 1.2);
+            final KeyValue radius1 = new KeyValue(nail.radiusProperty(), NailPresentation.HOVERED_RADIUS);
+
+            final KeyFrame kf1 = new KeyFrame(Duration.millis(0), radius0);
+            final KeyFrame kf2 = new KeyFrame(Duration.millis(80), radius2);
+            final KeyFrame kf3 = new KeyFrame(Duration.millis(100), radius1);
+
+            animation.getKeyFrames().addAll(kf1, kf2, kf3);
+
+            animation.play();
+        };
+        shrinkNail = nail -> {
+            final Timeline animation = new Timeline();
+
+            final KeyValue radius0 = new KeyValue(nail.radiusProperty(), NailPresentation.COLLAPSED_RADIUS);
+            final KeyValue radius1 = new KeyValue(nail.radiusProperty(), NailPresentation.HOVERED_RADIUS);
+
+            final KeyFrame kf1 = new KeyFrame(Duration.millis(0), radius1);
+            final KeyFrame kf2 = new KeyFrame(Duration.millis(100), radius0);
+
+            animation.getKeyFrames().addAll(kf1, kf2);
+
+            animation.play();
+        };
+
         collapseNail = () -> {
             final int interval = 50;
 
@@ -270,19 +306,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
                         // Run on UI thread
                         Platform.runLater(() -> {
                             // Collapse all nails
-                            getEdge().getNails().forEach(nail -> {
-                                final Timeline animation = new Timeline();
-
-                                final KeyValue radius0 = new KeyValue(nail.radiusProperty(), NailPresentation.COLLAPSED_RADIUS);
-                                final KeyValue radius1 = new KeyValue(nail.radiusProperty(), NailPresentation.HOVERED_RADIUS);
-
-                                final KeyFrame kf1 = new KeyFrame(Duration.millis(0), radius1);
-                                final KeyFrame kf2 = new KeyFrame(Duration.millis(100), radius0);
-
-                                animation.getKeyFrames().addAll(kf1, kf2);
-
-                                animation.play();
-                            });
+                            getEdge().getNails().forEach(shrinkNail);
                         });
 
                         break;
@@ -354,21 +378,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
         runningThread = new Thread(collapseNail);
         runningThread.start();
 
-        getEdge().getNails().forEach(nail -> {
-            final Timeline animation = new Timeline();
-
-            final KeyValue radius0 = new KeyValue(nail.radiusProperty(), NailPresentation.COLLAPSED_RADIUS);
-            final KeyValue radius2 = new KeyValue(nail.radiusProperty(), NailPresentation.HOVERED_RADIUS * 1.2);
-            final KeyValue radius1 = new KeyValue(nail.radiusProperty(), NailPresentation.HOVERED_RADIUS);
-
-            final KeyFrame kf1 = new KeyFrame(Duration.millis(0), radius0);
-            final KeyFrame kf2 = new KeyFrame(Duration.millis(80), radius2);
-            final KeyFrame kf3 = new KeyFrame(Duration.millis(100), radius1);
-
-            animation.getKeyFrames().addAll(kf1, kf2, kf3);
-
-            animation.play();
-        });
+        getEdge().getNails().forEach(enlargeNail);
     }
 
     public void edgeExited() {

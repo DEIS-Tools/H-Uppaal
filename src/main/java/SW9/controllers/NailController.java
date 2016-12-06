@@ -141,7 +141,6 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
         this.edge.set(edge);
     }
 
-
     @Override
     public void color(final Color color, final Color.Intensity intensity) {
         // Do nothing. A nail cannot be colored, but can be colored as selected
