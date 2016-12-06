@@ -79,8 +79,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             // Bind the component with the one of the controller
             controller.setComponent(component);
 
-            // TODO introduce change of name and invariant
-            // TODO make location draggable within a component
             // TODO make creation of location possible from the mouse
 
             initializeIdLabel();
@@ -91,7 +89,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             initializeLocationShape();
 
             initializeTags();
-            //initializeInvariantTag();
 
             initializeInitialAnimation();
             initializeHoverAnimationEntered();
@@ -154,6 +151,24 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         }
 
         controller.nameTag.replaceSpace();
+
+        // Set the layout from the model (if they are not both 0)
+        final Location loc = controller.getLocation();
+        if((loc.getNicknameX() != 0) && (loc.getNicknameY() != 0)) {
+            controller.nameTag.setTranslateX(loc.getNicknameX());
+            controller.nameTag.setTranslateY(loc.getNicknameY());
+        }
+
+        if((loc.getInvariantX() != 0) && (loc.getInvariantY() != 0)) {
+            controller.invariantTag.setTranslateX(loc.getInvariantX());
+            controller.invariantTag.setTranslateY(loc.getInvariantY());
+        }
+
+        // Bind the model to the layout
+        loc.nicknameXProperty().bind(controller.nameTag.translateXProperty());
+        loc.nicknameYProperty().bind(controller.nameTag.translateYProperty());
+        loc.invariantXProperty().bind(controller.invariantTag.translateXProperty());
+        loc.invariantYProperty().bind(controller.invariantTag.translateYProperty());
 
         final Consumer<Location> updateTags = location -> {
             // Update the color
@@ -222,11 +237,11 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         controller.nameTag.setOnKeyPressed(CanvasController.getEnterKeyHandler());
         controller.invariantTag.setOnKeyPressed(CanvasController.getEnterKeyHandler());
 
-        // Update the tags when the location updates
-        controller.locationProperty().addListener(observable -> updateTags.accept(controller.getLocation()));
+        // Update the tags when the loc updates
+        controller.locationProperty().addListener(observable -> updateTags.accept(loc));
 
-        // Initialize the tags from the current location
-        updateTags.accept(controller.getLocation());
+        // Initialize the tags from the current loc
+        updateTags.accept(loc);
 
     }
 

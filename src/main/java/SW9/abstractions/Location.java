@@ -21,6 +21,10 @@ public class Location implements Circular, Serializable {
     private static final String X = "x";
     private static final String Y = "Y";
     private static final String COLOR = "color";
+    private static final String NICKNAME_X = "nickname_x";
+    private static final String NICKNAME_Y = "nickname_Y";
+    private static final String INVARIANT_X = "invariant_x";
+    private static final String INVARIANT_Y = "invariant_Y";
 
     // Verification properties
     private final StringProperty nickname = new SimpleStringProperty("");
@@ -36,6 +40,11 @@ public class Location implements Circular, Serializable {
     private final SimpleDoubleProperty scale = new SimpleDoubleProperty(1d);
     private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.GREY_BLUE);
     private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I500);
+
+    private final DoubleProperty nicknameX = new SimpleDoubleProperty(0d);
+    private final DoubleProperty nicknameY = new SimpleDoubleProperty(0d);
+    private final DoubleProperty invariantX = new SimpleDoubleProperty(0d);
+    private final DoubleProperty invariantY = new SimpleDoubleProperty(0d);
 
     public Location() {
         setId("L" + hiddenID.getAndIncrement());
@@ -180,6 +189,54 @@ public class Location implements Circular, Serializable {
         return scale;
     }
 
+    public double getNicknameX() {
+        return nicknameX.get();
+    }
+
+    public DoubleProperty nicknameXProperty() {
+        return nicknameX;
+    }
+
+    public void setNicknameX(final double nicknameX) {
+        this.nicknameX.set(nicknameX);
+    }
+
+    public double getNicknameY() {
+        return nicknameY.get();
+    }
+
+    public DoubleProperty nicknameYProperty() {
+        return nicknameY;
+    }
+
+    public void setNicknameY(final double nicknameY) {
+        this.nicknameY.set(nicknameY);
+    }
+
+    public double getInvariantX() {
+        return invariantX.get();
+    }
+
+    public DoubleProperty invariantXProperty() {
+        return invariantX;
+    }
+
+    public void setInvariantX(final double invariantX) {
+        this.invariantX.set(invariantX);
+    }
+
+    public double getInvariantY() {
+        return invariantY.get();
+    }
+
+    public DoubleProperty invariantYProperty() {
+        return invariantY;
+    }
+
+    public void setInvariantY(final double invariantY) {
+        this.invariantY.set(invariantY);
+    }
+
     @Override
     public JsonObject serialize() {
         final JsonObject result = new JsonObject();
@@ -192,6 +249,11 @@ public class Location implements Circular, Serializable {
         result.addProperty(X, getX());
         result.addProperty(Y, getY());
         result.addProperty(COLOR, EnabledColor.getIdentifier(getColor()));
+
+        result.addProperty(NICKNAME_X, getNicknameX());
+        result.addProperty(NICKNAME_Y, getNicknameY());
+        result.addProperty(INVARIANT_X, getInvariantX());
+        result.addProperty(INVARIANT_Y, getInvariantY());
 
         return result;
     }
@@ -212,6 +274,11 @@ public class Location implements Circular, Serializable {
             setColor(enabledColor.color);
             setColorIntensity(enabledColor.intensity);
         }
+
+        setNicknameX(json.getAsJsonPrimitive(NICKNAME_X).getAsDouble());
+        setNicknameY(json.getAsJsonPrimitive(NICKNAME_Y).getAsDouble());
+        setInvariantX(json.getAsJsonPrimitive(INVARIANT_X).getAsDouble());
+        setInvariantY(json.getAsJsonPrimitive(INVARIANT_Y).getAsDouble());
     }
 
     public enum Type {
@@ -221,5 +288,7 @@ public class Location implements Circular, Serializable {
     public enum Urgency {
         NORMAL, URGENT, COMMITTED
     }
+
+
 
 }
