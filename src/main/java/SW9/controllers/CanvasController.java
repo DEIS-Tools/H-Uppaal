@@ -6,13 +6,17 @@ import SW9.presentations.ComponentPresentation;
 import SW9.utility.helpers.SelectHelper;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.util.Pair;
 
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
@@ -35,6 +39,19 @@ public class CanvasController implements Initializable {
     public static ObjectProperty<Component> activeComponentProperty() {
         return activeComponent;
     }
+
+    public static EventHandler<KeyEvent> getEnterKeyHandler() {
+        return getEnterKeyHandler(keyEvent -> {});
+    }
+
+    public static EventHandler<KeyEvent> getEnterKeyHandler(final Consumer<KeyEvent> afterEnter) {
+        return (keyEvent) -> {
+            leaveOnEnterPressed.accept(keyEvent);
+            afterEnter.accept(keyEvent);
+        };
+    }
+
+    private static Consumer<KeyEvent> leaveOnEnterPressed;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -65,6 +82,12 @@ public class CanvasController implements Initializable {
             root.getChildren().add(newComponentPresentation);
             root.requestFocus();
         });
+
+        leaveOnEnterPressed = (keyEvent) -> {
+            if (keyEvent.getCode().equals(KeyCode.ENTER)) {
+                root.requestFocus();
+            }
+        };
 
     }
 

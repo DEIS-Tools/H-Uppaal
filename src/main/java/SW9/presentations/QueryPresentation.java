@@ -4,6 +4,7 @@ import SW9.HUPPAAL;
 import SW9.abstractions.Query;
 import SW9.abstractions.QueryState;
 import SW9.backend.UPPAALDriver;
+import SW9.controllers.CanvasController;
 import SW9.utility.colors.Color;
 import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXSpinner;
@@ -17,6 +18,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -30,6 +32,8 @@ import static javafx.scene.paint.Color.TRANSPARENT;
 public class QueryPresentation extends AnchorPane {
 
     private final Query query;
+    private JFXRippler actionButton;
+    private Runnable runQuery;
 
     public QueryPresentation(final Query query) {
         final URL location = this.getClass().getResource("QueryPresentation.fxml");
@@ -44,6 +48,8 @@ public class QueryPresentation extends AnchorPane {
 
             this.query = query;
 
+            initializeRunQuery();
+
             initializeStateIndicator();
             initializeProgressIndicator();
             initializeActionButton();
@@ -53,6 +59,30 @@ public class QueryPresentation extends AnchorPane {
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+    private void initializeRunQuery() {
+        runQuery = () -> {
+            if (query.getQueryState().equals(QueryState.RUNNING)) {
+                // todo: Stop the query
+                query.setQueryState(QueryState.UNKNOWN);
+            } else {
+                query.setQueryState(QueryState.RUNNING);
+
+                UPPAALDriver.verify(query.getQuery(),
+                        aBoolean -> {
+                            if(aBoolean) {
+                                query.setQueryState(QueryState.SUCCESSFUL);
+                            } else {
+                                query.setQueryState(QueryState.ERROR);
+                            }
+                        },
+                        e -> {
+                            query.setQueryState(QueryState.SYNTAX_ERROR);
+                        },
+                        HUPPAAL.getProject().getComponents()
+                );
+            }
+        };
     }
 
     private void initializeTextFields() {
@@ -64,6 +94,14 @@ public class QueryPresentation extends AnchorPane {
 
         query.queryProperty().bind(queryTextField.textProperty());
         query.commentProperty().bind(commentTextField.textProperty());
+
+
+        queryTextField.setOnKeyPressed(CanvasController.getEnterKeyHandler(keyEvent -> {
+            if (keyEvent.getCode().equals(KeyCode.ENTER)) {
+                runQuery.run();
+            }
+        }));
+        commentTextField.setOnKeyPressed(CanvasController.getEnterKeyHandler());
     }
 
     private void initializeDetailsButton() {
@@ -115,7 +153,7 @@ public class QueryPresentation extends AnchorPane {
 
     private void initializeActionButton() {
         // Find the action icon
-        final JFXRippler actionButton = (JFXRippler) lookup("#actionButton");
+        actionButton = (JFXRippler) lookup("#actionButton");
         final FontIcon actionButtonIcon = (FontIcon) lookup("#actionButtonIcon");
 
         actionButtonIcon.setIconColor(Color.GREY.getColor(Color.Intensity.I900));
@@ -143,26 +181,7 @@ public class QueryPresentation extends AnchorPane {
         actionButton.setMaskType(JFXRippler.RipplerMask.CIRCLE);
 
         actionButton.getChildren().get(0).setOnMousePressed(event -> {
-            if (query.getQueryState().equals(QueryState.RUNNING)) {
-                // todo: Stop the query
-                query.setQueryState(QueryState.UNKNOWN);
-            } else {
-                query.setQueryState(QueryState.RUNNING);
-
-                UPPAALDriver.verify(query.getQuery(),
-                        aBoolean -> {
-                            if(aBoolean) {
-                                query.setQueryState(QueryState.SUCCESSFUL);
-                            } else {
-                                query.setQueryState(QueryState.ERROR);
-                            }
-                        },
-                        e -> {
-                            query.setQueryState(QueryState.SYNTAX_ERROR);
-                        },
-                        HUPPAAL.getProject().getComponents()
-                );
-            }
+            runQuery.run();
         });
     }
 

@@ -3,6 +3,7 @@ package SW9.presentations;
 import SW9.Debug;
 import SW9.abstractions.Component;
 import SW9.abstractions.Location;
+import SW9.controllers.CanvasController;
 import SW9.controllers.LocationController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.BindingHelper;
@@ -217,6 +218,9 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
                 }
             }
         });
+
+        controller.nameTag.setOnKeyPressed(CanvasController.getEnterKeyHandler());
+        controller.invariantTag.setOnKeyPressed(CanvasController.getEnterKeyHandler());
 
         // Update the tags when the location updates
         controller.locationProperty().addListener(observable -> updateTags.accept(controller.getLocation()));
