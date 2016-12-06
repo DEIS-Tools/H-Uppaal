@@ -47,6 +47,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
+import static SW9.presentations.CanvasPresentation.GRID_SIZE;
+
 public class ComponentController implements Initializable, SelectHelper.ColorSelectable {
 
     private static boolean placingLocation = false;
@@ -127,6 +129,13 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         component.addListener((obs, oldComponent, newComponent) -> {
             // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width from the presentation into the abstraction
             // Bind the position of the abstraction to the values in the view
+
+            // Ensure that the component snaps to the grid
+            if(newComponent.getX() == 0 && newComponent.getY() == 0) {
+                newComponent.setX(GRID_SIZE * 0.5);
+                newComponent.setY(GRID_SIZE * 0.5);
+            }
+
             root.layoutXProperty().set(newComponent.getX());
             root.layoutYProperty().set(newComponent.getY());
             newComponent.xProperty().bind(root.layoutXProperty());
