@@ -7,7 +7,8 @@ import java.util.ArrayList;
 public class EnabledColor {
 
     public static final ArrayList<EnabledColor> enabledColors = new ArrayList<EnabledColor>() {{
-        add(new EnabledColor(Color.GREY_BLUE, Color.Intensity.I700, KeyCode.DIGIT1));
+        add(new EnabledColor(Color.GREY_BLUE, Color.Intensity.I700, KeyCode.DIGIT0));
+        add(new EnabledColor(Color.DEEP_ORANGE, Color.Intensity.I700, KeyCode.DIGIT1));
         add(new EnabledColor(Color.RED, Color.Intensity.I700, KeyCode.DIGIT2));
         add(new EnabledColor(Color.PINK, Color.Intensity.I500, KeyCode.DIGIT3));
         add(new EnabledColor(Color.PURPLE, Color.Intensity.I500, KeyCode.DIGIT4));

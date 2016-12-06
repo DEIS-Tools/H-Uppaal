@@ -6,6 +6,10 @@ import javafx.collections.ObservableList;
 
 public class SelectHelper {
 
+    public static final Color SELECT_COLOR = Color.ORANGE;
+    public static final Color.Intensity SELECT_COLOR_INTENSITY_NORMAL = Color.Intensity.I700;
+    public static final Color.Intensity SELECT_COLOR_INTENSITY_BORDER = Color.Intensity.I900;
+
     private static final ObservableList<ColorSelectable> selectedElements = FXCollections.observableArrayList();
 
     public static void select(final ColorSelectable selectable) {
@@ -41,6 +45,18 @@ public class SelectHelper {
 
     public static ObservableList<ColorSelectable> getSelectedElements() {
         return selectedElements;
+    }
+
+    private static javafx.scene.paint.Color getColor(final Color.Intensity intensity) {
+        return SELECT_COLOR.getColor(intensity);
+    }
+
+    public static javafx.scene.paint.Color getNormalColor() {
+        return getColor(SELECT_COLOR_INTENSITY_NORMAL);
+    }
+
+    public static javafx.scene.paint.Color getBorderColor() {
+        return getColor(SELECT_COLOR_INTENSITY_BORDER);
     }
 
     public interface Selectable {

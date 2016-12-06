@@ -487,7 +487,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
     @Override
     public void select() {
-        updateColorDelegates.forEach(colorConsumer -> colorConsumer.accept(Color.DEEP_ORANGE, Color.Intensity.I500));
+        updateColorDelegates.forEach(colorConsumer -> colorConsumer.accept(SelectHelper.SELECT_COLOR, SelectHelper.SELECT_COLOR_INTENSITY_NORMAL));
     }
 
     @Override

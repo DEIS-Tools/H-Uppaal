@@ -223,7 +223,7 @@ public enum Color {
             new Pair<>(Intensity.I400, new ColorParser("#ffa726", "rgba(0, 0, 0, 0.87)")),
             new Pair<>(Intensity.I500, new ColorParser("#ff9800", "rgba(0, 0, 0, 0.87)")),
             new Pair<>(Intensity.I600, new ColorParser("#fb8c00", "rgba(0, 0, 0, 0.87)")),
-            new Pair<>(Intensity.I700, new ColorParser("#f57c00", "rgba(0, 0, 0, 0.87)")),
+            new Pair<>(Intensity.I700, new ColorParser("#f57c00", "rgba(255, 255, 255, 1.0)")), // This should normally be black, but we did a riot
             new Pair<>(Intensity.I800, new ColorParser("#ef6c00", "rgba(255, 255, 255, 1.0)")),
             new Pair<>(Intensity.I900, new ColorParser("#e65100", "rgba(255, 255, 255, 0.87)")),
             new Pair<>(Intensity.A100, new ColorParser("#ffd180", "rgba(0, 0, 0, 0.87)")),
