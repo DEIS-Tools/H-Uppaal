@@ -5,10 +5,7 @@ import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
 import SW9.abstractions.Nail;
-import SW9.presentations.CanvasPresentation;
-import SW9.presentations.EdgePresentation;
-import SW9.presentations.LocationPresentation;
-import SW9.presentations.SubComponentPresentation;
+import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.BindingHelper;
@@ -17,6 +14,7 @@ import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
+import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXTextField;
 import javafx.animation.Interpolator;
@@ -72,6 +70,8 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     public Rectangle rightAnchor;
     public Rectangle bottomAnchor;
     private MouseTracker mouseTracker;
+    private DropDownMenu dropDownMenu;
+    private Circle dropDownMenuHelperCircle;
 
     public static boolean isPlacingLocation() {
         return placingLocation;
@@ -167,6 +167,62 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
         // The root view have been inflated, initialize the mouse tracker on it
         mouseTracker = new MouseTracker(root);
+
+        initializeDropDownMenu();
+    }
+
+    private void initializeDropDownMenu() {
+        dropDownMenuHelperCircle = new Circle(5);
+        dropDownMenuHelperCircle.setOpacity(0);
+        dropDownMenuHelperCircle.setMouseTransparent(true);
+
+        root.getChildren().add(dropDownMenuHelperCircle);
+
+        final Consumer<Component> initializeDropDownMenu = (component) -> {
+            if (component == null) {
+                return;
+            }
+
+            dropDownMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 230, true);
+
+            final DropDownMenu subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
+            subMenu.addClickableListElement("Component 1", event -> {
+            });
+            subMenu.addClickableListElement("Component 2", event -> {
+            });
+            subMenu.addClickableListElement("Component 1", event -> {
+            });
+            subMenu.addClickableListElement("Component 2", event -> {
+            });
+            subMenu.addClickableListElement("Component 1", event -> {
+            });
+            subMenu.addClickableListElement("Component 2", event -> {
+            });
+            subMenu.addClickableListElement("Component 1", event -> {
+            });
+            subMenu.addClickableListElement("Component 2", event -> {
+            });
+            subMenu.addClickableListElement("Component 1", event -> {
+            });
+            subMenu.addClickableListElement("Component 2", event -> {
+            });
+            subMenu.addClickableListElement("Component 1", event -> {
+            });
+            subMenu.addClickableListElement("Component 2", event -> {
+            });
+
+            dropDownMenu.addSubMenu("Add subcomponent", subMenu);
+            dropDownMenu.addSpacerElement();
+            dropDownMenu.addListElement("Color");
+            dropDownMenu.addColorPicker(component);
+        };
+
+
+        component.addListener((obs, oldComponent, newComponent) -> {
+            initializeDropDownMenu.accept(newComponent);
+        });
+
+        initializeDropDownMenu.accept(getComponent());
     }
 
     private void initializeLocationHandling(final Component newComponent) {
@@ -328,16 +384,24 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
         final Edge unfinishedEdge = getComponent().getUnfinishedEdge();
 
-        // We are drawing an edge
-        if (unfinishedEdge != null) {
-            // Calculate the position for the new nail (based on the component position and the canvas mouse tracker)
-            final DoubleBinding x = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty());
-            final DoubleBinding y = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty());
+        if (event.isSecondaryButtonDown() && unfinishedEdge == null) {
+            dropDownMenuHelperCircle.setLayoutX(event.getX());
+            dropDownMenuHelperCircle.setLayoutY(event.getY());
+            dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
+        } else {
+            // We are drawing an edge
+            if (unfinishedEdge != null) {
+                // Calculate the position for the new nail (based on the component position and the canvas mouse tracker)
+                final DoubleBinding x = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty());
+                final DoubleBinding y = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty());
 
-            // Create the abstraction for the new nail and add it to the unfinished edge
-            final Nail newNail = new Nail(x, y);
-            unfinishedEdge.addNail(newNail);
+                // Create the abstraction for the new nail and add it to the unfinished edge
+                final Nail newNail = new Nail(x, y);
+                unfinishedEdge.addNail(newNail);
+            }
         }
+
+
     }
 
     public MouseTracker getMouseTracker() {

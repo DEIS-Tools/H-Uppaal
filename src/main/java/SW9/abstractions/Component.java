@@ -1,5 +1,6 @@
 package SW9.abstractions;
 
+import SW9.presentations.DropDownMenu;
 import SW9.utility.colors.Color;
 import SW9.utility.colors.EnabledColor;
 import SW9.utility.serialize.Serializable;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Component implements Serializable {
+public class Component implements Serializable, DropDownMenu.HasColor {
 
     private static final AtomicInteger hiddenID = new AtomicInteger(0); // Used to generate unique IDs
 
@@ -264,12 +265,12 @@ public class Component implements Serializable {
         return isMain.get();
     }
 
-    public BooleanProperty isMainProperty() {
-        return isMain;
-    }
-
     public void setIsMain(boolean isMain) {
         this.isMain.set(isMain);
+    }
+
+    public BooleanProperty isMainProperty() {
+        return isMain;
     }
 
     @Override
