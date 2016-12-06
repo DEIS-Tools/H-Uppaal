@@ -12,6 +12,7 @@ import com.google.gson.JsonArray;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
 import javafx.animation.ScaleTransition;
+import javafx.beans.binding.When;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ListChangeListener;
@@ -254,6 +255,8 @@ public class ProjectPaneController implements Initializable {
 
         addSpacer.run();
 
+        addListElement.accept("Color");
+
         /*
          * COLOR SELECTOR
          */
@@ -265,11 +268,13 @@ public class ProjectPaneController implements Initializable {
             circle.setStroke(color.color.getColor(color.intensity.next(2)));
             circle.setStrokeWidth(1);
 
-            final Label label = new Label(color.keyCode.getName());
-            label.getStyleClass().add("subhead");
-            label.setTextFill(color.color.getTextColor(color.intensity));
+            final FontIcon icon = new FontIcon();
+            icon.setIconLiteral("gmi-done");
+            icon.setFill(color.color.getTextColor(color.intensity));
+            icon.setIconSize(20);
+            icon.visibleProperty().bind(new When(filePresentation.getComponent().colorProperty().isEqualTo(color.color)).then(true).otherwise(false));
 
-            final StackPane child = new StackPane(circle, label);
+            final StackPane child = new StackPane(circle, icon);
             child.setMinSize(40, 40);
             child.setMaxSize(40, 40);
 
@@ -303,11 +308,11 @@ public class ProjectPaneController implements Initializable {
                 final Color.Intensity previousColorIntensity = component.getColorIntensity();
 
                 UndoRedoStack.push(() -> { // Perform
-                    component.setColor(color.color);
                     component.setColorIntensity(color.intensity);
+                    component.setColor(color.color);
                 }, () -> { // Undo
-                    component.setColor(previousColor);
                     component.setColorIntensity(previousColorIntensity);
+                    component.setColor(previousColor);
                 }, String.format("Changed the color of component %s to %s", component.getName(), color.color.name()), "color-lens");
 
             });
