@@ -203,6 +203,20 @@ public class DropDownMenu {
             }
         });
 
+        final FontIcon icon = new FontIcon();
+        icon.setIconLiteral("gmi-chevron-right");
+        icon.setFill(Color.GREY.getColor(Color.Intensity.I600));
+        icon.setIconSize(20);
+
+        final StackPane iconContainer = new StackPane(icon);
+        iconContainer.setMaxWidth(20);
+        iconContainer.setMaxHeight(20);
+        iconContainer.setStyle("-fx-padding: 8;");
+        iconContainer.setMouseTransparent(true);
+
+        rippler.getChildren().add(iconContainer);
+        StackPane.setAlignment(iconContainer, Pos.CENTER_RIGHT);
+
         list.getChildren().add(rippler);
     }
 
