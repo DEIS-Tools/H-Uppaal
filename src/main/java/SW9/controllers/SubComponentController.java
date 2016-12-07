@@ -1,6 +1,7 @@
 package SW9.controllers;
 
 import SW9.abstractions.Component;
+import SW9.abstractions.SubComponent;
 import SW9.presentations.CanvasPresentation;
 import SW9.utility.helpers.NewDragHelper;
 import javafx.beans.property.ObjectProperty;
@@ -18,8 +19,7 @@ import java.util.ResourceBundle;
 
 public class SubComponentController implements Initializable {
 
-    private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
-
+    private final ObjectProperty<SubComponent> subComponent = new SimpleObjectProperty<>(null);
     private final ObjectProperty<Component> parentComponent = new SimpleObjectProperty<>(null);
 
     public BorderPane toolbar;
@@ -30,16 +30,15 @@ public class SubComponentController implements Initializable {
     public Pane modelContainer;
     public Line line1;
     public Line line2;
-    public Label x;
-    public Label y;
     public Pane defaultLocationsContainer;
-    private double previousX;
 
+    private double previousX;
     private double previousY;
     private boolean wasDragged;
+
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        component.addListener((obs, oldComponent, newComponent) -> {
+        subComponent.addListener((obs, oldComponent, newComponent) -> {
             // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width fromP the presentation into the abstraction
         });
 
@@ -47,37 +46,34 @@ public class SubComponentController implements Initializable {
     }
 
     private void makeDraggable() {
-
-
         NewDragHelper.makeDraggable(
                 root,
                 () -> CanvasPresentation.mouseTracker.gridXProperty().subtract(getParentComponent().xProperty()).get(),
                 () -> CanvasPresentation.mouseTracker.gridYProperty().subtract(getParentComponent().yProperty()).get()
         );
-
     }
 
-    public Component getComponent() {
-        return component.get();
+    public SubComponent getSubComponent() {
+        return subComponent.get();
     }
 
-    public void setComponent(final Component component) {
-        this.component.set(component);
+    public void setSubComponent(final SubComponent subComponent) {
+        this.subComponent.set(subComponent);
     }
 
-    public ObjectProperty<Component> componentProperty() {
-        return component;
+    public ObjectProperty<SubComponent> subComponentProperty() {
+        return subComponent;
     }
 
     public Component getParentComponent() {
         return parentComponent.get();
     }
 
-    public ObjectProperty<Component> parentComponentProperty() {
-        return parentComponent;
-    }
-
     public void setParentComponent(final Component parentComponent) {
         this.parentComponent.set(parentComponent);
+    }
+
+    public ObjectProperty<Component> parentComponentProperty() {
+        return parentComponent;
     }
 }

@@ -91,6 +91,14 @@ public class HUPPAAL extends Application {
 
         // Load the project from disk
         for (final File file : projectFolder.listFiles()) {
+            if (!file.getName().equals("Queries.json")) {
+                final Component componentFromFile = new Component(file.getName().replace(".json", ""));
+                getProject().getComponents().add(componentFromFile);
+            }
+        }
+
+        // Load the project from disk
+        for (final File file : projectFolder.listFiles()) {
             final Scanner scanner = new Scanner(file);
             final String fileContent = scanner.useDelimiter("\\A").next();
             scanner.close(); // Put this call in a finally block
@@ -104,8 +112,8 @@ public class HUPPAAL extends Application {
                     getProject().getQueries().add(newQuery);
                 });
             } else {
-                final Component componentFromFile = new Component(element.getAsJsonObject());
-                getProject().getComponents().add(componentFromFile);
+                final Component componentFromFile = HUPPAAL.getProject().getComponents().filtered(component -> component.getName().equals(file.getName().replace(".json", ""))).get(0);
+                componentFromFile.deserialize(element.getAsJsonObject());
             }
         }
 

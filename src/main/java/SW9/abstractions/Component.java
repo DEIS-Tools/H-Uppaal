@@ -23,6 +23,7 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     private static final String LOCATIONS = "locations";
     private static final String INITIAL_LOCATION = "initialLocation";
     private static final String FINAL_LOCATION = "finalLocation";
+    private static final String SUBCOMPONENTS = "subcomponents";
     private static final String EDGES = "edges";
     private static final String X = "x";
     private static final String Y = "y";
@@ -38,7 +39,7 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     private final ObservableList<Edge> edges = FXCollections.observableArrayList();
     private final ObjectProperty<Location> initialLocation = new SimpleObjectProperty<>();
     private final ObjectProperty<Location> finalLocation = new SimpleObjectProperty<>();
-    private final ObservableList<Component> subComponents = FXCollections.observableArrayList();
+    private final ObservableList<SubComponent> subComponents = FXCollections.observableArrayList();
     private final BooleanProperty isMain = new SimpleBooleanProperty(false);
 
     // Styling properties
@@ -82,6 +83,7 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     }
 
     public void setName(final String name) {
+        this.name.unbind();
         this.name.set(name);
     }
 
@@ -241,15 +243,15 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         return finalLocation;
     }
 
-    public ObservableList<Component> getSubComponents() {
+    public ObservableList<SubComponent> getSubComponents() {
         return subComponents;
     }
 
-    public boolean addSubComponent(final Component component) {
+    public boolean addSubComponent(final SubComponent component) {
         return subComponents.add(component);
     }
 
-    public boolean removeSubComponent(final Component component) {
+    public boolean removeSubComponent(final SubComponent component) {
         return subComponents.remove(component);
     }
 
@@ -287,6 +289,10 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         result.add(INITIAL_LOCATION, getInitialLocation().serialize());
         result.add(FINAL_LOCATION, getFinalLocation().serialize());
 
+        final JsonArray subComponents = new JsonArray();
+        getSubComponents().forEach(subComponent -> subComponents.add(subComponent.serialize()));
+        result.add(SUBCOMPONENTS, subComponents);
+
         final JsonArray edges = new JsonArray();
         getEdges().forEach(edge -> edges.add(edge.serialize()));
         result.add(EDGES, edges);
@@ -315,6 +321,11 @@ public class Component implements Serializable, DropDownMenu.HasColor {
 
         final Location newFinalLocation = new Location(json.getAsJsonObject(FINAL_LOCATION));
         setFinalLocation(newFinalLocation);
+
+        json.getAsJsonArray(SUBCOMPONENTS).forEach(jsonElement -> {
+            final SubComponent newSubComponent = new SubComponent((JsonObject) jsonElement);
+            subComponents.add(newSubComponent);
+        });
 
         json.getAsJsonArray(EDGES).forEach(jsonElement -> {
             final Edge newEdge = new Edge((JsonObject) jsonElement, this);
