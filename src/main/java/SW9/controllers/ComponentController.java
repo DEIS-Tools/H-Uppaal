@@ -1,10 +1,7 @@
 package SW9.controllers;
 
 import SW9.HUPPAAL;
-import SW9.abstractions.Component;
-import SW9.abstractions.Edge;
-import SW9.abstractions.Location;
-import SW9.abstractions.Nail;
+import SW9.abstractions.*;
 import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
@@ -53,7 +50,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
     private final Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
     private final Map<Location, LocationPresentation> locationPresentationMap = new HashMap<>();
-    private final Map<Component, SubComponentPresentation> subComponentPresentationMap = new HashMap<>();
+    private final Map<SubComponent, SubComponentPresentation> subComponentPresentationMap = new HashMap<>();
     public BorderPane toolbar;
     public Rectangle background;
     public TextArea declaration;
@@ -127,12 +124,12 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
             root.layoutXProperty().set(newComponent.getX());
             root.layoutYProperty().set(newComponent.getY());
-            newComponent.xProperty().bind(root.layoutXProperty());
-            newComponent.yProperty().bind(root.layoutYProperty());
+            newComponent.xProperty().bindBidirectional(root.layoutXProperty());
+            newComponent.yProperty().bindBidirectional(root.layoutYProperty());
 
             // Bind the declarations of the abstraction the the view
             declaration.setText(newComponent.getDeclarations());
-            newComponent.declarationsProperty().bind(declaration.textProperty());
+            newComponent.declarationsProperty().bindBidirectional(declaration.textProperty());
 
             initializeEdgeHandling(newComponent);
             initializeLocationHandling(newComponent);
@@ -180,12 +177,14 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                     subMenu.addClickableListElement(c.getName(), event -> {
                         dropDownMenu.close();
 
+                        final SubComponent newSubComponent = new SubComponent(c);
+
                         // Add a new sub-component
                         UndoRedoStack.push(() -> { // Perform
-                            component.addSubComponent(c);
+                            component.addSubComponent(newSubComponent);
                         }, () -> { // Undo
-                            component.removeSubComponent(c);
-                        }, "Added sub-component '" + c.getName() + "' to component '" + component.getName() + "'", "add-circle");
+                            component.removeSubComponent(newSubComponent);
+                        }, "Added sub-component '" + newSubComponent.toString() + "' to component '" + component.getName() + "'", "add-circle");
                     });
                 }
             });
@@ -289,17 +288,17 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         newComponent.getEdges().forEach(handleAddedEdge);
     }
 
-    private void initializeSubComponentHandling(final Component newComponent) {
-        final Consumer<Component> handleAddedSubComponent = component -> {
-            final SubComponentPresentation subComponentPresentation = new SubComponentPresentation(component, getComponent());
-            subComponentPresentationMap.put(component, subComponentPresentation);
+    private void initializeSubComponentHandling(final Component newSubComponent) {
+        final Consumer<SubComponent> handleAddedSubComponent = subComponent -> {
+            final SubComponentPresentation subComponentPresentation = new SubComponentPresentation(subComponent, getComponent());
+            subComponentPresentationMap.put(subComponent, subComponentPresentation);
             modelContainer.getChildren().add(subComponentPresentation);
         };
 
-        // React on addition of edges to the component
-        newComponent.getSubComponents().addListener(new ListChangeListener<Component>() {
+        // React on addition of sub components to the component
+        newSubComponent.getSubComponents().addListener(new ListChangeListener<SubComponent>() {
             @Override
-            public void onChanged(final Change<? extends Component> c) {
+            public void onChanged(final Change<? extends SubComponent> c) {
                 if (c.next()) {
                     // SubComponents are added to the component
                     c.getAddedSubList().forEach(handleAddedSubComponent::accept);
@@ -313,7 +312,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             }
         });
 
-        newComponent.getSubComponents().forEach(handleAddedSubComponent);
+        newSubComponent.getSubComponents().forEach(handleAddedSubComponent);
 
         makeDraggable();
     }

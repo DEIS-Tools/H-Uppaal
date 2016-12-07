@@ -1,6 +1,7 @@
 package SW9.presentations;
 
 import SW9.abstractions.Component;
+import SW9.abstractions.SubComponent;
 import SW9.controllers.SubComponentController;
 import SW9.utility.colors.Color;
 import javafx.beans.property.BooleanProperty;
@@ -31,7 +32,7 @@ public class SubComponentPresentation extends StackPane {
     private LocationPresentation initialLocationPresentation = null;
     private LocationPresentation finalLocationPresentation = null;
 
-    public SubComponentPresentation(final Component component, final Component parentComponent) {
+    public SubComponentPresentation(final SubComponent subComponent, final Component parentComponent) {
         final URL location = this.getClass().getResource("SubComponentPresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();
@@ -49,8 +50,13 @@ public class SubComponentPresentation extends StackPane {
             setMaxHeight(CORNER_SIZE * 2);
 
             controller = fxmlLoader.getController();
-            controller.setComponent(component);
+            controller.setSubComponent(subComponent);
             controller.setParentComponent(parentComponent);
+
+            setLayoutX(subComponent.getX());
+            setLayoutY(subComponent.getY());
+            layoutXProperty().bindBidirectional(subComponent.xProperty());
+            layoutYProperty().bindBidirectional(subComponent.yProperty());
 
             initializeDefaultLocationsContainer();
             initializeToolbar();
@@ -77,16 +83,16 @@ public class SubComponentPresentation extends StackPane {
         }
 
         // Instantiate views for the initial and final location
-        final Component component = controller.getComponent();
-        initialLocationPresentation = new LocationPresentation(component.getInitialLocation(), component, false);
-        finalLocationPresentation = new LocationPresentation(component.getFinalLocation(), component, false);
+        final SubComponent subComponent = controller.getSubComponent();
+        initialLocationPresentation = new LocationPresentation(subComponent.getComponent().getInitialLocation(), subComponent.getComponent(), false);
+        finalLocationPresentation = new LocationPresentation(subComponent.getComponent().getFinalLocation(), subComponent.getComponent(), false);
 
         // Add the locations to the view
         controller.defaultLocationsContainer.getChildren().addAll(initialLocationPresentation, finalLocationPresentation);
     }
 
     private void initializeName() {
-        final Component component = controller.getComponent();
+        final SubComponent subComponent = controller.getSubComponent();
         final BooleanProperty initialized = new SimpleBooleanProperty(false);
 
         controller.name.focusedProperty().addListener((observable, oldValue, newValue) -> {
@@ -98,18 +104,18 @@ public class SubComponentPresentation extends StackPane {
 
 
         // Set the text field to the name in the model, and bind the model to the text field
-        controller.name.setText(component.getName());
-        component.nameProperty().bind(controller.name.textProperty());
+        controller.name.setText(subComponent.getComponent().getName());
+        subComponent.getComponent().nameProperty().bind(controller.name.textProperty());
 
         final Runnable updateColor = () -> {
-            final Color color = component.getColor();
-            final Color.Intensity colorIntensity = component.getColorIntensity();
+            final Color color = subComponent.getComponent().getColor();
+            final Color.Intensity colorIntensity = subComponent.getComponent().getColorIntensity();
 
             // Set the text color for the label
             controller.name.setStyle("-fx-text-fill: " + color.getTextColorRgbaString(colorIntensity) + ";");
         };
 
-        controller.getComponent().colorProperty().addListener(observable -> updateColor.run());
+        controller.getSubComponent().getComponent().colorProperty().addListener(observable -> updateColor.run());
         updateColor.run();
 
         // Center the text vertically and aff a left padding of CORNER_SIZE
@@ -117,7 +123,7 @@ public class SubComponentPresentation extends StackPane {
     }
 
     private void initializeInitialLocation() {
-        initialLocationPresentation.setLocation(controller.getComponent().getInitialLocation());
+        initialLocationPresentation.setLocation(controller.getSubComponent().getComponent().getInitialLocation());
         initialLocationPresentation.layoutXProperty().unbind();
         initialLocationPresentation.layoutYProperty().unbind();
         initialLocationPresentation.setLayoutX(CORNER_SIZE / 2 + 1);
@@ -127,7 +133,7 @@ public class SubComponentPresentation extends StackPane {
     }
 
     private void initializeFinalLocation() {
-        final Component component = controller.getComponent();
+        final Component component = controller.getSubComponent().getComponent();
 
         finalLocationPresentation.setLocation(component.getFinalLocation());
         finalLocationPresentation.layoutXProperty().unbind();
@@ -139,7 +145,7 @@ public class SubComponentPresentation extends StackPane {
     }
 
     private void initializeToolbar() {
-        final Component component = controller.getComponent();
+        final Component component = controller.getSubComponent().getComponent();
 
         final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
             // Set the background of the toolbar
@@ -152,13 +158,13 @@ public class SubComponentPresentation extends StackPane {
             controller.toolbar.setPrefHeight(TOOL_BAR_HEIGHT);
         };
 
-        controller.getComponent().colorProperty().addListener(observable -> updateColor.accept(component.getColor(), component.getColorIntensity()));
+        component.colorProperty().addListener(observable -> updateColor.accept(component.getColor(), component.getColorIntensity()));
 
         updateColor.accept(component.getColor(), component.getColorIntensity());
     }
 
     private void initializeFrame() {
-        final Component component = controller.getComponent();
+        final Component component = controller.getSubComponent().getComponent();
 
         final Shape[] mask = new Shape[1];
         final Rectangle rectangle = new Rectangle(getMinWidth(), getMinHeight());
@@ -221,7 +227,7 @@ public class SubComponentPresentation extends StackPane {
     }
 
     private void initializeBackground() {
-        final Component component = controller.getComponent();
+        final Component component = controller.getSubComponent().getComponent();
 
         // Bind the background width and height to the values in the model
         controller.background.widthProperty().bind(minWidthProperty());

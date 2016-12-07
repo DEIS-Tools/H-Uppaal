@@ -61,10 +61,10 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             setMaxWidth(component.getWidth());
             setMinHeight(component.getHeight());
             setMaxHeight(component.getHeight());
-            minHeightProperty().bind(component.heightProperty());
-            maxHeightProperty().bind(component.heightProperty());
-            minWidthProperty().bind(component.widthProperty());
-            maxWidthProperty().bind(component.widthProperty());
+            minHeightProperty().bindBidirectional(component.heightProperty());
+            maxHeightProperty().bindBidirectional(component.heightProperty());
+            minWidthProperty().bindBidirectional(component.widthProperty());
+            maxWidthProperty().bindBidirectional(component.widthProperty());
 
             controller = fxmlLoader.getController();
             controller.setComponent(component);
@@ -78,12 +78,12 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
                 initializeInitialLocation();
                 initializeFinalLocation();
                 initializeBackground();
-                initializeName();
             };
 
+            initializeName();
+            initializeDragAnchors();
             onUpdateSize.run();
 
-            initializeDragAnchors();
 
             // Re run initialisation on update of width and height property
             component.widthProperty().addListener(observable -> {
@@ -217,10 +217,12 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             }
         });
 
-
         // Set the text field to the name in the model, and bind the model to the text field
         controller.name.setText(component.getName());
-        component.nameProperty().bind(controller.name.textProperty());
+        controller.name.textProperty().addListener((obs, oldName, newName) -> {
+            component.nameProperty().unbind();
+            component.setName(newName);
+        });
 
         final Runnable updateColor = () -> {
             final Color color = component.getColor();
@@ -360,8 +362,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         final Component component = controller.getComponent();
 
         // Bind the background width and height to the values in the model
-        controller.background.widthProperty().bind(component.widthProperty());
-        controller.background.heightProperty().bind(component.heightProperty());
+        controller.background.widthProperty().bindBidirectional(component.widthProperty());
+        controller.background.heightProperty().bindBidirectional(component.heightProperty());
 
         final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
             // Set the background color to the lightest possible version of the color
