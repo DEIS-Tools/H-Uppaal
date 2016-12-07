@@ -258,7 +258,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                     for (int i = 0; i < neededNails; i++) {
                         final double x = unfinishedEdge.getSourceLocation().getX();
                         final double y = unfinishedEdge.getSourceLocation().getY() + GRID_SIZE * 2 * i + 2 * GRID_SIZE;
-                        unfinishedEdge.addNail(new Nail(x, y));
+                        unfinishedEdge.insertNailAt(new Nail(x, y), i);
                     }
                 } else {
                     int newNailsAdded = 0; // How many nails have been added after completion
