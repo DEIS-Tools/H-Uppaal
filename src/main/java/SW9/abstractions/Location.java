@@ -71,12 +71,12 @@ public class Location implements Circular, Serializable {
         return id.get();
     }
 
-    public StringProperty idProperty() {
-        return id;
-    }
-
     public void setId(String id) {
         this.id.set(id);
+    }
+
+    public StringProperty idProperty() {
+        return id;
     }
 
     public String getInvariant() {
@@ -193,48 +193,48 @@ public class Location implements Circular, Serializable {
         return nicknameX.get();
     }
 
-    public DoubleProperty nicknameXProperty() {
-        return nicknameX;
-    }
-
     public void setNicknameX(final double nicknameX) {
         this.nicknameX.set(nicknameX);
+    }
+
+    public DoubleProperty nicknameXProperty() {
+        return nicknameX;
     }
 
     public double getNicknameY() {
         return nicknameY.get();
     }
 
-    public DoubleProperty nicknameYProperty() {
-        return nicknameY;
-    }
-
     public void setNicknameY(final double nicknameY) {
         this.nicknameY.set(nicknameY);
+    }
+
+    public DoubleProperty nicknameYProperty() {
+        return nicknameY;
     }
 
     public double getInvariantX() {
         return invariantX.get();
     }
 
-    public DoubleProperty invariantXProperty() {
-        return invariantX;
-    }
-
     public void setInvariantX(final double invariantX) {
         this.invariantX.set(invariantX);
+    }
+
+    public DoubleProperty invariantXProperty() {
+        return invariantX;
     }
 
     public double getInvariantY() {
         return invariantY.get();
     }
 
-    public DoubleProperty invariantYProperty() {
-        return invariantY;
-    }
-
     public void setInvariantY(final double invariantY) {
         this.invariantY.set(invariantY);
+    }
+
+    public DoubleProperty invariantYProperty() {
+        return invariantY;
     }
 
     @Override
@@ -271,8 +271,8 @@ public class Location implements Circular, Serializable {
 
         final EnabledColor enabledColor = EnabledColor.fromIdentifier(json.getAsJsonPrimitive(COLOR).getAsString());
         if (enabledColor != null) {
-            setColor(enabledColor.color);
             setColorIntensity(enabledColor.intensity);
+            setColor(enabledColor.color);
         }
 
         setNicknameX(json.getAsJsonPrimitive(NICKNAME_X).getAsDouble());
