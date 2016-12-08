@@ -43,7 +43,7 @@
                       visible="false"
                       StackPane.alignment="TOP_CENTER"
                       styleClass="body2-mono"
-                      style="-fx-faint-focus-color: transparent; -fx-focus-color: transparent;"/>
+                      style="-fx-faint-focus-color: transparent; -fx-focus-color: transparent; -fx-padding: 20 0 20 5"/>
         </center>
     </BorderPane>
 
