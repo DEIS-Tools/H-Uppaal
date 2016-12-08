@@ -314,7 +314,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
             // Notify that the location was placed
             root.setPlaced(true);
-            ComponentController.setPlacingLocation(false);
+            ComponentController.setPlacingLocation(null);
             KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_LOCATION);
         }
     }

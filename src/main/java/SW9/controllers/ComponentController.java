@@ -19,7 +19,6 @@ import javafx.animation.Transition;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -47,7 +46,7 @@ import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
 public class ComponentController implements Initializable, SelectHelper.ColorSelectable {
 
-    private static boolean placingLocation = false;
+    private static Location placingLocation = null;
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
     private final Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
     private final Map<Location, LocationPresentation> locationPresentationMap = new HashMap<>();
@@ -70,14 +69,13 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     private MouseTracker mouseTracker;
     private DropDownMenu dropDownMenu;
     private Circle dropDownMenuHelperCircle;
-    private int instanceTest = 0;
     private static final Map<Component,ListChangeListener<Location>> locationListChangeListenerMap = new HashMap<>();
 
     public static boolean isPlacingLocation() {
-        return placingLocation;
+        return placingLocation != null;
     }
 
-    public static void setPlacingLocation(boolean placingLocation) {
+    public static void setPlacingLocation(final Location placingLocation) {
         ComponentController.placingLocation = placingLocation;
     }
 
@@ -86,16 +84,23 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
         // Register a keybind for adding new locations
         KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
-            if(placingLocation) return;
+            if (isPlacingLocation()) return;
 
             final Location newLocation = new Location();
-            placingLocation = true;
+            setPlacingLocation(newLocation);
+
+            UndoRedoStack.push(() -> { // Perform
+                component.get().addLocation(newLocation);
+            }, () -> { // Undo
+                component.get().removeLocation(newLocation);
+            }, "Added new location: " + newLocation.getNickname(), "add-circle");
 
             CanvasController.activeComponentProperty().addListener((observable, oldValue, newValue) -> {
                 if(!newValue.equals(getComponent())) {
-                    component.get().removeLocation(newLocation);
-                    placingLocation = false;
-                    UndoRedoStack.forget();
+                    if (isPlacingLocation()) {
+                        component.get().removeLocation(placingLocation);
+                        UndoRedoStack.forget();
+                    }
                 }
             });
 
@@ -103,22 +108,15 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             newLocation.setColor(getComponent().getColor());
 
             KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
-                component.get().removeLocation(newLocation);
-                UndoRedoStack.forget();
-            }));
+                if (isPlacingLocation()) {
+                    component.get().removeLocation(placingLocation);
+                    UndoRedoStack.forget();
+                }
 
-            UndoRedoStack.push(() -> { // Perform
-                component.get().addLocation(newLocation);
-            }, () -> { // Undo
-                component.get().removeLocation(newLocation);
-            }, "Added new location: " + newLocation.getNickname(), "add-circle");
+            }));
         }));
 
-
         component.addListener((obs, oldComponent, newComponent) -> {
-
-            System.out.println("Test: " + instanceTest);
-            instanceTest++;
             // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width from the presentation into the abstraction
             // Bind the position of the abstraction to the values in the view
 
@@ -219,42 +217,37 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     private void initializeLocationHandling(final Component newComponent) {
         final Consumer<Location> handleAddedLocation = (loc) -> {
             // Create a new presentation, and register it on the map
-            final LocationPresentation newLocationPresentation = new LocationPresentation(loc, getComponent());
+            final LocationPresentation newLocationPresentation = new LocationPresentation(loc, newComponent);
             locationPresentationMap.put(loc, newLocationPresentation);
 
             // Add it to the view
             modelContainer.getChildren().add(newLocationPresentation);
 
             // Bind the newly created location to the mouse and tell the ui that it is not placed yet
-
+            if (loc.getX() == 0) {
                 newLocationPresentation.setPlaced(false);
-                BindingHelper.bind(loc, getComponent().xProperty(), getComponent().yProperty());
-
+                BindingHelper.bind(loc, newComponent.xProperty(), newComponent.yProperty());
+            }
         };
-        System.out.println(locationListChangeListenerMap.size());
+
         if(locationListChangeListenerMap.containsKey(newComponent)) {
             newComponent.getLocations().removeListener(locationListChangeListenerMap.get(newComponent));
         }
         final ListChangeListener<Location> locationListChangeListener = c -> {
             if (c.next()) {
                 // Locations are added to the component
-                c.getAddedSubList().forEach((location) -> {
-                    handleAddedLocation.accept(location);
-                    System.out.println("added listener" + c);
-                });
+                c.getAddedSubList().forEach(handleAddedLocation::accept);
 
                 // Locations are removed from the component
                 c.getRemoved().forEach(location -> {
                     final LocationPresentation locationPresentation = locationPresentationMap.get(location);
                     modelContainer.getChildren().remove(locationPresentation);
                     locationPresentationMap.remove(location);
-                    System.out.println("removed listener");
                 });
             }
         };
         newComponent.getLocations().addListener(locationListChangeListener);
         locationListChangeListenerMap.put(newComponent, locationListChangeListener);
-
 
         newComponent.getLocations().forEach(handleAddedLocation);
     }
