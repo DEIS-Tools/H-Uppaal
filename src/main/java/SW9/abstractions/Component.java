@@ -25,6 +25,7 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     private static final String FINAL_LOCATION = "finalLocation";
     private static final String SUBCOMPONENTS = "subcomponents";
     private static final String EDGES = "edges";
+    private static final String IS_MAIN = "main";
     private static final String X = "x";
     private static final String Y = "y";
     private static final String WIDTH = "width";
@@ -297,6 +298,8 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         getEdges().forEach(edge -> edges.add(edge.serialize()));
         result.add(EDGES, edges);
 
+        result.addProperty(IS_MAIN, isIsMain());
+
         result.addProperty(X, getX());
         result.addProperty(Y, getY());
         result.addProperty(WIDTH, getWidth());
@@ -331,6 +334,8 @@ public class Component implements Serializable, DropDownMenu.HasColor {
             final Edge newEdge = new Edge((JsonObject) jsonElement, this);
             edges.add(newEdge);
         });
+
+        setIsMain(json.getAsJsonPrimitive(IS_MAIN).getAsBoolean());
 
         setX(json.getAsJsonPrimitive(X).getAsDouble());
         setY(json.getAsJsonPrimitive(Y).getAsDouble());
