@@ -19,6 +19,7 @@ import javafx.animation.Transition;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -69,6 +70,8 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     private MouseTracker mouseTracker;
     private DropDownMenu dropDownMenu;
     private Circle dropDownMenuHelperCircle;
+    private int instanceTest = 0;
+    private static final Map<Component,ListChangeListener<Location>> locationListChangeListenerMap = new HashMap<>();
 
     public static boolean isPlacingLocation() {
         return placingLocation;
@@ -113,6 +116,9 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
 
         component.addListener((obs, oldComponent, newComponent) -> {
+
+            System.out.println("Test: " + instanceTest);
+            instanceTest++;
             // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width from the presentation into the abstraction
             // Bind the position of the abstraction to the values in the view
 
@@ -220,28 +226,35 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             modelContainer.getChildren().add(newLocationPresentation);
 
             // Bind the newly created location to the mouse and tell the ui that it is not placed yet
-            if (loc.getX() == 0) {
+
                 newLocationPresentation.setPlaced(false);
                 BindingHelper.bind(loc, getComponent().xProperty(), getComponent().yProperty());
+
+        };
+        System.out.println(locationListChangeListenerMap.size());
+        if(locationListChangeListenerMap.containsKey(newComponent)) {
+            newComponent.getLocations().removeListener(locationListChangeListenerMap.get(newComponent));
+        }
+        final ListChangeListener<Location> locationListChangeListener = c -> {
+            if (c.next()) {
+                // Locations are added to the component
+                c.getAddedSubList().forEach((location) -> {
+                    handleAddedLocation.accept(location);
+                    System.out.println("added listener" + c);
+                });
+
+                // Locations are removed from the component
+                c.getRemoved().forEach(location -> {
+                    final LocationPresentation locationPresentation = locationPresentationMap.get(location);
+                    modelContainer.getChildren().remove(locationPresentation);
+                    locationPresentationMap.remove(location);
+                    System.out.println("removed listener");
+                });
             }
         };
+        newComponent.getLocations().addListener(locationListChangeListener);
+        locationListChangeListenerMap.put(newComponent, locationListChangeListener);
 
-        newComponent.getLocations().addListener(new ListChangeListener<Location>() {
-            @Override
-            public void onChanged(final Change<? extends Location> c) {
-                if (c.next()) {
-                    // Locations are added to the component
-                    c.getAddedSubList().forEach(handleAddedLocation);
-
-                    // Locations are removed from the component
-                    c.getRemoved().forEach(location -> {
-                        final LocationPresentation locationPresentation = locationPresentationMap.get(location);
-                        modelContainer.getChildren().remove(locationPresentation);
-                        locationPresentationMap.remove(location);
-                    });
-                }
-            }
-        });
 
         newComponent.getLocations().forEach(handleAddedLocation);
     }
