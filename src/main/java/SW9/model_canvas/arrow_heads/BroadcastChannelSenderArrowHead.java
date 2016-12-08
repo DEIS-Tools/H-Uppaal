@@ -104,4 +104,14 @@ public class BroadcastChannelSenderArrowHead extends ChannelSenderArrowHead {
     public void unmark() {
         // TODO: Not implemented yet
     }
+
+    @Override
+    public double getX() {
+        return xProperty().get();
+    }
+
+    @Override
+    public double getY() {
+        return yProperty().get();
+    }
 }

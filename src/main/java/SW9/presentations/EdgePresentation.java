@@ -68,12 +68,12 @@ public class EdgePresentation extends Group {
 
         final Runnable updatePlacement = () -> {
             // todo: calculate the placement differently if source = target
-            if (edge.getSourceLocation().equals(edge.getTargetLocation())) return;
+            if (edge.getSourceCircular().equals(edge.getTargetLocation())) return;
 
             if (edge.getTargetLocation() == null) return;
-            final double x1 = edge.getSourceLocation().getX();
+            final double x1 = edge.getSourceCircular().getX();
             final double x2 = edge.getTargetLocation().getX();
-            final double y1 = edge.getSourceLocation().getY();
+            final double y1 = edge.getSourceCircular().getY();
             final double y2 = edge.getTargetLocation().getY();
             final double m = (y2 - y1) / (x2 - x1);
             final double angle = Math.atan(m);
@@ -96,8 +96,8 @@ public class EdgePresentation extends Group {
         };
 
         edge.sourceLocationProperty().addListener(observable -> {
-            edge.getSourceLocation().xProperty().addListener(observable1 -> updatePlacement.run());
-            edge.getSourceLocation().yProperty().addListener(observable1 -> updatePlacement.run());
+            edge.getSourceCircular().xProperty().addListener(observable1 -> updatePlacement.run());
+            edge.getSourceCircular().yProperty().addListener(observable1 -> updatePlacement.run());
         });
 
         edge.targetLocationProperty().addListener(observable -> {
@@ -105,8 +105,8 @@ public class EdgePresentation extends Group {
             edge.getTargetLocation().yProperty().addListener(observable1 -> updatePlacement.run());
         });
 
-        edge.getSourceLocation().xProperty().addListener(obs -> updatePlacement.run());
-        edge.getSourceLocation().yProperty().addListener(obs -> updatePlacement.run());
+        edge.getSourceCircular().xProperty().addListener(obs -> updatePlacement.run());
+        edge.getSourceCircular().yProperty().addListener(obs -> updatePlacement.run());
 
         if (edge.getTargetLocation() == null) return;
         edge.getTargetLocation().xProperty().addListener(obs -> updatePlacement.run());

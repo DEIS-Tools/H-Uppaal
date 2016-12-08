@@ -80,4 +80,14 @@ public class SimpleArrowHead extends ArrowHead implements SelectHelper.Selectabl
         leftArrow.setStroke(SelectHelper.getBorderColor());
         rightArrow.setStroke(SelectHelper.getBorderColor());
     }
+
+    @Override
+    public double getX() {
+        return xProperty().get();
+    }
+
+    @Override
+    public double getY() {
+        return yProperty().get();
+    }
 }

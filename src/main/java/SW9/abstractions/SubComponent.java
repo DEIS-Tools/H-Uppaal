@@ -1,11 +1,12 @@
 package SW9.abstractions;
 
 import SW9.HUPPAAL;
+import SW9.utility.helpers.Circular;
 import SW9.utility.serialize.Serializable;
 import com.google.gson.JsonObject;
 import javafx.beans.property.*;
 
-public class SubComponent implements Serializable {
+public class SubComponent implements Serializable, Circular {
 
     private static final String COMPONENT = "component";
     private static final String IDENTIFIER = "identifier";
@@ -135,5 +136,15 @@ public class SubComponent implements Serializable {
         setY(json.getAsJsonPrimitive(Y).getAsDouble());
         setWidth(json.getAsJsonPrimitive(WIDTH).getAsDouble());
         setHeight(json.getAsJsonPrimitive(HEIGHT).getAsDouble());
+    }
+
+    @Override
+    public DoubleProperty radiusProperty() {
+        return new SimpleDoubleProperty(10);
+    }
+
+    @Override
+    public DoubleProperty scaleProperty() {
+        return new SimpleDoubleProperty(10);
     }
 }

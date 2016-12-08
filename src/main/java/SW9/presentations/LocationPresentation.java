@@ -419,6 +419,16 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     }
 
     @Override
+    public double getX() {
+        return xProperty().get();
+    }
+
+    @Override
+    public double getY() {
+        return yProperty().get();
+    }
+
+    @Override
     public MouseTracker getMouseTracker() {
         return mouseTracker;
     }

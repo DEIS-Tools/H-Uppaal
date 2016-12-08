@@ -47,4 +47,14 @@ public class ChannelReceiverArrowHead extends ArrowHead {
     public void unmark() {
 
     }
+
+    @Override
+    public double getX() {
+        return xProperty().get();
+    }
+
+    @Override
+    public double getY() {
+        return yProperty().get();
+    }
 }

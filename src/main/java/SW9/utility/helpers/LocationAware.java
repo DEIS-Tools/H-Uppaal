@@ -6,4 +6,8 @@ public interface LocationAware {
     DoubleProperty xProperty();
 
     DoubleProperty yProperty();
+
+    double getX();
+
+    double getY();
 }
