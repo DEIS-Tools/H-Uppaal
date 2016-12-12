@@ -159,7 +159,7 @@
                 <ScrollPane fx:id="errorsScrollPane"
                             fitToHeight="true" fitToWidth="true"
                             styleClass="edge-to-edge">
-                    <VBox fx:id="errorsList"/>
+                    <VBox fx:id="errorsList" style="-fx-padding: 10"/>
                 </ScrollPane>
             </Tab>
 
@@ -167,7 +167,7 @@
                 <ScrollPane fx:id="warningsScrollPane"
                             fitToHeight="true" fitToWidth="true"
                             styleClass="edge-to-edge">
-                    <VBox fx:id="warningsList"/>
+                    <VBox fx:id="warningsList" style="-fx-padding: 10"/>
                 </ScrollPane>
             </Tab>
 
