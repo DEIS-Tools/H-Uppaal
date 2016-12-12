@@ -4,6 +4,7 @@ import SW9.utility.colors.Color;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -16,7 +17,11 @@ import static javafx.scene.paint.Color.TRANSPARENT;
 
 public class MessagePresentation extends HBox {
 
-    public MessagePresentation() {
+    private final String message;
+
+    public MessagePresentation(final String message) {
+        this.message = message;
+
         final URL location = this.getClass().getResource("MessagePresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();
@@ -29,10 +34,16 @@ public class MessagePresentation extends HBox {
 
             // Initialize here
             initializeHover();
+            initializeMessage();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeMessage() {
+        final Label messageLabel = (Label) lookup("#messageLabel");
+        messageLabel.setText(message);
     }
 
     private void initializeHover() {

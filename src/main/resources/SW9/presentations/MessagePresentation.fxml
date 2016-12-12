@@ -5,7 +5,7 @@
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="HBox" style="-fx-padding: 3;">
 
-    <Label>
+    <Label fx:id="messageLabel">
         Det gik galt lige her: true == false
     </Label>
 

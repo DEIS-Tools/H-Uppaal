@@ -7,10 +7,7 @@ import SW9.abstractions.Location;
 import SW9.abstractions.Nail;
 import SW9.backend.UPPAALDriver;
 import SW9.code_analysis.CodeAnalysis;
-import SW9.presentations.CanvasPresentation;
-import SW9.presentations.HUPPAALPresentation;
-import SW9.presentations.ProjectPanePresentation;
-import SW9.presentations.QueryPanePresentation;
+import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.EnabledColor;
 import SW9.utility.helpers.SelectHelper;
@@ -43,9 +40,8 @@ import javafx.util.Pair;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class HUPPAALController implements Initializable {
 
@@ -114,7 +110,7 @@ public class HUPPAALController implements Initializable {
         }));
 
         KeyboardTracker.registerKeybind("DEBUGGING_ERROR", new Keybind(new KeyCodeCombination(KeyCode.E), () -> {
-            CodeAnalysis.addMessage(CanvasController.getActiveComponent(), new CodeAnalysis.Message("An error", CodeAnalysis.MessageType.WARNING));
+            CodeAnalysis.addMessage(CanvasController.getActiveComponent(), new CodeAnalysis.Message("An error", CodeAnalysis.MessageType.ERROR));
         }));
 
         dialog.setDialogContainer(dialogContainer);
@@ -166,6 +162,40 @@ public class HUPPAALController implements Initializable {
         });
 
         initializeTabPane();
+        initializeMessages();
+    }
+
+    private void initializeMessages() {
+        final Map<Component, MessageCollectionPresentation> componentMessageCollectionPresentationMapForErrors = new HashMap<>();
+        final Map<Component, MessageCollectionPresentation> componentMessageCollectionPresentationMapForWarnings = new HashMap<>();
+
+        final Consumer<Component> addComponent = (component) -> {
+            final MessageCollectionPresentation messageCollectionPresentationErrors = new MessageCollectionPresentation(component, CodeAnalysis.getErrors(component));
+            componentMessageCollectionPresentationMapForErrors.put(component, messageCollectionPresentationErrors);
+            errorsList.getChildren().add(messageCollectionPresentationErrors);
+
+            final MessageCollectionPresentation messageCollectionPresentationWarnings = new MessageCollectionPresentation(component, CodeAnalysis.getWarnings(component));
+            componentMessageCollectionPresentationMapForWarnings.put(component, messageCollectionPresentationWarnings);
+            warningsList.getChildren().add(messageCollectionPresentationWarnings);
+        };
+
+        HUPPAAL.getProject().getComponents().forEach(addComponent);
+        HUPPAAL.getProject().getComponents().addListener(new ListChangeListener<Component>() {
+            @Override
+            public void onChanged(final Change<? extends Component> c) {
+                while (c.next()) {
+                    c.getAddedSubList().forEach(addComponent::accept);
+
+                    c.getRemoved().forEach(component -> {
+                        errorsList.getChildren().remove(componentMessageCollectionPresentationMapForErrors.get(component));
+                        componentMessageCollectionPresentationMapForErrors.remove(component);
+
+                        warningsList.getChildren().remove(componentMessageCollectionPresentationMapForWarnings.get(component));
+                        componentMessageCollectionPresentationMapForWarnings.remove(component);
+                    });
+                }
+            }
+        });
     }
 
     private void initializeTabPane() {

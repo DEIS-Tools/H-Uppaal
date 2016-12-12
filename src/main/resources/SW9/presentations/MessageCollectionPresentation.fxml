@@ -18,7 +18,7 @@
     </HBox>
 
     <HBox translateX="15">
-        <Line endY="100" stroke="pink" strokeWidth="2" id="line"/>
+        <Line endY="16" strokeWidth="2" id="line"/>
         <Region minWidth="24"/>
         <VBox id="children"/>
     </HBox>

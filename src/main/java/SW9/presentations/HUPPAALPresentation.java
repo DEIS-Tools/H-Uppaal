@@ -152,24 +152,6 @@ public class HUPPAALPresentation extends StackPane {
                 }
             }
         });
-
-        // Test to see stuff
-        HUPPAAL.getProject().getComponents().addListener(new InvalidationListener() {
-            @Override
-            public void invalidated(final Observable observable) {
-                controller.errorsList.getChildren().clear();
-
-                HUPPAAL.getProject().getComponents().forEach(component -> {
-                    final MessageCollectionPresentation e = new MessageCollectionPresentation(component);
-                    e.addChild();
-                    e.addChild();
-                    e.addChild();
-
-                    controller.errorsList.getChildren().add(e);
-                });
-
-            }
-        });
     }
 
     private void initializeLogo() {
