@@ -56,7 +56,6 @@ public class MessageCollectionPresentation extends VBox {
             final MessagePresentation messagePresentation = new MessagePresentation(message.getMessage());
             messageMessagePresentationMap.put(message, messagePresentation);
             children.getChildren().add(messagePresentation);
-            System.out.println("jewns");
         };
 
         messages.forEach(addMessage);
