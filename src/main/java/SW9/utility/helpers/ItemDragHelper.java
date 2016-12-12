@@ -14,12 +14,12 @@ import java.util.function.Supplier;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
-public class NewDragHelper {
+public class ItemDragHelper {
 
     public static void makeDraggable(final Node dragSubject,
                                      final Supplier<Double> newX,
                                      final Supplier<Double> newY) {
-        NewDragHelper.makeDraggable(dragSubject, dragSubject, newX, newY, (event) -> {
+        ItemDragHelper.makeDraggable(dragSubject, dragSubject, newX, newY, (event) -> {
         }, () -> {
         }, () -> {
         });

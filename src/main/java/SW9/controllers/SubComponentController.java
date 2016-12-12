@@ -5,7 +5,8 @@ import SW9.abstractions.Edge;
 import SW9.abstractions.SubComponent;
 import SW9.presentations.CanvasPresentation;
 import SW9.utility.UndoRedoStack;
-import SW9.utility.helpers.NewDragHelper;
+import SW9.utility.helpers.ItemDragHelper;
+import SW9.utility.helpers.NailHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXTextField;
@@ -55,7 +56,14 @@ public class SubComponentController implements Initializable {
     private void makeDraggable() {
 
         Consumer<MouseEvent> startEdgeFromSubComponent = (event) -> {
-            if (event.isShiftDown()) {
+
+            final Edge unfinishedEdge = getParentComponent().getUnfinishedEdge();
+
+            if (unfinishedEdge != null) {
+                unfinishedEdge.setTargetSubComponent(getSubComponent());
+                NailHelper.addMissingNails(unfinishedEdge);
+            } else if (event.isShiftDown()) {
+                event.consume();
                 final Edge newEdge = new Edge(getSubComponent());
 
                 KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
@@ -71,7 +79,7 @@ public class SubComponentController implements Initializable {
             }
         };
 
-        NewDragHelper.makeDraggable(
+        ItemDragHelper.makeDraggable(
                 root,
                 root,
                 () -> CanvasPresentation.mouseTracker.gridXProperty().subtract(getParentComponent().xProperty()).get(),

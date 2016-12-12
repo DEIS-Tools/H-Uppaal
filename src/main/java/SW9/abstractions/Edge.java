@@ -40,6 +40,10 @@ public class Edge implements Serializable {
     private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.GREY_BLUE);
     private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I700);
     private final ObservableList<Nail> nails = FXCollections.observableArrayList();
+    
+    // Circulars 
+    private Circular sourceCircular;
+    private Circular targetCircular;
 
     public Edge(final Location sourceLocation) {
         this.sourceLocation.set(sourceLocation);
@@ -192,8 +196,9 @@ public class Edge implements Serializable {
     public Circular getSourceCircular() {
         if(getSourceLocation() != null) {
             return getSourceLocation();
-        } else {
-            return new Circular() {
+        } else if(getSourceSubComponent() != null) {
+            if(sourceCircular != null) return sourceCircular;
+            sourceCircular = new Circular() {
                 DoubleProperty x = new SimpleDoubleProperty();
                 DoubleProperty y = new SimpleDoubleProperty();
                 {
@@ -203,12 +208,12 @@ public class Edge implements Serializable {
 
                 @Override
                 public DoubleProperty radiusProperty() {
-                    return new SimpleDoubleProperty(1.5);
+                    return getSourceSubComponent().getComponent().getFinalLocation().radiusProperty();
                 }
 
                 @Override
                 public DoubleProperty scaleProperty() {
-                    return getSourceSubComponent().scaleProperty();
+                    return getSourceSubComponent().getComponent().getFinalLocation().scaleProperty();
                 }
 
                 @Override
@@ -231,15 +236,58 @@ public class Edge implements Serializable {
                     return yProperty().get();
                 }
             };
+            return sourceCircular;
         }
+        return null;
     }
 
     public Circular getTargetCircular() {
         if(getTargetLocation() != null) {
             return getTargetLocation();
-        } else {
-            return getTargetSubComponent();
+        } else if(getTargetSubComponent() != null) {
+            if(targetCircular != null) return targetCircular;
+            targetCircular = new Circular() {
+                DoubleProperty x = new SimpleDoubleProperty();
+                DoubleProperty y = new SimpleDoubleProperty();
+                {
+                    x.bind(getTargetSubComponent().xProperty().add(GRID_SIZE * 2));
+                    y.bind(getTargetSubComponent().yProperty().add(GRID_SIZE * 2));
+                }
+
+                @Override
+                public DoubleProperty radiusProperty() {
+                    return getTargetSubComponent().getComponent().getInitialLocation().radiusProperty();
+                }
+
+                @Override
+                public DoubleProperty scaleProperty() {
+                    return getTargetSubComponent().getComponent().getInitialLocation().scaleProperty();
+                }
+
+                @Override
+                public DoubleProperty xProperty() {
+                    return x;
+                }
+
+                @Override
+                public DoubleProperty yProperty() {
+                    return y;
+                }
+
+                @Override
+                public double getX() {
+                    return xProperty().get();
+                }
+
+                @Override
+                public double getY() {
+                    return yProperty().get();
+                }
+            };
+
+            return targetCircular;
         }
+        return null;
     }
 
     @Override

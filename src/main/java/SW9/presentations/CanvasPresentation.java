@@ -2,7 +2,7 @@ package SW9.presentations;
 
 import SW9.controllers.CanvasController;
 import SW9.utility.UndoRedoStack;
-import SW9.utility.helpers.DragHelper;
+import SW9.utility.helpers.CanvasDragHelper;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
@@ -67,7 +67,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
 
             */
 
-            DragHelper.makeDraggable(this, mouseEvent -> mouseEvent.getButton().equals(MouseButton.SECONDARY));
+            CanvasDragHelper.makeDraggable(this, mouseEvent -> mouseEvent.getButton().equals(MouseButton.SECONDARY));
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }

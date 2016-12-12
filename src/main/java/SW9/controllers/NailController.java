@@ -9,7 +9,7 @@ import SW9.presentations.ComponentPresentation;
 import SW9.presentations.LocationPresentation;
 import SW9.presentations.NailPresentation;
 import SW9.utility.colors.Color;
-import SW9.utility.helpers.NewDragHelper;
+import SW9.utility.helpers.ItemDragHelper;
 import SW9.utility.helpers.SelectHelper;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -91,7 +91,7 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
             }
         };
 
-        NewDragHelper.makeDraggable(
+        ItemDragHelper.makeDraggable(
                 root,
                 root,
                 supplyX,

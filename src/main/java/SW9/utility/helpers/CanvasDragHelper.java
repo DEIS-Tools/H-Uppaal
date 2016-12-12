@@ -16,7 +16,7 @@ import javafx.scene.layout.Pane;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class DragHelper {
+public class CanvasDragHelper {
 
     public static <T extends Node & MouseTrackable> void makeDraggable(final T subject) {
         makeDraggable(subject, mouseEvent -> true);

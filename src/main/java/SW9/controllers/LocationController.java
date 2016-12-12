@@ -13,6 +13,7 @@ import SW9.presentations.TagPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.Circular;
+import SW9.utility.helpers.NailHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
@@ -226,54 +227,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
             if (unfinishedEdge != null) {
                 unfinishedEdge.setTargetLocation(getLocation());
-                KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_EDGE);
-
-                // Maps index of a nail to a list of potential new nails before that nail
-                final Map<Integer, List<Pair<Double, Double>>> nailIndexToPotentialNewNailsMap = new HashMap<>();
-
-                // Run through all the segments that we have (between all nails, and from the locations of the edge)
-                int nailIndex = 0; // Counts the index of the nail in the edge we find segments for
-                int totalPotentialNails = 0; // A counter to count total amount of new potential nails
-                Circular from = unfinishedEdge.getSourceLocation(); // We start from source locations
-                for (final Nail nail : unfinishedEdge.getNails()) { // Run through all nails
-
-                    // Find the index of the nail at hans
-                    final List<Pair<Double, Double>> potentialNails = getPotentialNailSegments(from, nail);
-                    totalPotentialNails += potentialNails.size(); // Increment the total potential nails
-                    nailIndexToPotentialNewNailsMap.put(nailIndex, potentialNails); // Add potential segment the list to the map
-                    from = nail; // In the next iteration this nail is the start of the segment
-                    nailIndex++;
-                }
-
-                // Find the last segment from the last nail (or source location given no nails) to the target locations
-                final Circular end = unfinishedEdge.getTargetLocation();
-                final List<Pair<Double, Double>> potentialNails = getPotentialNailSegments(from, end);
-                nailIndexToPotentialNewNailsMap.put(nailIndex, potentialNails);
-                totalPotentialNails += potentialNails.size();
-
-                final double neededNails = REQUIRED_NAILS - unfinishedEdge.getNails().size();
-
-                // If we do not have enough potential nails simply draw enough below the source location
-                if (neededNails > totalPotentialNails) {
-                    for (int i = 0; i < neededNails; i++) {
-                        final double x = unfinishedEdge.getSourceLocation().getX();
-                        final double y = unfinishedEdge.getSourceLocation().getY() + GRID_SIZE * 2 * i + 2 * GRID_SIZE;
-                        unfinishedEdge.insertNailAt(new Nail(x, y), i);
-                    }
-                } else {
-                    int newNailsAdded = 0; // How many nails have been added after completion
-
-                    // Run through the maps of index and segments of potential new nails
-                    for (final Map.Entry<Integer, List<Pair<Double, Double>>> newNailsSegment : nailIndexToPotentialNewNailsMap.entrySet()) {
-                        // Run through the segment
-                        for (final Pair<Double, Double> toBeNail : newNailsSegment.getValue()) {
-                            if (newNailsAdded >= neededNails) break; // If we added enough nails break out
-
-                            unfinishedEdge.insertNailAt(new Nail(toBeNail.getKey(), toBeNail.getValue()), newNailsSegment.getKey() + newNailsAdded);
-                            newNailsAdded++;
-                        }
-                    }
-                }
+                NailHelper.addMissingNails(unfinishedEdge);
 
             } else {
                 // If shift is being held down, start drawing a new edge

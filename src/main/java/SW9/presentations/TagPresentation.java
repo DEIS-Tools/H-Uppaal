@@ -4,7 +4,6 @@ import SW9.abstractions.Component;
 import SW9.abstractions.Location;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
-import SW9.utility.helpers.NewDragHelper;
 import com.jfoenix.controls.JFXTextField;
 import javafx.animation.PauseTransition;
 import javafx.beans.binding.When;

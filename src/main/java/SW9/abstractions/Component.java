@@ -258,7 +258,7 @@ public class Component implements Serializable, DropDownMenu.HasColor {
 
     public Edge getUnfinishedEdge() {
         for (final Edge edge : edges) {
-            if (edge.getTargetLocation() == null) return edge;
+            if (edge.getTargetLocation() == null && edge.getTargetSubComponent() == null) return edge;
         }
 
         return null;

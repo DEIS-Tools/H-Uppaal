@@ -2,7 +2,6 @@ package SW9.controllers;
 
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
-import SW9.abstractions.Location;
 import SW9.abstractions.Nail;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.presentations.CanvasPresentation;
@@ -33,7 +32,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
-import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -73,7 +71,8 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
         initializeNailCollapse();
 
         edge.addListener((obsEdge, oldEdge, newEdge) -> {
-            newEdge.targetLocationProperty().addListener(getNewTargetLocationListener(newEdge));
+            newEdge.targetLocationProperty().addListener(getNewTargetCircularListener(newEdge));
+            newEdge.targetSubComponentProperty().addListener(getNewTargetCircularListener(newEdge));
             component.addListener(getComponentChangeListener(newEdge));
         });
 
@@ -83,7 +82,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
 
     private ChangeListener<Component> getComponentChangeListener(final Edge newEdge) {
         return (obsComponent, oldComponent, newComponent) -> {
-            if (newEdge.getNails().isEmpty() && newEdge.getTargetLocation() == null) {
+            if (newEdge.getNails().isEmpty() && newEdge.getTargetCircular() == null) {
                 final Link link = new Link();
                 links.add(link);
 
@@ -92,7 +91,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
 
                 // Bind the first link and the arrowhead from the source location to the mouse
                 BindingHelper.bind(link, simpleArrowHead, newEdge.getSourceCircular(), newComponent.xProperty(), newComponent.yProperty());
-            } else if (newEdge.getTargetLocation() != null) {
+            } else if (newEdge.getTargetCircular() != null) {
 
                 edgeRoot.getChildren().add(simpleArrowHead);
 
@@ -115,7 +114,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
                 links.add(link);
 
                 edgeRoot.getChildren().add(link);
-                BindingHelper.bind(link, simpleArrowHead, previous[0], newEdge.getTargetLocation());
+                BindingHelper.bind(link, simpleArrowHead, previous[0], newEdge.getTargetCircular());
             }
 
             // Changes are made to the nails list
@@ -135,7 +134,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
 
                     edgeRoot.getChildren().addAll(newNailPresentation);
 
-                    if (newEdge.getTargetLocation() != null) {
+                    if (newEdge.getTargetCircular() != null) {
                         final int indexOfNewNail = edge.get().getNails().indexOf(newNail);
 
                         final Link newLink = new Link();
@@ -157,7 +156,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
 
                         BindingHelper.bind(newLink, oldStart, newNail);
 
-                        if (oldEnd.equals(getEdge().getTargetLocation())) {
+                        if (oldEnd.equals(getEdge().getTargetCircular())) {
                             BindingHelper.bind(pressedLink, simpleArrowHead, newNail, oldEnd);
                         } else {
                             BindingHelper.bind(pressedLink, newNail, oldEnd);
@@ -207,7 +206,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
                         newTo = getEdge().getNails().get(removedIndex);
                     }
 
-                    if(newTo.equals(getEdge().getTargetLocation())) {
+                    if(newTo.equals(getEdge().getTargetCircular())) {
                         BindingHelper.bind(danglingLink, simpleArrowHead, newFrom, newTo);
                     } else {
                         BindingHelper.bind(danglingLink, newFrom, newTo);
@@ -220,9 +219,9 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
         };
     }
 
-    private ChangeListener<Location> getNewTargetLocationListener(final Edge newEdge) {
+    private ChangeListener<Circular> getNewTargetCircularListener(final Edge newEdge) {
         // When the target location is set, finish drawing the edge
-        return (obsTargetLocation, oldTargetLocation, newTargetLocation) -> {
+        return (obsTargetLocation, oldTargetCircular, newTargetCircular) -> {
 
             // If the nails list is empty, directly connect the source and target locations
             // otherwise, bind the line from the last nail to the target location
@@ -230,22 +229,22 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
             final ObservableList<Nail> nails = getEdge().getNails();
             if (nails.size() == 0) {
                 // Check if the source and target locations are the same, if they are, add two new helper nails
-                if (newEdge.getSourceCircular().equals(newTargetLocation)) {
-                    final Nail nail1 = new Nail(newTargetLocation.xProperty().add(5 * CanvasPresentation.GRID_SIZE), newTargetLocation.yProperty().add(3 * CanvasPresentation.GRID_SIZE));
-                    final Nail nail2 = new Nail(newTargetLocation.xProperty().add(3 * CanvasPresentation.GRID_SIZE), newTargetLocation.yProperty().add(5 * CanvasPresentation.GRID_SIZE));
+                if (newEdge.getSourceCircular().equals(newTargetCircular)) {
+                    final Nail nail1 = new Nail(newTargetCircular.xProperty().add(5 * CanvasPresentation.GRID_SIZE), newTargetCircular.yProperty().add(3 * CanvasPresentation.GRID_SIZE));
+                    final Nail nail2 = new Nail(newTargetCircular.xProperty().add(3 * CanvasPresentation.GRID_SIZE), newTargetCircular.yProperty().add(5 * CanvasPresentation.GRID_SIZE));
 
                     // Add the nails to the nails collection (will draw links between them)
                     nails.addAll(nail1, nail2);
 
                     // Find the new last link (updated by adding nails to the collection) and bind it from the last nail to the target location
                     final Link newLastLink = links.get(links.size() - 1);
-                    BindingHelper.bind(newLastLink, simpleArrowHead, nail2, newTargetLocation);
+                    BindingHelper.bind(newLastLink, simpleArrowHead, nail2, newTargetCircular);
                 } else {
-                    BindingHelper.bind(lastLink, simpleArrowHead, newEdge.getSourceCircular(), newTargetLocation);
+                    BindingHelper.bind(lastLink, simpleArrowHead, newEdge.getSourceCircular(), newTargetCircular);
                 }
             } else {
                 final Nail lastNail = nails.get(nails.size() - 1);
-                BindingHelper.bind(lastLink, simpleArrowHead, lastNail, newTargetLocation);
+                BindingHelper.bind(lastLink, simpleArrowHead, lastNail, newTargetCircular);
             }
 
             // When the target location is set the
@@ -370,6 +369,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
 
     public void edgeEntered() {
         isHoveringEdge.set(true);
+        System.out.println("hej");
 
         if ((runningThread != null && runningThread.isAlive())) return; // Do not re-animate
 
