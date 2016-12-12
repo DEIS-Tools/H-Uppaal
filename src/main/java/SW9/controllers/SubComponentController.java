@@ -43,7 +43,8 @@ public class SubComponentController implements Initializable {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         subComponent.addListener((obs, oldComponent, newComponent) -> {
-            // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width fromP the presentation into the abstraction
+            newComponent.widthProperty().bind(root.widthProperty());
+            newComponent.heightProperty().bind(root.heightProperty());
         });
 
         makeDraggable();

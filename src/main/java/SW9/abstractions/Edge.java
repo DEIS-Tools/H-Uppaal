@@ -1,6 +1,5 @@
 package SW9.abstractions;
 
-import SW9.presentations.LocationPresentation;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.Circular;
 import SW9.utility.serialize.Serializable;
@@ -11,6 +10,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.function.Consumer;
+
+import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
 public class Edge implements Serializable {
 
@@ -196,13 +197,13 @@ public class Edge implements Serializable {
                 DoubleProperty x = new SimpleDoubleProperty();
                 DoubleProperty y = new SimpleDoubleProperty();
                 {
-                    x.bind(getSourceSubComponent().xProperty());
-                    y.bind(getSourceSubComponent().yProperty());
+                    x.bind(getSourceSubComponent().xProperty().add(getSourceSubComponent().widthProperty()).subtract(GRID_SIZE * 2));
+                    y.bind(getSourceSubComponent().yProperty().add(getSourceSubComponent().heightProperty()).subtract(GRID_SIZE * 2));
                 }
 
                 @Override
                 public DoubleProperty radiusProperty() {
-                    return new SimpleDoubleProperty(1);
+                    return new SimpleDoubleProperty(1.5);
                 }
 
                 @Override
@@ -245,10 +246,18 @@ public class Edge implements Serializable {
     public JsonObject serialize() {
         final JsonObject result = new JsonObject();
 
-        result.addProperty(SOURCE_LOCATION, getSourceLocation().getId());
-        result.addProperty(TARGET_LOCATION, getTargetLocation().getId());
-        result.addProperty(SOURCE_SUB_COMPONENT, getSourceSubComponent().getIdentifier());
-        result.addProperty(TARGET_SUB_COMPONENT, getTargetSubComponent().getIdentifier());
+        if (getSourceLocation() != null) {
+            result.addProperty(SOURCE_LOCATION, getSourceLocation().getId());
+        }
+        if (getTargetLocation() != null) {
+            result.addProperty(TARGET_LOCATION, getTargetLocation().getId());
+        }
+        if (getSourceSubComponent() != null) {
+            result.addProperty(SOURCE_SUB_COMPONENT, getSourceSubComponent().getIdentifier());
+        }
+        if (getTargetSubComponent() != null) {
+            result.addProperty(TARGET_SUB_COMPONENT, getTargetSubComponent().getIdentifier());
+        }
         result.addProperty(SELECT, getSelect());
         result.addProperty(GUARD, getGuard());
         result.addProperty(UPDATE, getUpdate());
@@ -267,8 +276,6 @@ public class Edge implements Serializable {
     }
 
     public void deserialize(final JsonObject json, final Component component) {
-
-
         // Find the initial and final location of the component of the edge
         final Location initialLocation = component.getInitialLocation();
         final Location finalLocation = component.getFinalLocation();
