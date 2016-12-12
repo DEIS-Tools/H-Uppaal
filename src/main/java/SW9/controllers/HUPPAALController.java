@@ -6,6 +6,7 @@ import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
 import SW9.abstractions.Nail;
 import SW9.backend.UPPAALDriver;
+import SW9.code_analysis.CodeAnalysis;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.HUPPAALPresentation;
 import SW9.presentations.ProjectPanePresentation;
@@ -104,6 +105,16 @@ public class HUPPAALController implements Initializable {
         // Keybind for toggling the file pane
         KeyboardTracker.registerKeybind(KeyboardTracker.TOGGLE_FILE_PANE, new Keybind(new KeyCodeCombination(KeyCode.F), () -> {
             ((HUPPAALPresentation) root).toggleFilePane();
+        }));
+
+
+        // TODO - This is debugging for messages
+        KeyboardTracker.registerKeybind("DEBUGGING_WARNINGS", new Keybind(new KeyCodeCombination(KeyCode.W), () -> {
+            CodeAnalysis.addMessage(CanvasController.getActiveComponent(), new CodeAnalysis.Message("A warning", CodeAnalysis.MessageType.WARNING));
+        }));
+
+        KeyboardTracker.registerKeybind("DEBUGGING_ERROR", new Keybind(new KeyCodeCombination(KeyCode.E), () -> {
+            CodeAnalysis.addMessage(CanvasController.getActiveComponent(), new CodeAnalysis.Message("An error", CodeAnalysis.MessageType.WARNING));
         }));
 
         dialog.setDialogContainer(dialogContainer);
