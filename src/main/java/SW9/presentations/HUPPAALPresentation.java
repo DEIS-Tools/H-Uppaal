@@ -17,6 +17,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
@@ -59,7 +60,6 @@ public class HUPPAALPresentation extends StackPane {
             controller = fxmlLoader.getController();
 
             initializeTopBar();
-            initializeBottomStatusBar();
             initializeToolbar();
             initializeQueryDetailsDialog();
             initializeGenerateUppaalModelButton();
@@ -77,6 +77,8 @@ public class HUPPAALPresentation extends StackPane {
 
             initializeLogo();
 
+            initializeMessageContainer();
+
             // Open the file panel initially
             final BooleanProperty ranInitialToggle = new SimpleBooleanProperty(false);
             controller.filePane.widthProperty().addListener((observable) -> {
@@ -88,6 +90,33 @@ public class HUPPAALPresentation extends StackPane {
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeMessageContainer() {
+        controller.tabPaneResizeElement.sceneProperty().addListener((observableScene, oldScene, newScene) -> {
+            if (oldScene == null && newScene != null) {
+                // scene is set for the first time. Now its the time to listen stage changes.
+                newScene.windowProperty().addListener((observableWindow, oldWindow, newWindow) -> {
+                    if (oldWindow == null && newWindow != null) {
+                        newWindow.widthProperty().addListener((observableWidth, oldWidth, newWidth) -> {
+                            controller.tabPaneResizeElement.setWidth(newWidth.doubleValue() - 30);
+                        });
+                    }
+                });
+            }
+        });
+
+        controller.tabPaneResizeElement.setCursor(Cursor.N_RESIZE);
+
+        controller.tabPaneContainer.maxHeightProperty().addListener((obs, oldHeight, newHeight) -> {
+            if (newHeight.doubleValue() > 35) {
+                controller.collapseMessagesIcon.setIconLiteral("gmi-close");
+                controller.collapseMessagesIcon.setIconSize(24);
+            } else {
+                controller.collapseMessagesIcon.setIconLiteral("gmi-expand-less");
+                controller.collapseMessagesIcon.setIconSize(24);
+            }
+        });
     }
 
     private void initializeLogo() {
@@ -406,18 +435,6 @@ public class HUPPAALPresentation extends StackPane {
 
         // Set the background for the top toolbar
         controller.toolbar.setBackground(
-                new Background(new BackgroundFill(color.getColor(intensity),
-                        CornerRadii.EMPTY,
-                        Insets.EMPTY)
-                ));
-    }
-
-    private void initializeBottomStatusBar() {
-        final Color color = Color.GREY_BLUE;
-        final Color.Intensity intensity = Color.Intensity.I200;
-
-        // Set the background for the bottom status bar
-        controller.bottomStatusBar.setBackground(
                 new Background(new BackgroundFill(color.getColor(intensity),
                         CornerRadii.EMPTY,
                         Insets.EMPTY)

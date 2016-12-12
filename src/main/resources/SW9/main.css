@@ -162,3 +162,15 @@
 .menu-item .label {
     -fx-text-fill: -black;
 }
+
+.tab-header-background {
+    -fx-background-color: -blue-grey-700;
+}
+
+.tab-selected-line {
+    -fx-stroke: #ffffff;
+}
+
+.jfx-rippler {
+    -fx-rippler-fill: #ffffff;
+}

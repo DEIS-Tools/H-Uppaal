@@ -114,14 +114,9 @@
             <Label fx:id="filePaneFillerElement"/>
         </left>
 
-        <!-- Bottom status bar -->
+        <!-- Message container -->
         <bottom>
-            <BorderPane fx:id="bottomStatusBar"
-                        styleClass="bottom-bar"
-                        prefHeight="24"
-                        maxHeight="24">
-
-            </BorderPane>
+            <Rectangle fx:id="bottomFillerElement"/>
         </bottom>
 
         <top>
@@ -154,6 +149,42 @@
         </top>
 
     </BorderPane>
+
+    <!-- Message container -->
+    <StackPane style="-fx-background-color: amber;" fx:id="tabPaneContainer" maxHeight="300"
+               StackPane.alignment="BOTTOM_CENTER">
+        <JFXTabPane fx:id="tabPane" style="-fx-background-color: -blue-grey-50;">
+
+            <Tab fx:id="errorsTab" text="Errors (0)">
+                <Label text="Errors"/>
+            </Tab>
+
+            <Tab fx:id="warningsTab" text="Warnings (2)">
+                <Label text="Warnings"/>
+            </Tab>
+
+        </JFXTabPane>
+
+        <HBox maxHeight="35" StackPane.alignment="TOP_CENTER" pickOnBounds="false">
+            <Region HBox.hgrow="ALWAYS" mouseTransparent="true"/>
+
+            <JFXRippler fx:id="collapseMessages">
+                <StackPane minWidth="50" minHeight="35"
+                           onMouseClicked="#collapseMessagesClicked"
+                           StackPane.alignment="TOP_RIGHT">
+
+                    <FontIcon fx:id="collapseMessagesIcon" iconLiteral="gmi-close" iconSize="24" fill="white"/>
+
+                </StackPane>
+            </JFXRippler>
+        </HBox>
+
+        <Rectangle fx:id="tabPaneResizeElement"
+                   onMousePressed="#tabPaneResizeElementPressed"
+                   onMouseDragged="#tabPaneResizeElementDragged"
+                   width="500" height="3"
+                   fill="transparent" StackPane.alignment="TOP_CENTER"/>
+    </StackPane>
 
     <!-- Dialog -->
     <StackPane fx:id="dialogContainer" style="-fx-background-color: #0000007F;" visible="false">

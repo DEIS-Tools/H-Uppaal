@@ -17,7 +17,10 @@ import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXRippler;
+import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextField;
+import javafx.animation.Interpolator;
+import javafx.animation.Transition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
@@ -25,12 +28,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.Tab;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 import javafx.util.Pair;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -40,7 +47,6 @@ import java.util.ResourceBundle;
 public class HUPPAALController implements Initializable {
 
     public StackPane root;
-    public BorderPane bottomStatusBar;
     public QueryPanePresentation queryPane;
     public ProjectPanePresentation filePane;
     public StackPane toolbar;
@@ -59,6 +65,16 @@ public class HUPPAALController implements Initializable {
     public JFXRippler undo;
     public JFXRippler redo;
     public ImageView logo;
+    public JFXTabPane tabPane;
+    public Tab errorsTab;
+    public Tab warningsTab;
+    public Rectangle tabPaneResizeElement;
+    public StackPane tabPaneContainer;
+    public Rectangle bottomFillerElement;
+    public JFXRippler collapseMessages;
+    public FontIcon collapseMessagesIcon;
+
+    private double tabPanePreviousY = 0;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -120,6 +136,63 @@ public class HUPPAALController implements Initializable {
                 }
             }
         });
+    }
+
+    @FXML
+    private void tabPaneResizeElementPressed(final MouseEvent event) {
+        tabPanePreviousY = event.getScreenY();
+    }
+
+    @FXML
+    private void tabPaneResizeElementDragged(final MouseEvent event) {
+        final double mouseY = event.getScreenY();
+        double newHeight = tabPaneContainer.getMaxHeight() - (mouseY - tabPanePreviousY);
+        newHeight = Math.max(35, newHeight);
+
+        tabPaneContainer.setMaxHeight(newHeight);
+        tabPanePreviousY = mouseY;
+    }
+
+    @FXML
+    private void expandMessagesClicked() {
+        System.out.println("expandMessagesClicked");
+    }
+
+    @FXML
+    private void collapseMessagesClicked() {
+        final Transition collapse = new Transition() {
+            double height = tabPaneContainer.getMaxHeight();
+
+            {
+                setInterpolator(Interpolator.SPLINE(0.645, 0.045, 0.355, 1));
+                setCycleDuration(Duration.millis(200));
+            }
+
+            @Override
+            protected void interpolate(final double frac) {
+                tabPaneContainer.setMaxHeight(((height - 35) * (1 - frac)) + 35);
+            }
+        };
+
+        final Transition expand = new Transition() {
+            double height = tabPaneContainer.getMaxHeight();
+
+            {
+                setInterpolator(Interpolator.SPLINE(0.645, 0.045, 0.355, 1));
+                setCycleDuration(Duration.millis(200));
+            }
+
+            @Override
+            protected void interpolate(final double frac) {
+                tabPaneContainer.setMaxHeight(35 + frac * (300 - 35));
+            }
+        };
+
+        if (tabPaneContainer.getMaxHeight() > 35) {
+            collapse.play();
+        } else {
+            expand.play();
+        }
     }
 
     @FXML
