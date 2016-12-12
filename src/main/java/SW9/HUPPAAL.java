@@ -7,6 +7,7 @@ import SW9.presentations.HUPPAALPresentation;
 import SW9.presentations.UndoRedoHistoryPresentation;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
+import com.google.common.io.Files;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -23,6 +24,7 @@ import jiconfont.icons.GoogleMaterialDesignIcons;
 import jiconfont.javafx.IconFontFX;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Scanner;
 
 public class HUPPAAL extends Application {
@@ -99,9 +101,7 @@ public class HUPPAAL extends Application {
 
         // Load the project from disk
         for (final File file : projectFolder.listFiles()) {
-            final Scanner scanner = new Scanner(file);
-            final String fileContent = scanner.useDelimiter("\\A").next();
-            scanner.close(); // Put this call in a finally block
+            final String fileContent = Files.toString(file, Charset.defaultCharset());
 
             final JsonParser parser = new JsonParser();
             final JsonElement element = parser.parse(fileContent);
