@@ -2,6 +2,7 @@ package SW9.presentations;
 
 import SW9.abstractions.Component;
 import SW9.abstractions.SubComponent;
+import SW9.controllers.CanvasController;
 import SW9.controllers.SubComponentController;
 import SW9.utility.colors.Color;
 import javafx.beans.property.BooleanProperty;
@@ -44,10 +45,10 @@ public class SubComponentPresentation extends StackPane {
             fxmlLoader.load(location.openStream());
 
             // Todo: Set height and width of the sub component
-            setMinWidth(CORNER_SIZE * 5);
-            setMaxWidth(CORNER_SIZE * 5);
-            setMinHeight(CORNER_SIZE * 2);
-            setMaxHeight(CORNER_SIZE * 2);
+            setMinWidth(CORNER_SIZE * 6);
+            setMaxWidth(CORNER_SIZE * 6);
+            setMinHeight(CORNER_SIZE * 3);
+            setMaxHeight(CORNER_SIZE * 3);
 
             controller = fxmlLoader.getController();
             controller.setSubComponent(subComponent);
@@ -95,31 +96,41 @@ public class SubComponentPresentation extends StackPane {
         final SubComponent subComponent = controller.getSubComponent();
         final BooleanProperty initialized = new SimpleBooleanProperty(false);
 
-        controller.name.focusedProperty().addListener((observable, oldValue, newValue) -> {
+        controller.identifier.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue && !initialized.get()) {
                 controller.root.requestFocus();
                 initialized.setValue(true);
             }
         });
 
-
         // Set the text field to the name in the model, and bind the model to the text field
-        controller.name.setText(subComponent.getComponent().getName());
-        subComponent.getComponent().nameProperty().bind(controller.name.textProperty());
+        controller.identifier.setText(subComponent.getIdentifier());
+        controller.identifier.textProperty().addListener((obs, oldIdentifier, newIdentifier) -> {
+            subComponent.identifierProperty().unbind();
+            subComponent.setIdentifier(newIdentifier);
+        });
 
         final Runnable updateColor = () -> {
             final Color color = subComponent.getComponent().getColor();
             final Color.Intensity colorIntensity = subComponent.getComponent().getColorIntensity();
 
             // Set the text color for the label
-            controller.name.setStyle("-fx-text-fill: " + color.getTextColorRgbaString(colorIntensity) + ";");
+            controller.identifier.setStyle("-fx-text-fill: " + color.getTextColorRgbaString(colorIntensity) + ";");
+            controller.identifier.setFocusColor(color.getTextColor(colorIntensity));
+            controller.identifier.setUnFocusColor(javafx.scene.paint.Color.TRANSPARENT);
+
+            controller.originalComponent.setStyle("-fx-text-fill: " + color.getTextColorRgbaString(colorIntensity) + ";");
         };
 
         controller.getSubComponent().getComponent().colorProperty().addListener(observable -> updateColor.run());
         updateColor.run();
 
         // Center the text vertically and aff a left padding of CORNER_SIZE
-        controller.name.setPadding(new Insets(2, 0, 0, CORNER_SIZE));
+        controller.identifier.setPadding(new Insets(2, 0, 0, CORNER_SIZE));
+        controller.identifier.setOnKeyPressed(CanvasController.getEnterKeyHandler());
+
+        controller.originalComponent.setPadding(new Insets(2, 5, 0, 0));
+        controller.originalComponent.textProperty().bind(subComponent.getComponent().nameProperty());
     }
 
     private void initializeInitialLocation() {

@@ -28,7 +28,7 @@ public class SubComponent implements Serializable, Circular {
 
     public SubComponent(final Component component) {
         setComponent(component);
-        setIdentifier(String.valueOf(component.hashCode()));
+        setIdentifier(String.valueOf(hashCode()));
     }
 
     public SubComponent(final JsonObject object) {
