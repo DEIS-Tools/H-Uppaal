@@ -28,12 +28,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -70,11 +72,26 @@ public class HUPPAALController implements Initializable {
     public Tab warningsTab;
     public Rectangle tabPaneResizeElement;
     public StackPane tabPaneContainer;
+    private final Transition expandMessagesContainer = new Transition() {
+        {
+            setInterpolator(Interpolator.SPLINE(0.645, 0.045, 0.355, 1));
+            setCycleDuration(Duration.millis(200));
+        }
+
+        @Override
+        protected void interpolate(final double frac) {
+            tabPaneContainer.setMaxHeight(35 + frac * (300 - 35));
+        }
+    };
     public Rectangle bottomFillerElement;
     public JFXRippler collapseMessages;
     public FontIcon collapseMessagesIcon;
-
+    public ScrollPane errorsScrollPane;
+    public VBox errorsList;
+    public ScrollPane warningsScrollPane;
+    public VBox warningsList;
     private double tabPanePreviousY = 0;
+    private boolean shouldISkipOpeningTheMessagesContainer = true;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -136,6 +153,24 @@ public class HUPPAALController implements Initializable {
                 }
             }
         });
+
+        initializeTabPane();
+    }
+
+    private void initializeTabPane() {
+        bottomFillerElement.heightProperty().bind(tabPaneContainer.maxHeightProperty());
+
+        tabPane.getSelectionModel().selectedIndexProperty().addListener((obs, oldSelected, newSelected) -> {
+            if (newSelected.intValue() < 0 || tabPaneContainer.getMaxHeight() > 35) return;
+
+            if (shouldISkipOpeningTheMessagesContainer) {
+                shouldISkipOpeningTheMessagesContainer = false;
+            } else {
+                expandMessagesContainer.play();
+            }
+        });
+
+        tabPane.getSelectionModel().clearSelection();
     }
 
     @FXML
@@ -154,11 +189,6 @@ public class HUPPAALController implements Initializable {
     }
 
     @FXML
-    private void expandMessagesClicked() {
-        System.out.println("expandMessagesClicked");
-    }
-
-    @FXML
     private void collapseMessagesClicked() {
         final Transition collapse = new Transition() {
             double height = tabPaneContainer.getMaxHeight();
@@ -174,24 +204,10 @@ public class HUPPAALController implements Initializable {
             }
         };
 
-        final Transition expand = new Transition() {
-            double height = tabPaneContainer.getMaxHeight();
-
-            {
-                setInterpolator(Interpolator.SPLINE(0.645, 0.045, 0.355, 1));
-                setCycleDuration(Duration.millis(200));
-            }
-
-            @Override
-            protected void interpolate(final double frac) {
-                tabPaneContainer.setMaxHeight(35 + frac * (300 - 35));
-            }
-        };
-
         if (tabPaneContainer.getMaxHeight() > 35) {
             collapse.play();
         } else {
-            expand.play();
+            expandMessagesContainer.play();
         }
     }
 

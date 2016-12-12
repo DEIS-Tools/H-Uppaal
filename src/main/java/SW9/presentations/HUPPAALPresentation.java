@@ -9,6 +9,8 @@ import SW9.utility.helpers.SelectHelper;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
 import javafx.animation.*;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -93,6 +95,7 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private void initializeMessageContainer() {
+        // The element of which you drag to resize should be equal to the width of the window (main stage)
         controller.tabPaneResizeElement.sceneProperty().addListener((observableScene, oldScene, newScene) -> {
             if (oldScene == null && newScene != null) {
                 // scene is set for the first time. Now its the time to listen stage changes.
@@ -106,6 +109,7 @@ public class HUPPAALPresentation extends StackPane {
             }
         });
 
+        // Resize cursor
         controller.tabPaneResizeElement.setCursor(Cursor.N_RESIZE);
 
         controller.tabPaneContainer.maxHeightProperty().addListener((obs, oldHeight, newHeight) -> {
@@ -113,8 +117,39 @@ public class HUPPAALPresentation extends StackPane {
                 controller.collapseMessagesIcon.setIconLiteral("gmi-close");
                 controller.collapseMessagesIcon.setIconSize(24);
             } else {
+                controller.tabPane.getSelectionModel().clearSelection(); // Clear the currently selected tab (so that the view will open again when selecting a tab)
                 controller.collapseMessagesIcon.setIconLiteral("gmi-expand-less");
                 controller.collapseMessagesIcon.setIconSize(24);
+            }
+        });
+
+        // Remove the background of the scroll panes
+        controller.errorsScrollPane.setStyle("-fx-background-color: transparent;");
+        controller.warningsScrollPane.setStyle("-fx-background-color: transparent;");
+
+        // Update the tab-text
+        controller.errorsList.getChildren().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(final Observable observable) {
+                final int children = controller.errorsList.getChildren().size();
+                if (children == 0) {
+                    controller.errorsTab.setText("Errors");
+                } else {
+                    controller.errorsTab.setText("Errors (" + children + ")");
+                }
+            }
+        });
+
+        // Update the tab-text
+        controller.warningsList.getChildren().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(final Observable observable) {
+                final int children = controller.warningsList.getChildren().size();
+                if (children == 0) {
+                    controller.warningsTab.setText("Warnings");
+                } else {
+                    controller.warningsTab.setText("Warnings (" + children + ")");
+                }
             }
         });
     }

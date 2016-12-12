@@ -174,3 +174,7 @@
 .jfx-rippler {
     -fx-rippler-fill: #ffffff;
 }
+
+.scroll-pane {
+   -fx-background: transparent;
+}

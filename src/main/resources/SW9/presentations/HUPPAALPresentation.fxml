@@ -151,16 +151,24 @@
     </BorderPane>
 
     <!-- Message container -->
-    <StackPane style="-fx-background-color: amber;" fx:id="tabPaneContainer" maxHeight="300"
+    <StackPane fx:id="tabPaneContainer" maxHeight="35"
                StackPane.alignment="BOTTOM_CENTER">
-        <JFXTabPane fx:id="tabPane" style="-fx-background-color: -blue-grey-50;">
+        <JFXTabPane fx:id="tabPane" style="-fx-background-color: -grey-200;">
 
-            <Tab fx:id="errorsTab" text="Errors (0)">
-                <Label text="Errors"/>
+            <Tab fx:id="errorsTab" text="Errors">
+                <ScrollPane fx:id="errorsScrollPane"
+                            fitToHeight="true" fitToWidth="true"
+                            styleClass="edge-to-edge">
+                    <VBox fx:id="errorsList"/>
+                </ScrollPane>
             </Tab>
 
-            <Tab fx:id="warningsTab" text="Warnings (2)">
-                <Label text="Warnings"/>
+            <Tab fx:id="warningsTab" text="Warnings">
+                <ScrollPane fx:id="warningsScrollPane"
+                            fitToHeight="true" fitToWidth="true"
+                            styleClass="edge-to-edge">
+                    <VBox fx:id="warningsList"/>
+                </ScrollPane>
             </Tab>
 
         </JFXTabPane>
@@ -173,7 +181,7 @@
                            onMouseClicked="#collapseMessagesClicked"
                            StackPane.alignment="TOP_RIGHT">
 
-                    <FontIcon fx:id="collapseMessagesIcon" iconLiteral="gmi-close" iconSize="24" fill="white"/>
+                    <FontIcon fx:id="collapseMessagesIcon" iconLiteral="gmi-expand-less" iconSize="24" fill="white"/>
 
                 </StackPane>
             </JFXRippler>
