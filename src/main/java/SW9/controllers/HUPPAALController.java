@@ -164,6 +164,7 @@ public class HUPPAALController implements Initializable {
             if (newSelected.intValue() < 0 || tabPaneContainer.getMaxHeight() > 35) return;
 
             if (shouldISkipOpeningTheMessagesContainer) {
+                tabPane.getSelectionModel().clearSelection();
                 shouldISkipOpeningTheMessagesContainer = false;
             } else {
                 expandMessagesContainer.play();

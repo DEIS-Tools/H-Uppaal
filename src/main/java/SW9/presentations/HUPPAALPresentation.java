@@ -152,6 +152,46 @@ public class HUPPAALPresentation extends StackPane {
                 }
             }
         });
+
+        // Test to see stuff
+        controller.errorsList.getChildren().addAll(
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation(),
+                new MessagePresentation()
+        );
     }
 
     private void initializeLogo() {
