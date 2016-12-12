@@ -369,8 +369,6 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
 
     public void edgeEntered() {
         isHoveringEdge.set(true);
-        System.out.println("hej");
-
         if ((runningThread != null && runningThread.isAlive())) return; // Do not re-animate
 
         timeHoveringEdge.set(500);
