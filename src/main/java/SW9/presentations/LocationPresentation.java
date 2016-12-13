@@ -73,11 +73,11 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
             controller = fxmlLoader.getController();
 
-            // Bind the location with the one of the controller
-            controller.setLocation(location);
-
             // Bind the component with the one of the controller
             controller.setComponent(component);
+
+            // Bind the location with the one of the controller
+            controller.setLocation(location);
 
             // TODO make creation of location possible from the mouse
 

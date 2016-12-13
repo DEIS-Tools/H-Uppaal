@@ -4,8 +4,8 @@ import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
-import SW9.abstractions.Nail;
 import SW9.backend.UPPAALDriver;
+import SW9.code_analysis.CodeAnalysis;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.ComponentPresentation;
 import SW9.presentations.LocationPresentation;
@@ -35,6 +35,7 @@ import javafx.util.Pair;
 
 import java.net.URL;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
@@ -77,6 +78,33 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
 
         //initializeReachabilityCheck();
+
+        initializeInvalidNameError();
+    }
+
+    private void initializeInvalidNameError() {
+
+        final Consumer<Location> updateNameCheck = (location) -> {
+            if (location == null) return;
+
+            final CodeAnalysis.Message invalidNickName = new CodeAnalysis.Message("Location '" + location.getId() + "' does not have an alphanumeric name", CodeAnalysis.MessageType.ERROR);
+
+            final Consumer<String> updateNickNameCheck = (nickname) -> {
+                if (!nickname.matches("[A-Za-z0-9_-]*$")) {
+                    CodeAnalysis.addMessage(getComponent(), invalidNickName);
+                } else {
+                    CodeAnalysis.removeMessage(getComponent(), invalidNickName);
+                }
+            };
+
+            location.nicknameProperty().addListener((obs, oldNickName, newNickName) -> {
+                updateNickNameCheck.accept(newNickName);
+            });
+            updateNickNameCheck.accept(location.getNickname());
+        };
+
+        location.addListener((obs, oldLocation, newLocation) -> updateNameCheck.accept(newLocation));
+        updateNameCheck.accept(getLocation());
     }
 
     public void initializeReachabilityCheck() {

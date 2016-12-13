@@ -119,8 +119,7 @@ public class HUPPAALController implements Initializable {
 
         // Keybind for showing dialog // todo: remove this when done with testing
         KeyboardTracker.registerKeybind("DIALOG", new Keybind(new KeyCodeCombination(KeyCode.I), () -> {
-            dialogContainer.setVisible(true);
-            dialog.show();
+            System.out.println(CodeAnalysis.getErrors(CanvasController.getActiveComponent()));
         }));
 
         // Keybind for deleting the selected elements
@@ -213,6 +212,9 @@ public class HUPPAALController implements Initializable {
         });
 
         tabPane.getSelectionModel().clearSelection();
+
+        tabPane.setTabMinHeight(35);
+        tabPane.setTabMaxHeight(35);
     }
 
     @FXML
