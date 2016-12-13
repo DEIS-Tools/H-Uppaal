@@ -6,6 +6,7 @@ import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.BindingHelper;
+import SW9.utility.helpers.Circular;
 import SW9.utility.helpers.ItemDragHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
@@ -46,6 +47,7 @@ import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
 public class ComponentController implements Initializable, SelectHelper.ColorSelectable {
 
+    private static final Map<Component, ListChangeListener<Location>> locationListChangeListenerMap = new HashMap<>();
     private static Location placingLocation = null;
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
     private final Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
@@ -69,7 +71,6 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     private MouseTracker mouseTracker;
     private DropDownMenu dropDownMenu;
     private Circle dropDownMenuHelperCircle;
-    private static final Map<Component,ListChangeListener<Location>> locationListChangeListenerMap = new HashMap<>();
 
     public static boolean isPlacingLocation() {
         return placingLocation != null;
@@ -258,7 +259,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             edgePresentationMap.put(edge, edgePresentation);
             modelContainer.getChildren().add(edgePresentation);
 
-            final Consumer<Location> updateMouseTransparency = (newTargetLocation) -> {
+            final Consumer<Circular> updateMouseTransparency = (newTargetLocation) -> {
                 if (newTargetLocation == null) {
                     edgePresentation.setMouseTransparent(true);
                 } else {
@@ -267,9 +268,8 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             };
 
             updateMouseTransparency.accept(edge.getTargetLocation());
-            edge.targetLocationProperty().addListener((obs1, oldTargetLocation, newTargetLocation) -> {
-                updateMouseTransparency.accept(newTargetLocation);
-            });
+            edge.targetLocationProperty().addListener((obs1, oldTarget, newtarget) -> updateMouseTransparency.accept(newtarget));
+            edge.targetSubComponentProperty().addListener((obs1, oldTarget, newTarget) -> updateMouseTransparency.accept(newTarget));
         };
 
 
