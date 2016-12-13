@@ -9,6 +9,9 @@ import java.util.Map;
 
 public class CodeAnalysis {
 
+    private static final ObservableList<Message> warnings = FXCollections.observableArrayList();
+    private static final ObservableList<Message> errors = FXCollections.observableArrayList();
+
     private static final Map<Component, ObservableList<Message>> componentWarningsMap = new HashMap<>();
     private static final Map<Component, ObservableList<Message>> componentErrorsMap = new HashMap<>();
 
@@ -29,6 +32,7 @@ public class CodeAnalysis {
         }
 
         list.add(message);
+        warnings.add(message);
     }
 
     public static ObservableList<Message> getErrors(final Component component) {
@@ -48,6 +52,7 @@ public class CodeAnalysis {
         }
 
         list.add(message);
+        errors.add(message);
     }
 
     public static void addMessage(final Component component, final Message message) {
@@ -64,6 +69,14 @@ public class CodeAnalysis {
 
     public static void clearErrors(final Component component) {
         getErrors(component).clear();
+    }
+
+    public static ObservableList<Message> getWarnings() {
+        return warnings;
+    }
+
+    public static ObservableList<Message> getErrors() {
+        return errors;
     }
 
     public enum MessageType {WARNING, ERROR}

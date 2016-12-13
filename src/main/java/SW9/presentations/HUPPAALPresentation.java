@@ -1,6 +1,7 @@
 package SW9.presentations;
 
 import SW9.HUPPAAL;
+import SW9.code_analysis.CodeAnalysis;
 import SW9.controllers.HUPPAALController;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
@@ -128,27 +129,27 @@ public class HUPPAALPresentation extends StackPane {
         controller.warningsScrollPane.setStyle("-fx-background-color: transparent;");
 
         // Update the tab-text
-        controller.errorsList.getChildren().addListener(new InvalidationListener() {
+        CodeAnalysis.getErrors().addListener(new InvalidationListener() {
             @Override
-            public void invalidated(final Observable observable) {
-                final int children = controller.errorsList.getChildren().size();
-                if (children == 0) {
+            public void invalidated(Observable observable) {
+                final int errors = CodeAnalysis.getErrors().size();
+                if (errors == 0) {
                     controller.errorsTab.setText("Errors");
                 } else {
-                    controller.errorsTab.setText("Errors (" + children + ")");
+                    controller.errorsTab.setText("Errors (" + errors + ")");
                 }
             }
         });
 
         // Update the tab-text
-        controller.warningsList.getChildren().addListener(new InvalidationListener() {
+        CodeAnalysis.getWarnings().addListener(new InvalidationListener() {
             @Override
-            public void invalidated(final Observable observable) {
-                final int children = controller.warningsList.getChildren().size();
-                if (children == 0) {
+            public void invalidated(Observable observable) {
+                final int warnings = CodeAnalysis.getWarnings().size();
+                if (warnings == 0) {
                     controller.warningsTab.setText("Warnings");
                 } else {
-                    controller.warningsTab.setText("Warnings (" + children + ")");
+                    controller.warningsTab.setText("Warnings (" + warnings + ")");
                 }
             }
         });
