@@ -96,6 +96,7 @@ public class UPPAALDriver {
             // Check if there is any problems
             if (!problems.isEmpty()) {
                 problems.forEach(problem -> System.out.println("problem: " + problem));
+
             }
 
             // Update some internal state for the engine by getting the initial state

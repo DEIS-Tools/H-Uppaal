@@ -40,6 +40,7 @@ import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
 public class LocationController implements Initializable, SelectHelper.ColorSelectable {
 
+    private static final int REQUIRED_NAILS = 4;
     private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
     public LocationPresentation root;
@@ -56,14 +57,10 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public Label idLabel;
     public Line nameTagLine;
     public Line invariantTagLine;
-
     private TimerTask reachabilityCheckTask;
-
     private double previousX;
     private double previousY;
     private boolean wasDragged = false;
-
-    private static final int REQUIRED_NAILS = 4;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -79,7 +76,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
         scaleContent.scaleYProperty().bind(scaleContent.scaleXProperty());
 
 
-        initializeReachabilityCheck();
+        //initializeReachabilityCheck();
     }
 
     public void initializeReachabilityCheck() {

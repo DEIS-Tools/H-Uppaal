@@ -6,10 +6,8 @@ import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
 import SW9.abstractions.Nail;
 import SW9.backend.UPPAALDriver;
-import SW9.presentations.CanvasPresentation;
-import SW9.presentations.HUPPAALPresentation;
-import SW9.presentations.ProjectPanePresentation;
-import SW9.presentations.QueryPanePresentation;
+import SW9.code_analysis.CodeAnalysis;
+import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.EnabledColor;
 import SW9.utility.helpers.SelectHelper;
@@ -17,7 +15,10 @@ import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXRippler;
+import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextField;
+import javafx.animation.Interpolator;
+import javafx.animation.Transition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
@@ -25,22 +26,26 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 import javafx.util.Pair;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class HUPPAALController implements Initializable {
 
     public StackPane root;
-    public BorderPane bottomStatusBar;
     public QueryPanePresentation queryPane;
     public ProjectPanePresentation filePane;
     public StackPane toolbar;
@@ -59,6 +64,31 @@ public class HUPPAALController implements Initializable {
     public JFXRippler undo;
     public JFXRippler redo;
     public ImageView logo;
+    public JFXTabPane tabPane;
+    public Tab errorsTab;
+    public Tab warningsTab;
+    public Rectangle tabPaneResizeElement;
+    public StackPane tabPaneContainer;
+    private final Transition expandMessagesContainer = new Transition() {
+        {
+            setInterpolator(Interpolator.SPLINE(0.645, 0.045, 0.355, 1));
+            setCycleDuration(Duration.millis(200));
+        }
+
+        @Override
+        protected void interpolate(final double frac) {
+            tabPaneContainer.setMaxHeight(35 + frac * (300 - 35));
+        }
+    };
+    public Rectangle bottomFillerElement;
+    public JFXRippler collapseMessages;
+    public FontIcon collapseMessagesIcon;
+    public ScrollPane errorsScrollPane;
+    public VBox errorsList;
+    public ScrollPane warningsScrollPane;
+    public VBox warningsList;
+    private double tabPanePreviousY = 0;
+    private boolean shouldISkipOpeningTheMessagesContainer = true;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -71,6 +101,16 @@ public class HUPPAALController implements Initializable {
         // Keybind for toggling the file pane
         KeyboardTracker.registerKeybind(KeyboardTracker.TOGGLE_FILE_PANE, new Keybind(new KeyCodeCombination(KeyCode.F), () -> {
             ((HUPPAALPresentation) root).toggleFilePane();
+        }));
+
+
+        // TODO - This is debugging for messages
+        KeyboardTracker.registerKeybind("DEBUGGING_WARNINGS", new Keybind(new KeyCodeCombination(KeyCode.W), () -> {
+            CodeAnalysis.addMessage(CanvasController.getActiveComponent(), new CodeAnalysis.Message("A warning", CodeAnalysis.MessageType.WARNING));
+        }));
+
+        KeyboardTracker.registerKeybind("DEBUGGING_ERROR", new Keybind(new KeyCodeCombination(KeyCode.E), () -> {
+            CodeAnalysis.addMessage(CanvasController.getActiveComponent(), new CodeAnalysis.Message("An error", CodeAnalysis.MessageType.ERROR));
         }));
 
         dialog.setDialogContainer(dialogContainer);
@@ -120,6 +160,97 @@ public class HUPPAALController implements Initializable {
                 }
             }
         });
+
+        initializeTabPane();
+        initializeMessages();
+    }
+
+    private void initializeMessages() {
+        final Map<Component, MessageCollectionPresentation> componentMessageCollectionPresentationMapForErrors = new HashMap<>();
+        final Map<Component, MessageCollectionPresentation> componentMessageCollectionPresentationMapForWarnings = new HashMap<>();
+
+        final Consumer<Component> addComponent = (component) -> {
+            final MessageCollectionPresentation messageCollectionPresentationErrors = new MessageCollectionPresentation(component, CodeAnalysis.getErrors(component));
+            componentMessageCollectionPresentationMapForErrors.put(component, messageCollectionPresentationErrors);
+            errorsList.getChildren().add(messageCollectionPresentationErrors);
+
+            final MessageCollectionPresentation messageCollectionPresentationWarnings = new MessageCollectionPresentation(component, CodeAnalysis.getWarnings(component));
+            componentMessageCollectionPresentationMapForWarnings.put(component, messageCollectionPresentationWarnings);
+            warningsList.getChildren().add(messageCollectionPresentationWarnings);
+        };
+
+        HUPPAAL.getProject().getComponents().forEach(addComponent);
+        HUPPAAL.getProject().getComponents().addListener(new ListChangeListener<Component>() {
+            @Override
+            public void onChanged(final Change<? extends Component> c) {
+                while (c.next()) {
+                    c.getAddedSubList().forEach(addComponent::accept);
+
+                    c.getRemoved().forEach(component -> {
+                        errorsList.getChildren().remove(componentMessageCollectionPresentationMapForErrors.get(component));
+                        componentMessageCollectionPresentationMapForErrors.remove(component);
+
+                        warningsList.getChildren().remove(componentMessageCollectionPresentationMapForWarnings.get(component));
+                        componentMessageCollectionPresentationMapForWarnings.remove(component);
+                    });
+                }
+            }
+        });
+    }
+
+    private void initializeTabPane() {
+        bottomFillerElement.heightProperty().bind(tabPaneContainer.maxHeightProperty());
+
+        tabPane.getSelectionModel().selectedIndexProperty().addListener((obs, oldSelected, newSelected) -> {
+            if (newSelected.intValue() < 0 || tabPaneContainer.getMaxHeight() > 35) return;
+
+            if (shouldISkipOpeningTheMessagesContainer) {
+                tabPane.getSelectionModel().clearSelection();
+                shouldISkipOpeningTheMessagesContainer = false;
+            } else {
+                expandMessagesContainer.play();
+            }
+        });
+
+        tabPane.getSelectionModel().clearSelection();
+    }
+
+    @FXML
+    private void tabPaneResizeElementPressed(final MouseEvent event) {
+        tabPanePreviousY = event.getScreenY();
+    }
+
+    @FXML
+    private void tabPaneResizeElementDragged(final MouseEvent event) {
+        final double mouseY = event.getScreenY();
+        double newHeight = tabPaneContainer.getMaxHeight() - (mouseY - tabPanePreviousY);
+        newHeight = Math.max(35, newHeight);
+
+        tabPaneContainer.setMaxHeight(newHeight);
+        tabPanePreviousY = mouseY;
+    }
+
+    @FXML
+    private void collapseMessagesClicked() {
+        final Transition collapse = new Transition() {
+            double height = tabPaneContainer.getMaxHeight();
+
+            {
+                setInterpolator(Interpolator.SPLINE(0.645, 0.045, 0.355, 1));
+                setCycleDuration(Duration.millis(200));
+            }
+
+            @Override
+            protected void interpolate(final double frac) {
+                tabPaneContainer.setMaxHeight(((height - 35) * (1 - frac)) + 35);
+            }
+        };
+
+        if (tabPaneContainer.getMaxHeight() > 35) {
+            collapse.play();
+        } else {
+            expandMessagesContainer.play();
+        }
     }
 
     @FXML

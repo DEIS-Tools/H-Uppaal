@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Line?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         type="VBox">
+
+    <HBox>
+        <StackPane>
+            <Circle id="indicator" radius="16" fill="pink"/>
+            <FontIcon iconLiteral="gmi-description" iconSize="22" fill="white"/>
+        </StackPane>
+
+        <Label fx:id="headline" styleClass="body2" style="-fx-font-weight: 600;" translateX="8" translateY="6"/>
+    </HBox>
+
+    <HBox translateX="15">
+        <Line endY="16" strokeWidth="2" id="line"/>
+        <Region minWidth="24"/>
+        <VBox id="children"/>
+    </HBox>
+
+</fx:root>
