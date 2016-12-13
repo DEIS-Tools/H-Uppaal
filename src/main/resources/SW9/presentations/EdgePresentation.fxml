@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.Group?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.shape.Circle?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="Group"
@@ -14,22 +11,5 @@
          mouseTransparent="true">
 
     <Group fx:id="edgeRoot"/>
-
-    <StackPane fx:id="selectContainer" translateX="-8" translateY="-8">
-        <Circle radius="8" fx:id="selectCircle" strokeType="INSIDE"/>
-        <Label styleClass="edge-property" text="A" fx:id="selectLabel" />
-    </StackPane>
-    <StackPane fx:id="guardContainer" translateX="-8" translateY="-8">
-        <Circle radius="8" fx:id="guardCircle" strokeType="INSIDE"/>
-        <Label styleClass="edge-property" text="B" fx:id="guardLabel" />
-    </StackPane>
-    <StackPane fx:id="syncContainer" translateX="-8" translateY="-8">
-        <Circle radius="8" fx:id="syncCircle" strokeType="INSIDE"/>
-        <Label styleClass="edge-property" text="C" fx:id="syncLabel" />
-    </StackPane>
-    <StackPane fx:id="updateContainer" translateX="-8" translateY="-8">
-        <Circle radius="8" fx:id="updateCircle" strokeType="INSIDE"/>
-        <Label styleClass="edge-property" text="D" fx:id="updateLabel" />
-    </StackPane>
 
 </fx:root>

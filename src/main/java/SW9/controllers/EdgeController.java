@@ -47,18 +47,6 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
     private final SimpleBooleanProperty isHoveringEdge = new SimpleBooleanProperty(false);
     private final SimpleIntegerProperty timeHoveringEdge = new SimpleIntegerProperty(0);
     public Group edgeRoot;
-    public Label selectLabel;
-    public Label guardLabel;
-    public Label syncLabel;
-    public Label updateLabel;
-    public StackPane selectContainer;
-    public StackPane guardContainer;
-    public StackPane syncContainer;
-    public StackPane updateContainer;
-    public Circle selectCircle;
-    public Circle guardCircle;
-    public Circle syncCircle;
-    public Circle updateCircle;
     private Runnable collapseNail;
     private Thread runningThread;
     private Consumer<Nail> enlargeNail;
