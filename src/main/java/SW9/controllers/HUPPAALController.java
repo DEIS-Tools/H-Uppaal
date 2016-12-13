@@ -212,6 +212,9 @@ public class HUPPAALController implements Initializable {
         });
 
         tabPane.getSelectionModel().clearSelection();
+
+        tabPane.setTabMinHeight(35);
+        tabPane.setTabMaxHeight(35);
     }
 
     @FXML
