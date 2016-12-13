@@ -269,9 +269,11 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 }
             };
 
-            updateMouseTransparency.accept(edge.getTargetLocation());
             edge.targetLocationProperty().addListener((obs1, oldTarget, newTarget) -> updateMouseTransparency.accept(newTarget));
             edge.targetSubComponentProperty().addListener((obs1, oldTarget, newTarget) -> updateMouseTransparency.accept(newTarget));
+
+            updateMouseTransparency.accept(edge.getTargetLocation());
+            updateMouseTransparency.accept(edge.getTargetSubComponent());
         };
 
 
