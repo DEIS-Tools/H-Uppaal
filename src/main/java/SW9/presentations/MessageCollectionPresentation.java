@@ -42,6 +42,7 @@ public class MessageCollectionPresentation extends VBox {
             initializeLine();
             initializeErrorsListener();
 
+
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
@@ -65,9 +66,9 @@ public class MessageCollectionPresentation extends VBox {
                 while (c.next()) {
                     c.getAddedSubList().forEach(addMessage::accept);
 
-                    c.getRemoved().forEach(component -> {
-                        children.getChildren().remove(messageMessagePresentationMap.get(component));
-                        messageMessagePresentationMap.remove(component);
+                    c.getRemoved().forEach(message -> {
+                        children.getChildren().remove(messageMessagePresentationMap.get(message));
+                        messageMessagePresentationMap.remove(message);
                     });
                 }
             }
