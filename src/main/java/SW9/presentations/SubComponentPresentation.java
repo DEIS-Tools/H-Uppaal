@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 import static SW9.presentations.ComponentPresentation.CORNER_SIZE;
 import static SW9.presentations.ComponentPresentation.TOOL_BAR_HEIGHT;
 
@@ -44,20 +45,24 @@ public class SubComponentPresentation extends StackPane {
             fxmlLoader.setRoot(this);
             fxmlLoader.load(location.openStream());
 
-            // Todo: Set height and width of the sub component
-            setMinWidth(CORNER_SIZE * 6);
-            setMaxWidth(CORNER_SIZE * 6);
-            setMinHeight(CORNER_SIZE * 3);
-            setMaxHeight(CORNER_SIZE * 3);
-
             controller = fxmlLoader.getController();
             controller.setSubComponent(subComponent);
             controller.setParentComponent(parentComponent);
 
+            // Todo: Set height and width of the sub component
+            setMinWidth(GRID_SIZE * 24);
+            setMaxWidth(GRID_SIZE * 24);
+            setMinHeight(GRID_SIZE * 12);
+            setMaxHeight(GRID_SIZE * 12);
+
+            subComponent.widthProperty().bind(widthProperty());
+            subComponent.heightProperty().bind(heightProperty());
+
+            // Bind x and y
             setLayoutX(subComponent.getX());
             setLayoutY(subComponent.getY());
-            layoutXProperty().bindBidirectional(subComponent.xProperty());
-            layoutYProperty().bindBidirectional(subComponent.yProperty());
+            subComponent.xProperty().bind(layoutXProperty());
+            subComponent.yProperty().bind(layoutYProperty());
 
             initializeDefaultLocationsContainer();
             initializeToolbar();
