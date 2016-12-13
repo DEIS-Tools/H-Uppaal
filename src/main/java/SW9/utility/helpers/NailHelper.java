@@ -14,7 +14,6 @@ public class NailHelper {
     public static int REQUIRED_NAILS = 4;
 
     public static void addMissingNails(final Edge unfinishedEdge) {
-
         KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_EDGE);
 
         // Maps index of a nail to a list of potential new nails before that nail

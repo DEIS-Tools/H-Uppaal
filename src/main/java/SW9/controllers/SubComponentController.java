@@ -45,11 +45,6 @@ public class SubComponentController implements Initializable {
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        subComponent.addListener((obs, oldComponent, newComponent) -> {
-            newComponent.widthProperty().bind(root.widthProperty());
-            newComponent.heightProperty().bind(root.heightProperty());
-        });
-
         makeDraggable();
     }
 

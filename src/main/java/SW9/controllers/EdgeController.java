@@ -27,10 +27,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -228,11 +225,11 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
                     final Link newLastLink = links.get(links.size() - 1);
                     BindingHelper.bind(newLastLink, simpleArrowHead, nail2, newTargetCircular);
                 } else {
-                    BindingHelper.bind(lastLink, simpleArrowHead, newEdge.getSourceCircular(), newTargetCircular);
+                    BindingHelper.bind(lastLink, simpleArrowHead, newEdge.getSourceCircular(), newEdge.getTargetCircular());
                 }
             } else {
                 final Nail lastNail = nails.get(nails.size() - 1);
-                BindingHelper.bind(lastLink, simpleArrowHead, lastNail, newTargetCircular);
+                BindingHelper.bind(lastLink, simpleArrowHead, lastNail, newEdge.getTargetCircular());
             }
 
             // When the target location is set the
