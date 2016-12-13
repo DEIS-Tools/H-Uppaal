@@ -332,7 +332,8 @@ public class Edge implements Serializable {
         final Consumer<Location> setFromAndToLocationIfMatches = (location) -> {
             if (json.get(SOURCE_LOCATION) != null && location.getId().equals(json.getAsJsonPrimitive(SOURCE_LOCATION).getAsString())) {
                 setSourceLocation(location);
-            } else if (json.get(TARGET_LOCATION) != null && location.getId().equals(json.getAsJsonPrimitive(TARGET_LOCATION).getAsString())) {
+            }
+            if (json.get(TARGET_LOCATION) != null && location.getId().equals(json.getAsJsonPrimitive(TARGET_LOCATION).getAsString())) {
                 setTargetLocation(location);
             }
         };
@@ -345,7 +346,8 @@ public class Edge implements Serializable {
         final Consumer<SubComponent> setFromAndToSubComponentIfMatches = (subComponent) -> {
             if (json.get(SOURCE_SUB_COMPONENT) != null && subComponent.getIdentifier().equals(json.getAsJsonPrimitive(SOURCE_SUB_COMPONENT).getAsString())) {
                 setSourceSubComponent(subComponent);
-            } else if (json.get(TARGET_SUB_COMPONENT) != null && subComponent.getIdentifier().equals(json.getAsJsonPrimitive(TARGET_SUB_COMPONENT).getAsString())) {
+            }
+            if (json.get(TARGET_SUB_COMPONENT) != null && subComponent.getIdentifier().equals(json.getAsJsonPrimitive(TARGET_SUB_COMPONENT).getAsString())) {
                 setTargetSubComponent(subComponent);
             }
         };
