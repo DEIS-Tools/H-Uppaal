@@ -100,6 +100,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 if(!newValue.equals(getComponent())) {
                     if (isPlacingLocation()) {
                         component.get().removeLocation(placingLocation);
+                        ComponentController.setPlacingLocation(null);
                         UndoRedoStack.forget();
                     }
                 }
@@ -111,6 +112,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
                 if (isPlacingLocation()) {
                     component.get().removeLocation(placingLocation);
+                    ComponentController.setPlacingLocation(null);
                     UndoRedoStack.forget();
                 }
 
