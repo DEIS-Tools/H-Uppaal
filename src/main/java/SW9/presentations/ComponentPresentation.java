@@ -22,12 +22,18 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import org.fxmisc.richtext.StyleSpans;
+import org.fxmisc.richtext.StyleSpansBuilder;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
@@ -35,7 +41,21 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
 
     public final static double CORNER_SIZE = 4 * GRID_SIZE;
     public static final double TOOL_BAR_HEIGHT = CORNER_SIZE / 2;
-
+    private static final Pattern XML_TAG = Pattern.compile("(?<ELEMENT>(</?\\h*)(\\w+)([^<>]*)(\\h*/?>))" + "|(?<COMMENT><!--[^<>]+-->)");
+    private static final Pattern ATTRIBUTES = Pattern.compile("(\\w+\\h*)(=)(\\h*\"[^\"]+\")");
+    private static final int GROUP_OPEN_BRACKET = 2;
+    private static final int GROUP_ELEMENT_NAME = 3;
+    private static final int GROUP_ATTRIBUTES_SECTION = 4;
+    private static final int GROUP_CLOSE_BRACKET = 5;
+    private static final int GROUP_ATTRIBUTE_NAME = 1;
+    private static final int GROUP_EQUAL_SYMBOL = 2;
+    private static final int GROUP_ATTRIBUTE_VALUE = 3;
+    private static final String uppaalKeywords = "clock|chan|urgent|broadcast";
+    private static final String cKeywords = "auto|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while";
+    private static final Pattern UPPAAL = Pattern.compile(""
+            + "(" + uppaalKeywords + ")"
+            + "|(" + cKeywords + ")"
+            + "|(//.*|(\"(?:\\\\[^\"]|\\\\\"|.)*?\")|(?s)/\\*.*?\\*/)");
     private final ComponentController controller;
     private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
     private LocationPresentation initialLocationPresentation = null;
@@ -93,9 +113,36 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
                 onUpdateSize.run();
             });
 
+            controller.declaration.textProperty().addListener((obs, oldText, newText) -> {
+                controller.declaration.setStyleSpans(0, computeHighlighting(newText));
+            });
+
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private static StyleSpans<Collection<String>> computeHighlighting(final String text) {
+        final Matcher matcher = UPPAAL.matcher(text);
+        int lastKwEnd = 0;
+        final StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+        while (matcher.find()) {
+
+            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
+
+            if (matcher.group(1) != null) {
+                spansBuilder.add(Collections.singleton("uppaal-keyword"), matcher.end(1) - matcher.start(1));
+            } else if (matcher.group(2) != null) {
+                spansBuilder.add(Collections.singleton("c-keyword"), matcher.end(2) - matcher.start(2));
+            } else if (matcher.group(3) != null) {
+                spansBuilder.add(Collections.singleton("comment"), matcher.end(3) - matcher.start(3));
+            }
+
+            lastKwEnd = matcher.end();
+        }
+
+        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
+        return spansBuilder.create();
     }
 
     private void initializeDragAnchors() {

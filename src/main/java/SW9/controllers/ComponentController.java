@@ -27,7 +27,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
@@ -38,6 +37,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.StyleClassedTextArea;
 
 import java.net.URL;
 import java.util.*;
@@ -57,7 +58,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     private final Map<SubComponent, SubComponentPresentation> subComponentPresentationMap = new HashMap<>();
     public BorderPane toolbar;
     public Rectangle background;
-    public TextArea declaration;
+    public StyleClassedTextArea declaration;
     public JFXRippler toggleDeclarationButton;
     public BorderPane frame;
     public JFXTextField name;
@@ -86,6 +87,8 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+
+        declaration.setParagraphGraphicFactory(LineNumberFactory.get(declaration));
 
         // Register a keybind for adding new locations
         KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
@@ -139,8 +142,15 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             newComponent.yProperty().bindBidirectional(root.layoutYProperty());
 
             // Bind the declarations of the abstraction the the view
-            declaration.setText(newComponent.getDeclarations());
-            newComponent.declarationsProperty().bindBidirectional(declaration.textProperty());
+            declaration.replaceText(0, 0, newComponent.getDeclarations());
+            declaration.textProperty().addListener((observable, oldDeclaration, newDeclaration) -> newComponent.setDeclarations(newDeclaration));
+
+            final boolean[] first = {true};
+            newComponent.declarationsProperty().addListener((observable, oldValue, newValue) -> {
+                if (!first[0]) return;
+                first[0] = false;
+                declaration.replaceText(0, 0, newValue);
+            });
 
             initializeEdgeHandling(newComponent);
             initializeLocationHandling(newComponent);
