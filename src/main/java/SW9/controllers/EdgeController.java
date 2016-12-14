@@ -242,6 +242,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
 
     private void initializeNailCollapse() {
         enlargeNail = nail -> {
+            if(!nail.getPropertyType().equals(Edge.PropertyType.NONE)) return;
             final Timeline animation = new Timeline();
 
             final KeyValue radius0 = new KeyValue(nail.radiusProperty(), NailPresentation.COLLAPSED_RADIUS);
@@ -257,6 +258,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
             animation.play();
         };
         shrinkNail = nail -> {
+            if(!nail.getPropertyType().equals(Edge.PropertyType.NONE)) return;
             final Timeline animation = new Timeline();
 
             final KeyValue radius0 = new KeyValue(nail.radiusProperty(), NailPresentation.COLLAPSED_RADIUS);

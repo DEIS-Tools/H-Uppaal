@@ -13,6 +13,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -35,6 +36,7 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
     public Line propertyTagLine;
     public TagPresentation propertyTag;
     public Group dragGroup;
+    public Label propertyLabel;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {

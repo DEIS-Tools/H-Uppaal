@@ -50,7 +50,7 @@ public class NailHelper {
         if (neededNails > totalPotentialNails) {
             for (int i = 0; i < neededNails; i++) {
                 final double x = unfinishedEdge.getSourceCircular().getX();
-                final double y = unfinishedEdge.getSourceCircular().getY() + GRID_SIZE * 2 * i + 2 * GRID_SIZE;
+                final double y = unfinishedEdge.getSourceCircular().getY() + GRID_SIZE * 2 * i + 3 * GRID_SIZE;
                 unfinishedEdge.insertNailAt(new Nail(x, y), i);
             }
         } else {

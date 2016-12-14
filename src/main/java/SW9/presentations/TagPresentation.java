@@ -42,6 +42,8 @@ public class TagPresentation extends StackPane {
     private double previousY;
     private boolean wasDragged;
 
+    private static double TAG_HEIGHT = 1.6 * GRID_SIZE;
+
     public TagPresentation() {
         final URL location = this.getClass().getResource("TagPresentation.fxml");
 
@@ -77,7 +79,7 @@ public class TagPresentation extends StackPane {
         final JFXTextField textField = (JFXTextField) lookup("#textField");
         final Path shape = (Path) lookup("#shape");
 
-        final Insets insets = new Insets(-1, 2, 0, 2);
+        final Insets insets = new Insets(0,2,0,2);
         textField.setPadding(insets);
         label.setPadding(insets);
 
@@ -97,21 +99,21 @@ public class TagPresentation extends StackPane {
             setMinWidth(newWidth + padding);
             setMaxWidth(newWidth + padding);
 
-            textField.setMinHeight(GRID_SIZE * 1.5);
-            textField.setMaxHeight(GRID_SIZE * 1.5);
+            textField.setMinHeight(TAG_HEIGHT);
+            textField.setMaxHeight(TAG_HEIGHT);
 
             textField.focusedProperty().addListener((observable, oldFocused, newFocused) -> {
                 if (newFocused) {
-                    shape.setTranslateY(0);
-                    textField.setTranslateY(0);
+                    shape.setTranslateY(2);
+                    textField.setTranslateY(2);
                 }
             });
 
             if (getWidth() >= 1000) {
                 setWidth(newWidth);
-                setHeight(GRID_SIZE * 2);
-                shape.setTranslateY(-2);
-                textField.setTranslateY(-2);
+                setHeight(TAG_HEIGHT);
+                shape.setTranslateY(-1);
+                textField.setTranslateY(-1);
             }
 
             // Fixes the jumping of the shape when the text field is empty
@@ -140,7 +142,7 @@ public class TagPresentation extends StackPane {
 
     private void initializeShape() {
         final int WIDTH = 5000;
-        final double HEIGHT = GRID_SIZE * 1.5;
+        final double HEIGHT = TAG_HEIGHT;
 
         final Path shape = (Path) lookup("#shape");
 
@@ -154,7 +156,7 @@ public class TagPresentation extends StackPane {
         shape.getElements().addAll(start, l2, l3, l4, l6);
 
         shape.setFill(backgroundColor.getColor(backgroundColorIntensity));
-        shape.setStroke(backgroundColor.getColor(backgroundColorIntensity.next(2)));
+        shape.setStroke(backgroundColor.getColor(backgroundColorIntensity.next(4)));
 
         final JFXTextField textField = (JFXTextField) lookup("#textField");
         shape.setCursor(Cursor.OPEN_HAND);
@@ -169,7 +171,7 @@ public class TagPresentation extends StackPane {
             setTranslateX(newX);
 
             final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).subtract(getLocationAware().yProperty()).doubleValue() - getHeight() / 2;
-            setTranslateY(newY);
+            setTranslateY(newY - 2);
 
             // Tell the mouse release action that we can store an update
             wasDragged = true;

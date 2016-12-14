@@ -40,6 +40,11 @@
 }
 .sub-caption{
 	-fx-font-family: "Roboto";
+	-fx-font-size: 11.0;
+}
+
+.sub-caption-mono{
+	-fx-font-family: "Roboto Mono";
 	-fx-font-size: 10.0;
 }
 
