@@ -43,12 +43,11 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
     private final SimpleArrowHead simpleArrowHead = new SimpleArrowHead();
     private final SimpleBooleanProperty isHoveringEdge = new SimpleBooleanProperty(false);
     private final SimpleIntegerProperty timeHoveringEdge = new SimpleIntegerProperty(0);
+    private final Map<Nail, NailPresentation> nailNailPresentationMap = new HashMap<>();
     public Group edgeRoot;
     private Runnable collapseNail;
     private Thread runningThread;
     private Consumer<Nail> enlargeNail;
-
-    private final Map<Nail, NailPresentation> nailNailPresentationMap = new HashMap<>();
     private Consumer<Nail> shrinkNail;
 
     @Override
@@ -375,6 +374,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
     @FXML
     public void edgePressed(final MouseEvent event) {
         if (!event.isShiftDown()) {
+            event.consume();
             SelectHelper.select(this);
         }
     }
@@ -409,6 +409,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
 
     @Override
     public void deselect() {
+        System.out.println("deselect");
         edgeRoot.getChildren().forEach(node -> {
             if (node instanceof SelectHelper.Selectable) {
                 ((SelectHelper.Selectable) node).deselect();

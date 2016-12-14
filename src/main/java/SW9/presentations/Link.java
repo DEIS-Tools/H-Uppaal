@@ -1,6 +1,7 @@
 package SW9.presentations;
 
 import SW9.Debug;
+import SW9.utility.colors.Color;
 import SW9.utility.helpers.SelectHelper;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -110,6 +111,6 @@ public class Link extends Group implements SelectHelper.Selectable {
 
     @Override
     public void deselect() {
-        shownLine.setStroke(SelectHelper.getBorderColor());
+        shownLine.setStroke(Color.GREY.getColor(Color.Intensity.I900));
     }
 }
