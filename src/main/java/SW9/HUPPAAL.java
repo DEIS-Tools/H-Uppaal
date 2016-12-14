@@ -3,6 +3,7 @@ package SW9;
 import SW9.abstractions.Component;
 import SW9.abstractions.Project;
 import SW9.abstractions.Query;
+import SW9.controllers.CanvasController;
 import SW9.presentations.HUPPAALPresentation;
 import SW9.presentations.UndoRedoHistoryPresentation;
 import SW9.utility.keyboard.Keybind;
@@ -25,7 +26,6 @@ import jiconfont.javafx.IconFontFX;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.Scanner;
 
 public class HUPPAAL extends Application {
 
@@ -115,6 +115,28 @@ public class HUPPAAL extends Application {
                 final Component componentFromFile = HUPPAAL.getProject().getComponents().filtered(component -> component.getName().equals(file.getName().replace(".json", ""))).get(0);
                 componentFromFile.deserialize(element.getAsJsonObject());
             }
+        }
+
+
+        // Generate all component presentations by making them the active component in the view one by one
+        Component initialShownComponent = null;
+        for (Component component : HUPPAAL.getProject().getComponents()) {
+            // The first component should be shown if there is no main
+            if(initialShownComponent == null) {
+                initialShownComponent = component;
+            }
+
+            // If the component is the main show that one
+            if(component.isIsMain()) {
+                initialShownComponent = component;
+            }
+
+            CanvasController.setActiveComponent(component);
+        }
+
+        // If we found a component (preferably main) set that as active
+        if(initialShownComponent != null) {
+            CanvasController.setActiveComponent(initialShownComponent);
         }
 
         // We're now ready! Let the curtains fall!

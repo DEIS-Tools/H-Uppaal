@@ -19,12 +19,12 @@ public class Location implements Circular, Serializable {
     private static final String TYPE = "type";
     private static final String URGENCY = "urgency";
     private static final String X = "x";
-    private static final String Y = "Y";
+    private static final String Y = "y";
     private static final String COLOR = "color";
     private static final String NICKNAME_X = "nickname_x";
-    private static final String NICKNAME_Y = "nickname_Y";
+    private static final String NICKNAME_Y = "nickname_y";
     private static final String INVARIANT_X = "invariant_x";
-    private static final String INVARIANT_Y = "invariant_Y";
+    private static final String INVARIANT_Y = "invariant_y";
 
     // Verification properties
     private final StringProperty nickname = new SimpleStringProperty("");

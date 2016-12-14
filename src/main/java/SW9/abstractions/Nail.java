@@ -4,18 +4,23 @@ import SW9.utility.helpers.Circular;
 import SW9.utility.serialize.Serializable;
 import com.google.gson.JsonObject;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableDoubleValue;
 
 public class Nail implements Circular, Serializable {
 
+    public enum EdgeProperty {NONE, SELECTION, GUARD, SYNCHRONIZATION, UPDATE}
+
     private static final String X = "x";
-    private static final String Y = "Y";
+    private static final String Y = "y";
 
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
     private final DoubleProperty radius = new SimpleDoubleProperty(3d);
+    private final ObjectProperty<EdgeProperty> edgeProperty = new SimpleObjectProperty<>(EdgeProperty.NONE);
 
     public Nail(final ObservableDoubleValue x, final ObservableDoubleValue y) {
         this(x.get(), y.get());
@@ -66,6 +71,18 @@ public class Nail implements Circular, Serializable {
         return radius;
     }
 
+    public EdgeProperty getEdgeProperty() {
+        return edgeProperty.get();
+    }
+
+    public ObjectProperty<EdgeProperty> edgePropertyProperty() {
+        return edgeProperty;
+    }
+
+    public void setEdgeProperty(EdgeProperty edgeProperty) {
+        this.edgeProperty.set(edgeProperty);
+    }
+
     @Override
     public DoubleProperty scaleProperty() {
         return new SimpleDoubleProperty(1d);
@@ -86,4 +103,5 @@ public class Nail implements Circular, Serializable {
         setX(json.getAsJsonPrimitive(X).getAsDouble());
         setY(json.getAsJsonPrimitive(Y).getAsDouble());
     }
+
 }

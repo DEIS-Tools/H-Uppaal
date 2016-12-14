@@ -3,6 +3,7 @@ package SW9.utility.helpers;
 import SW9.abstractions.Edge;
 import SW9.abstractions.Nail;
 import SW9.utility.keyboard.KeyboardTracker;
+import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
 import java.util.*;
@@ -19,11 +20,15 @@ public class NailHelper {
         // Maps index of a nail to a list of potential new nails before that nail
         final Map<Integer, List<Pair<Double, Double>>> nailIndexToPotentialNewNailsMap = new HashMap<>();
 
-        // Run through all the segments that we have (between all nails, and from the locations of the edge)
+        // The list of all nails
+        ObservableList<Nail> nails = unfinishedEdge.getNails();
+
+        // Run through all the segments that we have (between all nails, and from the circulars of the edge)
         int nailIndex = 0; // Counts the index of the nail in the edge we find segments for
         int totalPotentialNails = 0; // A counter to count total amount of new potential nails
-        Circular from = unfinishedEdge.getSourceCircular(); // We start from source locations
-        for (final Nail nail : unfinishedEdge.getNails()) { // Run through all nails
+        Circular from = unfinishedEdge.getSourceCircular(); // We start from source circulars
+
+        for (final Nail nail : nails) { // Run through all nails
 
             // Find the index of the nail at hans
             final List<Pair<Double, Double>> potentialNails = getPotentialNailSegments(from, nail);
@@ -33,15 +38,15 @@ public class NailHelper {
             nailIndex++;
         }
 
-        // Find the last segment from the last nail (or source location given no nails) to the target locations
+        // Find the last segment from the last nail (or source circular given no nails) to the target circulars
         final Circular end = unfinishedEdge.getTargetCircular();
         final List<Pair<Double, Double>> potentialNails = getPotentialNailSegments(from, end);
         nailIndexToPotentialNewNailsMap.put(nailIndex, potentialNails);
         totalPotentialNails += potentialNails.size();
 
-        final double neededNails = REQUIRED_NAILS - unfinishedEdge.getNails().size();
+        final double neededNails = REQUIRED_NAILS - nails.size();
 
-        // If we do not have enough potential nails simply draw enough below the source location
+        // If we do not have enough potential nails simply draw enough below the source circular
         if (neededNails > totalPotentialNails) {
             for (int i = 0; i < neededNails; i++) {
                 final double x = unfinishedEdge.getSourceCircular().getX();
@@ -60,6 +65,17 @@ public class NailHelper {
                     unfinishedEdge.insertNailAt(new Nail(toBeNail.getKey(), toBeNail.getValue()), newNailsSegment.getKey() + newNailsAdded);
                     newNailsAdded++;
                 }
+            }
+        }
+
+        // Mark the first 4 nails as property nails
+        for (int i = 0; i < nails.size(); i++) {
+            switch (i) {
+                case 0: nails.get(i).setEdgeProperty(Nail.EdgeProperty.SELECTION); continue;
+                case 1: nails.get(i).setEdgeProperty(Nail.EdgeProperty.GUARD); continue;
+                case 2: nails.get(i).setEdgeProperty(Nail.EdgeProperty.SYNCHRONIZATION); continue;
+                case 3: nails.get(i).setEdgeProperty(Nail.EdgeProperty.UPDATE); continue;
+                default: return;
             }
         }
     }
