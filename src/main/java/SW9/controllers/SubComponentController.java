@@ -35,7 +35,6 @@ public class SubComponentController implements Initializable {
     public BorderPane toolbar;
     public Rectangle background;
     public BorderPane frame;
-    public JFXTextField name;
     public JFXTextField identifier;
     public Label originalComponent;
     public StackPane root;
