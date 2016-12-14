@@ -14,7 +14,9 @@
     <Rectangle fx:id="background" StackPane.alignment="TOP_LEFT"/>
 
     <StackPane>
-        <Pane fx:id="modelContainer" onMousePressed="#modelContainerPressed"/>
+        <Pane fx:id="modelContainerSubComponent" onMousePressed="#modelContainerPressed"/>
+        <Pane fx:id="modelContainerLocation" pickOnBounds="false"/>
+        <Pane fx:id="modelContainerEdge" pickOnBounds="false"/>
     </StackPane>
 
     <BorderPane fx:id="frame" pickOnBounds="false">

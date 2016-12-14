@@ -17,7 +17,6 @@ import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXTextField;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
-import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -61,7 +60,6 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     public BorderPane frame;
     public JFXTextField name;
     public StackPane root;
-    public Pane modelContainer;
     public Line line1;
     public Line line2;
     public Label x;
@@ -69,6 +67,9 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     public Pane defaultLocationsContainer;
     public Rectangle rightAnchor;
     public Rectangle bottomAnchor;
+    public Pane modelContainerSubComponent;
+    public Pane modelContainerLocation;
+    public Pane modelContainerEdge;
     private MouseTracker mouseTracker;
     private DropDownMenu dropDownMenu;
     private Circle dropDownMenuHelperCircle;
@@ -163,25 +164,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         mouseTracker = new MouseTracker(root);
 
         initializeDropDownMenu();
-
-        initializeEdgesFirstBehaviour();
     }
-
-    private void initializeEdgesFirstBehaviour() {
-        modelContainer.getChildren().addListener(new ListChangeListener<Node>() {
-            @Override
-            public void onChanged(Change<? extends Node> c) {
-                modelContainer.getChildren().forEach(node -> {
-                    if (node instanceof EdgePresentation) {
-                        Platform.runLater(node::toFront);
-                    } else if (node instanceof SubComponentPresentation) {
-                        Platform.runLater(node::toBack);
-                    }
-                });
-            }
-        });
-    }
-
     private void initializeDropDownMenu() {
         dropDownMenuHelperCircle = new Circle(5);
         dropDownMenuHelperCircle.setOpacity(0);
@@ -242,7 +225,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             locationPresentationMap.put(loc, newLocationPresentation);
 
             // Add it to the view
-            modelContainer.getChildren().add(newLocationPresentation);
+            modelContainerLocation.getChildren().add(newLocationPresentation);
 
             // Bind the newly created location to the mouse and tell the ui that it is not placed yet
             if (loc.getX() == 0) {
@@ -262,7 +245,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 // Locations are removed from the component
                 c.getRemoved().forEach(location -> {
                     final LocationPresentation locationPresentation = locationPresentationMap.get(location);
-                    modelContainer.getChildren().remove(locationPresentation);
+                    modelContainerLocation.getChildren().remove(locationPresentation);
                     locationPresentationMap.remove(location);
                 });
             }
@@ -277,7 +260,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         final Consumer<Edge> handleAddedEdge = edge -> {
             final EdgePresentation edgePresentation = new EdgePresentation(edge, newComponent);
             edgePresentationMap.put(edge, edgePresentation);
-            modelContainer.getChildren().add(edgePresentation);
+            modelContainerEdge.getChildren().add(edgePresentation);
 
             final Consumer<Circular> updateMouseTransparency = (newTargetLocation) -> {
                 if (newTargetLocation == null) {
@@ -306,7 +289,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                     // Edges are removed from the component
                     c.getRemoved().forEach(edge -> {
                         final EdgePresentation edgePresentation = edgePresentationMap.get(edge);
-                        modelContainer.getChildren().remove(edgePresentation);
+                        modelContainerEdge.getChildren().remove(edgePresentation);
                         edgePresentationMap.remove(edge);
                     });
                 }
@@ -320,7 +303,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         final Consumer<SubComponent> handleAddedSubComponent = subComponent -> {
             final SubComponentPresentation subComponentPresentation = new SubComponentPresentation(subComponent, getComponent());
             subComponentPresentationMap.put(subComponent, subComponentPresentation);
-            modelContainer.getChildren().add(subComponentPresentation);
+            modelContainerSubComponent.getChildren().add(subComponentPresentation);
         };
 
         // React on addition of sub components to the component
@@ -334,7 +317,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                     // SubComponents are removed from the component
                     c.getRemoved().forEach(subComponent -> {
                         final SubComponentPresentation subComponentPresentation = subComponentPresentationMap.get(subComponent);
-                        modelContainer.getChildren().remove(subComponentPresentation);
+                        modelContainerSubComponent.getChildren().remove(subComponentPresentation);
                     });
                 }
             }
@@ -458,14 +441,14 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     public void select() {
         ((SelectHelper.Selectable) root).select();
 
-        final Consumer<Node> sugLocations = node -> {
+        final Consumer<Node> selectLocations = node -> {
             if (node instanceof LocationPresentation) {
                 SelectHelper.addToSelection(((LocationPresentation) node).getController());
             }
         };
 
-        modelContainer.getChildren().forEach(sugLocations);
-        defaultLocationsContainer.getChildren().forEach(sugLocations);
+        modelContainerLocation.getChildren().forEach(selectLocations);
+        defaultLocationsContainer.getChildren().forEach(selectLocations);
     }
 
     @Override
