@@ -1,9 +1,9 @@
 package SW9.presentations;
 
 import SW9.abstractions.Component;
-import SW9.abstractions.Location;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
+import SW9.utility.helpers.LocationAware;
 import com.jfoenix.controls.JFXTextField;
 import javafx.animation.PauseTransition;
 import javafx.beans.binding.When;
@@ -34,13 +34,14 @@ public class TagPresentation extends StackPane {
     private final static Color.Intensity backgroundColorIntensity = Color.Intensity.I50;
 
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
-    private final ObjectProperty<Location> location = new SimpleObjectProperty<>(null);
+    private final ObjectProperty<LocationAware> locationAware = new SimpleObjectProperty<>(null);
 
     private LineTo l2;
     private LineTo l3;
     private double previousX;
     private double previousY;
     private boolean wasDragged;
+
     public TagPresentation() {
         final URL location = this.getClass().getResource("TagPresentation.fxml");
 
@@ -126,6 +127,15 @@ public class TagPresentation extends StackPane {
                 setOpacity(0);
             }
         });
+
+        // Show and hide the tag according to focus of the text field
+        opacityProperty().addListener((obs, oldOpacity, newOpacity) -> {
+            if (newOpacity.doubleValue() < 1) {
+                if (textFieldIsFocused()) {
+                    setOpacity(1);
+                }
+            }
+        });
     }
 
     private void initializeShape() {
@@ -155,10 +165,10 @@ public class TagPresentation extends StackPane {
         });
 
         shape.setOnMouseDragged(event -> {
-            final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).subtract(getLocation().xProperty()).doubleValue() - getMinWidth() / 2;
+            final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).subtract(getLocationAware().xProperty()).doubleValue() - getMinWidth() / 2;
             setTranslateX(newX);
 
-            final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).subtract(getLocation().yProperty()).doubleValue() - getHeight() / 2;
+            final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).subtract(getLocationAware().yProperty()).doubleValue() - getHeight() / 2;
             setTranslateY(newY);
 
             // Tell the mouse release action that we can store an update
@@ -235,6 +245,13 @@ public class TagPresentation extends StackPane {
     public void setAndBindString(final StringProperty string) {
         final JFXTextField textField = (JFXTextField) lookup("#textField");
 
+        // If the content of the tag is going to be empty, start out by hiding it
+        if(string.get().equals("")) {
+            setOpacity(0);
+        } else {
+            setOpacity(1);
+        }
+
         textField.textProperty().unbind();
         textField.setText(string.get());
         string.bind(textField.textProperty());
@@ -267,15 +284,15 @@ public class TagPresentation extends StackPane {
         return component;
     }
 
-    public Location getLocation() {
-        return location.get();
+    public LocationAware getLocationAware() {
+        return locationAware.get();
     }
 
-    public void setLocation(final Location location) {
-        this.location.set(location);
+    public ObjectProperty<LocationAware> locationAwareProperty() {
+        return locationAware;
     }
 
-    public ObjectProperty<Location> locationProperty() {
-        return location;
+    public void setLocationAware(LocationAware locationAware) {
+        this.locationAware.set(locationAware);
     }
 }

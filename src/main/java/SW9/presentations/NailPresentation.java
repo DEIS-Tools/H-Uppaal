@@ -2,17 +2,19 @@ package SW9.presentations;
 
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
-import SW9.abstractions.Location;
 import SW9.abstractions.Nail;
 import SW9.controllers.NailController;
 import SW9.utility.colors.Color;
+import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.SelectHelper;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
+import javafx.scene.shape.Line;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.function.Consumer;
 
 public class NailPresentation extends Group implements SelectHelper.Selectable {
 
@@ -45,9 +47,68 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
 
             initializeNailCircle();
 
+            initializePropertyTag();
+
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializePropertyTag() {
+
+        final TagPresentation propertyTag = controller.propertyTag;
+        final Line propertyTagLine = controller.propertyTagLine;
+        propertyTag.setComponent(controller.getComponent());
+        propertyTag.setLocationAware(controller.getNail());
+
+        // Bind the line to the tag
+        BindingHelper.bind(propertyTagLine, propertyTag);
+
+        // Bind the color of the tag to the color of the component
+        propertyTag.bindToColor(controller.getComponent().colorProperty(), controller.getComponent().colorIntensityProperty());
+
+        // Updates visibility and placeholder of the tag depending on the type of nail
+        final Consumer<Edge.PropertyType> updatePropertyType = (propertyType) -> {
+
+            // If it is not a property nail hide the tag otherwise show it and write proper placeholder
+            if(propertyType.equals(Edge.PropertyType.NONE)) {
+                propertyTag.setVisible(false);
+                propertyTagLine.setVisible(false);
+            } else {
+
+                // Show the property tag since the nail is a property nail
+                propertyTag.setVisible(true);
+                propertyTagLine.setVisible(true);
+
+                // Set and bind the location of the property tag
+                propertyTag.setTranslateX(controller.getNail().getPropertyX());
+                propertyTag.setTranslateY(controller.getNail().getPropertyY());
+                controller.getNail().propertyXProperty().bind(propertyTag.translateXProperty());
+                controller.getNail().propertyYProperty().bind(propertyTag.translateYProperty());
+
+                if(propertyType.equals(Edge.PropertyType.SELECTION)) {
+                    propertyTag.setPlaceholder("Select");
+                    propertyTag.setAndBindString(controller.getEdge().selectProperty());
+                } else if(propertyType.equals(Edge.PropertyType.GUARD)) {
+                    propertyTag.setPlaceholder("Guard");
+                    propertyTag.setAndBindString(controller.getEdge().guardProperty());
+                } else if(propertyType.equals(Edge.PropertyType.SYNCHRONIZATION)) {
+                    propertyTag.setPlaceholder("Sync");
+                    propertyTag.setAndBindString(controller.getEdge().syncProperty());
+                } else if(propertyType.equals(Edge.PropertyType.UPDATE)) {
+                    propertyTag.setPlaceholder("Update");
+                    propertyTag.setAndBindString(controller.getEdge().updateProperty());
+                }
+            }
+        };
+
+        // Whenever the property type updates update the tag
+        controller.getNail().propertyTypeProperty().addListener((obs, oldPropertyType, newPropertyType) -> {
+            updatePropertyType.accept(newPropertyType);
+        });
+
+        // Update the tag initially
+        updatePropertyType.accept(controller.getNail().getPropertyType());
     }
 
     private void initializeNailCircle() {

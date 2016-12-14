@@ -31,11 +31,11 @@
            onMouseReleased="#mouseReleased"
            onMouseDragged="#mouseDragged">
 
-        <!-- Circular location -->
+        <!-- Circular locationAware -->
         <Circle fx:id="circle" strokeType="INSIDE" opacity="0"/>
         <Circle fx:id="circleShakeIndicator" radius="10" mouseTransparent="true" fill="white" opacity="0"/>
 
-        <!-- The transformable location shape -->
+        <!-- The transformable locationAware shape -->
         <Path fx:id="locationShape" strokeType="INSIDE"/>
 
         <Group fx:id="shakeContent">

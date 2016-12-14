@@ -208,31 +208,13 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             updateVisibilityFromInvariant.accept(location.getInvariant());
 
             controller.nameTag.setComponent(controller.getComponent());
-            controller.nameTag.setLocation(location);
+            controller.nameTag.setLocationAware(location);
             BindingHelper.bind(controller.nameTagLine, controller.nameTag);
 
             controller.invariantTag.setComponent(controller.getComponent());
-            controller.invariantTag.setLocation(location);
+            controller.invariantTag.setLocationAware(location);
             BindingHelper.bind(controller.invariantTagLine, controller.invariantTag);
         };
-
-        // Show and hide the name tag properly
-        controller.nameTag.opacityProperty().addListener((obs, oldOpacity, newOpacity) -> {
-            if (newOpacity.doubleValue() < 1) {
-                if (controller.nameTag.textFieldIsFocused()) {
-                    controller.nameTag.setOpacity(1);
-                }
-            }
-        });
-
-        // Show and hide the invariant tag properly
-        controller.invariantTag.opacityProperty().addListener((obs, oldOpacity, newOpacity) -> {
-            if (newOpacity.doubleValue() < 1) {
-                if (controller.invariantTag.textFieldIsFocused()) {
-                    controller.invariantTag.setOpacity(1);
-                }
-            }
-        });
 
         controller.nameTag.setOnKeyPressed(CanvasController.getEnterKeyHandler());
         controller.invariantTag.setOnKeyPressed(CanvasController.getEnterKeyHandler());

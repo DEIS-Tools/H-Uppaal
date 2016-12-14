@@ -207,7 +207,6 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
     private ChangeListener<Circular> getNewTargetCircularListener(final Edge newEdge) {
         // When the target location is set, finish drawing the edge
         return (obsTargetLocation, oldTargetCircular, newTargetCircular) -> {
-
             // If the nails list is empty, directly connect the source and target locations
             // otherwise, bind the line from the last nail to the target location
             final Link lastLink = links.get(links.size() - 1);

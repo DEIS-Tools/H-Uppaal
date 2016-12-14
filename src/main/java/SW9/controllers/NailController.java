@@ -4,18 +4,18 @@ import SW9.Debug;
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.abstractions.Nail;
-import SW9.presentations.CanvasPresentation;
-import SW9.presentations.ComponentPresentation;
-import SW9.presentations.LocationPresentation;
-import SW9.presentations.NailPresentation;
+import SW9.presentations.*;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.ItemDragHelper;
 import SW9.utility.helpers.SelectHelper;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -32,6 +32,9 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
     public Group root;
     public Circle nailCircle;
     public Circle dragCircle;
+    public Line propertyTagLine;
+    public TagPresentation propertyTag;
+    public Group dragGroup;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -93,7 +96,7 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
 
         ItemDragHelper.makeDraggable(
                 root,
-                root,
+                dragGroup,
                 supplyX,
                 supplyY,
                 (event) -> {
@@ -164,5 +167,20 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
     @Override
     public void deselect() {
         ((SelectHelper.Selectable) root).deselect();
+    }
+
+    @FXML
+    private void mouseEntered() {
+        propertyTag.setOpacity(1);
+    }
+
+    @FXML
+    private void mouseExited() {
+        if (getEdge().getProperty(getNail().getPropertyType()).equals("")) {
+            propertyTag.setOpacity(0);
+        } else {
+            propertyTag.setOpacity(1);
+        }
+
     }
 }

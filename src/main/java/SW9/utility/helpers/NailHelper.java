@@ -71,10 +71,10 @@ public class NailHelper {
         // Mark the first 4 nails as property nails
         for (int i = 0; i < nails.size(); i++) {
             switch (i) {
-                case 0: nails.get(i).setEdgeProperty(Nail.EdgeProperty.SELECTION); continue;
-                case 1: nails.get(i).setEdgeProperty(Nail.EdgeProperty.GUARD); continue;
-                case 2: nails.get(i).setEdgeProperty(Nail.EdgeProperty.SYNCHRONIZATION); continue;
-                case 3: nails.get(i).setEdgeProperty(Nail.EdgeProperty.UPDATE); continue;
+                case 0: nails.get(i).setPropertyType(Edge.PropertyType.SELECTION); continue;
+                case 1: nails.get(i).setPropertyType(Edge.PropertyType.GUARD); continue;
+                case 2: nails.get(i).setPropertyType(Edge.PropertyType.SYNCHRONIZATION); continue;
+                case 3: nails.get(i).setPropertyType(Edge.PropertyType.UPDATE); continue;
                 default: return;
             }
         }

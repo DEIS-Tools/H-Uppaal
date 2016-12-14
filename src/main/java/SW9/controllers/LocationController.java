@@ -298,55 +298,6 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
         }
     }
 
-    private List<Pair<Double, Double>> getPotentialNailSegments(Circular start, Circular end) {
-
-        final List<Pair<Double, Double>> result = new ArrayList<>();
-        boolean wasSwapped = false;
-
-        if (start.xProperty().get() == end.xProperty().get()) {
-            if (end.yProperty().get() < start.yProperty().get()) {
-                final Circular swap = start;
-                start = end;
-                end = swap;
-                wasSwapped = true;
-            }
-
-            double count = 2;
-            final double x = start.xProperty().get();
-            while (start.yProperty().get() + count * GRID_SIZE <= end.yProperty().get() - GRID_SIZE * 2) {
-                final double y = start.yProperty().get() + count * GRID_SIZE;
-                result.add(new Pair<>(x, y));
-                count += 2;
-            }
-        }
-
-        if (end.xProperty().get() < start.xProperty().get()) {
-            final Circular swap = start;
-            start = end;
-            end = swap;
-            wasSwapped = true;
-        }
-
-        final double a = (start.yProperty().get() - end.yProperty().get()) / (start.xProperty().get() - end.xProperty().get());
-        final double b = start.yProperty().get() - a * start.xProperty().get();
-
-        double count = 2;
-        while (start.xProperty().get() + count * GRID_SIZE <= end.xProperty().get() - GRID_SIZE * 2) {
-            final double x = start.xProperty().get() + count * GRID_SIZE;
-            final double y = x * a + b;
-            if (y % GRID_SIZE < 1) {
-                result.add(new Pair<>(x, y));
-                count++;
-            }
-            count++;
-        }
-
-        if (wasSwapped) {
-            Collections.reverse(result);
-        }
-        return result;
-    }
-
     @FXML
     private void mouseDragged(final MouseEvent event) {
         // If the location is not a normal location (not initial/final) make it draggable

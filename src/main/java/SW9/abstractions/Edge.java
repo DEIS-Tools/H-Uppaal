@@ -45,6 +45,8 @@ public class Edge implements Serializable {
     private Circular sourceCircular;
     private Circular targetCircular;
 
+    public enum PropertyType {NONE, SELECTION, GUARD, SYNCHRONIZATION, UPDATE}
+
     public Edge(final Location sourceLocation) {
         this.sourceLocation.set(sourceLocation);
     }
@@ -290,6 +292,20 @@ public class Edge implements Serializable {
         return null;
     }
 
+    public String getProperty(final PropertyType propertyType) {
+        if (propertyType.equals(PropertyType.SELECTION)) {
+            return getSelect();
+        } else if (propertyType.equals(PropertyType.GUARD)) {
+            return getGuard();
+        } else if (propertyType.equals(PropertyType.SYNCHRONIZATION)) {
+            return getSync();
+        } else if (propertyType.equals(PropertyType.UPDATE)) {
+            return getUpdate();
+        } else {
+            return "";
+        }
+    }
+
     @Override
     public JsonObject serialize() {
         final JsonObject result = new JsonObject();
@@ -364,4 +380,5 @@ public class Edge implements Serializable {
             nails.add(newNail);
         });
     }
+
 }
