@@ -17,6 +17,7 @@ import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXTextField;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
+import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -162,6 +163,23 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         mouseTracker = new MouseTracker(root);
 
         initializeDropDownMenu();
+
+        initializeEdgesFirstBehaviour();
+    }
+
+    private void initializeEdgesFirstBehaviour() {
+        modelContainer.getChildren().addListener(new ListChangeListener<Node>() {
+            @Override
+            public void onChanged(Change<? extends Node> c) {
+                modelContainer.getChildren().forEach(node -> {
+                    if (node instanceof EdgePresentation) {
+                        Platform.runLater(node::toFront);
+                    } else if (node instanceof SubComponentPresentation) {
+                        Platform.runLater(node::toBack);
+                    }
+                });
+            }
+        });
     }
 
     private void initializeDropDownMenu() {
