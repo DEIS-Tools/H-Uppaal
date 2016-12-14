@@ -93,7 +93,7 @@ public class NailHelper {
                 wasSwapped = true;
             }
 
-            double count = 2;
+            double count = 3;
             final double x = start.xProperty().get();
             while (start.yProperty().get() + count * GRID_SIZE <= end.yProperty().get() - GRID_SIZE * 2) {
                 final double y = start.yProperty().get() + count * GRID_SIZE;
