@@ -314,6 +314,11 @@ public class HUPPAALController implements Initializable {
                 final Edge edge = nailController.getEdge();
                 final Nail nail = nailController.getNail();
                 final int index = edge.getNails().indexOf(nail);
+
+                // If the nail is a property nail disallow deletion
+                if(!nail.getPropertyType().equals(Edge.PropertyType.NONE)) return;
+                // TODO show some error to the user
+
                 UndoRedoStack.push(
                         ()-> edge.removeNail(nail),
                         ()-> edge.insertNailAt(nail,index),
