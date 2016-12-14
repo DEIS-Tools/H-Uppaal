@@ -43,6 +43,11 @@
 	-fx-font-size: 10.0;
 }
 
+.sub-caption-mono{
+	-fx-font-family: "Roboto Mono";
+	-fx-font-size: 10.0;
+}
+
 .edge-property{
 	-fx-font-family: "Roboto Mono Medium";
 	-fx-font-size: 12.0;

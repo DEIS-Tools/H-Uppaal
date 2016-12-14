@@ -10,6 +10,7 @@ import SW9.utility.helpers.SelectHelper;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.shape.Line;
 
 import java.io.IOException;
@@ -49,9 +50,26 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
 
             initializePropertyTag();
 
+            initializeRadius();
+
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeRadius() {
+
+        final Consumer<Edge.PropertyType> radiusUpdater = (propertyType) -> {
+            if(!propertyType.equals(Edge.PropertyType.NONE)) {
+                controller.getNail().setRadius(NailPresentation.HOVERED_RADIUS);
+            }
+        };
+
+        controller.getNail().propertyTypeProperty().addListener((observable, oldValue, newValue) -> {
+            radiusUpdater.accept(newValue);
+        });
+
+        radiusUpdater.accept(controller.getNail().getPropertyType());
     }
 
     private void initializePropertyTag() {
@@ -88,17 +106,31 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
                 controller.getNail().propertyXProperty().bind(propertyTag.translateXProperty());
                 controller.getNail().propertyYProperty().bind(propertyTag.translateYProperty());
 
+                Label propertyLabel = controller.propertyLabel;
+
                 if(propertyType.equals(Edge.PropertyType.SELECTION)) {
                     propertyTag.setPlaceholder("Select");
+                    propertyLabel.setText(":");
+                    propertyLabel.setTranslateX(-3);
+                    propertyLabel.setTranslateY(-8);
                     propertyTag.setAndBindString(controller.getEdge().selectProperty());
                 } else if(propertyType.equals(Edge.PropertyType.GUARD)) {
                     propertyTag.setPlaceholder("Guard");
+                    propertyLabel.setText("<");
+                    propertyLabel.setTranslateX(-3);
+                    propertyLabel.setTranslateY(-7);
                     propertyTag.setAndBindString(controller.getEdge().guardProperty());
                 } else if(propertyType.equals(Edge.PropertyType.SYNCHRONIZATION)) {
                     propertyTag.setPlaceholder("Sync");
+                    propertyLabel.setText("!?");
+                    propertyLabel.setTranslateX(-6);
+                    propertyLabel.setTranslateY(-7);
                     propertyTag.setAndBindString(controller.getEdge().syncProperty());
                 } else if(propertyType.equals(Edge.PropertyType.UPDATE)) {
                     propertyTag.setPlaceholder("Update");
+                    propertyLabel.setText("=");
+                    propertyLabel.setTranslateX(-3);
+                    propertyLabel.setTranslateY(-7);
                     propertyTag.setAndBindString(controller.getEdge().updateProperty());
                 }
             }
