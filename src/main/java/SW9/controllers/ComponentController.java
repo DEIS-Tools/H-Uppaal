@@ -41,6 +41,7 @@ import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
@@ -348,19 +349,17 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             edgePresentationMap.put(edge, edgePresentation);
             modelContainerEdge.getChildren().add(edgePresentation);
 
-            final Consumer<Circular> updateMouseTransparency = (newTargetLocation) -> {
-                if (newTargetLocation == null) {
+            final BiConsumer<Circular, Circular> updateMouseTransparency = (newTargetLocation, newTargetSubComponent) -> {
+                if (newTargetLocation == null && newTargetSubComponent == null) {
                     edgePresentation.setMouseTransparent(true);
                 } else {
                     edgePresentation.setMouseTransparent(false);
                 }
             };
 
-            edge.targetLocationProperty().addListener((obs1, oldTarget, newTarget) -> updateMouseTransparency.accept(newTarget));
-            edge.targetSubComponentProperty().addListener((obs1, oldTarget, newTarget) -> updateMouseTransparency.accept(newTarget));
-
-            updateMouseTransparency.accept(edge.getTargetLocation());
-            updateMouseTransparency.accept(edge.getTargetSubComponent());
+            edge.targetLocationProperty().addListener((obs1, oldTarget, newTarget) -> updateMouseTransparency.accept(newTarget, edge.getTargetSubComponent()));
+            edge.targetSubComponentProperty().addListener((obs1, oldTarget, newTarget) -> updateMouseTransparency.accept(edge.getTargetLocation(), newTarget));
+            updateMouseTransparency.accept(edge.getTargetLocation(), edge.getTargetSubComponent());
         };
 
 
