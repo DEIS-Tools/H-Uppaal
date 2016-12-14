@@ -21,9 +21,9 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     private static final String NAME = "name";
     private static final String DECLARATIONS = "declarations";
     private static final String LOCATIONS = "locations";
-    private static final String INITIAL_LOCATION = "initialLocation";
-    private static final String FINAL_LOCATION = "finalLocation";
-    private static final String SUBCOMPONENTS = "subcomponents";
+    private static final String INITIAL_LOCATION = "initial_location";
+    private static final String FINAL_LOCATION = "final_location";
+    private static final String SUBCOMPONENTS = "sub_components";
     private static final String EDGES = "edges";
     private static final String IS_MAIN = "main";
     private static final String X = "x";
@@ -31,7 +31,7 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     private static final String WIDTH = "width";
     private static final String HEIGHT = "height";
     private static final String COLOR = "color";
-    private static final String COLOR_INTENSITY = "colorIntensity";
+    private static final String COLOR_INTENSITY = "color_intensity";
 
     // Verification properties
     private final StringProperty name = new SimpleStringProperty("");
