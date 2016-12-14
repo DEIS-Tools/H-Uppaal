@@ -2,6 +2,7 @@ package SW9.presentations;
 
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
+import SW9.abstractions.Location;
 import SW9.abstractions.Nail;
 import SW9.controllers.NailController;
 import SW9.utility.colors.Color;
@@ -12,7 +13,6 @@ import javafx.scene.Group;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.function.Consumer;
 
 public class NailPresentation extends Group implements SelectHelper.Selectable {
 
@@ -44,43 +44,11 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
             controller.setNail(nail);
 
             initializeNailCircle();
-            initializePropertyTag();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
     }
-
-    private void initializePropertyTag() {
-        controller.propertyTag.setComponent(controller.getComponent());
-        controller.propertyTag.setLocationAware(controller.getNail());
-
-        final Consumer<Nail.EdgeProperty> updateEdgePropertyTag = (property) -> {
-            if (property.equals(Nail.EdgeProperty.NONE)) {
-                controller.propertyTag.setVisible(false);
-                controller.propertyTagLine.setVisible(false);
-            } else {
-                controller.propertyTag.setVisible(true);
-                controller.propertyTagLine.setVisible(true);
-                if (property.equals(Nail.EdgeProperty.SELECTION)) {
-                    controller.propertyTag.setPlaceholder("Select");
-                } else if (property.equals(Nail.EdgeProperty.GUARD)) {
-                    controller.propertyTag.setPlaceholder("Guard");
-                } else if (property.equals(Nail.EdgeProperty.SYNCHRONIZATION)) {
-                    controller.propertyTag.setPlaceholder("Synchronization");
-                } else if (property.equals(Nail.EdgeProperty.UPDATE)) {
-                    controller.propertyTag.setPlaceholder("Update");
-                }
-            }
-        };
-
-        controller.getNail().edgePropertyProperty().addListener((observable, oldValue, newValue) -> {
-            updateEdgePropertyTag.accept(newValue);
-        });
-
-        updateEdgePropertyTag.accept(controller.getNail().getEdgeProperty());
-    }
-
 
     private void initializeNailCircle() {
         final Runnable updateNailColor = () -> {

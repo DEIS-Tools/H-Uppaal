@@ -208,11 +208,11 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             updateVisibilityFromInvariant.accept(location.getInvariant());
 
             controller.nameTag.setComponent(controller.getComponent());
-            controller.nameTag.setLocationAware(location);
+            controller.nameTag.setLocation(location);
             BindingHelper.bind(controller.nameTagLine, controller.nameTag);
 
             controller.invariantTag.setComponent(controller.getComponent());
-            controller.invariantTag.setLocationAware(location);
+            controller.invariantTag.setLocation(location);
             BindingHelper.bind(controller.invariantTagLine, controller.invariantTag);
         };
 
