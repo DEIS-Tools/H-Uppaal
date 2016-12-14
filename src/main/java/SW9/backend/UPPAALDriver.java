@@ -1,11 +1,13 @@
 package SW9.backend;
 
 import SW9.abstractions.Component;
+import SW9.code_analysis.CodeAnalysis;
 import com.uppaal.engine.Engine;
 import com.uppaal.engine.EngineException;
 import com.uppaal.engine.Problem;
 import com.uppaal.model.core2.Document;
 import com.uppaal.model.system.UppaalSystem;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 import java.io.File;
@@ -93,11 +95,38 @@ public class UPPAALDriver {
             // Get the system, and fill the problems list if any
             final UppaalSystem system = engine.getSystem(queryListener.getHUPPAALDocument().toUPPAALDocument(), problems);
 
-            // Check if there is any problems
-            if (!problems.isEmpty()) {
-                problems.forEach(problem -> System.out.println("problem: " + problem));
+            // Run on UI thread
+            Platform.runLater(() -> {
+                // Clear the UI for backend-errors
+                CodeAnalysis.clearBackendErrors();
 
-            }
+                // Check if there is any problems
+                if (!problems.isEmpty()) {
+                    problems.forEach(problem -> {
+                        System.out.println("problem: " + problem);
+
+                        // Generate the message
+                        CodeAnalysis.Message message = null;
+                        if (problem.getPath().contains("declaration")) {
+                            final String[] lines = problem.getLocation().split("\\n");
+                            final String errorLine = lines[problem.getFirstLine() - 1];
+
+                            message = new CodeAnalysis.Message(
+                                    problem.getMessage() + " on line " + problem.getFirstLine() + " (" + errorLine + ")",
+                                    CodeAnalysis.MessageType.ERROR
+                            );
+                        } else {
+                            message = new CodeAnalysis.Message(
+                                    problem.getMessage() + " (" + problem.getLocation() + ")",
+                                    CodeAnalysis.MessageType.ERROR
+                            );
+                        }
+
+
+                        CodeAnalysis.addBackendError(message);
+                    });
+                }
+            });
 
             // Update some internal state for the engine by getting the initial state
             engine.getInitialState(system);

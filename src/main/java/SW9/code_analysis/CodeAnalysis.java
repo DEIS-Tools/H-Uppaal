@@ -11,6 +11,7 @@ import java.util.Map;
 
 public class CodeAnalysis {
 
+    private static final ObservableList<Message> backendErrors = FXCollections.observableArrayList();
     private static final ObservableList<Message> warnings = FXCollections.observableArrayList();
     private static final ObservableList<Message> errors = FXCollections.observableArrayList();
 
@@ -102,6 +103,18 @@ public class CodeAnalysis {
 
     public static ObservableList<Message> getErrors() {
         return errors;
+    }
+
+    public static void addBackendError(final Message message) {
+        backendErrors.add(message);
+    }
+
+    public static void clearBackendErrors() {
+        backendErrors.clear();
+    }
+
+    public static ObservableList<Message> getBackendErrors() {
+        return backendErrors;
     }
 
     public enum MessageType {WARNING, ERROR}

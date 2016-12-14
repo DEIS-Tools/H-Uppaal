@@ -129,9 +129,23 @@ public class HUPPAALPresentation extends StackPane {
         controller.warningsScrollPane.setStyle("-fx-background-color: transparent;");
 
         // Update the tab-text
+        CodeAnalysis.getBackendErrors().addListener(new InvalidationListener() {
+            @Override
+            public void invalidated(final Observable observable) {
+                final int errors = CodeAnalysis.getBackendErrors().size();
+                if (errors == 0) {
+                    controller.backendErrorsTab.setText("Backend Errors");
+                } else {
+                    controller.backendErrorsTab.setText("Backend Errors (" + errors + ")");
+                }
+            }
+        });
+
+
+        // Update the tab-text
         CodeAnalysis.getErrors().addListener(new InvalidationListener() {
             @Override
-            public void invalidated(Observable observable) {
+            public void invalidated(final Observable observable) {
                 final int errors = CodeAnalysis.getErrors().size();
                 if (errors == 0) {
                     controller.errorsTab.setText("Errors");
@@ -144,7 +158,7 @@ public class HUPPAALPresentation extends StackPane {
         // Update the tab-text
         CodeAnalysis.getWarnings().addListener(new InvalidationListener() {
             @Override
-            public void invalidated(Observable observable) {
+            public void invalidated(final Observable observable) {
                 final int warnings = CodeAnalysis.getWarnings().size();
                 if (warnings == 0) {
                     controller.warningsTab.setText("Warnings");
