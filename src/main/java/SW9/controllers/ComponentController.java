@@ -2,6 +2,7 @@ package SW9.controllers;
 
 import SW9.HUPPAAL;
 import SW9.abstractions.*;
+import SW9.code_analysis.CodeAnalysis;
 import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
@@ -17,6 +18,7 @@ import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXTextField;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
+import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -38,15 +40,14 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
 public class ComponentController implements Initializable, SelectHelper.ColorSelectable {
 
+    private static final Map<Component, Timer> COMPONENT_SUBCOMPONENT_NAME_CHECK_TIMER_MAP = new HashMap<>();
     private static final Map<Component, ListChangeListener<Location>> locationListChangeListenerMap = new HashMap<>();
     private static Location placingLocation = null;
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
@@ -164,7 +165,92 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         mouseTracker = new MouseTracker(root);
 
         initializeDropDownMenu();
+
+        initializeSubComponentUniqueNameError();
     }
+
+    private void initializeSubComponentUniqueNameError() {
+        final HashMap<String, ArrayList<CodeAnalysis.Message>> errorsMap = new HashMap<>();
+
+        final Runnable checkNames = () -> {
+            final HashMap<String, Integer> occurrences = new HashMap<>();
+
+            subComponentPresentationMap.keySet().forEach(subComponent -> {
+
+                // Check if we have seen the identifier of the sub component before
+                final String identifier = subComponent.getIdentifier();
+                if (occurrences.containsKey(identifier)) {
+                    occurrences.put(identifier, occurrences.get(identifier) + 1);
+                } else {
+                    occurrences.put(identifier, 0);
+                }
+            });
+
+            // Check if we have previously added an error for each of the found duplicates
+            occurrences.keySet().forEach(id -> {
+                if (!errorsMap.containsKey(id)) {
+                    errorsMap.put(id, new ArrayList<>());
+                }
+
+                final ArrayList<CodeAnalysis.Message> messages = errorsMap.get(id);
+                final int addedErrors = messages.size();
+                final int foundErrors = occurrences.get(id);
+
+                if (addedErrors > foundErrors) { // There are too many errors in the view
+                    final CodeAnalysis.Message messageToRemove = messages.get(0);
+                    messages.remove(messageToRemove);
+                    Platform.runLater(() -> CodeAnalysis.removeMessage(getComponent(), messageToRemove));
+                } else if (addedErrors < foundErrors) { // There are too few errors in the view
+                    final CodeAnalysis.Message identifierIsNotUnique = new CodeAnalysis.Message("Identifier '" + id + "' is multiply defined", CodeAnalysis.MessageType.ERROR);
+                    messages.add(identifierIsNotUnique);
+                    Platform.runLater(() -> CodeAnalysis.addMessage(getComponent(), identifierIsNotUnique));
+                }
+            });
+
+            // Remove any messages that are no longer found
+            errorsMap.keySet().forEach(id -> {
+                if (!occurrences.containsKey(id)) {
+                    errorsMap.get(id).forEach(message -> Platform.runLater(() -> CodeAnalysis.removeMessage(getComponent(), message)));
+                    errorsMap.put(id, new ArrayList<>());
+                }
+            });
+
+        };
+
+        // Wait until component is not null
+        component.addListener((obs, oldComponent, newComponent) -> {
+            if (!COMPONENT_SUBCOMPONENT_NAME_CHECK_TIMER_MAP.containsKey(newComponent)) {
+                TimerTask reachabilityCheckTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (getComponent() == null) return;
+                        checkNames.run();
+                    }
+                };
+
+                final int interval = 2000; // ms
+                final Timer timer = new Timer();
+                timer.schedule(reachabilityCheckTask, 0, interval);
+
+                COMPONENT_SUBCOMPONENT_NAME_CHECK_TIMER_MAP.put(getComponent(), timer);
+            }
+        });
+
+        // Cancel timers when the component is removed
+        HUPPAAL.getProject().getComponents().addListener(new ListChangeListener<Component>() {
+            @Override
+            public void onChanged(Change<? extends Component> c) {
+                while (c.next()) {
+                    c.getRemoved().forEach(removedComponent -> {
+                        if (COMPONENT_SUBCOMPONENT_NAME_CHECK_TIMER_MAP.containsKey(removedComponent)) {
+                            COMPONENT_SUBCOMPONENT_NAME_CHECK_TIMER_MAP.get(removedComponent).cancel();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     private void initializeDropDownMenu() {
         dropDownMenuHelperCircle = new Circle(5);
         dropDownMenuHelperCircle.setOpacity(0);
