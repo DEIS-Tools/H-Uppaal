@@ -1,6 +1,7 @@
 package SW9.presentations;
 
 import SW9.utility.colors.Color;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
@@ -17,9 +18,9 @@ import static javafx.scene.paint.Color.TRANSPARENT;
 
 public class MessagePresentation extends HBox {
 
-    private final String message;
+    private final StringProperty message;
 
-    public MessagePresentation(final String message) {
+    public MessagePresentation(final StringProperty message) {
         this.message = message;
 
         final URL location = this.getClass().getResource("MessagePresentation.fxml");
@@ -43,7 +44,7 @@ public class MessagePresentation extends HBox {
 
     private void initializeMessage() {
         final Label messageLabel = (Label) lookup("#messageLabel");
-        messageLabel.setText(message);
+        messageLabel.textProperty().bind(message);
     }
 
     private void initializeHover() {

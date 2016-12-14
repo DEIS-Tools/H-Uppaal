@@ -54,7 +54,7 @@ public class MessageCollectionPresentation extends VBox {
         final Map<CodeAnalysis.Message, MessagePresentation> messageMessagePresentationMap = new HashMap<>();
 
         final Consumer<CodeAnalysis.Message> addMessage = (message) -> {
-            final MessagePresentation messagePresentation = new MessagePresentation(message.getMessage());
+            final MessagePresentation messagePresentation = new MessagePresentation(message.messageProperty());
             messageMessagePresentationMap.put(message, messagePresentation);
             children.getChildren().add(messagePresentation);
         };

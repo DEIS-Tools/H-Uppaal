@@ -1,6 +1,8 @@
 package SW9.code_analysis;
 
 import SW9.abstractions.Component;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -107,10 +109,10 @@ public class CodeAnalysis {
     public static class Message {
 
         private final MessageType messageType;
-        private String message;
+        private StringProperty message;
 
         public Message(final String message, final MessageType messageType) {
-            this.message = message;
+            this.message = new SimpleStringProperty(message);
             this.messageType = messageType;
         }
 
@@ -119,11 +121,15 @@ public class CodeAnalysis {
         }
 
         public String getMessage() {
-            return message;
+            return message.get();
         }
 
         public void setMessage(String message) {
-            this.message = message;
+            this.message.set(message);
+        }
+
+        public StringProperty messageProperty() {
+            return message;
         }
     }
 
