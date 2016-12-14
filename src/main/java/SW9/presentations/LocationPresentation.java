@@ -141,6 +141,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
         // Update the color of the circle when the color of the location is updated
         color.addListener((obs, old, newColor) -> updateColor.accept(newColor, colorIntensity.get()));
+        colorIntensity.addListener((obs, old, newIntensity) -> updateColor.accept(color.get(), newIntensity));
     }
 
     private void initializeTags() {
