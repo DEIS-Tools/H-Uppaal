@@ -87,6 +87,9 @@ public class HUPPAALController implements Initializable {
     public VBox errorsList;
     public ScrollPane warningsScrollPane;
     public VBox warningsList;
+    public Tab backendErrorsTab;
+    public ScrollPane backendErrorsScrollPane;
+    public VBox backendErrorsList;
     private double tabPanePreviousY = 0;
     private boolean shouldISkipOpeningTheMessagesContainer = true;
 
@@ -191,6 +194,26 @@ public class HUPPAALController implements Initializable {
 
                         warningsList.getChildren().remove(componentMessageCollectionPresentationMapForWarnings.get(component));
                         componentMessageCollectionPresentationMapForWarnings.remove(component);
+                    });
+                }
+            }
+        });
+
+        final Map<CodeAnalysis.Message, MessagePresentation> messageMessagePresentationHashMap = new HashMap<>();
+
+        CodeAnalysis.getBackendErrors().addListener(new ListChangeListener<CodeAnalysis.Message>() {
+            @Override
+            public void onChanged(final Change<? extends CodeAnalysis.Message> c) {
+                while (c.next()) {
+                    c.getAddedSubList().forEach(addedMessage -> {
+                        final MessagePresentation messagePresentation = new MessagePresentation(addedMessage.messageProperty());
+                        backendErrorsList.getChildren().add(messagePresentation);
+                        messageMessagePresentationHashMap.put(addedMessage, messagePresentation);
+                    });
+
+                    c.getRemoved().forEach(removedMessage -> {
+                        backendErrorsList.getChildren().remove(messageMessagePresentationHashMap.get(removedMessage));
+                        messageMessagePresentationHashMap.remove(removedMessage);
                     });
                 }
             }
