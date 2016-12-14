@@ -284,6 +284,14 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
                         final SubComponent newSubComponent = new SubComponent(c);
 
+                        double x = DropDownMenu.x - newSubComponent.getWidth() / 2;
+                        x -= x % GRID_SIZE;
+                        newSubComponent.setX(x);
+
+                        double y = DropDownMenu.y - newSubComponent.getHeight() / 4;
+                        y -= y % GRID_SIZE;
+                        newSubComponent.setY(y);
+
                         // Add a new sub-component
                         UndoRedoStack.push(() -> { // Perform
                             component.addSubComponent(newSubComponent);
@@ -478,6 +486,8 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         if (event.isSecondaryButtonDown() && unfinishedEdge == null) {
             dropDownMenuHelperCircle.setLayoutX(event.getX());
             dropDownMenuHelperCircle.setLayoutY(event.getY());
+            DropDownMenu.x = event.getX();
+            DropDownMenu.y = event.getY();
             dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
         } else {
             // We are drawing an edge

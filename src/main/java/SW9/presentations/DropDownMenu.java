@@ -29,6 +29,8 @@ import static javafx.scene.paint.Color.TRANSPARENT;
 
 public class DropDownMenu {
 
+    public static double x = 0;
+    public static double y = 0;
     private final int width;
     private final StackPane content;
     private final VBox list;
