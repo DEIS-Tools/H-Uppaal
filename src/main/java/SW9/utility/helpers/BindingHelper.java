@@ -21,6 +21,7 @@ public class BindingHelper {
         subject.endXProperty().bind(target.translateXProperty().add(target.minWidthProperty().divide(2)));
         subject.endYProperty().bind(target.translateYProperty().add(target.heightProperty().divide(2)));
         subject.opacityProperty().bind(target.opacityProperty());
+        subject.visibleProperty().bind(target.visibleProperty());
     }
 
     public static void bind(final Circular subject, final ObservableDoubleValue x, final ObservableDoubleValue y) {

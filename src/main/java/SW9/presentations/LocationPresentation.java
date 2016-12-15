@@ -13,9 +13,7 @@ import SW9.utility.mouse.MouseTracker;
 import javafx.animation.*;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.When;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.*;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
@@ -53,7 +51,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
     private final boolean interactable;
 
-    private boolean isPlaced = true;
+    private BooleanProperty isPlaced = new SimpleBooleanProperty(true);
 
     public LocationPresentation(final Location location, final Component component) {
         this(location, component, true);
@@ -192,6 +190,10 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
                     controller.nameTag.setOpacity(1);
                 }
             };
+
+            // Update the visibility according to if the location have been placed
+            controller.nameTag.visibleProperty().bind(isPlaced);
+            controller.invariantTag.visibleProperty().bind(isPlaced);
 
             location.nicknameProperty().addListener((obs, oldNickname, newNickname) -> updateVisibilityFromNickName.accept(newNickname));
             updateVisibilityFromNickName.accept(location.getNickname());
@@ -417,11 +419,11 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     }
 
     public boolean isPlaced() {
-        return isPlaced;
+        return isPlaced.get();
     }
 
     public void setPlaced(boolean placed) {
-        isPlaced = placed;
+        isPlaced.set(placed);
     }
 
     public boolean isInteractable() {
