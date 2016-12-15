@@ -7,6 +7,10 @@ import SW9.controllers.NailController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.SelectHelper;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
@@ -17,12 +21,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.function.Consumer;
 
+import static javafx.util.Duration.*;
+
 public class NailPresentation extends Group implements SelectHelper.Selectable {
 
     public static final double COLLAPSED_RADIUS = 2d;
     public static final double HOVERED_RADIUS = 7d;
 
     private final NailController controller;
+    private final Timeline shakeAnimation = new Timeline();
 
     public NailPresentation(final Nail nail, final Edge edge,final Component component) {
         final URL url = this.getClass().getResource("NailPresentation.fxml");
@@ -160,6 +167,22 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
 
         // Initialize the color of the nail
         updateNailColor.run();
+    }
+
+    public void shake() {
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+
+        final double startX = controller.root.getLayoutX();
+        final KeyValue kv1 = new KeyValue(controller.root.layoutXProperty(), startX-3, interpolator);
+        final KeyValue kv2 = new KeyValue(controller.root.layoutXProperty(), startX+3, interpolator);
+        final KeyValue kv3 = new KeyValue(controller.root.layoutXProperty(), startX, interpolator);
+        
+        final KeyFrame kf1 = new KeyFrame(millis(75), kv1);
+        final KeyFrame kf2 = new KeyFrame(millis(150), kv2);
+        final KeyFrame kf3 = new KeyFrame(millis(225), kv3);
+
+        shakeAnimation.getKeyFrames().addAll(kf1, kf2, kf3);
+        shakeAnimation.play();
     }
 
     @Override

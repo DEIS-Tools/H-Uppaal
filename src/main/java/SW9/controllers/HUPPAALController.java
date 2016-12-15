@@ -339,7 +339,12 @@ public class HUPPAALController implements Initializable {
                 final int index = edge.getNails().indexOf(nail);
 
                 // If the nail is a property nail disallow deletion
-                if(!nail.getPropertyType().equals(Edge.PropertyType.NONE)) return;
+                if(!nail.getPropertyType().equals(Edge.PropertyType.NONE)) {
+                    ((NailPresentation) nailController.root).shake();
+                    System.out.println("hej");
+                    return;
+                }
+
                 // TODO show some error to the user
 
                 UndoRedoStack.push(
