@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import static javafx.util.Duration.millis;
+
 public class LocationPresentation extends Group implements MouseTrackable, SelectHelper.Selectable {
 
     public static final double RADIUS = 15;
@@ -52,6 +54,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private final boolean interactable;
 
     private BooleanProperty isPlaced = new SimpleBooleanProperty(true);
+    private Timeline shakeDeleteAnimation = new Timeline();
 
     public LocationPresentation(final Location location, final Component component) {
         this(location, component, true);
@@ -91,6 +94,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             initializeInitialAnimation();
             initializeHoverAnimationEntered();
             initializeHoverAnimationExited();
+            initializeDeleteShakeAnimation();
             initializeShakeAnimation();
 
             initializeHiddenAreaCircle();
@@ -391,6 +395,27 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         if (shakeContentAnimation.getStatus().equals(Animation.Status.RUNNING) || !interactable) return;
 
         hoverAnimationExited.play();
+    }
+
+    private void initializeDeleteShakeAnimation() {
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+
+        final double startX = controller.scaleContent.getLayoutX();
+        final KeyValue kv1 = new KeyValue(controller.scaleContent.layoutXProperty(), startX - 3, interpolator);
+        final KeyValue kv2 = new KeyValue(controller.scaleContent.layoutXProperty(), startX + 3, interpolator);
+        final KeyValue kv3 = new KeyValue(controller.scaleContent.layoutXProperty(), startX, interpolator);
+
+        final KeyFrame kf1 = new KeyFrame(millis(50), kv1);
+        final KeyFrame kf2 = new KeyFrame(millis(100), kv2);
+        final KeyFrame kf3 = new KeyFrame(millis(150), kv1);
+        final KeyFrame kf4 = new KeyFrame(millis(200), kv2);
+        final KeyFrame kf5 = new KeyFrame(millis(250), kv3);
+
+        shakeDeleteAnimation.getKeyFrames().addAll(kf1, kf2, kf3, kf4, kf5);
+    }
+
+    public void shake() {
+        shakeDeleteAnimation.play();
     }
 
     @Override

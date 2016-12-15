@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.function.Consumer;
 
-import static javafx.util.Duration.*;
+import static javafx.util.Duration.millis;
 
 public class NailPresentation extends Group implements SelectHelper.Selectable {
 
@@ -54,10 +54,9 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
             controller.setNail(nail);
 
             initializeNailCircle();
-
             initializePropertyTag();
-
             initializeRadius();
+            initializeShakeAnimation();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
@@ -169,19 +168,24 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
         updateNailColor.run();
     }
 
-    public void shake() {
+    private void initializeShakeAnimation() {
         final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
 
         final double startX = controller.root.getLayoutX();
-        final KeyValue kv1 = new KeyValue(controller.root.layoutXProperty(), startX-3, interpolator);
-        final KeyValue kv2 = new KeyValue(controller.root.layoutXProperty(), startX+3, interpolator);
+        final KeyValue kv1 = new KeyValue(controller.root.layoutXProperty(), startX - 3, interpolator);
+        final KeyValue kv2 = new KeyValue(controller.root.layoutXProperty(), startX + 3, interpolator);
         final KeyValue kv3 = new KeyValue(controller.root.layoutXProperty(), startX, interpolator);
 
-        final KeyFrame kf1 = new KeyFrame(millis(75), kv1);
-        final KeyFrame kf2 = new KeyFrame(millis(150), kv2);
-        final KeyFrame kf3 = new KeyFrame(millis(225), kv3);
+        final KeyFrame kf1 = new KeyFrame(millis(50), kv1);
+        final KeyFrame kf2 = new KeyFrame(millis(100), kv2);
+        final KeyFrame kf3 = new KeyFrame(millis(150), kv1);
+        final KeyFrame kf4 = new KeyFrame(millis(200), kv2);
+        final KeyFrame kf5 = new KeyFrame(millis(250), kv3);
 
-        shakeAnimation.getKeyFrames().addAll(kf1, kf2, kf3);
+        shakeAnimation.getKeyFrames().addAll(kf1, kf2, kf3, kf4, kf5);
+    }
+
+    public void shake() {
         shakeAnimation.play();
     }
 
