@@ -276,6 +276,27 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
             dropDownMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 230, true);
 
+            dropDownMenu.addClickableListElement("Add location", event -> {
+                dropDownMenu.close();
+
+                final Location newLocation = new Location();
+
+                double x = DropDownMenu.x - LocationPresentation.RADIUS / 2;
+                x = Math.round(x / GRID_SIZE) * GRID_SIZE;
+                newLocation.setX(x);
+
+                double y = DropDownMenu.y - LocationPresentation.RADIUS / 2;
+                y = Math.round(y / GRID_SIZE) * GRID_SIZE;
+                newLocation.setY(y);
+
+                // Add a new location
+                UndoRedoStack.push(() -> { // Perform
+                    component.addLocation(newLocation);
+                }, () -> { // Undo
+                    component.removeLocation(newLocation);
+                }, "Added location '" + newLocation.toString() + "' to component '" + component.getName() + "'", "add-circle");
+            });
+
             final DropDownMenu subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
             HUPPAAL.getProject().getComponents().forEach(c -> {
                 if (!c.equals(component)) {
