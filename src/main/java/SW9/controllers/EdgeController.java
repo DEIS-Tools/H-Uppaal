@@ -429,7 +429,6 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
 
     @Override
     public void deselect() {
-        System.out.println("deselect");
         edgeRoot.getChildren().forEach(node -> {
             if (node instanceof SelectHelper.Selectable) {
                 ((SelectHelper.Selectable) node).deselect();

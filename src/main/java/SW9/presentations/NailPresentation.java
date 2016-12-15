@@ -176,7 +176,7 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
         final KeyValue kv1 = new KeyValue(controller.root.layoutXProperty(), startX-3, interpolator);
         final KeyValue kv2 = new KeyValue(controller.root.layoutXProperty(), startX+3, interpolator);
         final KeyValue kv3 = new KeyValue(controller.root.layoutXProperty(), startX, interpolator);
-        
+
         final KeyFrame kf1 = new KeyFrame(millis(75), kv1);
         final KeyFrame kf2 = new KeyFrame(millis(150), kv2);
         final KeyFrame kf3 = new KeyFrame(millis(225), kv3);
