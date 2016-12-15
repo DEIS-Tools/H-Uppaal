@@ -91,12 +91,10 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
             // If it is not a property nail hide the tag otherwise show it and write proper placeholder
             if(propertyType.equals(Edge.PropertyType.NONE)) {
                 propertyTag.setVisible(false);
-                propertyTagLine.setVisible(false);
             } else {
 
                 // Show the property tag since the nail is a property nail
                 propertyTag.setVisible(true);
-                propertyTagLine.setVisible(true);
 
                 // Set and bind the location of the property tag
                 if((controller.getNail().getPropertyX() != 0) && (controller.getNail().getPropertyY() != 0)) {

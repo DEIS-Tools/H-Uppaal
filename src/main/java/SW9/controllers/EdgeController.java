@@ -27,6 +27,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 
@@ -62,6 +63,25 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
 
         initializeLinksListener();
 
+        ensureNailsInFront();
+
+    }
+
+    private void ensureNailsInFront() {
+
+        // When ever changes happens to the children of the edge root force nails in front and other elements to back
+        edgeRoot.getChildren().addListener((ListChangeListener<? super Node>) c -> {
+            while (c.next()) {
+                for (int i = 0; i < c.getAddedSize(); i++) {
+                    final Node node = c.getAddedSubList().get(i);
+                    if (node instanceof NailPresentation) {
+                        node.toFront();
+                    } else {
+                        node.toBack();
+                    }
+                }
+            }
+        });
     }
 
     private ChangeListener<Component> getComponentChangeListener(final Edge newEdge) {
@@ -146,7 +166,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
                             BindingHelper.bind(pressedLink, newNail, oldEnd);
                         }
 
-                        if(isHoveringEdge.get()) {
+                        if (isHoveringEdge.get()) {
                             enlargeNail.accept(newNail);
                         }
 
@@ -182,15 +202,15 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
                     Circular newFrom = getEdge().getSourceCircular();
                     Circular newTo = getEdge().getTargetCircular();
 
-                    if(removedIndex > 0) {
+                    if (removedIndex > 0) {
                         newFrom = getEdge().getNails().get(removedIndex - 1);
                     }
 
-                    if(removedIndex -1 != getEdge().getNails().size() - 1) {
+                    if (removedIndex - 1 != getEdge().getNails().size() - 1) {
                         newTo = getEdge().getNails().get(removedIndex);
                     }
 
-                    if(newTo.equals(getEdge().getTargetCircular())) {
+                    if (newTo.equals(getEdge().getTargetCircular())) {
                         BindingHelper.bind(danglingLink, simpleArrowHead, newFrom, newTo);
                     } else {
                         BindingHelper.bind(danglingLink, newFrom, newTo);
@@ -241,7 +261,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
 
     private void initializeNailCollapse() {
         enlargeNail = nail -> {
-            if(!nail.getPropertyType().equals(Edge.PropertyType.NONE)) return;
+            if (!nail.getPropertyType().equals(Edge.PropertyType.NONE)) return;
             final Timeline animation = new Timeline();
 
             final KeyValue radius0 = new KeyValue(nail.radiusProperty(), NailPresentation.COLLAPSED_RADIUS);
@@ -257,7 +277,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
             animation.play();
         };
         shrinkNail = nail -> {
-            if(!nail.getPropertyType().equals(Edge.PropertyType.NONE)) return;
+            if (!nail.getPropertyType().equals(Edge.PropertyType.NONE)) return;
             final Timeline animation = new Timeline();
 
             final KeyValue radius0 = new KeyValue(nail.radiusProperty(), NailPresentation.COLLAPSED_RADIUS);
@@ -277,10 +297,10 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
             int previousValue = 1;
 
             try {
-                while(true) {
+                while (true) {
                     Thread.sleep(interval);
 
-                    if(isHoveringEdge.get()) {
+                    if (isHoveringEdge.get()) {
                         // Do not let the timer go above this threshold
                         if (timeHoveringEdge.get() <= 500) {
                             timeHoveringEdge.set(timeHoveringEdge.get() + interval);
@@ -289,7 +309,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
                         timeHoveringEdge.set(timeHoveringEdge.get() - interval);
                     }
 
-                    if(previousValue >= 0 && timeHoveringEdge.get() < 0) {
+                    if (previousValue >= 0 && timeHoveringEdge.get() < 0) {
                         // Run on UI thread
                         Platform.runLater(() -> {
                             // Collapse all nails
@@ -320,8 +340,8 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
                         final Nail newNail = new Nail(nailX, nailY);
 
                         UndoRedoStack.push(
-                                ()-> getEdge().insertNailAt(newNail, links.indexOf(link)),
-                                ()-> getEdge().removeNail(newNail),
+                                () -> getEdge().insertNailAt(newNail, links.indexOf(link)),
+                                () -> getEdge().removeNail(newNail),
                                 "Nail added",
                                 "add-circle"
                         );
