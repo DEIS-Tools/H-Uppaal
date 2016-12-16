@@ -27,7 +27,7 @@
                   style="-fx-unfocus-color:transparent;" styleClass="caption"
                   promptText="Comment"/>
 
-    <StackPane AnchorPane.topAnchor="8" AnchorPane.rightAnchor="8" AnchorPane.bottomAnchor="8">
+    <StackPane AnchorPane.topAnchor="8" AnchorPane.rightAnchor="16" AnchorPane.bottomAnchor="8">
 
         <HBox>
 
@@ -41,7 +41,7 @@
                 </JFXRippler>
             </StackPane>
 
-            <Region minWidth="8"/>
+            <Region minWidth="5"/>
 
             <JFXRippler id="detailsButton">
                 <StackPane minWidth="40" maxWidth="40" minHeight="40" maxHeight="40">

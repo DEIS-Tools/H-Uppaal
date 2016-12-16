@@ -126,13 +126,34 @@ public class QueryPresentation extends AnchorPane {
         // todo: move this to the model
         final SimpleBooleanProperty isPeriodic = new SimpleBooleanProperty(false);
 
-        final DropDownMenu dropDownMenu = new DropDownMenu(this, detailsButton, 230, true);
+        final DropDownMenu dropDownMenu = new DropDownMenu((Pane) getParent(), detailsButton, 230, true);
+
         dropDownMenu.addTogglableListElement("Run periodically", isPeriodic, event -> {
+            // Toggle the property
             isPeriodic.set(!isPeriodic.get());
         });
 
+        dropDownMenu.addClickableListElement("Clear Status", event -> {
+            // Clear the state
+            query.setQueryState(QueryState.UNKNOWN);
+
+            // Close the menu
+            dropDownMenu.close();
+        });
+
+        dropDownMenu.addSpacerElement();
+
+        dropDownMenu.addClickableListElement("Delete", event -> {
+            // Remove the query
+            HUPPAAL.getProject().getQueries().remove(query);
+
+            // Close the menu
+            dropDownMenu.close();
+        });
+
         detailsButton.getChildren().get(0).setOnMousePressed(event -> {
-            dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT, 0, 0);
+            // Show the popup
+            dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT, 310, 35);
         });
     }
 
