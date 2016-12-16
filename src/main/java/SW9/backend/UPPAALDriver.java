@@ -13,19 +13,13 @@ import javafx.concurrent.Task;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class UPPAALDriver {
 
-    public static void verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final List<Component> components) {
+    public static void verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final Component component) {
         verify(query, success, failure, TraceType.NONE, e -> {
-        }, components);
-    }
-
-    public static void verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final Component... components) {
-        verify(query, success, failure, TraceType.NONE, e -> {
-        }, components);
+        }, component);
     }
 
     public static void verify(final String query,
@@ -33,20 +27,7 @@ public class UPPAALDriver {
                               final Consumer<BackendException> failure,
                               final TraceType traceType,
                               final Consumer<Trace> traceCallBack,
-                              final Component... components) {
-        final List<Component> componentList = new ArrayList<>();
-        for (final Component component : components) {
-            componentList.add(component);
-        }
-        verify(query, success, failure, traceType, traceCallBack, componentList);
-    }
-
-    public static void verify(final String query,
-                              final Consumer<Boolean> success,
-                              final Consumer<BackendException> failure,
-                              final TraceType traceType,
-                              final Consumer<Trace> traceCallBack,
-                              final List<Component> components) {
+                              final Component component) {
         // The task that should be executed on the background thread
         // calls success if no exception happens with the result
         // otherwise calls failure with the exception
@@ -55,7 +36,7 @@ public class UPPAALDriver {
             protected Void call() throws Exception {
                 {
                     try {
-                        success.accept(UPPAALDriver.verify(query, traceType, traceCallBack, components));
+                        success.accept(UPPAALDriver.verify(query, traceType, traceCallBack, component));
                     } catch (final BackendException backendException) {
                         failure.accept(backendException);
                     }
@@ -68,8 +49,8 @@ public class UPPAALDriver {
         new Thread(task).start();
     }
 
-    private static synchronized boolean verify(final String query, final TraceType traceType, final Consumer<Trace> traceCallback, final List<Component> components) throws BackendException {
-        final HUPPAALDocument huppaalDocument = new HUPPAALDocument(components);
+    private static synchronized boolean verify(final String query, final TraceType traceType, final Consumer<Trace> traceCallback, final Component component) throws BackendException {
+        final HUPPAALDocument huppaalDocument = new HUPPAALDocument(component);
 
         // Store the debug document
         storeUppaalFile(huppaalDocument.toUPPAALDocument(), "uppaal-debug/debug.xml");
@@ -171,7 +152,7 @@ public class UPPAALDriver {
         final File file = new File(fileName);
         try {
             uppaalDocument.save(file);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             // TODO Handle exception
             e.printStackTrace();
         }

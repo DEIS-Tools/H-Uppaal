@@ -12,7 +12,6 @@ import SW9.presentations.LocationPresentation;
 import SW9.presentations.TagPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
-import SW9.utility.helpers.Circular;
 import SW9.utility.helpers.NailHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
@@ -31,10 +30,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Path;
-import javafx.util.Pair;
 
 import java.net.URL;
-import java.util.*;
+import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
@@ -120,6 +120,17 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                 // The location might have been remove from the component (through ctrl + z)
                 if (getLocation().getType() == Location.Type.NORMAL && !getComponent().getLocations().contains(getLocation())) return;
 
+                final Component[] mainComponent = {null};
+                HUPPAAL.getProject().getComponents().forEach(component -> {
+                    if (component.isIsMain()) {
+                        mainComponent[0] = component;
+                    }
+                });
+
+                if (mainComponent[0] == null) {
+                    return; // We cannot generate a UPPAAL file without a main component
+                }
+
                 UPPAALDriver.verify(
                         "E<> " + getComponent().getName() + "." + getLocation().getId(),
                         result -> {
@@ -128,10 +139,10 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                             locationPresentation.animateShakeWarning(!result);
                         },
                         e -> {
-                            System.out.println(e);
                             // Could not run query
+                            System.out.println(e);
                         },
-                        HUPPAAL.getProject().getComponents()
+                        mainComponent[0]
                 );
             }
 

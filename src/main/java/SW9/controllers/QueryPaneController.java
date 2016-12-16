@@ -1,6 +1,7 @@
 package SW9.controllers;
 
 import SW9.HUPPAAL;
+import SW9.abstractions.Component;
 import SW9.abstractions.Query;
 import SW9.abstractions.QueryState;
 import SW9.backend.UPPAALDriver;
@@ -82,6 +83,17 @@ public class QueryPaneController implements Initializable {
         final int interval = 50;
         final int[] counter = {0};
 
+        final Component[] mainComponent = {null};
+        HUPPAAL.getProject().getComponents().forEach(component -> {
+            if (component.isIsMain()) {
+                mainComponent[0] = component;
+            }
+        });
+
+        if (mainComponent[0] == null) {
+            return; // We cannot generate a UPPAAL file without a main component
+        }
+
         HUPPAAL.getProject().getQueries().forEach(query -> {
             final Timeline timeline = new Timeline(new KeyFrame(
                     Duration.millis(1 + counter[0] * interval),
@@ -96,7 +108,7 @@ public class QueryPaneController implements Initializable {
                             e -> {
                                 query.setQueryState(QueryState.SYNTAX_ERROR);
                             },
-                            HUPPAAL.getProject().getComponents()
+                            mainComponent[0]
                     )));
             timeline.play();
 
