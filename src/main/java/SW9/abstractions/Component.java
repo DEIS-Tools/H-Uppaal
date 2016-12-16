@@ -21,6 +21,7 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     private static final String NAME = "name";
     private static final String DECLARATIONS = "declarations";
     private static final String LOCATIONS = "locations";
+    private static final String JORKS = "jorks";
     private static final String INITIAL_LOCATION = "initial_location";
     private static final String FINAL_LOCATION = "final_location";
     private static final String SUBCOMPONENTS = "sub_components";
@@ -37,6 +38,7 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     private final StringProperty name = new SimpleStringProperty("");
     private final StringProperty declarations = new SimpleStringProperty("");
     private final ObservableList<Location> locations = FXCollections.observableArrayList();
+    private final ObservableList<Jork> jorks = FXCollections.observableArrayList();
     private final ObservableList<Edge> edges = FXCollections.observableArrayList();
     private final ObjectProperty<Location> initialLocation = new SimpleObjectProperty<>();
     private final ObjectProperty<Location> finalLocation = new SimpleObjectProperty<>();
@@ -138,6 +140,18 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         });
 
         return relatedEdges;
+    }
+
+    public ObservableList<Jork> getJorks() {
+        return jorks;
+    }
+
+    public boolean addJork(final Jork jork) {
+        return jorks.add(jork);
+    }
+
+    public boolean removeJork(final Jork jork) {
+        return jorks.remove(jork);
     }
 
     public double getX() {
@@ -290,6 +304,10 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         result.add(INITIAL_LOCATION, getInitialLocation().serialize());
         result.add(FINAL_LOCATION, getFinalLocation().serialize());
 
+        final JsonArray jorks = new JsonArray();
+        getJorks().forEach(jork -> jorks.add(jork.serialize()));
+        result.add(JORKS, jorks);
+
         final JsonArray subComponents = new JsonArray();
         getSubComponents().forEach(subComponent -> subComponents.add(subComponent.serialize()));
         result.add(SUBCOMPONENTS, subComponents);
@@ -324,6 +342,11 @@ public class Component implements Serializable, DropDownMenu.HasColor {
 
         final Location newFinalLocation = new Location(json.getAsJsonObject(FINAL_LOCATION));
         setFinalLocation(newFinalLocation);
+
+        json.getAsJsonArray(JORKS).forEach(jsonElement -> {
+            final Jork newJork = new Jork((JsonObject) jsonElement);
+            jorks.add(newJork);
+        });
 
         json.getAsJsonArray(SUBCOMPONENTS).forEach(jsonElement -> {
             final SubComponent newSubComponent = new SubComponent((JsonObject) jsonElement);

@@ -16,6 +16,7 @@
     <StackPane>
         <Pane fx:id="modelContainerSubComponent" onMousePressed="#modelContainerPressed"/>
         <Pane fx:id="modelContainerLocation" pickOnBounds="false"/>
+        <Pane fx:id="modelContainerJork" pickOnBounds="false"/>
         <Pane fx:id="modelContainerEdge" pickOnBounds="false"/>
     </StackPane>
 

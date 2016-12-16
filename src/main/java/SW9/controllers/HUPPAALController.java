@@ -1,10 +1,7 @@
 package SW9.controllers;
 
 import SW9.HUPPAAL;
-import SW9.abstractions.Component;
-import SW9.abstractions.Edge;
-import SW9.abstractions.Location;
-import SW9.abstractions.Nail;
+import SW9.abstractions.*;
 import SW9.backend.UPPAALDriver;
 import SW9.code_analysis.CodeAnalysis;
 import SW9.presentations.*;
@@ -340,7 +337,18 @@ public class HUPPAALController implements Initializable {
                     // Re-all the edge
                     component.getEdges().add(edge);
                 }, String.format("Deleted %s", selectable.toString()), "delete");
-            } else if(selectable instanceof NailController) {
+            } else if (selectable instanceof JorkController) {
+                final Component component = CanvasController.getActiveComponent();
+                final Jork jork = ((JorkController) selectable).getJork();
+
+                UndoRedoStack.push(() -> { // Perform
+                    // Remove the jork
+                    component.getJorks().remove(jork);
+                }, () -> { // Undo
+                    // Re-all the jork
+                    component.getJorks().add(jork);
+                }, String.format("Deleted %s", selectable.toString()), "delete");
+            } else if (selectable instanceof NailController) {
                 final NailController nailController = (NailController) selectable;
                 final Edge edge = nailController.getEdge();
                 final Nail nail = nailController.getNail();
