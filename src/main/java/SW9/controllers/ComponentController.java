@@ -42,7 +42,6 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 
 import java.net.URL;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
@@ -185,7 +184,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
     private void initializeJorkHandling(final Component newComponent) {
         final Consumer<Jork> handleAddedJork = newJork -> {
-            final JorkPresentation jorkPresentation = new JorkPresentation(newJork);
+            final JorkPresentation jorkPresentation = new JorkPresentation(newJork, newComponent);
             jorkPresentationMap.put(newJork, jorkPresentation);
             modelContainerJork.getChildren().add(jorkPresentation);
         };
