@@ -140,10 +140,8 @@ public class SubComponentPresentation extends StackPane {
 
     private void initializeInitialLocation() {
         initialLocationPresentation.setLocation(controller.getSubComponent().getComponent().getInitialLocation());
-        initialLocationPresentation.layoutXProperty().unbind();
-        initialLocationPresentation.layoutYProperty().unbind();
-        initialLocationPresentation.setLayoutX(CORNER_SIZE / 2 + 1);
-        initialLocationPresentation.setLayoutY(CORNER_SIZE / 2 + 1);
+        initialLocationPresentation.setTranslateX(CORNER_SIZE / 2 + 1 - initialLocationPresentation.getLayoutX());
+        initialLocationPresentation.setTranslateY(CORNER_SIZE / 2 + 1 - initialLocationPresentation.getLayoutY());
 
         StackPane.setAlignment(initialLocationPresentation, Pos.TOP_LEFT);
     }
@@ -152,10 +150,8 @@ public class SubComponentPresentation extends StackPane {
         final Component component = controller.getSubComponent().getComponent();
 
         finalLocationPresentation.setLocation(component.getFinalLocation());
-        finalLocationPresentation.layoutXProperty().unbind();
-        finalLocationPresentation.layoutYProperty().unbind();
-        finalLocationPresentation.setLayoutX(getMinWidth() - CORNER_SIZE / 2 - 1);
-        finalLocationPresentation.setLayoutY(getMinHeight() - CORNER_SIZE / 2 - 1);
+        finalLocationPresentation.setTranslateX(getMinWidth() - CORNER_SIZE / 2 - 1 - finalLocationPresentation.getLayoutX());
+        finalLocationPresentation.setTranslateY(getMinHeight() - CORNER_SIZE / 2 - 1 - finalLocationPresentation.getLayoutY());
 
         StackPane.setAlignment(finalLocationPresentation, Pos.BOTTOM_RIGHT);
     }
