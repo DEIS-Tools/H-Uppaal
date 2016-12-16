@@ -56,8 +56,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
         initializeNailCollapse();
 
         edge.addListener((obsEdge, oldEdge, newEdge) -> {
-            newEdge.targetLocationProperty().addListener(getNewTargetCircularListener(newEdge));
-            newEdge.targetSubComponentProperty().addListener(getNewTargetCircularListener(newEdge));
+            newEdge.targetCircularProperty().addListener(getNewTargetCircularListener(newEdge));
             component.addListener(getComponentChangeListener(newEdge));
         });
 

@@ -28,7 +28,6 @@ public class Edge implements Serializable {
     // Verification properties
     private final ObjectProperty<Location> sourceLocation = new SimpleObjectProperty<>();
     private final ObjectProperty<Location> targetLocation = new SimpleObjectProperty<>();
-
     private final ObjectProperty<SubComponent> sourceSubComponent = new SimpleObjectProperty<>();
     private final ObjectProperty<SubComponent> targetSubComponent = new SimpleObjectProperty<>();
     private final StringProperty select = new SimpleStringProperty("");
@@ -40,19 +39,19 @@ public class Edge implements Serializable {
     private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.GREY_BLUE);
     private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I700);
     private final ObservableList<Nail> nails = FXCollections.observableArrayList();
-    
-    // Circulars 
-    private Circular sourceCircular;
-    private Circular targetCircular;
+
+    // Circulars
+    private ObjectProperty<Circular> sourceCircular = new SimpleObjectProperty<>();
+    private ObjectProperty<Circular> targetCircular = new SimpleObjectProperty<>();
 
     public enum PropertyType {NONE, SELECTION, GUARD, SYNCHRONIZATION, UPDATE}
 
     public Edge(final Location sourceLocation) {
-        this.sourceLocation.set(sourceLocation);
+        setSourceLocation(sourceLocation);
     }
 
     public Edge(final SubComponent sourceComponent) {
-        this.sourceSubComponent.set(sourceComponent);
+        setSourceSubComponent(sourceComponent);
     }
 
     public Edge(final JsonObject jsonObject, final Component component) {
@@ -65,6 +64,7 @@ public class Edge implements Serializable {
 
     public void setSourceLocation(final Location sourceLocation) {
         this.sourceLocation.set(sourceLocation);
+        updateSourceCircular();
     }
 
     public ObjectProperty<Location> sourceLocationProperty() {
@@ -77,6 +77,7 @@ public class Edge implements Serializable {
 
     public void setTargetLocation(final Location targetLocation) {
         this.targetLocation.set(targetLocation);
+        updateTargetCircular();
     }
 
     public ObjectProperty<Location> targetLocationProperty() {
@@ -181,6 +182,7 @@ public class Edge implements Serializable {
 
     public void setSourceSubComponent(final SubComponent sourceSubComponent) {
         this.sourceSubComponent.set(sourceSubComponent);
+        updateSourceCircular();
     }
 
     public SubComponent getTargetSubComponent() {
@@ -193,14 +195,37 @@ public class Edge implements Serializable {
 
     public void setTargetSubComponent(final SubComponent targetSubComponent) {
         this.targetSubComponent.set(targetSubComponent);
+        updateTargetCircular();
+    }
+
+    public ObjectProperty<Circular> sourceCircularProperty() {
+        return sourceCircular;
+    }
+
+    public ObjectProperty<Circular> targetCircularProperty() {
+        return targetCircular;
     }
 
     public Circular getSourceCircular() {
+        if(sourceCircular != null) {
+            return sourceCircular.get();
+        }
+        return null;
+    }
+
+    public Circular getTargetCircular() {
+        if(targetCircular != null) {
+            return targetCircular.get();
+        }
+        return null;
+
+    }
+
+    private void updateSourceCircular() {
         if(getSourceLocation() != null) {
-            return getSourceLocation();
+            sourceCircular.set(getSourceLocation());
         } else if(getSourceSubComponent() != null) {
-            if(sourceCircular != null) return sourceCircular;
-            sourceCircular = new Circular() {
+            sourceCircular.set(new Circular() {
                 DoubleProperty x = new SimpleDoubleProperty();
                 DoubleProperty y = new SimpleDoubleProperty();
                 {
@@ -237,18 +262,15 @@ public class Edge implements Serializable {
                 public double getY() {
                     return yProperty().get();
                 }
-            };
-            return sourceCircular;
+            });
         }
-        return null;
     }
 
-    public Circular getTargetCircular() {
+    private void updateTargetCircular() {
         if(getTargetLocation() != null) {
-            return getTargetLocation();
+            targetCircular.set(getTargetLocation());
         } else if(getTargetSubComponent() != null) {
-            if(targetCircular != null) return targetCircular;
-            targetCircular = new Circular() {
+            targetCircular.set(new Circular() {
                 DoubleProperty x = new SimpleDoubleProperty();
                 DoubleProperty y = new SimpleDoubleProperty();
                 {
@@ -285,11 +307,8 @@ public class Edge implements Serializable {
                 public double getY() {
                     return yProperty().get();
                 }
-            };
-
-            return targetCircular;
+            });
         }
-        return null;
     }
 
     public String getProperty(final PropertyType propertyType) {
