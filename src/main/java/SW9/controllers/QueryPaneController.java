@@ -23,6 +23,8 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class QueryPaneController implements Initializable {
@@ -36,6 +38,8 @@ public class QueryPaneController implements Initializable {
     public StackPane root;
     public ScrollPane scrollPane;
 
+    private Map<Query, QueryPresentation> queryPresentationMap = new HashMap<>();
+
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
 
@@ -48,11 +52,14 @@ public class QueryPaneController implements Initializable {
             public void onChanged(final Change<? extends Query> c) {
                 while (c.next()) {
                     for (final Query removeQuery : c.getRemoved()) {
-                        queriesList.getChildren().remove(removeQuery);
+                        queriesList.getChildren().remove(queryPresentationMap.get(removeQuery));
+                        queryPresentationMap.remove(removeQuery);
                     }
 
                     for (final Query newQuery : c.getAddedSubList()) {
-                        queriesList.getChildren().add(new QueryPresentation(newQuery));
+                        final QueryPresentation newQueryPresentation = new QueryPresentation(newQuery);
+                        queryPresentationMap.put(newQuery, newQueryPresentation);
+                        queriesList.getChildren().add(newQueryPresentation);
                     }
                 }
             }

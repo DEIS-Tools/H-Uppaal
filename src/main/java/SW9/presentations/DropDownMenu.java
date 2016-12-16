@@ -141,7 +141,7 @@ public class DropDownMenu {
         list.getChildren().add(rippler);
     }
 
-    public void addSubMenu(final String s, final DropDownMenu subMenu) {
+    public void addSubMenu(final String s, final DropDownMenu subMenu, final int offset) {
         final Label label = new Label(s);
 
         label.setStyle("-fx-padding: 8 16 8 16;");
@@ -157,6 +157,9 @@ public class DropDownMenu {
             this.content.getChildren().add(subMenuContent);
         }
 
+        subMenuContent.setTranslateY(offset);
+
+        subMenuContent.setOpacity(0);
         final Runnable showHideSubMenu = () -> {
             if (showSubMenu.get() || isHoveringSubMenu.get()) {
                 subMenuContent.setOpacity(1);

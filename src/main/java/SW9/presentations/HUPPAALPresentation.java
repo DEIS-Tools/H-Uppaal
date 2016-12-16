@@ -82,11 +82,12 @@ public class HUPPAALPresentation extends StackPane {
 
             initializeMessageContainer();
 
-            // Open the file panel initially
+            // Open the file and query panel initially
             final BooleanProperty ranInitialToggle = new SimpleBooleanProperty(false);
             controller.filePane.widthProperty().addListener((observable) -> {
                 if (ranInitialToggle.get()) return;
                 toggleFilePane();
+                toggleQueryPane();
                 ranInitialToggle.set(true);
             });
 

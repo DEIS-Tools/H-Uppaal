@@ -176,11 +176,11 @@
     -fx-stroke: #ffffff;
 }
 
-.jfx-rippler {
+.jfx-tab-pane .jfx-rippler {
     -fx-rippler-fill: #ffffff;
 }
 
-.scroll-pane {
+.jfx-tab-pane .scroll-pane {
    -fx-background: #ffffff00; /** Transparent **/
 }
 
