@@ -56,6 +56,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     private final Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
     private final Map<Location, LocationPresentation> locationPresentationMap = new HashMap<>();
     private final Map<SubComponent, SubComponentPresentation> subComponentPresentationMap = new HashMap<>();
+    private final Map<Jork, JorkPresentation> jorkPresentationMap = new HashMap<>();
     public BorderPane toolbar;
     public Rectangle background;
     public StyleClassedTextArea declaration;
@@ -73,6 +74,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     public Pane modelContainerSubComponent;
     public Pane modelContainerLocation;
     public Pane modelContainerEdge;
+    public Pane modelContainerJork;
     private MouseTracker mouseTracker;
     private DropDownMenu dropDownMenu;
     private Circle dropDownMenuHelperCircle;
@@ -155,6 +157,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             initializeEdgeHandling(newComponent);
             initializeLocationHandling(newComponent);
             initializeSubComponentHandling(newComponent);
+            initializeJorkHandling(newComponent);
 
             // When we update the color of the component, also update the color of the initial and final locations if the colors are the same
             newComponent.colorProperty().addListener((obs1, oldColor, newColor) -> {
@@ -178,6 +181,35 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         initializeDropDownMenu();
 
         initializeSubComponentUniqueNameError();
+    }
+
+    private void initializeJorkHandling(final Component newComponent) {
+        final Consumer<Jork> handleAddedJork = newJork -> {
+            final JorkPresentation jorkPresentation = new JorkPresentation(newJork);
+            jorkPresentationMap.put(newJork, jorkPresentation);
+            modelContainerJork.getChildren().add(jorkPresentation);
+        };
+
+
+        // React on addition of jorks to the component
+        newComponent.getJorks().addListener(new ListChangeListener<Jork>() {
+            @Override
+            public void onChanged(final Change<? extends Jork> c) {
+                if (c.next()) {
+                    // Edges are added to the component
+                    c.getAddedSubList().forEach(handleAddedJork::accept);
+
+                    // Edges are removed from the component
+                    c.getRemoved().forEach(edge -> {
+                        final JorkPresentation jorkPresentation = jorkPresentationMap.get(edge);
+                        modelContainerJork.getChildren().remove(jorkPresentation);
+                        jorkPresentationMap.remove(edge);
+                    });
+                }
+            }
+        });
+
+        newComponent.getJorks().forEach(handleAddedJork);
     }
 
     private void initializeSubComponentUniqueNameError() {
@@ -276,7 +308,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
             dropDownMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 230, true);
 
-            dropDownMenu.addClickableListElement("Add location", event -> {
+            dropDownMenu.addClickableListElement("Add Location", event -> {
                 dropDownMenu.close();
 
                 final Location newLocation = new Location();
@@ -295,6 +327,27 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 }, () -> { // Undo
                     component.removeLocation(newLocation);
                 }, "Added location '" + newLocation.toString() + "' to component '" + component.getName() + "'", "add-circle");
+            });
+
+            dropDownMenu.addClickableListElement("Add Jork", event -> {
+                dropDownMenu.close();
+
+                final Jork newJork = new Jork();
+
+                double x = DropDownMenu.x - LocationPresentation.RADIUS / 2;
+                x = Math.round(x / GRID_SIZE) * GRID_SIZE;
+                newJork.setX(x);
+
+                double y = DropDownMenu.y - LocationPresentation.RADIUS / 2;
+                y = Math.round(y / GRID_SIZE) * GRID_SIZE;
+                newJork.setY(y);
+
+                // Add a new location
+                UndoRedoStack.push(() -> { // Perform
+                    component.addJork(newJork);
+                }, () -> { // Undo
+                    component.removeJork(newJork);
+                }, "Added jork '" + newJork.toString() + "' to component '" + component.getName() + "'", "add-circle");
             });
 
             final DropDownMenu subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
@@ -323,7 +376,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 }
             });
 
-            dropDownMenu.addSubMenu("Add subcomponent", subMenu);
+            dropDownMenu.addSubMenu("Add SubComponent", subMenu);
             dropDownMenu.addSpacerElement();
             dropDownMenu.addListElement("Color");
             dropDownMenu.addColorPicker(component);
