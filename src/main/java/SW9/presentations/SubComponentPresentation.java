@@ -5,15 +5,14 @@ import SW9.abstractions.SubComponent;
 import SW9.controllers.CanvasController;
 import SW9.controllers.SubComponentController;
 import SW9.utility.colors.Color;
+import SW9.utility.helpers.SelectHelper;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
@@ -31,7 +30,7 @@ import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 import static SW9.presentations.ComponentPresentation.CORNER_SIZE;
 import static SW9.presentations.ComponentPresentation.TOOL_BAR_HEIGHT;
 
-public class SubComponentPresentation extends StackPane {
+public class SubComponentPresentation extends StackPane implements SelectHelper.Selectable {
 
     private final SubComponentController controller;
     private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
@@ -183,6 +182,8 @@ public class SubComponentPresentation extends StackPane {
             controller.toolbar.setPrefHeight(TOOL_BAR_HEIGHT);
         };
 
+        updateColorDelegates.add(updateColor);
+
         component.colorProperty().addListener(observable -> updateColor.accept(component.getColor(), component.getColorIntensity()));
 
         updateColor.accept(component.getColor(), component.getColorIntensity());
@@ -270,5 +271,19 @@ public class SubComponentPresentation extends StackPane {
         });
 
         updateColor.accept(component.getColor(), component.getColorIntensity());
+    }
+
+    @Override
+    public void select() {
+        updateColorDelegates.forEach(colorConsumer -> colorConsumer.accept(SelectHelper.SELECT_COLOR, SelectHelper.SELECT_COLOR_INTENSITY_NORMAL));
+    }
+
+    @Override
+    public void deselect() {
+        updateColorDelegates.forEach(colorConsumer -> {
+            final Component component = controller.getParentComponent();
+
+            colorConsumer.accept(component.getColor(), component.getColorIntensity());
+        });
     }
 }

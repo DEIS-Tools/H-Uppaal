@@ -348,6 +348,17 @@ public class HUPPAALController implements Initializable {
                     // Re-all the jork
                     component.getJorks().add(jork);
                 }, String.format("Deleted %s", selectable.toString()), "delete");
+            } else if (selectable instanceof SubComponentController) {
+                final Component component = CanvasController.getActiveComponent();
+                final SubComponent subComponent = ((SubComponentController) selectable).getSubComponent();
+
+                UndoRedoStack.push(() -> { // Perform
+                    // Remove the subComponent
+                    component.getSubComponents().remove(subComponent);
+                }, () -> { // Undo
+                    // Re-all the subComponent
+                    component.getSubComponents().add(subComponent);
+                }, String.format("Deleted %s", selectable.toString()), "delete");
             } else if (selectable instanceof NailController) {
                 final NailController nailController = (NailController) selectable;
                 final Edge edge = nailController.getEdge();
