@@ -1,18 +1,16 @@
 package SW9.backend;
 
+import SW9.abstractions.*;
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
-import SW9.abstractions.SubComponent;
-import com.uppaal.model.core2.Document;
-import com.uppaal.model.core2.Property;
-import com.uppaal.model.core2.PrototypeDocument;
-import com.uppaal.model.core2.Template;
+import SW9.abstractions.Nail;
+import com.google.common.base.Strings;
+import com.uppaal.model.core2.*;
 
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
+import java.util.List;
 
 public class HUPPAALDocument {
 
@@ -64,8 +62,6 @@ public class HUPPAALDocument {
         // Add the identifier for the location
         result += location.getId();
 
-        System.out.println(result);
-
         // Return the result
         return result;
     }
@@ -108,7 +104,7 @@ public class HUPPAALDocument {
         }
 
         for (final Edge hEdge : mainComponent.getEdges()) {
-            uToHEdges.put(addEdge(template, hEdge), hEdge);
+            uToHEdges.put(addEdge(template, hEdge, 0), hEdge);
         }
 
         return template;
@@ -152,7 +148,7 @@ public class HUPPAALDocument {
         }
 
         for (final Edge hEdge : component.getEdges()) {
-            uToHEdges.put(addEdge(template, hEdge), hEdge);
+            uToHEdges.put(addEdge(template, hEdge, offset), hEdge);
         }
 
         // Remove the sub component from the list
@@ -206,7 +202,7 @@ public class HUPPAALDocument {
         return uLocation;
     }
 
-    private com.uppaal.model.core2.Edge addEdge(final Template template, final Edge hEdge) throws BackendException {
+    private com.uppaal.model.core2.Edge addEdge(final Template template, final Edge hEdge, final int offset) throws BackendException {
         // Create new UPPAAL edge and insert it into the template
         final com.uppaal.model.core2.Edge uEdge = template.createEdge();
         template.insert(uEdge, null);
@@ -240,35 +236,53 @@ public class HUPPAALDocument {
         uEdge.setSource(sourceULocation);
         uEdge.setTarget(targetULocation);
 
-        final int x = (sourceULocation.getX() + targetULocation.getX()) / 2;
-        final int y = (sourceULocation.getY() + targetULocation.getY()) / 2;
 
-        if (hEdge.getSelect() != null) {
-            uEdge.setProperty("select", hEdge.getSelect());
-            final Property p = uEdge.getProperty("select");
-            p.setProperty("x", x - 15);
-            p.setProperty("y", y - 42);
-        }
+        final List<Nail> reversedNails = new ArrayList<>();
 
-        if (hEdge.getGuard() != null) {
-            uEdge.setProperty("guard", hEdge.getGuard());
-            final Property p = uEdge.getProperty("guard");
-            p.setProperty("x", x - 15);
-            p.setProperty("y", y - 28);
-        }
+        hEdge.getNails().forEach(nail -> reversedNails.add(0, nail));
 
-        if (hEdge.getSync() != null) {
-            uEdge.setProperty("synchronisation", hEdge.getSync());
-            final Property p = uEdge.getProperty("synchronisation");
-            p.setProperty("x", x - 15);
-            p.setProperty("y", y - 14);
-        }
+        for (final Nail hNail : reversedNails) {
 
-        if (hEdge.getUpdate() != null) {
-            uEdge.setProperty("assignment", hEdge.getUpdate());
-            final Property p = uEdge.getProperty("assignment");
-            p.setProperty("x", x - 15);
-            p.setProperty("y", y);
+            // Create a Uppaal nail
+            final com.uppaal.model.core2.Nail uNail = uEdge.createNail();
+            uEdge.insert(uNail, null);
+
+            final int x = (int) hNail.getX();
+            final int y = ((int) hNail.getY()) + offset;
+
+            // If the nail is a property nail and the edge have this property set, add it to the view
+            if (!Strings.isNullOrEmpty(hEdge.getSelect()) && hNail.getPropertyType().equals(Edge.PropertyType.SELECTION)) {
+                uEdge.setProperty("select", hEdge.getSelect());
+                final Property p = uEdge.getProperty("select");
+                p.setProperty("x", x + ((int) hNail.getPropertyX()));
+                p.setProperty("y", y + ((int) hNail.getPropertyY()) + offset);
+            }
+
+            if (!Strings.isNullOrEmpty(hEdge.getGuard()) && hNail.getPropertyType().equals(Edge.PropertyType.GUARD)) {
+                uEdge.setProperty("guard", hEdge.getGuard());
+                final Property p = uEdge.getProperty("guard");
+                p.setProperty("x", x + ((int) hNail.getPropertyX()));
+                p.setProperty("y", y + ((int) hNail.getPropertyY()) + offset);
+            }
+
+            if (!Strings.isNullOrEmpty(hEdge.getSync()) && hNail.getPropertyType().equals(Edge.PropertyType.SYNCHRONIZATION)) {
+                uEdge.setProperty("synchronisation", hEdge.getSync());
+                final Property p = uEdge.getProperty("synchronisation");
+                p.setProperty("x", x + ((int) hNail.getPropertyX()));
+                p.setProperty("y", y + ((int) hNail.getPropertyY()) + offset);
+            }
+
+            if (!Strings.isNullOrEmpty(hEdge.getUpdate()) && hNail.getPropertyType().equals(Edge.PropertyType.UPDATE)) {
+                uEdge.setProperty("assignment", hEdge.getUpdate());
+                final Property p = uEdge.getProperty("assignment");
+                p.setProperty("x", x + ((int) hNail.getPropertyX()));
+                p.setProperty("y", y + ((int) hNail.getPropertyY()) + offset);
+            }
+
+            // Add the position of the nail
+            uNail.setProperty("x", x);
+            uNail.setProperty("y", y);
+
         }
 
         return uEdge;
