@@ -160,14 +160,14 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             newComponent.colorProperty().addListener((obs1, oldColor, newColor) -> {
                 final Location initialLocation = newComponent.getInitialLocation();
                 if (initialLocation.getColor().equals(oldColor)) {
-                    initialLocation.setColor(newColor);
                     initialLocation.setColorIntensity(newComponent.getColorIntensity());
+                    initialLocation.setColor(newColor);
                 }
 
                 final Location finalLocation = newComponent.getFinalLocation();
                 if (finalLocation.getColor().equals(oldColor)) {
-                    finalLocation.setColor(newColor);
                     finalLocation.setColorIntensity(newComponent.getColorIntensity());
+                    finalLocation.setColor(newColor);
                 }
             });
         });

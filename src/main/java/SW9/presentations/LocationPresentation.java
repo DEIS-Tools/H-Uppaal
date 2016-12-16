@@ -44,8 +44,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private final Timeline hoverAnimationExited = new Timeline();
     private final Timeline scaleShakeIndicatorBackgroundAnimation = new Timeline();
     private final Timeline shakeContentAnimation = new Timeline();
-    private final Timeline propertiesPaneAnimationShow = new Timeline();
-    private final Timeline propertiesPaneAnimationHide = new Timeline();
 
     private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
     private final DoubleProperty animation = new SimpleDoubleProperty(0);
@@ -80,24 +78,17 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             // Bind the location with the one of the controller
             controller.setLocation(location);
 
-            // TODO make creation of location possible from the mouse
-
             initializeIdLabel();
-
             initializeTypeGraphics();
-
-            initializeCircle();
             initializeLocationShape();
-
             initializeTags();
-
             initializeInitialAnimation();
             initializeHoverAnimationEntered();
             initializeHoverAnimationExited();
             initializeDeleteShakeAnimation();
             initializeShakeAnimation();
-
             initializeHiddenAreaCircle();
+            initializeCircle();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
@@ -111,8 +102,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
     private void initializeIdLabel() {
         final Location location = controller.getLocation();
-
-
         final Label idLabel = controller.idLabel;
 
         final DropShadow ds = new DropShadow();
@@ -143,7 +132,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
         // Update the color of the circle when the color of the location is updated
         color.addListener((obs, old, newColor) -> updateColor.accept(newColor, colorIntensity.get()));
-        colorIntensity.addListener((obs, old, newIntensity) -> updateColor.accept(color.get(), newIntensity));
     }
 
     private void initializeTags() {
@@ -292,6 +280,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
         // Update the color of the circle when the color of the location is updated
         color.addListener((obs, old, newColor) -> updateColor.accept(newColor, colorIntensity.get()));
+        colorIntensity.addListener((obs, old, newIntensity) -> updateColor.accept(color.get(), newIntensity));
     }
 
     private void initializeLocationShape() {

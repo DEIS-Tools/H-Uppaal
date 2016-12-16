@@ -344,8 +344,8 @@ public class Component implements Serializable, DropDownMenu.HasColor {
 
         final EnabledColor enabledColor = EnabledColor.fromIdentifier(json.getAsJsonPrimitive(COLOR).getAsString());
         if (enabledColor != null) {
-            setColor(enabledColor.color);
             setColorIntensity(enabledColor.intensity);
+            setColor(enabledColor.color);
         }
     }
 }

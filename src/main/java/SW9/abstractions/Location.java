@@ -39,7 +39,7 @@ public class Location implements Circular, Serializable {
     private final DoubleProperty radius = new SimpleDoubleProperty(0d);
     private final SimpleDoubleProperty scale = new SimpleDoubleProperty(1d);
     private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.GREY_BLUE);
-    private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I500);
+    private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I700);
 
     private final DoubleProperty nicknameX = new SimpleDoubleProperty(0d);
     private final DoubleProperty nicknameY = new SimpleDoubleProperty(0d);
