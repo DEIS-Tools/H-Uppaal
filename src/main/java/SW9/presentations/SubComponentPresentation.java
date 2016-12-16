@@ -7,10 +7,13 @@ import SW9.controllers.SubComponentController;
 import SW9.utility.colors.Color;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
@@ -22,6 +25,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 import static SW9.presentations.ComponentPresentation.CORNER_SIZE;
@@ -72,8 +76,6 @@ public class SubComponentPresentation extends StackPane {
             initializeBackground();
             initializeName();
 
-            // todo: make draggable
-
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
@@ -92,6 +94,17 @@ public class SubComponentPresentation extends StackPane {
         final SubComponent subComponent = controller.getSubComponent();
         initialLocationPresentation = new LocationPresentation(subComponent.getComponent().getInitialLocation(), subComponent.getComponent(), false);
         finalLocationPresentation = new LocationPresentation(subComponent.getComponent().getFinalLocation(), subComponent.getComponent(), false);
+
+        final Consumer<Node> tapeForMousePressed = (node) -> {
+            node.setOnMousePressed((mouseEvent) -> {
+                mouseEvent.consume();
+                controller.root.fireEvent(mouseEvent);
+            });
+
+        };
+
+        tapeForMousePressed.accept(initialLocationPresentation.getController().scaleContent);
+        tapeForMousePressed.accept(finalLocationPresentation.getController().scaleContent);
 
         // Add the locations to the view
         controller.defaultLocationsContainer.getChildren().addAll(initialLocationPresentation, finalLocationPresentation);

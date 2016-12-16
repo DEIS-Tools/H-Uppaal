@@ -51,6 +51,8 @@ public class SubComponentController implements Initializable {
 
         Consumer<MouseEvent> startEdgeFromSubComponent = (event) -> {
 
+            event.consume();
+
             final Edge unfinishedEdge = getParentComponent().getUnfinishedEdge();
 
             if (unfinishedEdge != null) {
