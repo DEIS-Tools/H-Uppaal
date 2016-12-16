@@ -41,7 +41,6 @@ import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
 public class LocationController implements Initializable, SelectHelper.ColorSelectable {
 
-    private static final int REQUIRED_NAILS = 4;
     private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
     public Group root;
