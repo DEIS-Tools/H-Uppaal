@@ -310,7 +310,7 @@ public class HUPPAALController implements Initializable {
                 final Location finalLocation = component.getFinalLocation();
 
                 if (location.getId().equals(initialLocation.getId()) || location.getId().equals(finalLocation.getId())) {
-                    ((LocationController) selectable).root.shake();
+                    ((LocationPresentation) ((LocationController) selectable).root).shake();
                     return; // Do not delete initial or final locations
                 }
 
