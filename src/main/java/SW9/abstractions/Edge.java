@@ -1,5 +1,6 @@
 package SW9.abstractions;
 
+import SW9.presentations.JorkPresentation;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.Circular;
 import SW9.utility.serialize.Serializable;
@@ -30,6 +31,9 @@ public class Edge implements Serializable {
     private final ObjectProperty<Location> targetLocation = new SimpleObjectProperty<>();
     private final ObjectProperty<SubComponent> sourceSubComponent = new SimpleObjectProperty<>();
     private final ObjectProperty<SubComponent> targetSubComponent = new SimpleObjectProperty<>();
+    private final ObjectProperty<Jork> sourceJork = new SimpleObjectProperty<>();
+
+    private final ObjectProperty<Jork> targetJork = new SimpleObjectProperty<>();
     private final StringProperty select = new SimpleStringProperty("");
     private final StringProperty guard = new SimpleStringProperty("");
     private final StringProperty update = new SimpleStringProperty("");
@@ -52,6 +56,10 @@ public class Edge implements Serializable {
 
     public Edge(final SubComponent sourceComponent) {
         setSourceSubComponent(sourceComponent);
+    }
+
+    public Edge(final Jork sourceJork) {
+        setSourceJork(sourceJork);
     }
 
     public Edge(final JsonObject jsonObject, final Component component) {
@@ -198,6 +206,32 @@ public class Edge implements Serializable {
         updateTargetCircular();
     }
 
+    public Jork getSourceJork() {
+        return sourceJork.get();
+    }
+
+    public ObjectProperty<Jork> sourceJorkProperty() {
+        return sourceJork;
+    }
+
+    public void setSourceJork(final Jork sourceJork) {
+        this.sourceJork.set(sourceJork);
+        updateSourceCircular();
+    }
+
+    public Jork getTargetJork() {
+        return targetJork.get();
+    }
+
+    public ObjectProperty<Jork> targetJorkProperty() {
+        return targetJork;
+    }
+
+    public void setTargetJork(final Jork targetJork) {
+        this.targetJork.set(targetJork);
+        updateTargetCircular();
+    }
+
     public ObjectProperty<Circular> sourceCircularProperty() {
         return sourceCircular;
     }
@@ -263,6 +297,46 @@ public class Edge implements Serializable {
                     return yProperty().get();
                 }
             });
+        } else if (getSourceJork() != null) {
+            sourceCircular.set(new Circular() {
+                DoubleProperty x = new SimpleDoubleProperty();
+                DoubleProperty y = new SimpleDoubleProperty();
+
+                {
+                    x.bind(getSourceJork().xProperty().add(JorkPresentation.JORK_WIDTH / 2));
+                    y.bind(getSourceJork().yProperty().add(JorkPresentation.JORK_HEIGHT));
+                }
+
+                @Override
+                public DoubleProperty radiusProperty() {
+                    return new SimpleDoubleProperty(0);
+                }
+
+                @Override
+                public DoubleProperty scaleProperty() {
+                    return new SimpleDoubleProperty(0);
+                }
+
+                @Override
+                public DoubleProperty xProperty() {
+                    return x;
+                }
+
+                @Override
+                public DoubleProperty yProperty() {
+                    return y;
+                }
+
+                @Override
+                public double getX() {
+                    return xProperty().get();
+                }
+
+                @Override
+                public double getY() {
+                    return yProperty().get();
+                }
+            });
         }
     }
 
@@ -286,6 +360,46 @@ public class Edge implements Serializable {
                 @Override
                 public DoubleProperty scaleProperty() {
                     return getTargetSubComponent().getComponent().getInitialLocation().scaleProperty();
+                }
+
+                @Override
+                public DoubleProperty xProperty() {
+                    return x;
+                }
+
+                @Override
+                public DoubleProperty yProperty() {
+                    return y;
+                }
+
+                @Override
+                public double getX() {
+                    return xProperty().get();
+                }
+
+                @Override
+                public double getY() {
+                    return yProperty().get();
+                }
+            });
+        } else if (getTargetJork() != null) {
+            targetCircular.set(new Circular() {
+                DoubleProperty x = new SimpleDoubleProperty();
+                DoubleProperty y = new SimpleDoubleProperty();
+
+                {
+                    x.bind(getTargetJork().xProperty().add(JorkPresentation.JORK_WIDTH / 2));
+                    y.bind(getTargetJork().yProperty());
+                }
+
+                @Override
+                public DoubleProperty radiusProperty() {
+                    return new SimpleDoubleProperty(0);
+                }
+
+                @Override
+                public DoubleProperty scaleProperty() {
+                    return new SimpleDoubleProperty(0);
                 }
 
                 @Override

@@ -1,5 +1,6 @@
 package SW9.presentations;
 
+import SW9.abstractions.Component;
 import SW9.abstractions.Jork;
 import SW9.controllers.JorkController;
 import SW9.utility.colors.Color;
@@ -16,9 +17,12 @@ import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
 public class JorkPresentation extends Group implements SelectHelper.Selectable {
 
+    public static final double JORK_WIDTH = GRID_SIZE * 6;
+    public static final double JORK_HEIGHT = GRID_SIZE;
+
     private final JorkController controller;
 
-    public JorkPresentation(final Jork newJork) {
+    public JorkPresentation(final Jork newJork, final Component component) {
         final URL url = this.getClass().getResource("JorkPresentation.fxml");
 
         final FXMLLoader fxmlLoader = new FXMLLoader();
@@ -30,6 +34,7 @@ public class JorkPresentation extends Group implements SelectHelper.Selectable {
             fxmlLoader.load(url.openStream());
 
             controller = fxmlLoader.getController();
+            controller.setComponent(component);
             controller.setJork(newJork);
 
             setLayoutX(newJork.getX());
@@ -51,9 +56,8 @@ public class JorkPresentation extends Group implements SelectHelper.Selectable {
     }
 
     private void initializeShape() {
-        controller.rectangle.setHeight(GRID_SIZE);
-        controller.rectangle.setWidth(GRID_SIZE * 5);
-
+        controller.rectangle.setHeight(JORK_HEIGHT);
+        controller.rectangle.setWidth(JORK_WIDTH);
         controller.rectangle.setStrokeType(StrokeType.INSIDE);
     }
 
