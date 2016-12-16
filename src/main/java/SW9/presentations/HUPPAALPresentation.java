@@ -87,7 +87,6 @@ public class HUPPAALPresentation extends StackPane {
             controller.filePane.widthProperty().addListener((observable) -> {
                 if (ranInitialToggle.get()) return;
                 toggleFilePane();
-                toggleQueryPane();
                 ranInitialToggle.set(true);
             });
 
