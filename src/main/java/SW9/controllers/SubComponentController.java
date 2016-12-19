@@ -4,9 +4,12 @@ import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.abstractions.SubComponent;
 import SW9.presentations.CanvasPresentation;
+import SW9.presentations.LocationPresentation;
 import SW9.utility.UndoRedoStack;
+import SW9.utility.colors.Color;
 import SW9.utility.helpers.ItemDragHelper;
 import SW9.utility.helpers.NailHelper;
+import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXTextField;
@@ -27,7 +30,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
-public class SubComponentController implements Initializable {
+public class SubComponentController implements Initializable, SelectHelper.ColorSelectable {
 
     private final ObjectProperty<SubComponent> subComponent = new SimpleObjectProperty<>(null);
     private final ObjectProperty<Component> parentComponent = new SimpleObjectProperty<>(null);
@@ -72,6 +75,8 @@ public class SubComponentController implements Initializable {
                 }, () -> { // Undo
                     getParentComponent().removeEdge(newEdge);
                 }, "Created edge starting from sub component " + getSubComponent().getIdentifier(), "add-circle");
+            } else {
+                SelectHelper.select(this);
             }
         };
 
@@ -108,5 +113,34 @@ public class SubComponentController implements Initializable {
 
     public ObjectProperty<Component> parentComponentProperty() {
         return parentComponent;
+    }
+
+    @Override
+    public void color(final Color color, final Color.Intensity intensity) {
+        // Cannot be colored
+    }
+
+    @Override
+    public Color getColor() {
+        return null;
+    }
+
+    @Override
+    public Color.Intensity getColorIntensity() {
+        return null;
+    }
+
+    @Override
+    public void select() {
+        ((SelectHelper.Selectable) root).select();
+
+        defaultLocationsContainer.getChildren().forEach(node -> ((LocationPresentation) node).select());
+    }
+
+    @Override
+    public void deselect() {
+        ((SelectHelper.Selectable) root).deselect();
+
+        defaultLocationsContainer.getChildren().forEach(node -> ((LocationPresentation) node).deselect());
     }
 }
