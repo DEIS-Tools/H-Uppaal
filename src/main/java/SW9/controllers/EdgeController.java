@@ -58,6 +58,12 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
         edge.addListener((obsEdge, oldEdge, newEdge) -> {
             newEdge.targetCircularProperty().addListener(getNewTargetCircularListener(newEdge));
             component.addListener(getComponentChangeListener(newEdge));
+
+            // Invalidate the list of edges (to update UI and errors)
+            newEdge.targetCircularProperty().addListener(observable -> {
+                getComponent().getEdges().remove(getEdge());
+                getComponent().getEdges().add(getEdge());
+            });
         });
 
         initializeLinksListener();

@@ -211,59 +211,6 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         newComponent.getJorks().forEach(handleAddedJork);
     }
 
-    private void initializeJorkErrorHandling() {
-        final HashMap<String, ArrayList<CodeAnalysis.Message>> errorsMap = new HashMap<>();
-
-        final Runnable checkJorks = () -> {
-            final Component component = this.component.get();
-            final List<Jork> jorks = component.getJorks();
-
-            for (final Jork jork : jorks) {
-                final List<Edge> incomingEdges = component.getIncomingEdges(jork);
-                final List<Edge> outgoingEdges = component.getOutGoingEdges(jork);
-                final ObjectProperty<Jork.Type> incomingJorkType= new SimpleObjectProperty<>();
-                final ObjectProperty<Jork.Type> outgoingJorkType= new SimpleObjectProperty<>();
-
-                incomingEdges.forEach(edge -> {
-                    if(edge.getSourceLocation() != null) {
-                        if(!incomingJorkType.get().equals(Jork.Type.LOCATION)) {
-                            // TODO bad jork
-                        }
-                        incomingJorkType.set(Jork.Type.LOCATION);
-                    } else if(edge.getSourceSubComponent() != null) {
-                        if(!incomingJorkType.get().equals(Jork.Type.SUB_COMPONENT)) {
-                            // TODO bad jork
-                        }
-                        incomingJorkType.set(Jork.Type.SUB_COMPONENT);
-                    } else {
-                        // TODO bad jork
-                    }
-                });
-
-                outgoingEdges.forEach(edge -> {
-                    if(edge.getTargetLocation() != null) {
-                        if(!outgoingJorkType.get().equals(Jork.Type.LOCATION)) {
-                            // TODO bad jork
-                        }
-                        outgoingJorkType.set(Jork.Type.LOCATION);
-                    } else if(edge.getTargetSubComponent() != null) {
-                        if(!outgoingJorkType.get().equals(Jork.Type.SUB_COMPONENT)) {
-                            // TODO bad jork
-                        }
-                        outgoingJorkType.set(Jork.Type.SUB_COMPONENT);
-                    } else {
-                        // TODO bad jork
-                    }
-                });
-
-                if(incomingJorkType.get().equals(outgoingJorkType.get())) {
-                    // TODO bad jork
-                }
-            }
-
-        };
-    }
-
     private void initializeSubComponentUniqueNameError() {
         final HashMap<String, ArrayList<CodeAnalysis.Message>> errorsMap = new HashMap<>();
 
