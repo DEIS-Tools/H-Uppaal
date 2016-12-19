@@ -24,6 +24,8 @@ public class HUPPAALDocument {
     // Map from location to all of its uppaal names
     private final Map<Location, List<String>> hLocationToFlattenedNames = new HashMap<>();
 
+    private String toBeDeclarations = "";
+
     private final Component mainComponent;
     /**
      * Used to figure out the layering of sub components
@@ -74,9 +76,7 @@ public class HUPPAALDocument {
         final Template template = uppaalDocument.createTemplate();
         uppaalDocument.insert(template, null);
 
-
-        final String declarations = mainComponent.getDeclarations();
-        template.setProperty("declaration", declarations);
+        toBeDeclarations += mainComponent.getDeclarations() + "\n";
 
         // Add all locations from the model to our conversion map and to the template
         for (final Location hLocation : mainComponent.getLocations()) {
@@ -98,7 +98,6 @@ public class HUPPAALDocument {
         final com.uppaal.model.core2.Location uFinalLocation = addLocation(template, hFinalLocation, 0);
         addLocationsToMaps(hFinalLocation, uFinalLocation);
 
-        // todo: Add sub-components here
         for (final SubComponent subComponent : mainComponent.getSubComponents()) {
             addSubComponentToTemplate(template, subComponent);
         }
@@ -106,6 +105,8 @@ public class HUPPAALDocument {
         for (final Edge hEdge : mainComponent.getEdges()) {
             uToHEdges.put(addEdge(template, hEdge, 0), hEdge);
         }
+
+        template.setProperty("declaration", toBeDeclarations);
 
         return template;
     }
@@ -125,13 +126,15 @@ public class HUPPAALDocument {
     }
 
     private void addSubComponentToTemplate(final Template template, final SubComponent subComponent) throws BackendException {
-        // todo få declarations med
+        // todo få toBeDeclarations med
 
         // Add the sub component to the stack
         subComponentList.push(subComponent);
 
         final Component component = subComponent.getComponent();
         offset += component.getHeight() + 10;
+
+        toBeDeclarations += component.getDeclarations() + "\n";
 
         // Add all locations from the model to our conversion map and to the template
         for (final Location hLocation : component.getLocations()) {
@@ -153,7 +156,6 @@ public class HUPPAALDocument {
         final com.uppaal.model.core2.Location uFinalLocation = addLocation(template, hFinalLocation, offset);
         addLocationsToMaps(hFinalLocation, uFinalLocation);
 
-        // todo: Add sub-components here
         for (final SubComponent nestedSubComponents : subComponent.getComponent().getSubComponents()) {
             addSubComponentToTemplate(template, nestedSubComponents);
         }
