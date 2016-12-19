@@ -32,6 +32,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -39,6 +40,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
+
+import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
 public class EdgeController implements Initializable, SelectHelper.ColorSelectable {
     private final ObservableList<Link> links = FXCollections.observableArrayList();
@@ -53,6 +56,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
     private Thread runningThread;
     private Consumer<Nail> enlargeNail;
     private Consumer<Nail> shrinkNail;
+    private Circle dropDownMenuHelperCircle;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -336,16 +340,42 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
     }
 
     private void initializeLinksListener() {
+        // Tape
+        dropDownMenuHelperCircle = new Circle(5);
+        dropDownMenuHelperCircle.setOpacity(0);
+        dropDownMenuHelperCircle.setMouseTransparent(true);
+        edgeRoot.getChildren().add(dropDownMenuHelperCircle);
+
         links.addListener(new ListChangeListener<Link>() {
             @Override
-            public void onChanged(Change<? extends Link> c) {
+            public void onChanged(final Change<? extends Link> c) {
                 links.forEach((link) -> link.setOnMousePressed(event -> {
 
                     if (event.isSecondaryButtonDown()) {
+                        event.consume();
 
-                        final DropDownMenu dropDownMenu = new DropDownMenu(((Pane) edgeRoot.getParent().getParent()), edgeRoot.getParent().getParent(), 230, true);
-                        addEdgePropertyRow(dropDownMenu, "Add select", Edge.PropertyType.SELECTION, link);
+                        final DropDownMenu dropDownMenu = new DropDownMenu(((Pane) edgeRoot.getParent().getParent().getParent().getParent()), dropDownMenuHelperCircle, 230, true);
+
+                        addEdgePropertyRow(dropDownMenu, "Add Select", Edge.PropertyType.SELECTION, link);
+                        addEdgePropertyRow(dropDownMenu, "Add Guard", Edge.PropertyType.GUARD, link);
+                        addEdgePropertyRow(dropDownMenu, "Add Synchronization", Edge.PropertyType.SYNCHRONIZATION, link);
+                        addEdgePropertyRow(dropDownMenu, "Add Update", Edge.PropertyType.UPDATE, link);
+
+                        dropDownMenu.addSpacerElement();
+
+                        dropDownMenu.addClickableListElement("Delete", mouseEvent -> {
+                            dropDownMenu.close();
+                            UndoRedoStack.push(() -> { // Perform
+                                getComponent().getEdges().remove(getEdge());
+                            }, () -> { // Undo
+                                getComponent().getEdges().add(getEdge());
+                            }, "Deleted edge " + getEdge(), "delete");
+                        });
+
                         dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, event.getX(), event.getY());
+
+                        DropDownMenu.x = CanvasPresentation.mouseTracker.getGridX();
+                        DropDownMenu.y = CanvasPresentation.mouseTracker.getGridY();
 
 
                     } else if (event.isShiftDown()) {
@@ -368,15 +398,55 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
     }
 
     private void addEdgePropertyRow(final DropDownMenu dropDownMenu, final String rowTitle, final Edge.PropertyType type, final Link link) {
-        dropDownMenu.addClickableListElement(rowTitle, event -> {
-            final double nailX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
-            final double nailY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
+        final SimpleBooleanProperty isDisabled = new SimpleBooleanProperty(false);
+
+        final int[] data = {-1, -1, -1, -1};
+
+        int i = 0;
+        for (final Nail nail : getEdge().getNails()) {
+            if (nail.getPropertyType().equals(Edge.PropertyType.SELECTION))
+                data[Edge.PropertyType.SELECTION.getI()] = i;
+            if (nail.getPropertyType().equals(Edge.PropertyType.GUARD)) data[Edge.PropertyType.GUARD.getI()] = i;
+            if (nail.getPropertyType().equals(Edge.PropertyType.SYNCHRONIZATION))
+                data[Edge.PropertyType.SYNCHRONIZATION.getI()] = i;
+            if (nail.getPropertyType().equals(Edge.PropertyType.UPDATE)) data[Edge.PropertyType.UPDATE.getI()] = i;
+
+            if (nail.getPropertyType().equals(type)) {
+                isDisabled.set(true);
+            }
+
+            i++;
+        }
+
+        final SimpleIntegerProperty insertAt = new SimpleIntegerProperty(links.indexOf(link));
+        final int clickedLinkedIndex = links.indexOf(link);
+
+
+        // Check the elements before me, and ensure that I am placed after these
+        for (int i1 = type.getI() - 1; i1 >= 0; i1--) {
+
+            if (data[i1] != -1 && data[i1] >= clickedLinkedIndex) {
+                insertAt.set(data[i1] + 1);
+            }
+        }
+
+        // Check the elements after me, and ensure that I am placed before these
+        for (int i1 = type.getI() + 1; i1 < data.length; i1++) {
+
+            if (data[i1] != -1 && data[i1] < clickedLinkedIndex) {
+                insertAt.set(data[i1]);
+            }
+        }
+
+        dropDownMenu.addClickableAndDisableableListElement(rowTitle, isDisabled, event -> {
+            final double nailX = Math.round(DropDownMenu.x / GRID_SIZE) * GRID_SIZE;
+            final double nailY = Math.round(DropDownMenu.y / GRID_SIZE) * GRID_SIZE;
 
             final Nail newNail = new Nail(nailX, nailY);
             newNail.setPropertyType(type);
 
             UndoRedoStack.push(
-                    () -> getEdge().insertNailAt(newNail, links.indexOf(link)),
+                    () -> getEdge().insertNailAt(newNail, insertAt.get()),
                     () -> getEdge().removeNail(newNail),
                     "Nail property added (" + type + ")",
                     "add-circle"

@@ -171,10 +171,10 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
     private void initializeShakeAnimation() {
         final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
 
-        final double startX = controller.root.getLayoutX();
-        final KeyValue kv1 = new KeyValue(controller.root.layoutXProperty(), startX - 3, interpolator);
-        final KeyValue kv2 = new KeyValue(controller.root.layoutXProperty(), startX + 3, interpolator);
-        final KeyValue kv3 = new KeyValue(controller.root.layoutXProperty(), startX, interpolator);
+        final double startX = controller.root.getTranslateX();
+        final KeyValue kv1 = new KeyValue(controller.root.translateXProperty(), startX - 3, interpolator);
+        final KeyValue kv2 = new KeyValue(controller.root.translateXProperty(), startX + 3, interpolator);
+        final KeyValue kv3 = new KeyValue(controller.root.translateXProperty(), startX, interpolator);
 
         final KeyFrame kf1 = new KeyFrame(millis(50), kv1);
         final KeyFrame kf2 = new KeyFrame(millis(100), kv2);

@@ -1,7 +1,6 @@
 package SW9.abstractions;
 
 import SW9.presentations.JorkPresentation;
-import SW9.presentations.Link;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.Circular;
 import SW9.utility.serialize.Serializable;
@@ -50,8 +49,6 @@ public class Edge implements Serializable {
     // Circulars
     private ObjectProperty<Circular> sourceCircular = new SimpleObjectProperty<>();
     private ObjectProperty<Circular> targetCircular = new SimpleObjectProperty<>();
-
-    public enum PropertyType {NONE, SELECTION, GUARD, SYNCHRONIZATION, UPDATE}
 
     public Edge(final Location sourceLocation) {
         setSourceLocation(sourceLocation);
@@ -187,21 +184,17 @@ public class Edge implements Serializable {
         return sourceSubComponent.get();
     }
 
-    public ObjectProperty<SubComponent> sourceSubComponentProperty() {
-        return sourceSubComponent;
-    }
-
     public void setSourceSubComponent(final SubComponent sourceSubComponent) {
         this.sourceSubComponent.set(sourceSubComponent);
         updateSourceCircular();
     }
 
-    public SubComponent getTargetSubComponent() {
-        return targetSubComponent.get();
+    public ObjectProperty<SubComponent> sourceSubComponentProperty() {
+        return sourceSubComponent;
     }
 
-    public ObjectProperty<SubComponent> targetSubComponentProperty() {
-        return targetSubComponent;
+    public SubComponent getTargetSubComponent() {
+        return targetSubComponent.get();
     }
 
     public void setTargetSubComponent(final SubComponent targetSubComponent) {
@@ -209,12 +202,12 @@ public class Edge implements Serializable {
         updateTargetCircular();
     }
 
-    public Jork getSourceJork() {
-        return sourceJork.get();
+    public ObjectProperty<SubComponent> targetSubComponentProperty() {
+        return targetSubComponent;
     }
 
-    public ObjectProperty<Jork> sourceJorkProperty() {
-        return sourceJork;
+    public Jork getSourceJork() {
+        return sourceJork.get();
     }
 
     public void setSourceJork(final Jork sourceJork) {
@@ -222,17 +215,21 @@ public class Edge implements Serializable {
         updateSourceCircular();
     }
 
-    public Jork getTargetJork() {
-        return targetJork.get();
+    public ObjectProperty<Jork> sourceJorkProperty() {
+        return sourceJork;
     }
 
-    public ObjectProperty<Jork> targetJorkProperty() {
-        return targetJork;
+    public Jork getTargetJork() {
+        return targetJork.get();
     }
 
     public void setTargetJork(final Jork targetJork) {
         this.targetJork.set(targetJork);
         updateTargetCircular();
+    }
+
+    public ObjectProperty<Jork> targetJorkProperty() {
+        return targetJork;
     }
 
     public ObjectProperty<Circular> sourceCircularProperty() {
@@ -442,6 +439,18 @@ public class Edge implements Serializable {
         }
     }
 
+    public void setProperty(final PropertyType propertyType, final String newProperty) {
+        if (propertyType.equals(PropertyType.SELECTION)) {
+            setSelect(newProperty);
+        } else if (propertyType.equals(PropertyType.GUARD)) {
+            setGuard(newProperty);
+        } else if (propertyType.equals(PropertyType.SYNCHRONIZATION)) {
+            setSync(newProperty);
+        } else if (propertyType.equals(PropertyType.UPDATE)) {
+            setUpdate(newProperty);
+        }
+    }
+
     @Override
     public JsonObject serialize() {
         final JsonObject result = new JsonObject();
@@ -533,6 +542,24 @@ public class Edge implements Serializable {
             final Nail newNail = new Nail((JsonObject) jsonElement);
             nails.add(newNail);
         });
+    }
+
+    public enum PropertyType {
+        NONE(-1),
+        SELECTION(0),
+        GUARD(1),
+        SYNCHRONIZATION(2),
+        UPDATE(3);
+
+        private int i;
+
+        PropertyType(final int i) {
+            this.i = i;
+        }
+
+        public int getI() {
+            return i;
+        }
     }
 
 }

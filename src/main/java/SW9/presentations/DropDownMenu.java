@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 
 import static SW9.utility.colors.EnabledColor.enabledColors;
 import static javafx.scene.paint.Color.TRANSPARENT;
+import static javafx.scene.paint.Color.WHITE;
 
 public class DropDownMenu {
 
@@ -360,6 +361,69 @@ public class DropDownMenu {
 
     public void addCustomChild(final Node child) {
         list.getChildren().add(child);
+    }
+
+    public void addClickableAndDisableableListElement(final String s, final ObservableBooleanValue isDisabled, final Consumer<MouseEvent> mouseEventConsumer) {
+        final Label label = new Label(s);
+
+        label.setStyle("-fx-padding: 8 16 8 16;");
+        label.getStyleClass().add("body2");
+        label.setMinWidth(width);
+
+        final JFXRippler rippler = new JFXRippler(label);
+
+        rippler.setOnMouseEntered(event -> {
+            if (isDisabled.get()) return;
+
+            // Set the background to a light grey
+            label.setBackground(new Background(new BackgroundFill(
+                    Color.GREY.getColor(Color.Intensity.I200),
+                    CornerRadii.EMPTY,
+                    Insets.EMPTY
+            )));
+
+            canIShowSubMenu.set(false);
+        });
+
+        rippler.setOnMouseExited(event -> {
+            if (isDisabled.get()) return;
+
+            // Set the background to be transparent
+            label.setBackground(new Background(new BackgroundFill(
+                    TRANSPARENT,
+                    CornerRadii.EMPTY,
+                    Insets.EMPTY
+            )));
+        });
+
+        // When the rippler is pressed, run the provided consumer.
+        rippler.setOnMousePressed(event -> {
+            if (isDisabled.get()) {
+                event.consume();
+                return;
+            }
+
+            // If we do not do this, the method below will be called twice
+            if (!(event.getTarget() instanceof StackPane)) return;
+
+            mouseEventConsumer.accept(event);
+        });
+
+        final Consumer<Boolean> updateTransparency = (disabled) -> {
+            if (disabled) {
+                rippler.setRipplerFill(WHITE);
+                label.setOpacity(0.5);
+            } else {
+                rippler.setOpacity(1);
+                rippler.setRipplerFill(Color.GREY_BLUE.getColor(Color.Intensity.I300));
+                label.setOpacity(1);
+            }
+        };
+
+        isDisabled.addListener((obs, oldDisabled, newDisabled) -> updateTransparency.accept(newDisabled));
+        updateTransparency.accept(isDisabled.get());
+
+        list.getChildren().add(rippler);
     }
 
     public interface HasColor {

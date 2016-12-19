@@ -369,17 +369,19 @@ public class HUPPAALController implements Initializable {
                 final Nail nail = nailController.getNail();
                 final int index = edge.getNails().indexOf(nail);
 
-                // If the nail is a property nail disallow deletion
-                if(!nail.getPropertyType().equals(Edge.PropertyType.NONE)) {
-                    ((NailPresentation) nailController.root).shake();
-                    return;
-                }
+                final String restoreProperty = edge.getProperty(nail.getPropertyType());
 
                 UndoRedoStack.push(
-                        ()-> edge.removeNail(nail),
-                        ()-> edge.insertNailAt(nail,index),
+                        () -> {
+                            edge.removeNail(nail);
+                            edge.setProperty(nail.getPropertyType(), "");
+                        },
+                        () -> {
+                            edge.insertNailAt(nail, index);
+                            edge.setProperty(nail.getPropertyType(), restoreProperty);
+                        },
                         "Nail removed",
-                        "add-circle"
+                        "delete"
                 );
             }
         });
