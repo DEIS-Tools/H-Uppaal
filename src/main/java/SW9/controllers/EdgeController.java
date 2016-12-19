@@ -5,6 +5,7 @@ import SW9.abstractions.Edge;
 import SW9.abstractions.Nail;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.presentations.CanvasPresentation;
+import SW9.presentations.DropDownMenu;
 import SW9.presentations.Link;
 import SW9.presentations.NailPresentation;
 import SW9.utility.UndoRedoStack;
@@ -12,6 +13,7 @@ import SW9.utility.colors.Color;
 import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.Circular;
 import SW9.utility.helpers.SelectHelper;
+import com.jfoenix.controls.JFXPopup;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -29,6 +31,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -69,7 +72,6 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
         initializeLinksListener();
 
         ensureNailsInFront();
-
     }
 
     private void ensureNailsInFront() {
@@ -338,7 +340,15 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
             @Override
             public void onChanged(Change<? extends Link> c) {
                 links.forEach((link) -> link.setOnMousePressed(event -> {
-                    if (event.isShiftDown()) {
+
+                    if (event.isSecondaryButtonDown()) {
+
+                        final DropDownMenu dropDownMenu = new DropDownMenu(((Pane) edgeRoot.getParent().getParent()), edgeRoot.getParent().getParent(), 230, true);
+                        addEdgePropertyRow(dropDownMenu, "Add select", Edge.PropertyType.SELECTION, link);
+                        dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, event.getX(), event.getY());
+
+
+                    } else if (event.isShiftDown()) {
                         final double nailX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
                         final double nailY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
 
@@ -354,6 +364,25 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
                     }
                 }));
             }
+        });
+    }
+
+    private void addEdgePropertyRow(final DropDownMenu dropDownMenu, final String rowTitle, final Edge.PropertyType type, final Link link) {
+        dropDownMenu.addClickableListElement(rowTitle, event -> {
+            final double nailX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
+            final double nailY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
+
+            final Nail newNail = new Nail(nailX, nailY);
+            newNail.setPropertyType(type);
+
+            UndoRedoStack.push(
+                    () -> getEdge().insertNailAt(newNail, links.indexOf(link)),
+                    () -> getEdge().removeNail(newNail),
+                    "Nail property added (" + type + ")",
+                    "add-circle"
+            );
+
+            dropDownMenu.close();
         });
     }
 

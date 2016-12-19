@@ -1,6 +1,7 @@
 package SW9.abstractions;
 
 import SW9.presentations.JorkPresentation;
+import SW9.presentations.Link;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.Circular;
 import SW9.utility.serialize.Serializable;

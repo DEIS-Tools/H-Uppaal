@@ -16,7 +16,7 @@ public class NailHelper {
 
     public static void addMissingNails(final Edge unfinishedEdge) {
         KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_EDGE);
-
+        /*
         // Maps index of a nail to a list of potential new nails before that nail
         final Map<Integer, List<Pair<Double, Double>>> nailIndexToPotentialNewNailsMap = new HashMap<>();
 
@@ -77,7 +77,7 @@ public class NailHelper {
                 case 3: nails.get(i).setPropertyType(Edge.PropertyType.UPDATE); continue;
                 default: return;
             }
-        }
+        }*/
     }
 
     private static List<Pair<Double, Double>> getPotentialNailSegments(Circular start, Circular end) {

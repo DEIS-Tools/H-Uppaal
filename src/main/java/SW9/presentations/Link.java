@@ -22,7 +22,6 @@ public class Link extends Group implements SelectHelper.Selectable {
     }
 
     public Link(final double startX, final double endX, final double startY, final double endY) {
-
         // Set the initial values
         this.startX = new SimpleDoubleProperty(startX);
         this.endX = new SimpleDoubleProperty(endX);
