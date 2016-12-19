@@ -14,6 +14,7 @@ import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -47,11 +48,11 @@ public class JorkController implements Initializable, SelectHelper.ColorSelectab
         final CodeAnalysis.Message missingIncomingEdges = new CodeAnalysis.Message("Jork '" + getJork().getId() + "' have no incoming edges", CodeAnalysis.MessageType.ERROR);
         final CodeAnalysis.Message missingOutgoingEdges = new CodeAnalysis.Message("Jork '" + getJork().getId() + "' have no outgoing edges", CodeAnalysis.MessageType.ERROR);
 
-        final boolean[] addedWrongIncomingMessage = {false};
-        final boolean[] addedWrongOutgoingMessage = {false};
-        final boolean[] addedWrongJorkTypeMessage = {false};
-        final boolean[] addedMissingIncomingEdgesMessage = {false};
-        final boolean[] addedMissingOutgoingEdgesMessage = {false};
+        final SimpleBooleanProperty addedWrongIncomingMessage = new SimpleBooleanProperty(false);
+        final SimpleBooleanProperty addedWrongOutgoingMessage = new SimpleBooleanProperty(false);
+        final SimpleBooleanProperty addedWrongJorkTypeMessage = new SimpleBooleanProperty(false);
+        final SimpleBooleanProperty addedMissingIncomingEdgesMessage = new SimpleBooleanProperty(false);
+        final SimpleBooleanProperty addedMissingOutgoingEdgesMessage = new SimpleBooleanProperty(false);
 
         final Runnable checkJork = () -> {
             // Find the incoming and outgoing edges (from/to the jork)
@@ -61,16 +62,11 @@ public class JorkController implements Initializable, SelectHelper.ColorSelectab
             // Make sure that the jork is still a part of the component
             if (!getComponent().getJorks().contains(getJork())) {
                 // Remove all of the errors
-                CodeAnalysis.removeMessage(getComponent(), wrongIncoming);
-                CodeAnalysis.removeMessage(getComponent(), wrongOutgoing);
-                CodeAnalysis.removeMessage(getComponent(), wrongJorkType);
-                CodeAnalysis.removeMessage(getComponent(), missingIncomingEdges);
-                CodeAnalysis.removeMessage(getComponent(), missingOutgoingEdges);
-                addedMissingIncomingEdgesMessage[0] = false;
-                addedMissingOutgoingEdgesMessage[0] = false;
-                addedWrongIncomingMessage[0] = false;
-                addedWrongJorkTypeMessage[0] = false;
-                addedWrongOutgoingMessage[0] = false;
+                addRemoveError(false, addedMissingIncomingEdgesMessage, wrongIncoming);
+                addRemoveError(false, addedWrongOutgoingMessage, wrongOutgoing);
+                addRemoveError(false, addedWrongJorkTypeMessage, wrongJorkType);
+                addRemoveError(false, addedMissingIncomingEdgesMessage, missingIncomingEdges);
+                addRemoveError(false, addedMissingOutgoingEdgesMessage, missingOutgoingEdges);
 
                 // Do not re-add them
                 return;
@@ -78,33 +74,10 @@ public class JorkController implements Initializable, SelectHelper.ColorSelectab
 
 
             // Check if we have some incoming edges
-
-            // We found an inconsistency that is not already in the map
-            if (incomingEdges.size() == 0 && !addedMissingIncomingEdgesMessage[0]) {
-                CodeAnalysis.addMessage(getComponent(), missingIncomingEdges);
-                addedMissingIncomingEdgesMessage[0] = true;
-            }
-
-            // We did not find an inconsistency, but we have an error for it
-            if (incomingEdges.size() != 0 && addedMissingIncomingEdgesMessage[0]) {
-                CodeAnalysis.removeMessage(getComponent(), missingIncomingEdges);
-                addedMissingIncomingEdgesMessage[0] = false;
-            }
+            addRemoveError(incomingEdges.size() == 0, addedMissingIncomingEdgesMessage, missingIncomingEdges);
 
             // Check if we have some outgoing edges
-
-            // We found an inconsistency that is not already in the map
-            if (outgoingEdges.size() == 0 && !addedMissingOutgoingEdgesMessage[0]) {
-                CodeAnalysis.addMessage(getComponent(), missingOutgoingEdges);
-                addedMissingOutgoingEdgesMessage[0] = true;
-            }
-
-            // We did not find an inconsistency, but we have an error for it
-            if (outgoingEdges.size() != 0 && addedMissingOutgoingEdgesMessage[0]) {
-                CodeAnalysis.removeMessage(getComponent(), missingOutgoingEdges);
-                addedMissingOutgoingEdgesMessage[0] = false;
-            }
-
+            addRemoveError(outgoingEdges.size() == 0, addedMissingOutgoingEdgesMessage, missingOutgoingEdges);
 
             // Check if all of the incoming edges are of the same type
             boolean foundIncomingInconsistency = false;
@@ -125,17 +98,7 @@ public class JorkController implements Initializable, SelectHelper.ColorSelectab
                 previousIncomingType = thisType;
             }
 
-            // We found an inconsistency that is not already in the map
-            if (foundIncomingInconsistency && !addedWrongIncomingMessage[0]) {
-                CodeAnalysis.addMessage(getComponent(), wrongIncoming);
-                addedWrongIncomingMessage[0] = true;
-            }
-
-            // We did not find an inconsistency, but we have an error for it
-            if (!foundIncomingInconsistency && addedWrongIncomingMessage[0]) {
-                CodeAnalysis.removeMessage(getComponent(), wrongIncoming);
-                addedWrongIncomingMessage[0] = false;
-            }
+            addRemoveError(foundIncomingInconsistency, addedWrongIncomingMessage, wrongIncoming);
 
             // Check if all of the outgoing edges are of the same type
             boolean foundOutgoingInconsistency = false;
@@ -158,36 +121,11 @@ public class JorkController implements Initializable, SelectHelper.ColorSelectab
                 previousOutgoingType = thisType;
             }
 
-            if (!foundNonFinishedEdge) {
-                // We found an inconsistency that is not already in the map
-                if (foundOutgoingInconsistency && !addedWrongOutgoingMessage[0]) {
-                    CodeAnalysis.addMessage(getComponent(), wrongOutgoing);
-                    addedWrongOutgoingMessage[0] = true;
-                }
-
-                // We did not find an inconsistency, but we have an error for it
-                if (!foundOutgoingInconsistency && addedWrongOutgoingMessage[0]) {
-                    CodeAnalysis.removeMessage(getComponent(), wrongOutgoing);
-                    addedWrongOutgoingMessage[0] = false;
-                }
-            }
-
+            addRemoveError(foundOutgoingInconsistency, addedWrongOutgoingMessage, wrongOutgoing);
 
             // Check if the incoming type matches the outgoing type
             if (!foundIncomingInconsistency && !foundOutgoingInconsistency && !foundNonFinishedEdge) {
-
-                // We found an inconsistency that is not already in the map
-                if (previousIncomingType == previousOutgoingType && !addedWrongJorkTypeMessage[0]) {
-                    CodeAnalysis.addMessage(getComponent(), wrongJorkType);
-                    addedWrongJorkTypeMessage[0] = true;
-                }
-
-                // We did not find an inconsistency, but we have an error for it
-                if (previousIncomingType != previousOutgoingType && addedWrongJorkTypeMessage[0]) {
-                    CodeAnalysis.removeMessage(getComponent(), wrongJorkType);
-                    addedWrongJorkTypeMessage[0] = false;
-                }
-
+                addRemoveError(previousIncomingType == previousOutgoingType, addedWrongJorkTypeMessage, wrongJorkType);
             }
 
         };
@@ -203,6 +141,27 @@ public class JorkController implements Initializable, SelectHelper.ColorSelectab
 
 
             REGISTERED_JORK_ERROR_CHECKER_MAP.put(getJork(), true);
+        }
+    }
+
+    /**
+     * Adds or removed an error from the view based on the isErrorPresent variable
+     *
+     * @param isErrorPresent indicates if the error is currently present (true = add the error, false = remove the error)
+     * @param isErrorAdded   indicates if the error is currently added to the view
+     * @param errorMessage   the error message to add or remove
+     */
+    private void addRemoveError(final boolean isErrorPresent, final SimpleBooleanProperty isErrorAdded, final CodeAnalysis.Message errorMessage) {
+        // If the error is present and is not already in the map
+        if (isErrorPresent && !isErrorAdded.get()) {
+            CodeAnalysis.addMessage(getComponent(), errorMessage);
+            isErrorAdded.set(true);
+        }
+
+        // The error is no longer present
+        if (!isErrorPresent) {
+            CodeAnalysis.removeMessage(getComponent(), errorMessage);
+            isErrorAdded.set(false);
         }
     }
 
