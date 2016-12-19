@@ -20,6 +20,8 @@ public class Edge implements Serializable {
     private static final String TARGET_LOCATION = "target_location";
     private static final String SOURCE_SUB_COMPONENT = "source_sub_component";
     private static final String TARGET_SUB_COMPONENT = "target_sub_component";
+    private static final String SOURCE_JORK = "source_jork";
+    private static final String TARGET_JORK = "target_jork";
     private static final String SELECT = "select";
     private static final String GUARD = "guard";
     private static final String UPDATE = "update";
@@ -455,6 +457,12 @@ public class Edge implements Serializable {
         if (getTargetSubComponent() != null) {
             result.addProperty(TARGET_SUB_COMPONENT, getTargetSubComponent().getIdentifier());
         }
+        if (getSourceJork() != null) {
+            result.addProperty(SOURCE_JORK, getSourceJork().getId());
+        }
+        if (getTargetJork() != null) {
+            result.addProperty(TARGET_JORK, getTargetJork().getId());
+        }
         result.addProperty(SELECT, getSelect());
         result.addProperty(GUARD, getGuard());
         result.addProperty(UPDATE, getUpdate());
@@ -491,7 +499,7 @@ public class Edge implements Serializable {
         setFromAndToLocationIfMatches.accept(initialLocation);
         setFromAndToLocationIfMatches.accept(finalLocation);
 
-        // Sets a location to be either source or target sub component if the sub component matches the json content
+        // Sets a sub component to be either source or target sub component if the sub component matches the json content
         final Consumer<SubComponent> setFromAndToSubComponentIfMatches = (subComponent) -> {
             if (json.get(SOURCE_SUB_COMPONENT) != null && subComponent.getIdentifier().equals(json.getAsJsonPrimitive(SOURCE_SUB_COMPONENT).getAsString())) {
                 setSourceSubComponent(subComponent);
@@ -502,6 +510,18 @@ public class Edge implements Serializable {
         };
 
         component.getSubComponents().forEach(setFromAndToSubComponentIfMatches);
+
+        // Sets a jork to be either source or target jork if the jork matches the json content
+        final Consumer<Jork> setFromAndToJorkIfMatches = (jork) -> {
+            if (json.get(SOURCE_JORK) != null && jork.getId().equals(json.getAsJsonPrimitive(SOURCE_JORK).getAsString())) {
+                setSourceJork(jork);
+            }
+            if (json.get(TARGET_JORK) != null && jork.getId().equals(json.getAsJsonPrimitive(TARGET_JORK).getAsString())) {
+                setTargetJork(jork);
+            }
+        };
+
+        component.getJorks().forEach(setFromAndToJorkIfMatches);
 
         setSelect(json.getAsJsonPrimitive(SELECT).getAsString());
         setGuard(json.getAsJsonPrimitive(GUARD).getAsString());
