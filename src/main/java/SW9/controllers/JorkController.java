@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
 public class JorkController implements Initializable, SelectHelper.ColorSelectable {
 
     private static final HashMap<Jork, Boolean> REGISTERED_JORK_ERROR_CHECKER_MAP = new HashMap<>();
+
     private final ObjectProperty<Jork> jork = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
     public Group root;
