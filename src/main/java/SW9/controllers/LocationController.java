@@ -6,16 +6,14 @@ import SW9.abstractions.Edge;
 import SW9.abstractions.Location;
 import SW9.backend.UPPAALDriver;
 import SW9.code_analysis.CodeAnalysis;
-import SW9.presentations.CanvasPresentation;
-import SW9.presentations.ComponentPresentation;
-import SW9.presentations.LocationPresentation;
-import SW9.presentations.TagPresentation;
+import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.NailHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
+import com.jfoenix.controls.JFXPopup;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -25,7 +23,9 @@ import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -61,6 +61,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     private double previousX;
     private double previousY;
     private boolean wasDragged = false;
+    private DropDownMenu dropDownMenu;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -79,6 +80,15 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
         //initializeReachabilityCheck();
 
         initializeInvalidNameError();
+        initializeDropDownMenu();
+    }
+
+    private void initializeDropDownMenu() {
+        dropDownMenu = new DropDownMenu(((Pane) root.getParent()), root, 230, true);
+        dropDownMenu.addClickableListElement("Rasmus", event -> {
+            // Husk og kald den her
+            dropDownMenu.close();
+        });
     }
 
     private void initializeInvalidNameError() {
@@ -255,6 +265,11 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     @FXML
     private void mousePressed(final MouseEvent event) {
         final Component component = getComponent();
+
+        if (event.getButton().equals(MouseButton.SECONDARY)) {
+            dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 380, 160);
+            return;
+        }
 
         event.consume();
         if (((LocationPresentation) root).isPlaced()) {
