@@ -404,11 +404,9 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
 
         int i = 0;
         for (final Nail nail : getEdge().getNails()) {
-            if (nail.getPropertyType().equals(Edge.PropertyType.SELECTION))
-                data[Edge.PropertyType.SELECTION.getI()] = i;
+            if (nail.getPropertyType().equals(Edge.PropertyType.SELECTION)) data[Edge.PropertyType.SELECTION.getI()] = i;
             if (nail.getPropertyType().equals(Edge.PropertyType.GUARD)) data[Edge.PropertyType.GUARD.getI()] = i;
-            if (nail.getPropertyType().equals(Edge.PropertyType.SYNCHRONIZATION))
-                data[Edge.PropertyType.SYNCHRONIZATION.getI()] = i;
+            if (nail.getPropertyType().equals(Edge.PropertyType.SYNCHRONIZATION)) data[Edge.PropertyType.SYNCHRONIZATION.getI()] = i;
             if (nail.getPropertyType().equals(Edge.PropertyType.UPDATE)) data[Edge.PropertyType.UPDATE.getI()] = i;
 
             if (nail.getPropertyType().equals(type)) {
