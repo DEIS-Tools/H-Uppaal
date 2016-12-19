@@ -4,6 +4,7 @@ import SW9.utility.colors.Color;
 import SW9.utility.colors.EnabledColor;
 import SW9.utility.helpers.Circular;
 import SW9.utility.serialize.Serializable;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import javafx.beans.property.*;
@@ -235,6 +236,14 @@ public class Location implements Circular, Serializable {
 
     public DoubleProperty invariantYProperty() {
         return invariantY;
+    }
+
+    public String getMostDescriptiveIdentifier() {
+        if(!Strings.isNullOrEmpty(getNickname())) {
+            return getNickname();
+        } else {
+            return getId();
+        }
     }
 
     @Override

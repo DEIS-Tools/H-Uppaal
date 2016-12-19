@@ -1,6 +1,7 @@
 package SW9.backend;
 
 import SW9.abstractions.Component;
+import SW9.abstractions.Location;
 import SW9.code_analysis.CodeAnalysis;
 import com.uppaal.engine.Engine;
 import com.uppaal.engine.EngineException;
@@ -13,6 +14,7 @@ import javafx.concurrent.Task;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class UPPAALDriver {
@@ -167,5 +169,21 @@ public class UPPAALDriver {
         }
     }
 
+    public static String getLocationReachableQuery(final Location location, final Component mainComponent) throws BackendException {
+        // Generate a uppaal document
+        final HUPPAALDocument huppaalDocument = new HUPPAALDocument(mainComponent);
 
+        // Get the various flattened names of a location to produce a reachability query
+        final List<String> locationsNames = huppaalDocument.getFlattenedNames(location);
+        String result = "E<> ";
+
+        for (int i = 0; i < locationsNames.size(); i++) {
+            if(i != 0) {
+                result += " || ";
+            }
+            result += mainComponent.getName() + "." + locationsNames.get(i);
+        }
+
+        return result;
+    }
 }

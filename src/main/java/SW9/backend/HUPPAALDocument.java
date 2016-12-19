@@ -21,6 +21,9 @@ public class HUPPAALDocument {
     private final Map<com.uppaal.model.core2.Location, Location> uToHLocations = new HashMap<>();
     // Map to convert back from UPPAAL edges to H-UPPAAL edges
     private final Map<com.uppaal.model.core2.Edge, Edge> uToHEdges = new HashMap<>();
+    // Map from location to all of its uppaal names
+    private final Map<Location, List<String>> hLocationToFlattenedNames = new HashMap<>();
+
     private final Component mainComponent;
     /**
      * Used to figure out the layering of sub components
@@ -82,21 +85,18 @@ public class HUPPAALDocument {
             final com.uppaal.model.core2.Location uLocation = addLocation(template, hLocation, 0);
 
             // Populate the map
-            hToULocations.put(generateName(hLocation), uLocation);
-            uToHLocations.put(uLocation, hLocation);
+            addLocationsToMaps(hLocation, uLocation);
         }
 
         // Add the initial location to the template
-        final Location initialLocation = mainComponent.getInitialLocation();
-        final com.uppaal.model.core2.Location uLocation1 = addLocation(template, initialLocation, 0);
-        hToULocations.put(generateName(initialLocation), uLocation1);
-        uToHLocations.put(uLocation1, initialLocation);
+        final Location hInitialLocation = mainComponent.getInitialLocation();
+        final com.uppaal.model.core2.Location uInitialLocation = addLocation(template, hInitialLocation, 0);
+        addLocationsToMaps(hInitialLocation, uInitialLocation);
 
         // Add the final location to the template
-        final Location finalLocation = mainComponent.getFinalLocation();
-        final com.uppaal.model.core2.Location uLocation2 = addLocation(template, finalLocation, 0);
-        hToULocations.put(generateName(finalLocation), uLocation2);
-        uToHLocations.put(uLocation2, finalLocation);
+        final Location hFinalLocation = mainComponent.getFinalLocation();
+        final com.uppaal.model.core2.Location uFinalLocation = addLocation(template, hFinalLocation, 0);
+        addLocationsToMaps(hFinalLocation, uFinalLocation);
 
         // todo: Add sub-components here
         for (final SubComponent subComponent : mainComponent.getSubComponents()) {
@@ -108,6 +108,20 @@ public class HUPPAALDocument {
         }
 
         return template;
+    }
+
+    private void addLocationsToMaps(final Location hLocation, final com.uppaal.model.core2.Location uLocation) {
+        final String serializedHLocationName = generateName(hLocation);
+        hToULocations.put(serializedHLocationName, uLocation);
+        uToHLocations.put(uLocation, hLocation);
+
+        List<String> nameList;
+        nameList = hLocationToFlattenedNames.get(hLocation);
+        if(nameList == null) {
+            nameList = new ArrayList<>();
+            hLocationToFlattenedNames.put(hLocation, nameList);
+        }
+        nameList.add(serializedHLocationName);
     }
 
     private void addSubComponentToTemplate(final Template template, final SubComponent subComponent) throws BackendException {
@@ -126,21 +140,18 @@ public class HUPPAALDocument {
             final com.uppaal.model.core2.Location uLocation = addLocation(template, hLocation, offset);
 
             // Populate the map
-            hToULocations.put(generateName(hLocation), uLocation);
-            uToHLocations.put(uLocation, hLocation);
+            addLocationsToMaps(hLocation, uLocation);
         }
 
         // Add the initial location to the template
-        final Location initialLocation = component.getInitialLocation();
-        final com.uppaal.model.core2.Location uLocation1 = addLocation(template, initialLocation, offset);
-        hToULocations.put(generateName(initialLocation), uLocation1);
-        uToHLocations.put(uLocation1, initialLocation);
+        final Location hInitialLocation = component.getInitialLocation();
+        final com.uppaal.model.core2.Location uInitialLocation = addLocation(template, hInitialLocation, offset);
+        addLocationsToMaps(hInitialLocation, uInitialLocation);
 
         // Add the final location to the template
-        final Location finalLocation = component.getFinalLocation();
-        final com.uppaal.model.core2.Location uLocation2 = addLocation(template, finalLocation, offset);
-        hToULocations.put(generateName(finalLocation), uLocation2);
-        uToHLocations.put(uLocation2, finalLocation);
+        final Location hFinalLocation = component.getFinalLocation();
+        final com.uppaal.model.core2.Location uFinalLocation = addLocation(template, hFinalLocation, offset);
+        addLocationsToMaps(hFinalLocation, uFinalLocation);
 
         // todo: Add sub-components here
         for (final SubComponent nestedSubComponents : subComponent.getComponent().getSubComponents()) {
@@ -300,34 +311,13 @@ public class HUPPAALDocument {
         return uToHEdges.get(uEdge);
     }
 
-    private class SubComponentLocationPair {
-        private SubComponent subComponent;
-        private Location location;
+    public List<String> getFlattenedNames(final Location location) {
+        List<String> result = hLocationToFlattenedNames.get(location);
 
-        public SubComponentLocationPair(final SubComponent subComponent, final Location location) {
-            this.subComponent = subComponent;
-            this.location = location;
+        // If list does not exist in the map
+        if(result == null) {
+            result = new ArrayList<>();
         }
-
-        public SubComponent getSubComponent() {
-            return subComponent;
-        }
-
-        public Location getLocation() {
-            return location;
-        }
-
-        @Override
-        public boolean equals(final Object obj) {
-            if (super.equals(obj)) {
-                return true;
-            }
-
-            if (obj instanceof SubComponentLocationPair) {
-                final SubComponentLocationPair subComponentLocationPair = (SubComponentLocationPair) obj;
-                return (subComponent.equals(subComponentLocationPair.subComponent) && location.equals(subComponentLocationPair.location));
-            }
-            return false;
-        }
+        return result;
     }
 }

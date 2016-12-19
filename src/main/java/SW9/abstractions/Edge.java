@@ -306,7 +306,7 @@ public class Edge implements Serializable {
 
                 {
                     x.bind(getSourceJork().xProperty().add(JorkPresentation.JORK_WIDTH / 2));
-                    y.bind(getSourceJork().yProperty().add(JorkPresentation.JORK_HEIGHT));
+                    y.bind(getSourceJork().yProperty().add(JorkPresentation.JORK_HEIGHT + JorkPresentation.JORK_Y_TRANSLATE));
                 }
 
                 @Override
@@ -391,7 +391,7 @@ public class Edge implements Serializable {
 
                 {
                     x.bind(getTargetJork().xProperty().add(JorkPresentation.JORK_WIDTH / 2));
-                    y.bind(getTargetJork().yProperty());
+                    y.bind(getTargetJork().yProperty().add(JorkPresentation.JORK_Y_TRANSLATE));
                 }
 
                 @Override

@@ -1,9 +1,8 @@
 package SW9.controllers;
 
 import SW9.HUPPAAL;
-import SW9.abstractions.Component;
-import SW9.abstractions.Edge;
-import SW9.abstractions.Location;
+import SW9.abstractions.*;
+import SW9.backend.BackendException;
 import SW9.backend.UPPAALDriver;
 import SW9.code_analysis.CodeAnalysis;
 import SW9.presentations.*;
@@ -85,8 +84,20 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
     private void initializeDropDownMenu() {
         dropDownMenu = new DropDownMenu(((Pane) root.getParent()), root, 230, true);
-        dropDownMenu.addClickableListElement("Rasmus", event -> {
-            // Husk og kald den her
+        dropDownMenu.addClickableListElement("Is reachable ?", event -> {
+            try {
+                // Generate the query from the backend
+                final String reachabilityQuery = UPPAALDriver.getLocationReachableQuery(getLocation(), HUPPAAL.getProject().getMainComponent());
+
+                // Add proper comment
+                final String reachabilityComment = "Is " + getLocation().getMostDescriptiveIdentifier() + " reachable?";
+
+                // Add new query for this location
+                HUPPAAL.getProject().getQueries().add(new Query(reachabilityQuery, reachabilityComment, QueryState.UNKNOWN));
+
+            } catch (final BackendException e) {
+                e.printStackTrace();
+            }
             dropDownMenu.close();
         });
     }
@@ -129,14 +140,9 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                 // The location might have been remove from the component (through ctrl + z)
                 if (getLocation().getType() == Location.Type.NORMAL && !getComponent().getLocations().contains(getLocation())) return;
 
-                final Component[] mainComponent = {null};
-                HUPPAAL.getProject().getComponents().forEach(component -> {
-                    if (component.isIsMain()) {
-                        mainComponent[0] = component;
-                    }
-                });
+                final Component mainComponent = HUPPAAL.getProject().getMainComponent();
 
-                if (mainComponent[0] == null) {
+                if (mainComponent == null) {
                     return; // We cannot generate a UPPAAL file without a main component
                 }
 
@@ -151,7 +157,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                             // Could not run query
                             System.out.println(e);
                         },
-                        mainComponent[0]
+                        mainComponent
                 );
             }
 

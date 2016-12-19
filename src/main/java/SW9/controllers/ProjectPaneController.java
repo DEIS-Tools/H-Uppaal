@@ -42,8 +42,6 @@ public class ProjectPaneController implements Initializable {
     public JFXRippler saveProject;
     public VBox mainComponentContainer;
 
-    private Component mainComponent = null;
-
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
 
@@ -165,13 +163,15 @@ public class ProjectPaneController implements Initializable {
         component.nameProperty().addListener(obs -> sortPresentations());
 
         component.isMainProperty().addListener((obs, oldIsMain, newIsMain) -> {
+            final Component mainComponent = HUPPAAL.getProject().getMainComponent();
+
             if (component.equals(mainComponent)) return;
 
             if (mainComponent != null && newIsMain) {
                 mainComponent.setIsMain(false);
             }
 
-            mainComponent = component;
+            HUPPAAL.getProject().setMainComponent(component);
         });
     }
 

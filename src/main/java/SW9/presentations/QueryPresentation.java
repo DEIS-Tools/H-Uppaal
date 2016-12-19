@@ -66,14 +66,9 @@ public class QueryPresentation extends AnchorPane {
             } else {
                 query.setQueryState(QueryState.RUNNING);
 
-                final Component[] mainComponent = {null};
-                HUPPAAL.getProject().getComponents().forEach(component -> {
-                    if (component.isIsMain()) {
-                        mainComponent[0] = component;
-                    }
-                });
+                final Component mainComponent = HUPPAAL.getProject().getMainComponent();
 
-                if (mainComponent[0] == null) {
+                if (mainComponent == null) {
                     return; // We cannot generate a UPPAAL file without a main component
                 }
 
@@ -88,7 +83,7 @@ public class QueryPresentation extends AnchorPane {
                         e -> {
                             query.setQueryState(QueryState.SYNTAX_ERROR);
                         },
-                        mainComponent[0]
+                        mainComponent
                 );
             }
         };
