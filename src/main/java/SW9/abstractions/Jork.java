@@ -11,12 +11,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Jork implements Serializable {
 
-    public enum Type {LOCATION, SUB_COMPONENT}
-
     private static final String X = "x";
     private static final String Y = "y";
     private static final String ID = "id";
+
     private static AtomicInteger idGenerator = new AtomicInteger();
+
     // Modeling properties
     private final StringProperty id = new SimpleStringProperty("");
 
