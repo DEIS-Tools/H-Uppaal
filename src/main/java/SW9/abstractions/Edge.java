@@ -311,7 +311,7 @@ public class Edge implements Serializable {
 
                 @Override
                 public DoubleProperty radiusProperty() {
-                    return new SimpleDoubleProperty(3);
+                    return new SimpleDoubleProperty(0);
                 }
 
                 @Override
@@ -396,7 +396,7 @@ public class Edge implements Serializable {
 
                 @Override
                 public DoubleProperty radiusProperty() {
-                    return new SimpleDoubleProperty(3);
+                    return new SimpleDoubleProperty(0);
                 }
 
                 @Override
