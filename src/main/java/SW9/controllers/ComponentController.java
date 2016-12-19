@@ -143,14 +143,14 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             newComponent.yProperty().bindBidirectional(root.layoutYProperty());
 
             // Bind the declarations of the abstraction the the view
-            declaration.replaceText(0, 0, newComponent.getDeclarations());
+            declaration.replaceText(0, declaration.getLength(), newComponent.getDeclarations());
             declaration.textProperty().addListener((observable, oldDeclaration, newDeclaration) -> newComponent.setDeclarations(newDeclaration));
 
             final boolean[] first = {true};
             newComponent.declarationsProperty().addListener((observable, oldValue, newValue) -> {
                 if (!first[0]) return;
                 first[0] = false;
-                declaration.replaceText(0, 0, newValue);
+                declaration.replaceText(0, declaration.getLength(), newValue);
             });
 
             initializeEdgeHandling(newComponent);
