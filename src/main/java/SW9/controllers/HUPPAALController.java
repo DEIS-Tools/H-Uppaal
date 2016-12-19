@@ -336,23 +336,32 @@ public class HUPPAALController implements Initializable {
                 final Component component = CanvasController.getActiveComponent();
                 final Jork jork = ((JorkController) selectable).getJork();
 
+                final List<Edge> relatedEdges = component.getRelatedEdges(jork);
+
                 UndoRedoStack.push(() -> { // Perform
                     // Remove the jork
                     component.getJorks().remove(jork);
+                    relatedEdges.forEach(component::removeEdge);
                 }, () -> { // Undo
                     // Re-all the jork
                     component.getJorks().add(jork);
+                    relatedEdges.forEach(component::addEdge);
                 }, String.format("Deleted %s", selectable.toString()), "delete");
             } else if (selectable instanceof SubComponentController) {
                 final Component component = CanvasController.getActiveComponent();
                 final SubComponent subComponent = ((SubComponentController) selectable).getSubComponent();
 
+
+                final List<Edge> relatedEdges = component.getRelatedEdges(subComponent);
+
                 UndoRedoStack.push(() -> { // Perform
                     // Remove the subComponent
                     component.getSubComponents().remove(subComponent);
+                    relatedEdges.forEach(component::removeEdge);
                 }, () -> { // Undo
                     // Re-all the subComponent
                     component.getSubComponents().add(subComponent);
+                    relatedEdges.forEach(component::addEdge);
                 }, String.format("Deleted %s", selectable.toString()), "delete");
             } else if (selectable instanceof NailController) {
                 final NailController nailController = (NailController) selectable;

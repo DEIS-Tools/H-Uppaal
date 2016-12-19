@@ -142,6 +142,30 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         return relatedEdges;
     }
 
+    public List<Edge> getRelatedEdges(final SubComponent subComponent) {
+        final ArrayList<Edge> relatedEdges = new ArrayList<>();
+
+        edges.forEach(edge -> {
+            if(subComponent.equals(edge.getSourceSubComponent()) ||subComponent.equals(edge.getTargetSubComponent())) {
+                relatedEdges.add(edge);
+            }
+        });
+
+        return relatedEdges;
+    }
+
+    public List<Edge> getRelatedEdges(final Jork jork) {
+        final ArrayList<Edge> relatedEdges = new ArrayList<>();
+
+        edges.forEach(edge -> {
+            if(jork.equals(edge.getSourceJork()) ||jork.equals(edge.getTargetJork())) {
+                relatedEdges.add(edge);
+            }
+        });
+
+        return relatedEdges;
+    }
+
     public List<Edge> getIncomingEdges(final Jork jork) {
         final ArrayList<Edge> relatedEdges = new ArrayList<>();
 
