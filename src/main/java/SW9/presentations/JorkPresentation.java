@@ -19,6 +19,7 @@ public class JorkPresentation extends Group implements SelectHelper.Selectable {
 
     public static final double JORK_WIDTH = GRID_SIZE * 6;
     public static final double JORK_HEIGHT = GRID_SIZE;
+    public static final double JORK_Y_TRANSLATE = 5;
 
     private final JorkController controller;
 
@@ -41,6 +42,8 @@ public class JorkPresentation extends Group implements SelectHelper.Selectable {
             setLayoutY(newJork.getY());
             newJork.xProperty().bind(layoutXProperty());
             newJork.yProperty().bind(layoutYProperty());
+
+            setTranslateY(JORK_Y_TRANSLATE);
 
             initializeColor();
             initializeShape();
