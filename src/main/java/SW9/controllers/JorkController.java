@@ -58,6 +58,24 @@ public class JorkController implements Initializable, SelectHelper.ColorSelectab
             final List<Edge> incomingEdges = getComponent().getIncomingEdges(getJork());
             final List<Edge> outgoingEdges = getComponent().getOutGoingEdges(getJork());
 
+            // Make sure that the jork is still a part of the component
+            if (!getComponent().getJorks().contains(getJork())) {
+                // Remove all of the errors
+                CodeAnalysis.removeMessage(getComponent(), wrongIncoming);
+                CodeAnalysis.removeMessage(getComponent(), wrongOutgoing);
+                CodeAnalysis.removeMessage(getComponent(), wrongJorkType);
+                CodeAnalysis.removeMessage(getComponent(), missingIncomingEdges);
+                CodeAnalysis.removeMessage(getComponent(), missingOutgoingEdges);
+                addedMissingIncomingEdgesMessage[0] = false;
+                addedMissingOutgoingEdgesMessage[0] = false;
+                addedWrongIncomingMessage[0] = false;
+                addedWrongJorkTypeMessage[0] = false;
+                addedWrongOutgoingMessage[0] = false;
+
+                // Do not re-add them
+                return;
+            }
+
 
             // Check if we have some incoming edges
 
@@ -175,8 +193,15 @@ public class JorkController implements Initializable, SelectHelper.ColorSelectab
         };
 
         if (!REGISTERED_JORK_ERROR_CHECKER_MAP.containsKey(getJork())) {
-            final InvalidationListener listener = observable -> checkJork.run();
-            getComponent().getEdges().addListener(listener);
+            // Whenever the edges updates
+            final InvalidationListener onEdgesChanged = observable -> checkJork.run();
+            getComponent().getEdges().addListener(onEdgesChanged);
+
+            // Whenever we remove a jork from the component
+            final InvalidationListener onJorksChanged = observable -> checkJork.run();
+            getComponent().getJorks().addListener(onJorksChanged);
+
+
             REGISTERED_JORK_ERROR_CHECKER_MAP.put(getJork(), true);
         }
     }
