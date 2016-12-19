@@ -277,14 +277,9 @@ public class HUPPAALController implements Initializable {
 
     @FXML
     private void generateUppaalModelClicked() {
-        final Component[] mainComponent = {null};
-        HUPPAAL.getProject().getComponents().forEach(component -> {
-            if (component.isIsMain()) {
-                mainComponent[0] = component;
-            }
-        });
+        final Component mainComponent = HUPPAAL.getProject().getMainComponent();
 
-        if (mainComponent[0] == null) {
+        if (mainComponent == null) {
             System.out.println("No main component");
             return; // We cannot generate a UPPAAL file without a main component
         }
@@ -292,7 +287,7 @@ public class HUPPAALController implements Initializable {
         UPPAALDriver.verify("E<> true", // todo: consider creating an interface for generating the model instead of this query
                 aBoolean -> System.out.println("Generated UPPAAL file!"),
                 e -> System.out.println("ERROR"),
-                mainComponent[0]
+                mainComponent
         );
     }
 
