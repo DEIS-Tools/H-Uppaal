@@ -44,15 +44,49 @@ public class JorkController implements Initializable, SelectHelper.ColorSelectab
         final CodeAnalysis.Message wrongIncoming = new CodeAnalysis.Message("Incoming edges to Jork '" + getJork().getId() + "' are of inconsistent types", CodeAnalysis.MessageType.ERROR);
         final CodeAnalysis.Message wrongOutgoing = new CodeAnalysis.Message("Outgoing edges from Jork '" + getJork().getId() + "' are of inconsistent types", CodeAnalysis.MessageType.ERROR);
         final CodeAnalysis.Message wrongJorkType = new CodeAnalysis.Message("Incoming and outgoing edges of Jork '" + getJork().getId() + "' are the same type (must be different)", CodeAnalysis.MessageType.ERROR);
+        final CodeAnalysis.Message missingIncomingEdges = new CodeAnalysis.Message("Jork '" + getJork().getId() + "' have no incoming edges", CodeAnalysis.MessageType.ERROR);
+        final CodeAnalysis.Message missingOutgoingEdges = new CodeAnalysis.Message("Jork '" + getJork().getId() + "' have no outgoing edges", CodeAnalysis.MessageType.ERROR);
 
         final boolean[] addedWrongIncomingMessage = {false};
         final boolean[] addedWrongOutgoingMessage = {false};
         final boolean[] addedWrongJorkTypeMessage = {false};
+        final boolean[] addedMissingIncomingEdgesMessage = {false};
+        final boolean[] addedMissingOutgoingEdgesMessage = {false};
 
         final Runnable checkJork = () -> {
             // Find the incoming and outgoing edges (from/to the jork)
             final List<Edge> incomingEdges = getComponent().getIncomingEdges(getJork());
             final List<Edge> outgoingEdges = getComponent().getOutGoingEdges(getJork());
+
+
+            // Check if we have some incoming edges
+
+            // We found an inconsistency that is not already in the map
+            if (incomingEdges.size() == 0 && !addedMissingIncomingEdgesMessage[0]) {
+                CodeAnalysis.addMessage(getComponent(), missingIncomingEdges);
+                addedMissingIncomingEdgesMessage[0] = true;
+            }
+
+            // We did not find an inconsistency, but we have an error for it
+            if (incomingEdges.size() != 0 && addedMissingIncomingEdgesMessage[0]) {
+                CodeAnalysis.removeMessage(getComponent(), missingIncomingEdges);
+                addedMissingIncomingEdgesMessage[0] = false;
+            }
+
+            // Check if we have some outgoing edges
+
+            // We found an inconsistency that is not already in the map
+            if (outgoingEdges.size() == 0 && !addedMissingOutgoingEdgesMessage[0]) {
+                CodeAnalysis.addMessage(getComponent(), missingOutgoingEdges);
+                addedMissingOutgoingEdgesMessage[0] = true;
+            }
+
+            // We did not find an inconsistency, but we have an error for it
+            if (outgoingEdges.size() != 0 && addedMissingOutgoingEdgesMessage[0]) {
+                CodeAnalysis.removeMessage(getComponent(), missingOutgoingEdges);
+                addedMissingOutgoingEdgesMessage[0] = false;
+            }
+
 
             // Check if all of the incoming edges are of the same type
             boolean foundIncomingInconsistency = false;
