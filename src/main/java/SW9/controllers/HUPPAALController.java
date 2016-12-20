@@ -2,6 +2,7 @@ package SW9.controllers;
 
 import SW9.HUPPAAL;
 import SW9.abstractions.*;
+import SW9.backend.Trace;
 import SW9.backend.UPPAALDriver;
 import SW9.code_analysis.CodeAnalysis;
 import SW9.presentations.*;
@@ -106,11 +107,11 @@ public class HUPPAALController implements Initializable {
 
         // TODO - This is debugging for messages
         KeyboardTracker.registerKeybind("DEBUGGING_WARNINGS", new Keybind(new KeyCodeCombination(KeyCode.W), () -> {
-            CodeAnalysis.addMessage(CanvasController.getActiveComponent(), new CodeAnalysis.Message("A warning", CodeAnalysis.MessageType.WARNING));
-        }));
 
-        KeyboardTracker.registerKeybind("DEBUGGING_ERROR", new Keybind(new KeyCodeCombination(KeyCode.E), () -> {
-            CodeAnalysis.addMessage(CanvasController.getActiveComponent(), new CodeAnalysis.Message("An error", CodeAnalysis.MessageType.ERROR));
+            Consumer<Trace> spisDen  = (trace) -> {
+                System.out.println(trace);
+            };
+            UPPAALDriver.verify("E<> deadlock", (a) -> {}, (a) -> {}, UPPAALDriver.TraceType.SOME, spisDen, CanvasController.getActiveComponent());
         }));
 
         dialog.setDialogContainer(dialogContainer);
