@@ -27,7 +27,7 @@ public class HUPPAALDocument {
     private final Document uppaalDocument = new Document(new PrototypeDocument());
 
     // Map to convert H-UPPAAL locations to UPPAAL locations
-    private final Map<String, com.uppaal.model.core2.Location> hToULocations = new HashMap<>();
+    private final Map<Location, com.uppaal.model.core2.Location> hToULocations = new HashMap<>();
 
     // Map to convert back from UPPAAL to H-UPPAAL items
     private final Map<com.uppaal.model.core2.Location, Location> uToHLocations = new HashMap<>();
@@ -242,17 +242,17 @@ public class HUPPAALDocument {
             final com.uppaal.model.core2.Location subIndicateDone = generatePseudoLocationInTemplate(template, "SubIndicateDone", true, finalLocation.getX() + offset, finalLocation.getY());
 
             // Add edges between the pseudo locations
-            final com.uppaal.model.core2.Edge subStartToInitial = generateEdgeInTemplate(template, subStart, hToULocations.get(generateName(initialLocation)));
+            final com.uppaal.model.core2.Edge subStartToInitial = generateEdgeInTemplate(template, subStart, hToULocations.get(initialLocation));
             addPropertyToEdge(subStartToInitial, SYNC_PROPERTY_TAG, "start" + subComponentIdentifiers.indexOf(subComponent) + "?");
 
             final com.uppaal.model.core2.Edge subUpdateFinishedToSubIndicateDone = generateEdgeInTemplate(template, subUpdateFinished, subIndicateDone);
             addPropertyToEdge(subUpdateFinishedToSubIndicateDone, UPDATE_PROPERTY_TAG, "isDone" + generateName(subComponent, true) + " = true");
 
-            final com.uppaal.model.core2.Edge subIndicateDoneToFinal = generateEdgeInTemplate(template, subIndicateDone, hToULocations.get(generateName(finalLocation)));
+            final com.uppaal.model.core2.Edge subIndicateDoneToFinal = generateEdgeInTemplate(template, subIndicateDone, hToULocations.get(finalLocation));
             addPropertyToEdge(subIndicateDoneToFinal, SYNC_PROPERTY_TAG, SUBS_DONE_BROADCAST + "!");
 
             // Add the pseudo edge from the final location to the subStart pseudo location
-            final com.uppaal.model.core2.Edge finalToSubStart = generateEdgeInTemplate(template, hToULocations.get(generateName(finalLocation)), subStart);
+            final com.uppaal.model.core2.Edge finalToSubStart = generateEdgeInTemplate(template, hToULocations.get(finalLocation), subStart);
             addPropertyToEdge(finalToSubStart, UPDATE_PROPERTY_TAG, "isDone" + generateName(subComponent, true) + " = false");
             addPropertyToEdge(finalToSubStart, SYNC_PROPERTY_TAG, "end" + subComponentIdentifiers.indexOf(subComponent) + "?");
 
@@ -272,7 +272,7 @@ public class HUPPAALDocument {
             for (final Edge hEdge : ignoredEdges) {
                 // From location
                 if (hEdge.getSourceLocation() != null) {
-                    final com.uppaal.model.core2.Edge edge = generateEdgeInTemplate(template, hToULocations.get(generateName(hEdge.getSourceLocation())), subUpdateFinished);
+                    final com.uppaal.model.core2.Edge edge = generateEdgeInTemplate(template, hToULocations.get(hEdge.getSourceLocation()), subUpdateFinished);
                     annotateEdge(edge, hEdge, 0);
                 }
                 // From sub component
@@ -391,7 +391,7 @@ public class HUPPAALDocument {
 
     private void addLocationsToMaps(final Location hLocation, final com.uppaal.model.core2.Location uLocation) {
         final String serializedHLocationName = generateName(hLocation);
-        hToULocations.put(serializedHLocationName, uLocation);
+        hToULocations.put(hLocation, uLocation);
         uToHLocations.put(uLocation, hLocation);
 
         List<String> nameList;
@@ -413,7 +413,7 @@ public class HUPPAALDocument {
         template.insert(uLocation, null);
 
         // Set name of the location
-        uLocation.setProperty(NAME_PROPERTY_TAG, generateName(hLocation));
+        uLocation.setProperty(NAME_PROPERTY_TAG, hLocation.getId());
 
         // Set the invariant if any
         if (hLocation.getInvariant() != null) {
@@ -464,7 +464,7 @@ public class HUPPAALDocument {
 
         // Find the source locations
         if (hEdge.getSourceLocation() != null) {
-            sourceULocation = hToULocations.get(generateName(hEdge.getSourceLocation()));
+            sourceULocation = hToULocations.get(hEdge.getSourceLocation());
         } else if (fallBackLocation != null) {
             sourceULocation = fallBackLocation;
         } else {
@@ -473,7 +473,7 @@ public class HUPPAALDocument {
 
         // Find the target locations
         if (hEdge.getTargetLocation() != null) {
-            targetULocation = hToULocations.get(generateName(hEdge.getTargetLocation()));
+            targetULocation = hToULocations.get(hEdge.getTargetLocation());
         } else if (fallBackLocation != null) {
             targetULocation = fallBackLocation;
         } else {
