@@ -39,12 +39,12 @@ public class HUPPAALDocument {
     private final Map<Location, List<String>> hLocationToFlattenedNames = new HashMap<>();
 
     // Map from subComponent to the Enter and Exit pseudo locations
-    private final Map<SubComponent, Pair<com.uppaal.model.core2.Location, com.uppaal.model.core2.Location>> subComponentPseudoLocationMap = new HashMap<>();
+    private final Map<String, Pair<com.uppaal.model.core2.Location, com.uppaal.model.core2.Location>> subComponentPseudoLocationMap = new HashMap<>();
 
     private final Component mainComponent;
 
     // List used to generate startX and endX channels
-    private final ArrayList<SubComponent> subComponentIdentifiers = new ArrayList<>();
+    private final ArrayList<String> subComponentIdentifiers = new ArrayList<>();
 
     /**
      * Used to figure out the layering of sub components
@@ -145,7 +145,7 @@ public class HUPPAALDocument {
 
     private void generateTemplate(final SubComponent subComponent) throws BackendException {
         // Put the sub component into the list, and get the identifier (the index of the added sub component)
-        subComponentIdentifiers.add(subComponent);
+        subComponentIdentifiers.add(generateName(subComponent));
 
         subComponentList.add(subComponent);
         final Template template = generateTemplate(subComponent.getComponent(), subComponent);
@@ -204,12 +204,13 @@ public class HUPPAALDocument {
             if (hEdge.getSourceLocation() != null && hEdge.getTargetSubComponent() != null) {
 
                 // If we have not already created pseudo locations for this sub component
-                if (!subComponentPseudoLocationMap.containsKey(hEdge.getTargetSubComponent())) {
+                if (!subComponentPseudoLocationMap.containsKey(generateName(hEdge.getTargetSubComponent()))) {
                     addPseudoLocationsForSubComponent(template, hEdge.getTargetSubComponent());
                 }
 
                 // Add an edge from the location to the pseudo enter location
-                final com.uppaal.model.core2.Location pseudoEnter = subComponentPseudoLocationMap.get(hEdge.getTargetSubComponent()).getKey();
+                final com.uppaal.model.core2.Location pseudoEnter = subComponentPseudoLocationMap.get(generateName(hEdge.getTargetSubComponent())).getKey();
+                System.out.println(pseudoEnter);
                 addEdge(template, hEdge, 0, pseudoEnter);
             }
         }
@@ -223,7 +224,7 @@ public class HUPPAALDocument {
             if (hEdge.getSourceSubComponent() != null && hEdge.getTargetLocation() != null) {
 
                 // Add an edge from the pseudo exit location to the location
-                final com.uppaal.model.core2.Location pseudoExit = subComponentPseudoLocationMap.get(hEdge.getSourceSubComponent()).getValue();
+                final com.uppaal.model.core2.Location pseudoExit = subComponentPseudoLocationMap.get(generateName(hEdge.getSourceSubComponent())).getValue();
                 addEdge(template, hEdge, 0, pseudoExit);
             }
         }
@@ -243,7 +244,7 @@ public class HUPPAALDocument {
 
             // Add edges between the pseudo locations
             final com.uppaal.model.core2.Edge subStartToInitial = generateEdgeInTemplate(template, subStart, hToULocations.get(initialLocation));
-            addPropertyToEdge(subStartToInitial, SYNC_PROPERTY_TAG, "start" + subComponentIdentifiers.indexOf(subComponent) + "?");
+            addPropertyToEdge(subStartToInitial, SYNC_PROPERTY_TAG, "start" + subComponentIdentifiers.indexOf(generateName(subComponent, true)) + "?");
 
             final com.uppaal.model.core2.Edge subUpdateFinishedToSubIndicateDone = generateEdgeInTemplate(template, subUpdateFinished, subIndicateDone);
             addPropertyToEdge(subUpdateFinishedToSubIndicateDone, UPDATE_PROPERTY_TAG, "isDone" + generateName(subComponent, true) + " = true");
@@ -254,7 +255,7 @@ public class HUPPAALDocument {
             // Add the pseudo edge from the final location to the subStart pseudo location
             final com.uppaal.model.core2.Edge finalToSubStart = generateEdgeInTemplate(template, hToULocations.get(finalLocation), subStart);
             addPropertyToEdge(finalToSubStart, UPDATE_PROPERTY_TAG, "isDone" + generateName(subComponent, true) + " = false");
-            addPropertyToEdge(finalToSubStart, SYNC_PROPERTY_TAG, "end" + subComponentIdentifiers.indexOf(subComponent) + "?");
+            addPropertyToEdge(finalToSubStart, SYNC_PROPERTY_TAG, "end" + subComponentIdentifiers.indexOf(generateName(subComponent, true)) + "?");
 
             final Property syncProperty = finalToSubStart.getProperty(SYNC_PROPERTY_TAG);
             syncProperty.setProperty("x", subStart.getX() + 15);
@@ -277,7 +278,7 @@ public class HUPPAALDocument {
                 }
                 // From sub component
                 else if (hEdge.getSourceSubComponent() != null) {
-                    final com.uppaal.model.core2.Location pseudoExit = subComponentPseudoLocationMap.get(hEdge.getSourceSubComponent()).getValue();
+                    final com.uppaal.model.core2.Location pseudoExit = subComponentPseudoLocationMap.get(generateName(hEdge.getSourceSubComponent())).getValue();
                     final com.uppaal.model.core2.Edge edge = generateEdgeInTemplate(template, pseudoExit, subUpdateFinished);
                     annotateEdge(edge, hEdge, 0);
                 }
@@ -300,7 +301,8 @@ public class HUPPAALDocument {
         final int xAsInt = (int) x;
         final int yAsInt = (int) y;
 
-        /*// Add the name label
+        /* todo: navne her
+        // Add the name label
         final Property p = uLocation.setProperty(NAME_PROPERTY_TAG, name);
         p.setProperty("x", xAsInt);
         p.setProperty("y", yAsInt);*/
@@ -356,7 +358,7 @@ public class HUPPAALDocument {
         exit.setProperty(INVARIANT_PROPERTY_TAG, targetSubComponent.getComponent().getFinalLocation().getInvariant());
 
         // Find the channel id for this sub component
-        final int id = subComponentIdentifiers.indexOf(targetSubComponent);
+        final int id = subComponentIdentifiers.indexOf(generateName(targetSubComponent));
 
         // Draw edge from enter to running
         final com.uppaal.model.core2.Edge enterToRunning = generateEdgeInTemplate(template, enter, running);
@@ -386,7 +388,7 @@ public class HUPPAALDocument {
         addToGlobalDeclarations("broadcast chan " + endSubProcedureChanName + ";");
         addPropertyToEdge(exitingToExit, SYNC_PROPERTY_TAG, endSubProcedureChanName + "!");
 
-        subComponentPseudoLocationMap.put(targetSubComponent, new Pair<>(enter, exit));
+        subComponentPseudoLocationMap.put(generateName(targetSubComponent), new Pair<>(enter, exit));
     }
 
     private void addLocationsToMaps(final Location hLocation, final com.uppaal.model.core2.Location uLocation) {
