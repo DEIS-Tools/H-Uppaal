@@ -25,24 +25,31 @@ public class HUPPAALDocument {
     private static final String INVARIANT_PROPERTY_TAG = "invariant";
     private static final String GUARD_PROPERTY_TAG = "guard";
     private static final String SYNC_PROPERTY_TAG = "synchronisation";
+
     private final Document uppaalDocument = new Document(new PrototypeDocument());
+
     // Map to convert H-UPPAAL locations to UPPAAL locations
     private final Map<String, com.uppaal.model.core2.Location> hToULocations = new HashMap<>();
+
     // Map to convert back from UPPAAL to H-UPPAAL items
     private final Map<com.uppaal.model.core2.Location, Location> uToHLocations = new HashMap<>();
+
     // Map to convert back from UPPAAL edges to H-UPPAAL edges
     private final Map<com.uppaal.model.core2.Edge, Edge> uToHEdges = new HashMap<>();
+
     // Map from location to all of its uppaal names
     private final Map<Location, List<String>> hLocationToFlattenedNames = new HashMap<>();
+
     // Map from subComponent to the Enter and Exit pseudo locations
     private final Map<SubComponent, Pair<com.uppaal.model.core2.Location, com.uppaal.model.core2.Location>> subComponentPseudoLocationMap = new HashMap<>();
+
     private final Component mainComponent;
     private final AtomicInteger subProcedureCount = new AtomicInteger(0);
+
     /**
      * Used to figure out the layering of sub components
      */
     private Stack<SubComponent> subComponentList = new Stack<>();
-    private int componentOffset = 10;
 
     public HUPPAALDocument(final Component mainComponent) throws BackendException {
         this.mainComponent = mainComponent;
@@ -274,45 +281,6 @@ public class HUPPAALDocument {
             hLocationToFlattenedNames.put(hLocation, nameList);
         }
         nameList.add(serializedHLocationName);
-    }
-
-    private void addSubComponentToTemplate(final Template template, final SubComponent subComponent) throws BackendException {
-        // Add the sub component to the stack
-        subComponentList.push(subComponent);
-
-        final Component component = subComponent.getComponent();
-        componentOffset += component.getHeight() + 10;
-
-        // Add all locations from the model to our conversion map and to the template
-        for (final Location hLocation : component.getLocations()) {
-
-            // Add the location to the template
-            final com.uppaal.model.core2.Location uLocation = addLocation(template, hLocation, componentOffset);
-
-            // Populate the map
-            addLocationsToMaps(hLocation, uLocation);
-        }
-
-        // Add the initial location to the template
-        final Location hInitialLocation = component.getInitialLocation();
-        final com.uppaal.model.core2.Location uInitialLocation = addLocation(template, hInitialLocation, componentOffset);
-        addLocationsToMaps(hInitialLocation, uInitialLocation);
-
-        // Add the final location to the template
-        final Location hFinalLocation = component.getFinalLocation();
-        final com.uppaal.model.core2.Location uFinalLocation = addLocation(template, hFinalLocation, componentOffset);
-        addLocationsToMaps(hFinalLocation, uFinalLocation);
-
-        for (final SubComponent nestedSubComponents : subComponent.getComponent().getSubComponents()) {
-            addSubComponentToTemplate(template, nestedSubComponents);
-        }
-
-        for (final Edge hEdge : component.getEdges()) {
-            uToHEdges.put(addEdge(template, hEdge, componentOffset), hEdge);
-        }
-
-        // Remove the sub component from the list
-        subComponentList.pop();
     }
 
     private com.uppaal.model.core2.Location addLocation(final Template template, final Location hLocation, final int offset) {
