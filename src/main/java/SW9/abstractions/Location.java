@@ -1,6 +1,7 @@
 package SW9.abstractions;
 
 import SW9.code_analysis.Nearable;
+import SW9.presentations.DropDownMenu;
 import SW9.utility.colors.Color;
 import SW9.utility.colors.EnabledColor;
 import SW9.utility.helpers.Circular;
@@ -12,7 +13,7 @@ import javafx.beans.property.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Location implements Circular, Serializable, Nearable {
+public class Location implements Circular, Serializable, Nearable, DropDownMenu.HasColor {
 
     private static final AtomicInteger hiddenID = new AtomicInteger(0); // Used to generate unique IDs
     private static final String NICKNAME = "nickname";

@@ -118,6 +118,13 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
             dropDownMenu.close();
         });
+
+        dropDownMenu.addSpacerElement();
+
+        dropDownMenu.addColorPicker(getLocation(), (color, intensity) -> {
+            getLocation().setColorIntensity(intensity);
+            getLocation().setColor(color);
+        });
     }
 
     public void initializeInvalidNameError() {
