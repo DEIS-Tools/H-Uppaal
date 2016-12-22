@@ -6,6 +6,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,14 +29,14 @@ public class CodeAnalysis {
     }
 
     private static void addToWarnings(final Component component, final Message message) {
-        ObservableList<Message> list = getWarnings(component);
+        final ObservableList<Message> list = getWarnings(component);
 
         list.add(message);
         warnings.add(message);
     }
 
     private static void removeFromWarnings(final Component component, final Message message) {
-        ObservableList<Message> list = getWarnings(component);
+        final ObservableList<Message> list = getWarnings(component);
 
         if (list.contains(message)) return;
 
@@ -54,7 +55,7 @@ public class CodeAnalysis {
     }
 
     private static void addToErrors(final Component component, final Message message) {
-        ObservableList<Message> list = getErrors(component);
+        final ObservableList<Message> list = getErrors(component);
 
         if (list.contains(message)) return;
 
@@ -63,7 +64,7 @@ public class CodeAnalysis {
     }
 
     private static void removeFromErrors(final Component component, final Message message) {
-        ObservableList<Message> list = getErrors(component);
+        final ObservableList<Message> list = getErrors(component);
 
         list.remove(message);
         errors.remove(message);
@@ -124,9 +125,12 @@ public class CodeAnalysis {
         private final MessageType messageType;
         private StringProperty message;
 
-        public Message(final String message, final MessageType messageType) {
+        private ObservableList<Nearable> nearables = FXCollections.observableArrayList();
+
+        public Message(final String message, final MessageType messageType, final Nearable... nearables) {
             this.message = new SimpleStringProperty(message);
             this.messageType = messageType;
+            Collections.addAll(this.nearables, nearables);
         }
 
         public MessageType getMessageType() {
@@ -137,12 +141,20 @@ public class CodeAnalysis {
             return message.get();
         }
 
-        public void setMessage(String message) {
+        public void setMessage(final String message) {
             this.message.set(message);
         }
 
         public StringProperty messageProperty() {
             return message;
+        }
+
+        public ObservableList<Nearable> getNearables() {
+            return nearables;
+        }
+
+        public void setNearables(final ObservableList<Nearable> nearables) {
+            this.nearables = nearables;
         }
     }
 

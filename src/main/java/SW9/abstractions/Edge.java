@@ -1,5 +1,6 @@
 package SW9.abstractions;
 
+import SW9.code_analysis.Nearable;
 import SW9.presentations.JorkPresentation;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.Circular;
@@ -14,7 +15,7 @@ import java.util.function.Consumer;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
-public class Edge implements Serializable {
+public class Edge implements Serializable, Nearable {
 
     private static final String SOURCE_LOCATION = "source_location";
     private static final String TARGET_LOCATION = "target_location";
@@ -542,6 +543,29 @@ public class Edge implements Serializable {
             final Nail newNail = new Nail((JsonObject) jsonElement);
             nails.add(newNail);
         });
+    }
+
+    @Override
+    public String generateNearString() {
+        String result = "Edge";
+
+        if (getSourceLocation() != null) {
+            result += " from " + getSourceLocation().generateNearString();
+        } else if (getSourceJork() != null) {
+            result += " from " + getSourceJork().generateNearString();
+        } else {
+            result += " from " + getSourceCircular();
+        }
+
+        if (getTargetLocation() != null) {
+            result += " to " + getTargetLocation().generateNearString();
+        } else if (getTargetJork() != null) {
+            result += " to " + getTargetJork().generateNearString();
+        } else {
+            result += " to " + getTargetCircular();
+        }
+
+        return result;
     }
 
     public enum PropertyType {

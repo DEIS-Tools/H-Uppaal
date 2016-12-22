@@ -1,8 +1,7 @@
 package SW9.controllers;
 
-import SW9.abstractions.Component;
-import SW9.abstractions.Edge;
-import SW9.abstractions.Nail;
+import SW9.abstractions.*;
+import SW9.code_analysis.CodeAnalysis;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.DropDownMenu;
@@ -18,6 +17,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -44,6 +44,10 @@ import java.util.function.Consumer;
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
 public class EdgeController implements Initializable, SelectHelper.ColorSelectable {
+    private static final Map<Edge, Boolean> initializedEdgeFromTargetError = new HashMap<>();
+    private static final Map<Edge, Boolean> initializedEdgeToInitialError = new HashMap<>();
+    private static final Map<Edge, Boolean> initializedEdgeToForkError = new HashMap<>();
+    private static final Map<Edge, Boolean> initializedEdgeFromJoinError = new HashMap<>();
     private final ObservableList<Link> links = FXCollections.observableArrayList();
     private final ObjectProperty<Edge> edge = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
@@ -76,6 +80,142 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
         initializeLinksListener();
 
         ensureNailsInFront();
+    }
+
+    public void initializeEdgeErrorFromTargetLocation() {
+        if (initializedEdgeFromTargetError.containsKey(getEdge())) return; // Already initialized
+        initializedEdgeFromTargetError.put(getEdge(), true); // Set initialized
+
+        final CodeAnalysis.Message message = new CodeAnalysis.Message("Outgoing edges from a target location are not allowed", CodeAnalysis.MessageType.ERROR, getEdge());
+
+        final Consumer<Location> checkIfErrorIsPresent = (sourceLocation) -> {
+            if (sourceLocation != null
+                    && sourceLocation.getType().equals(Location.Type.FINAl)
+                    && getComponent().getEdges().contains(getEdge())
+                    && getEdge().getTargetCircular() != null) {
+
+
+                // Add the message to the UI
+                CodeAnalysis.addMessage(getComponent(), message);
+            } else {
+                // Remove the message from the UI
+                CodeAnalysis.removeMessage(getComponent(), message);
+            }
+        };
+
+        // When the source location is updated
+        getEdge().sourceLocationProperty().addListener((obs, oldSource, newSource) -> checkIfErrorIsPresent.accept(newSource));
+
+        // When the list of edges are updated
+        final InvalidationListener listener = observable -> checkIfErrorIsPresent.accept(getEdge().getSourceLocation());
+        getComponent().getEdges().addListener(listener);
+
+        // Check if the error is present right now
+        checkIfErrorIsPresent.accept(getEdge().getSourceLocation());
+    }
+
+    public void initializeEdgeErrorToInitialLocation() {
+        if (initializedEdgeToInitialError.containsKey(getEdge())) return; // Already initialized
+        initializedEdgeToInitialError.put(getEdge(), true); // Set initialized
+
+        final CodeAnalysis.Message message = new CodeAnalysis.Message("Incoming edges to an initial location are not allowed", CodeAnalysis.MessageType.ERROR, getEdge());
+
+        final Consumer<Location> checkIfErrorIsPresent = (targetLocation) -> {
+            if (targetLocation != null
+                    && targetLocation.getType().equals(Location.Type.INITIAL)
+                    && getComponent().getEdges().contains(getEdge())) {
+
+                // Add the message to the UI
+                CodeAnalysis.addMessage(getComponent(), message);
+            } else {
+                // Remove the message from the UI
+                CodeAnalysis.removeMessage(getComponent(), message);
+            }
+        };
+
+        // When the source location is updated
+        getEdge().targetLocationProperty().addListener((obs, oldTarget, newTarget) -> checkIfErrorIsPresent.accept(newTarget));
+
+        // When the list of edges are updated
+        final InvalidationListener listener = observable -> checkIfErrorIsPresent.accept(getEdge().getTargetLocation());
+        getComponent().getEdges().addListener(listener);
+
+        // Check if the error is present right now
+        checkIfErrorIsPresent.accept(getEdge().getTargetLocation());
+    }
+
+    public void initializeEdgeToForkError() {
+        if (initializedEdgeToForkError.containsKey(getEdge())) return; // Already initialized
+        initializedEdgeToForkError.put(getEdge(), true); // Set initialized
+
+        final CodeAnalysis.Message message = new CodeAnalysis.Message("Only sub components can run in parallel", CodeAnalysis.MessageType.ERROR, getEdge());
+
+        final Consumer<Edge> checkIfErrorIsPresent = (edge) -> {
+            if (edge != null // The edge is not null
+                    // The edge is not being drawn
+                    && !edge.equals(getComponent().getUnfinishedEdge())
+                    // The edge has a source jork
+                    && edge.getSourceJork() != null
+                    // The source jork is a fork
+                    && edge.getSourceJork().getType().equals(Jork.Type.FORK)
+                    // The jork does not have a sub component as its target
+                    && edge.getTargetSubComponent() == null
+                    // The edge is in the component (not deleted)
+                    && getComponent().getEdges().contains(edge)) {
+                // Add the message to the UI
+                CodeAnalysis.addMessage(getComponent(), message);
+            } else {
+                // Add the message to the UI
+                CodeAnalysis.removeMessage(getComponent(), message);
+            }
+        };
+
+        // When the target location is updated
+        getEdge().targetCircularProperty().addListener((obs, oldTarget, newTarget) -> checkIfErrorIsPresent.accept(getEdge()));
+
+        // When the list of edges are updated
+        final InvalidationListener listener = observable -> checkIfErrorIsPresent.accept(getEdge());
+        getComponent().getEdges().addListener(listener);
+
+        // Check if the error is present right now
+        checkIfErrorIsPresent.accept(getEdge());
+    }
+
+    public void initializeEdgeFromJoinError() {
+        if (initializedEdgeFromJoinError.containsKey(getEdge())) return; // Already initialized
+        initializedEdgeFromJoinError.put(getEdge(), true); // Set initialized
+
+        final CodeAnalysis.Message message = new CodeAnalysis.Message("Only sub components that are running in parallel can be joined", CodeAnalysis.MessageType.ERROR, getEdge());
+
+        final Consumer<Edge> checkIfErrorIsPresent = (edge) -> {
+            if (edge != null // The edge is not null
+                    // The edge is not being drawn
+                    && !edge.equals(getComponent().getUnfinishedEdge())
+                    // The edge has a target jork
+                    && edge.getTargetJork() != null
+                    // The target jork is a join
+                    && edge.getTargetJork().getType().equals(Jork.Type.JOIN)
+                    // The jork does not have a sub component as its source
+                    && edge.getSourceSubComponent() == null
+                    // The edge is in the component (not deleted)
+                    && getComponent().getEdges().contains(edge)) {
+                // Add the message to the UI
+                CodeAnalysis.addMessage(getComponent(), message);
+            } else {
+                // Add the message to the UI
+                CodeAnalysis.removeMessage(getComponent(), message);
+            }
+        };
+
+        // When the target location is updated
+        getEdge().targetCircularProperty().addListener((obs, oldTarget, newTarget) -> checkIfErrorIsPresent.accept(getEdge()));
+
+        // When the list of edges are updated
+        final InvalidationListener listener = observable -> checkIfErrorIsPresent.accept(getEdge());
+        getComponent().getEdges().addListener(listener);
+
+        // Check if the error is present right now
+        checkIfErrorIsPresent.accept(getEdge());
     }
 
     private void ensureNailsInFront() {

@@ -52,6 +52,8 @@ public class SubComponentPresentation extends StackPane implements SelectHelper.
             controller.setSubComponent(subComponent);
             controller.setParentComponent(parentComponent);
 
+            controller.initializeInconsistentEdgeError();
+
             // Todo: Set height and width of the sub component
             setMinWidth(GRID_SIZE * 24);
             setMaxWidth(GRID_SIZE * 24);

@@ -103,16 +103,6 @@ public class HUPPAALController implements Initializable {
             ((HUPPAALPresentation) root).toggleFilePane();
         }));
 
-
-        // TODO - This is debugging for messages
-        KeyboardTracker.registerKeybind("DEBUGGING_WARNINGS", new Keybind(new KeyCodeCombination(KeyCode.W), () -> {
-            CodeAnalysis.addMessage(CanvasController.getActiveComponent(), new CodeAnalysis.Message("A warning", CodeAnalysis.MessageType.WARNING));
-        }));
-
-        KeyboardTracker.registerKeybind("DEBUGGING_ERROR", new Keybind(new KeyCodeCombination(KeyCode.E), () -> {
-            CodeAnalysis.addMessage(CanvasController.getActiveComponent(), new CodeAnalysis.Message("An error", CodeAnalysis.MessageType.ERROR));
-        }));
-
         dialog.setDialogContainer(dialogContainer);
         dialogContainer.opacityProperty().bind(dialog.getChildren().get(0).scaleXProperty());
         dialog.setOnDialogClosed(event -> dialogContainer.setVisible(false));
@@ -203,7 +193,7 @@ public class HUPPAALController implements Initializable {
             public void onChanged(final Change<? extends CodeAnalysis.Message> c) {
                 while (c.next()) {
                     c.getAddedSubList().forEach(addedMessage -> {
-                        final MessagePresentation messagePresentation = new MessagePresentation(addedMessage.messageProperty());
+                        final MessagePresentation messagePresentation = new MessagePresentation(addedMessage);
                         backendErrorsList.getChildren().add(messagePresentation);
                         messageMessagePresentationHashMap.put(addedMessage, messagePresentation);
                     });

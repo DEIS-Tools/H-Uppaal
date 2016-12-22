@@ -13,7 +13,9 @@ import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXPopup;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -31,14 +33,14 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Path;
 
 import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
 public class LocationController implements Initializable, SelectHelper.ColorSelectable {
+
+    private static final Map<Location, Boolean> invalidNameError = new HashMap<>();
 
     private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
@@ -75,15 +77,36 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
         // Scale x and y 1:1 (based on the x-scale)
         scaleContent.scaleYProperty().bind(scaleContent.scaleXProperty());
 
-
         //initializeReachabilityCheck();
-
-        initializeInvalidNameError();
-        initializeDropDownMenu();
     }
 
-    private void initializeDropDownMenu() {
+    public void initializeDropDownMenu() {
         dropDownMenu = new DropDownMenu(((Pane) root.getParent()), root, 230, true);
+
+        dropDownMenu.addListElement("Set Urgency");
+
+        final BooleanProperty isUrgent = new SimpleBooleanProperty(false);
+        isUrgent.bind(getLocation().urgencyProperty().isEqualTo(Location.Urgency.URGENT));
+        dropDownMenu.addTogglableListElement("Urgent", isUrgent, event -> {
+            if (isUrgent.get()) {
+                getLocation().setUrgency(Location.Urgency.NORMAL);
+            } else {
+                getLocation().setUrgency(Location.Urgency.URGENT);
+            }
+        });
+
+        final BooleanProperty isCommitted = new SimpleBooleanProperty(false);
+        isCommitted.bind(getLocation().urgencyProperty().isEqualTo(Location.Urgency.COMMITTED));
+        dropDownMenu.addTogglableListElement("Committed", isCommitted, event -> {
+            if (isCommitted.get()) {
+                getLocation().setUrgency(Location.Urgency.NORMAL);
+            } else {
+                getLocation().setUrgency(Location.Urgency.COMMITTED);
+            }
+        });
+
+        dropDownMenu.addSpacerElement();
+
         dropDownMenu.addClickableListElement("Is reachable ?", event -> {
             // Generate the query from the backend
             final String reachabilityQuery = UPPAALDriver.getLocationReachableQuery(getLocation(), getComponent());
@@ -98,29 +121,28 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
         });
     }
 
-    private void initializeInvalidNameError() {
+    public void initializeInvalidNameError() {
+        final Location location = getLocation();
+        if (invalidNameError.containsKey(location)) return;
+        invalidNameError.put(location, true);
 
-        final Consumer<Location> updateNameCheck = (location) -> {
-            if (location == null) return;
+        final CodeAnalysis.Message invalidNickName = new CodeAnalysis.Message("Nicknames for locations must be alpha-numeric", CodeAnalysis.MessageType.ERROR, location);
 
-            final CodeAnalysis.Message invalidNickName = new CodeAnalysis.Message("Location '" + location.getId() + "' does not have an alphanumeric name", CodeAnalysis.MessageType.ERROR);
-
-            final Consumer<String> updateNickNameCheck = (nickname) -> {
-                if (!nickname.matches("[A-Za-z0-9_-]*$")) {
-                    CodeAnalysis.addMessage(getComponent(), invalidNickName);
-                } else {
-                    CodeAnalysis.removeMessage(getComponent(), invalidNickName);
-                }
-            };
-
-            location.nicknameProperty().addListener((obs, oldNickName, newNickName) -> {
-                updateNickNameCheck.accept(newNickName);
-            });
-            updateNickNameCheck.accept(location.getNickname());
+        final Consumer<String> updateNickNameCheck = (nickname) -> {
+            if (!nickname.matches("[A-Za-z0-9_-]*$")) {
+                // Invalidate the list (will update the UI with the new name)
+                invalidNickName.getNearables().remove(location);
+                invalidNickName.getNearables().add(location);
+                CodeAnalysis.addMessage(getComponent(), invalidNickName);
+            } else {
+                CodeAnalysis.removeMessage(getComponent(), invalidNickName);
+            }
         };
 
-        location.addListener((obs, oldLocation, newLocation) -> updateNameCheck.accept(newLocation));
-        updateNameCheck.accept(getLocation());
+        location.nicknameProperty().addListener((obs, oldNickName, newNickName) -> {
+            updateNickNameCheck.accept(newNickName);
+        });
+        updateNickNameCheck.accept(location.getNickname());
     }
 
     public void initializeReachabilityCheck() {
