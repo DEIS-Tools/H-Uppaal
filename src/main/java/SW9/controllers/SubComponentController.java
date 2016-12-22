@@ -52,6 +52,7 @@ public class SubComponentController implements Initializable, SelectHelper.Color
     public Line line1;
     public Line line2;
     public Pane defaultLocationsContainer;
+    public Label description;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {

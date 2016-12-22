@@ -27,8 +27,8 @@
         </top>
 
         <center>
-            <Label wrapText="true" styleClass="caption" mouseTransparent="true" style="-fx-padding: 0 40 0 40"
-                   text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque lectus odio, dapibus eget leo at, ornare pellentesque purus. Nam imperdiet mattis semper. Nullam urna ex, venenatis quis lacus at, ultrices ornare mauris."/>
+            <Label fx:id="description" wrapText="true" styleClass="caption" mouseTransparent="true"
+                   style="-fx-padding: 0 40 0 40"/>
         </center>
     </BorderPane>
 

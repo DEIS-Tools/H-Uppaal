@@ -10,6 +10,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
+import com.jfoenix.controls.JFXTextArea;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -115,6 +116,28 @@ public class ProjectPaneController implements Initializable {
                 includeInPeriodicCheck.set(didIncludeInPeriodicCheck);
             }, "Component " + component.getName() + " is included in periodic check: " + !didIncludeInPeriodicCheck, "search");
         });
+
+        moreInformationDropDown.addSpacerElement();
+
+        moreInformationDropDown.addListElement("Description");
+
+        final JFXTextArea textArea = new JFXTextArea();
+        textArea.setMinHeight(30);
+
+        filePresentation.getComponent().descriptionProperty().bindBidirectional(textArea.textProperty());
+
+        textArea.textProperty().addListener((obs, oldText, newText) -> {
+            int i = 0;
+            for (final char c : newText.toCharArray()) {
+                if (c == '\n') {
+                    i++;
+                }
+            }
+
+            textArea.setMinHeight(i * 17 + 30);
+        });
+
+        moreInformationDropDown.addCustomChild(textArea);
 
         moreInformationDropDown.addSpacerElement();
 

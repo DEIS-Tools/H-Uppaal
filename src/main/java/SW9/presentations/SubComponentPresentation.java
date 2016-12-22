@@ -76,10 +76,15 @@ public class SubComponentPresentation extends StackPane implements SelectHelper.
             initializeFinalLocation();
             initializeBackground();
             initializeName();
+            initializeDescription();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeDescription() {
+        controller.description.textProperty().bind(controller.getSubComponent().getComponent().descriptionProperty());
     }
 
     private void initializeDefaultLocationsContainer() {

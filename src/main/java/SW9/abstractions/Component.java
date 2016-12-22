@@ -31,6 +31,7 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     private static final String SUBCOMPONENTS = "sub_components";
     private static final String EDGES = "edges";
     private static final String IS_MAIN = "main";
+    private static final String DESCRIPTION = "description";
     private static final String X = "x";
     private static final String Y = "y";
     private static final String WIDTH = "width";
@@ -48,6 +49,7 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     private final ObjectProperty<Location> finalLocation = new SimpleObjectProperty<>();
     private final ObservableList<SubComponent> subComponents = FXCollections.observableArrayList();
     private final BooleanProperty isMain = new SimpleBooleanProperty(false);
+    private final StringProperty description = new SimpleStringProperty("");
 
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
@@ -367,6 +369,18 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         return isMain;
     }
 
+    public String getDescription() {
+        return description.get();
+    }
+
+    public void setDescription(final String description) {
+        this.description.set(description);
+    }
+
+    public StringProperty descriptionProperty() {
+        return description;
+    }
+
     @Override
     public JsonObject serialize() {
         final JsonObject result = new JsonObject();
@@ -394,6 +408,8 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         result.add(EDGES, edges);
 
         result.addProperty(IS_MAIN, isIsMain());
+
+        result.addProperty(DESCRIPTION, getDescription());
 
         result.addProperty(X, getX());
         result.addProperty(Y, getY());
@@ -436,6 +452,8 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         });
 
         setIsMain(json.getAsJsonPrimitive(IS_MAIN).getAsBoolean());
+
+        setDescription(json.getAsJsonPrimitive(DESCRIPTION).getAsString());
 
         setX(json.getAsJsonPrimitive(X).getAsDouble());
         setY(json.getAsJsonPrimitive(Y).getAsDouble());
