@@ -123,7 +123,7 @@ public class ProjectPaneController implements Initializable {
         /*
          * COLOR SELECTOR
          */
-        moreInformationDropDown.addColorPicker(filePresentation.getComponent());
+        moreInformationDropDown.addColorPicker(filePresentation.getComponent(), filePresentation.getComponent()::color);
 
         moreInformationDropDown.addSpacerElement();
 

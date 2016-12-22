@@ -1,6 +1,7 @@
 package SW9.abstractions;
 
 import SW9.presentations.DropDownMenu;
+import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.colors.EnabledColor;
 import SW9.utility.serialize.Serializable;
@@ -9,9 +10,12 @@ import com.google.gson.JsonObject;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.util.Pair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Component implements Serializable, DropDownMenu.HasColor {
@@ -443,5 +447,39 @@ public class Component implements Serializable, DropDownMenu.HasColor {
             setColorIntensity(enabledColor.intensity);
             setColor(enabledColor.color);
         }
+    }
+
+    public void color(final Color color, final Color.Intensity intensity) {
+        final Color previousColor = colorProperty().get();
+        final Color.Intensity previousColorIntensity = colorIntensityProperty().get();
+
+        final Map<Location, Pair<Color, Color.Intensity>> previousLocationColors = new HashMap<>();
+
+        for (final Location location : getLocations()) {
+            if (!location.getColor().equals(previousColor)) continue;
+            previousLocationColors.put(location, new Pair<>(location.getColor(), location.getColorIntensity()));
+        }
+
+        UndoRedoStack.push(() -> { // Perform
+            // Color the component
+            setColorIntensity(intensity);
+            setColor(color);
+
+            // Color all of the locations
+            previousLocationColors.keySet().forEach(location -> {
+                location.setColorIntensity(intensity);
+                location.setColor(color);
+            });
+        }, () -> { // Undo
+            // Color the component
+            setColorIntensity(previousColorIntensity);
+            setColor(previousColor);
+
+            // Color the locations accordingly to the previous color for them
+            previousLocationColors.keySet().forEach(location -> {
+                location.setColorIntensity(previousLocationColors.get(location).getValue());
+                location.setColor(previousLocationColors.get(location).getKey());
+            });
+        }, String.format("Changed the color of %s to %s", this, color.name()), "color-lens");
     }
 }

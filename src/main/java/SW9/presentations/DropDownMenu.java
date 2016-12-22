@@ -1,6 +1,5 @@
 package SW9.presentations;
 
-import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.colors.EnabledColor;
 import com.jfoenix.controls.JFXPopup;
@@ -22,6 +21,7 @@ import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import javax.swing.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static SW9.utility.colors.EnabledColor.enabledColors;
@@ -295,7 +295,7 @@ public class DropDownMenu {
         space2.setOnMouseEntered(event -> canIShowSubMenu.set(false));
     }
 
-    public void addColorPicker(final HasColor hasColor) {
+    public void addColorPicker(final HasColor hasColor, final BiConsumer<Color, Color.Intensity> consumer) {
         final FlowPane flowPane = new FlowPane();
         flowPane.setStyle("-fx-padding: 0 8 0 8");
 
@@ -338,17 +338,7 @@ public class DropDownMenu {
                 // Only color the subject if the user chooses a new color
                 if (hasColor.colorProperty().get().equals(color.color)) return;
 
-                final Color previousColor = hasColor.colorProperty().get();
-                final Color.Intensity previousColorIntensity = hasColor.colorIntensityProperty().get();
-
-                UndoRedoStack.push(() -> { // Perform
-                    hasColor.colorIntensityProperty().set(color.intensity);
-                    hasColor.colorProperty().set(color.color);
-                }, () -> { // Undo
-                    hasColor.colorIntensityProperty().set(previousColorIntensity);
-                    hasColor.colorProperty().set(previousColor);
-                }, String.format("Changed the color of %s to %s", hasColor, color.color.name()), "color-lens");
-
+                consumer.accept(color.color, color.intensity);
             });
 
             flowPane.getChildren().add(child);

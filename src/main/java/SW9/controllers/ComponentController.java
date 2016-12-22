@@ -423,7 +423,8 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
             dropDownMenu.addSpacerElement();
 
             dropDownMenu.addListElement("Color");
-            dropDownMenu.addColorPicker(component);
+
+            dropDownMenu.addColorPicker(component, component::color);
         };
 
 
