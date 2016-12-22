@@ -18,9 +18,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Path;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -34,7 +35,8 @@ public class JorkController implements Initializable, SelectHelper.ColorSelectab
     private final ObjectProperty<Jork> jork = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
     public Group root;
-    public Rectangle rectangle;
+    public Path shape;
+    public Label id;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
