@@ -293,7 +293,7 @@ public class Location implements Circular, Serializable, Nearable {
 
     @Override
     public String generateNearString() {
-        return "Location " + (!Strings.isNullOrEmpty(getNickname()) ? (getNickname() + "(" + getId() + ")") : getId());
+        return "Location " + (!Strings.isNullOrEmpty(getNickname()) ? (getNickname() + " (" + getId() + ")") : getId());
     }
 
     public enum Type {
