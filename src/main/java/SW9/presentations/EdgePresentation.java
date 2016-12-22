@@ -40,6 +40,8 @@ public class EdgePresentation extends Group {
 
             controller.initializeEdgeErrorFromTargetLocation();
             controller.initializeEdgeErrorToInitialLocation();
+            controller.initializeEdgeToForkError();
+            controller.initializeEdgeFromJoinError();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);

@@ -1,5 +1,6 @@
 package SW9.abstractions;
 
+import SW9.code_analysis.Nearable;
 import SW9.utility.serialize.Serializable;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -7,7 +8,7 @@ import javafx.beans.property.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Jork implements Serializable {
+public class Jork implements Serializable, Nearable {
 
     private static final String X = "x";
     private static final String Y = "y";
@@ -101,6 +102,21 @@ public class Jork implements Serializable {
         setY(json.getAsJsonPrimitive(Y).getAsDouble());
         setId(json.getAsJsonPrimitive(ID).getAsString());
         setType(new Gson().fromJson(json.getAsJsonPrimitive(TYPE), Type.class));
+    }
+
+    @Override
+    public String generateNearString() {
+        String result = "";
+
+        if (getType().equals(Type.FORK)) {
+            result += "Fork ";
+        } else {
+            result += "Join ";
+        }
+
+        result += getId();
+
+        return result;
     }
 
     public enum Type {

@@ -1,9 +1,6 @@
 package SW9.controllers;
 
-import SW9.abstractions.Component;
-import SW9.abstractions.Edge;
-import SW9.abstractions.Location;
-import SW9.abstractions.Nail;
+import SW9.abstractions.*;
 import SW9.code_analysis.CodeAnalysis;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.presentations.CanvasPresentation;
@@ -49,6 +46,8 @@ import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 public class EdgeController implements Initializable, SelectHelper.ColorSelectable {
     private static final Map<Edge, Boolean> initializedEdgeFromTargetError = new HashMap<>();
     private static final Map<Edge, Boolean> initializedEdgeToInitialError = new HashMap<>();
+    private static final Map<Edge, Boolean> initializedEdgeToForkError = new HashMap<>();
+    private static final Map<Edge, Boolean> initializedEdgeFromJoinError = new HashMap<>();
     private final ObservableList<Link> links = FXCollections.observableArrayList();
     private final ObjectProperty<Edge> edge = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
@@ -143,6 +142,80 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
 
         // Check if the error is present right now
         checkIfErrorIsPresent.accept(getEdge().getTargetLocation());
+    }
+
+    public void initializeEdgeToForkError() {
+        if (initializedEdgeToForkError.containsKey(getEdge())) return; // Already initialized
+        initializedEdgeToForkError.put(getEdge(), true); // Set initialized
+
+        final CodeAnalysis.Message message = new CodeAnalysis.Message("Only sub components can run in parallel", CodeAnalysis.MessageType.ERROR, getEdge());
+
+        final Consumer<Edge> checkIfErrorIsPresent = (edge) -> {
+            if (edge != null // The edge is not null
+                    // The edge is not being drawn
+                    && !edge.equals(getComponent().getUnfinishedEdge())
+                    // The edge has a source jork
+                    && edge.getSourceJork() != null
+                    // The source jork is a fork
+                    && edge.getSourceJork().getType().equals(Jork.Type.FORK)
+                    // The jork does not have a sub component as its target
+                    && edge.getTargetSubComponent() == null
+                    // The edge is in the component (not deleted)
+                    && getComponent().getEdges().contains(edge)) {
+                // Add the message to the UI
+                CodeAnalysis.addMessage(getComponent(), message);
+            } else {
+                // Add the message to the UI
+                CodeAnalysis.removeMessage(getComponent(), message);
+            }
+        };
+
+        // When the target location is updated
+        getEdge().targetCircularProperty().addListener((obs, oldTarget, newTarget) -> checkIfErrorIsPresent.accept(getEdge()));
+
+        // When the list of edges are updated
+        final InvalidationListener listener = observable -> checkIfErrorIsPresent.accept(getEdge());
+        getComponent().getEdges().addListener(listener);
+
+        // Check if the error is present right now
+        checkIfErrorIsPresent.accept(getEdge());
+    }
+
+    public void initializeEdgeFromJoinError() {
+        if (initializedEdgeFromJoinError.containsKey(getEdge())) return; // Already initialized
+        initializedEdgeFromJoinError.put(getEdge(), true); // Set initialized
+
+        final CodeAnalysis.Message message = new CodeAnalysis.Message("Only sub components that are running in parallel can be joined", CodeAnalysis.MessageType.ERROR, getEdge());
+
+        final Consumer<Edge> checkIfErrorIsPresent = (edge) -> {
+            if (edge != null // The edge is not null
+                    // The edge is not being drawn
+                    && !edge.equals(getComponent().getUnfinishedEdge())
+                    // The edge has a target jork
+                    && edge.getTargetJork() != null
+                    // The target jork is a join
+                    && edge.getTargetJork().getType().equals(Jork.Type.JOIN)
+                    // The jork does not have a sub component as its source
+                    && edge.getSourceSubComponent() == null
+                    // The edge is in the component (not deleted)
+                    && getComponent().getEdges().contains(edge)) {
+                // Add the message to the UI
+                CodeAnalysis.addMessage(getComponent(), message);
+            } else {
+                // Add the message to the UI
+                CodeAnalysis.removeMessage(getComponent(), message);
+            }
+        };
+
+        // When the target location is updated
+        getEdge().targetCircularProperty().addListener((obs, oldTarget, newTarget) -> checkIfErrorIsPresent.accept(getEdge()));
+
+        // When the list of edges are updated
+        final InvalidationListener listener = observable -> checkIfErrorIsPresent.accept(getEdge());
+        getComponent().getEdges().addListener(listener);
+
+        // Check if the error is present right now
+        checkIfErrorIsPresent.accept(getEdge());
     }
 
     private void ensureNailsInFront() {

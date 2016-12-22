@@ -40,8 +40,6 @@ public class JorkPresentation extends Group implements SelectHelper.Selectable {
             controller.setComponent(component);
             controller.setJork(newJork);
 
-            controller.initializeJorkErrorHandling();
-
             setLayoutX(newJork.getX());
             setLayoutY(newJork.getY());
             newJork.xProperty().bind(layoutXProperty());

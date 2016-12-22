@@ -551,12 +551,16 @@ public class Edge implements Serializable, Nearable {
 
         if (getSourceLocation() != null) {
             result += " from " + getSourceLocation().generateNearString();
+        } else if (getSourceJork() != null) {
+            result += " from " + getSourceJork().generateNearString();
         } else {
             result += " from " + getSourceCircular();
         }
 
         if (getTargetLocation() != null) {
             result += " to " + getTargetLocation().generateNearString();
+        } else if (getTargetJork() != null) {
+            result += " to " + getTargetJork().generateNearString();
         } else {
             result += " to " + getTargetCircular();
         }
