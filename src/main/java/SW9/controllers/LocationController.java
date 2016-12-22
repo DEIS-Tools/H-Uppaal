@@ -108,19 +108,15 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
         dropDownMenu.addSpacerElement();
 
         dropDownMenu.addClickableListElement("Is reachable ?", event -> {
-            try {
-                // Generate the query from the backend
-                final String reachabilityQuery = UPPAALDriver.getLocationReachableQuery(getLocation(), HUPPAAL.getProject().getMainComponent());
+            // Generate the query from the backend
+            final String reachabilityQuery = UPPAALDriver.getLocationReachableQuery(getLocation(), getComponent());
 
-                // Add proper comment
-                final String reachabilityComment = "Is " + getLocation().getMostDescriptiveIdentifier() + " reachable?";
+            // Add proper comment
+            final String reachabilityComment = "Is " + getLocation().getMostDescriptiveIdentifier() + " reachable?";
 
-                // Add new query for this location
-                HUPPAAL.getProject().getQueries().add(new Query(reachabilityQuery, reachabilityComment, QueryState.UNKNOWN));
+            // Add new query for this location
+            HUPPAAL.getProject().getQueries().add(new Query(reachabilityQuery, reachabilityComment, QueryState.UNKNOWN));
 
-            } catch (final BackendException e) {
-                e.printStackTrace();
-            }
             dropDownMenu.close();
         });
     }

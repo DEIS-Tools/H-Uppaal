@@ -1,8 +1,11 @@
 package SW9.backend;
 
+import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.abstractions.Location;
+import SW9.abstractions.SubComponent;
 import SW9.code_analysis.CodeAnalysis;
+import com.google.common.base.Strings;
 import com.uppaal.engine.Engine;
 import com.uppaal.engine.EngineException;
 import com.uppaal.engine.Problem;
@@ -169,21 +172,62 @@ public class UPPAALDriver {
         }
     }
 
-    public static String getLocationReachableQuery(final Location location, final Component mainComponent) throws BackendException {
-        // Generate a uppaal document
-        final HUPPAALDocument huppaalDocument = new HUPPAALDocument(mainComponent);
+    public static String getLocationReachableQuery(final Location location, final Component component) {
 
         // Get the various flattened names of a location to produce a reachability query
-        final List<String> locationsNames = huppaalDocument.getFlattenedNames(location);
-        String result = "E<> ";
+        final List<String> templateNames = getTemplateNames(component);
+        final List<String> locationNames = new ArrayList<>();
 
-        for (int i = 0; i < locationsNames.size(); i++) {
-            if(i != 0) {
-                result += " || ";
-            }
-            result += mainComponent.getName() + "." + locationsNames.get(i);
+        for (final String templateName : templateNames) {
+            locationNames.add(templateName + "." + location.getId());
         }
 
-        return result;
+        return "E<> " + String.join(" || ", locationNames);
+    }
+
+    public static String getExistDeadlockQuery(final Component component) {
+        // Get the various flattened names of a location to produce a reachability query
+        final List<String> template = getTemplateNames(component);
+        final List<String> locationNames = new ArrayList<>();
+
+
+        for (final String templateName : template) {
+            for (final Location location : component.getLocations()) {
+                locationNames.add(templateName + "." + location.getId());
+            }
+
+            locationNames.add(templateName + "." + component.getInitialLocation().getId());
+            locationNames.add(templateName + "." + component.getFinalLocation().getId());
+        }
+
+        return "E<> (" + String.join(" || ", locationNames) + ") && deadlock";
+    }
+
+    private static List<String> getTemplateNames(final Component component) {
+        final List<String> subComponentInstanceNames = new ArrayList<>();
+
+        // Run through all sub components in main
+        for (final SubComponent subComp : HUPPAAL.getProject().getMainComponent().getSubComponents()) {
+            subComponentInstanceNames.addAll(getTemplateNames("", subComp, component));
+        }
+        return subComponentInstanceNames;
+    }
+
+    private static List<String> getTemplateNames(String str, final SubComponent subject, final Component needle) {
+        final List<String> subComponentInstanceNames = new ArrayList<>();
+
+        // Run all their sub components
+        for (final SubComponent sc : subject.getComponent().getSubComponents()) {
+            subComponentInstanceNames.addAll(getTemplateNames(subject.getIdentifier(), sc, needle));
+        }
+
+        if (subject.getComponent().equals(needle)) {
+            if (!Strings.isNullOrEmpty(str)) {
+                str += "_";
+            }
+            subComponentInstanceNames.add(str + subject.getIdentifier());
+        }
+
+        return subComponentInstanceNames;
     }
 }

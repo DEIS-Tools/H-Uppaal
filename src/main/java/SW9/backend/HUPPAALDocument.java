@@ -622,13 +622,4 @@ public class HUPPAALDocument {
         return uToHEdges.get(uEdge);
     }
 
-    public List<String> getFlattenedNames(final Location location) {
-        List<String> result = hLocationToFlattenedNames.get(location);
-
-        // If list does not exist in the map
-        if(result == null) {
-            result = new ArrayList<>();
-        }
-        return result;
-    }
 }
