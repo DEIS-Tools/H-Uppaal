@@ -203,7 +203,7 @@ public class HUPPAALController implements Initializable {
             public void onChanged(final Change<? extends CodeAnalysis.Message> c) {
                 while (c.next()) {
                     c.getAddedSubList().forEach(addedMessage -> {
-                        final MessagePresentation messagePresentation = new MessagePresentation(addedMessage.messageProperty());
+                        final MessagePresentation messagePresentation = new MessagePresentation(addedMessage);
                         backendErrorsList.getChildren().add(messagePresentation);
                         messageMessagePresentationHashMap.put(addedMessage, messagePresentation);
                     });

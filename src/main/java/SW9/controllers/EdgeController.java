@@ -2,7 +2,9 @@ package SW9.controllers;
 
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
+import SW9.abstractions.Location;
 import SW9.abstractions.Nail;
+import SW9.code_analysis.CodeAnalysis;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.DropDownMenu;
@@ -18,6 +20,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -44,6 +47,7 @@ import java.util.function.Consumer;
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
 public class EdgeController implements Initializable, SelectHelper.ColorSelectable {
+    private static final Map<Edge, Boolean> initializedEdgeError = new HashMap<>();
     private final ObservableList<Link> links = FXCollections.observableArrayList();
     private final ObjectProperty<Edge> edge = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
@@ -76,6 +80,38 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
         initializeLinksListener();
 
         ensureNailsInFront();
+    }
+
+    public void initializeEdgeErrorFromTargetLocation() {
+        if (initializedEdgeError.containsKey(getEdge())) return; // Already initialized
+        initializedEdgeError.put(getEdge(), true); // Set initialized
+
+        final CodeAnalysis.Message message = new CodeAnalysis.Message("Outgoing edges from a target location are not allowed", CodeAnalysis.MessageType.ERROR, getEdge());
+
+        final Consumer<Location> checkIfErrorIsPresent = (sourceLocation) -> {
+            if (sourceLocation != null
+                    && sourceLocation.getType().equals(Location.Type.FINAl)
+                    && getComponent().getEdges().contains(getEdge())
+                    && getEdge().getTargetCircular() != null) {
+
+
+                // Add the message to the UI
+                CodeAnalysis.addMessage(getComponent(), message);
+            } else {
+                // Remove the message from the UI
+                CodeAnalysis.removeMessage(getComponent(), message);
+            }
+        };
+
+        // When the source location is updated
+        getEdge().sourceLocationProperty().addListener((obs, oldSource, newSource) -> checkIfErrorIsPresent.accept(newSource));
+
+        // When the list of edges are updated
+        final InvalidationListener listener = observable -> checkIfErrorIsPresent.accept(getEdge().getSourceLocation());
+        getComponent().getEdges().addListener(listener);
+
+        // Check if the error is present right now
+        checkIfErrorIsPresent.accept(getEdge().getSourceLocation());
     }
 
     private void ensureNailsInFront() {

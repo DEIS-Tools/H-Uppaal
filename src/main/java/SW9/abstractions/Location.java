@@ -1,5 +1,6 @@
 package SW9.abstractions;
 
+import SW9.code_analysis.Nearable;
 import SW9.utility.colors.Color;
 import SW9.utility.colors.EnabledColor;
 import SW9.utility.helpers.Circular;
@@ -11,7 +12,7 @@ import javafx.beans.property.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Location implements Circular, Serializable {
+public class Location implements Circular, Serializable, Nearable {
 
     private static final AtomicInteger hiddenID = new AtomicInteger(0); // Used to generate unique IDs
     private static final String NICKNAME = "nickname";
@@ -288,6 +289,11 @@ public class Location implements Circular, Serializable {
         setNicknameY(json.getAsJsonPrimitive(NICKNAME_Y).getAsDouble());
         setInvariantX(json.getAsJsonPrimitive(INVARIANT_X).getAsDouble());
         setInvariantY(json.getAsJsonPrimitive(INVARIANT_Y).getAsDouble());
+    }
+
+    @Override
+    public String generateNearString() {
+        return "Location " + (!Strings.isNullOrEmpty(getNickname()) ? (getNickname() + "(" + getId() + ")") : getId());
     }
 
     public enum Type {

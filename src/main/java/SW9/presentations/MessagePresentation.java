@@ -1,7 +1,9 @@
 package SW9.presentations;
 
+import SW9.code_analysis.CodeAnalysis;
+import SW9.code_analysis.Nearable;
 import SW9.utility.colors.Color;
-import javafx.beans.property.StringProperty;
+import javafx.beans.InvalidationListener;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
@@ -18,9 +20,9 @@ import static javafx.scene.paint.Color.TRANSPARENT;
 
 public class MessagePresentation extends HBox {
 
-    private final StringProperty message;
+    private final CodeAnalysis.Message message;
 
-    public MessagePresentation(final StringProperty message) {
+    public MessagePresentation(final CodeAnalysis.Message message) {
         this.message = message;
 
         final URL location = this.getClass().getResource("MessagePresentation.fxml");
@@ -36,6 +38,7 @@ public class MessagePresentation extends HBox {
             // Initialize here
             initializeHover();
             initializeMessage();
+            initializeNearLabel();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
@@ -44,7 +47,31 @@ public class MessagePresentation extends HBox {
 
     private void initializeMessage() {
         final Label messageLabel = (Label) lookup("#messageLabel");
-        messageLabel.textProperty().bind(message);
+        messageLabel.textProperty().bind(message.messageProperty());
+    }
+
+    private void initializeNearLabel() {
+        final InvalidationListener listener = observable -> {
+            String result = "Near: ";
+
+            if (message.getNearables().size() == 0) {
+                result = ""; // Do not display any "near"
+            } else {
+                // Add all "near" strings
+                for (final Nearable nearable : message.getNearables()) {
+                    result += nearable.generateNearString();
+                }
+            }
+
+            final Label nearLabel = (Label) lookup("#nearLabel");
+            nearLabel.setText(result);
+        };
+
+        // Run the listener now
+        listener.invalidated(null);
+
+        // Whenever the list is updated
+        message.getNearables().addListener(listener);
     }
 
     private void initializeHover() {

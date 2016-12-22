@@ -3,20 +3,14 @@ package SW9.presentations;
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.controllers.EdgeController;
-import SW9.utility.colors.Color;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Circle;
 
 import java.io.IOException;
 import java.net.URL;
-
-import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
 public class EdgePresentation extends Group {
 
@@ -43,6 +37,8 @@ public class EdgePresentation extends Group {
 
             controller.setComponent(component);
             this.component.bind(controller.componentProperty());
+
+            controller.initializeEdgeErrorFromTargetLocation();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
