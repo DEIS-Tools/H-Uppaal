@@ -2,7 +2,6 @@ package SW9.controllers;
 
 import SW9.HUPPAAL;
 import SW9.abstractions.*;
-import SW9.backend.BackendException;
 import SW9.backend.UPPAALDriver;
 import SW9.code_analysis.CodeAnalysis;
 import SW9.presentations.*;
@@ -321,6 +320,9 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 double y = DropDownMenu.y - LocationPresentation.RADIUS / 2;
                 y = Math.round(y / GRID_SIZE) * GRID_SIZE;
                 newLocation.setY(y);
+
+                newLocation.setColorIntensity(component.getColorIntensity());
+                newLocation.setColor(component.getColor());
 
                 // Add a new location
                 UndoRedoStack.push(() -> { // Perform
