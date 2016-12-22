@@ -68,7 +68,7 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
             // Calculate the potential new x alongside min and max values
             final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
             final double minX = LocationPresentation.RADIUS + CanvasPresentation.GRID_SIZE;
-            final double maxX = getComponent().getWidth() - LocationPresentation.RADIUS - CanvasPresentation.GRID_SIZE;
+            final double maxX = getComponent().getWidth() - NailPresentation.HOVERED_RADIUS- CanvasPresentation.GRID_SIZE;
 
             // Drag according to min and max
             if (newX < minX) {
@@ -84,7 +84,7 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
             // Calculate the potential new y alongside min and max values
             final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
             final double minY = NailPresentation.COLLAPSED_RADIUS + ComponentPresentation.TOOL_BAR_HEIGHT + CanvasPresentation.GRID_SIZE;
-            final double maxY = getComponent().getHeight() - NailPresentation.COLLAPSED_RADIUS - CanvasPresentation.GRID_SIZE;
+            final double maxY = getComponent().getHeight() - NailPresentation.HOVERED_RADIUS - CanvasPresentation.GRID_SIZE;
 
             // Drag according to min and max
             if (newY < minY) {
