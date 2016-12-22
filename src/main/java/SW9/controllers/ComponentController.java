@@ -2,6 +2,8 @@ package SW9.controllers;
 
 import SW9.HUPPAAL;
 import SW9.abstractions.*;
+import SW9.backend.BackendException;
+import SW9.backend.UPPAALDriver;
 import SW9.code_analysis.CodeAnalysis;
 import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
@@ -396,8 +398,28 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 }
             });
 
-            dropDownMenu.addSubMenu("Add SubComponent", subMenu, 70);
+            dropDownMenu.addSubMenu("Add SubComponent", subMenu, 3 * 35);
+
             dropDownMenu.addSpacerElement();
+
+            dropDownMenu.addClickableListElement("Contains deadlock?", event -> {
+                dropDownMenu.close();
+
+                // Generate the query
+                final String deadlockQuery = UPPAALDriver.getExistDeadlockQuery(getComponent());
+
+                // Add proper comment
+                final String deadlockComment = "Does " + component.getName() + " contain a deadlock?";
+
+                // Add new query for this component
+                HUPPAAL.getProject().getQueries().add(new Query(deadlockQuery, deadlockComment, QueryState.UNKNOWN));
+
+                dropDownMenu.close();
+
+            });
+
+            dropDownMenu.addSpacerElement();
+
             dropDownMenu.addListElement("Color");
             dropDownMenu.addColorPicker(component);
         };
