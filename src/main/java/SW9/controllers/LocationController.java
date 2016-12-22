@@ -13,7 +13,9 @@ import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXPopup;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -76,12 +78,35 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
         scaleContent.scaleYProperty().bind(scaleContent.scaleXProperty());
 
         //initializeReachabilityCheck();
-
-        initializeDropDownMenu();
     }
 
-    private void initializeDropDownMenu() {
+    public void initializeDropDownMenu() {
         dropDownMenu = new DropDownMenu(((Pane) root.getParent()), root, 230, true);
+
+        dropDownMenu.addListElement("Set Urgency");
+
+        final BooleanProperty isUrgent = new SimpleBooleanProperty(false);
+        isUrgent.bind(getLocation().urgencyProperty().isEqualTo(Location.Urgency.URGENT));
+        dropDownMenu.addTogglableListElement("Urgent", isUrgent, event -> {
+            if (isUrgent.get()) {
+                getLocation().setUrgency(Location.Urgency.NORMAL);
+            } else {
+                getLocation().setUrgency(Location.Urgency.URGENT);
+            }
+        });
+
+        final BooleanProperty isCommitted = new SimpleBooleanProperty(false);
+        isCommitted.bind(getLocation().urgencyProperty().isEqualTo(Location.Urgency.COMMITTED));
+        dropDownMenu.addTogglableListElement("Committed", isCommitted, event -> {
+            if (isCommitted.get()) {
+                getLocation().setUrgency(Location.Urgency.NORMAL);
+            } else {
+                getLocation().setUrgency(Location.Urgency.COMMITTED);
+            }
+        });
+
+        dropDownMenu.addSpacerElement();
+
         dropDownMenu.addClickableListElement("Is reachable ?", event -> {
             try {
                 // Generate the query from the backend

@@ -79,6 +79,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             controller.setLocation(location);
 
             controller.initializeInvalidNameError();
+            controller.initializeDropDownMenu();
 
             initializeIdLabel();
             initializeTypeGraphics();
