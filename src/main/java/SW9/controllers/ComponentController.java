@@ -328,27 +328,6 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 }, "Added location '" + newLocation.toString() + "' to component '" + component.getName() + "'", "add-circle");
             });
 
-            dropDownMenu.addClickableListElement("Add Join", event -> {
-                dropDownMenu.close();
-
-                final Jork newJork = new Jork(Jork.Type.JOIN);
-
-                double x = DropDownMenu.x - LocationPresentation.RADIUS / 2;
-                x = Math.round(x / GRID_SIZE) * GRID_SIZE;
-                newJork.setX(x);
-
-                double y = DropDownMenu.y - LocationPresentation.RADIUS / 2;
-                y = Math.round(y / GRID_SIZE) * GRID_SIZE;
-                newJork.setY(y);
-
-                // Add a new location
-                UndoRedoStack.push(() -> { // Perform
-                    component.addJork(newJork);
-                }, () -> { // Undo
-                    component.removeJork(newJork);
-                }, "Added join '" + newJork.toString() + "' to component '" + component.getName() + "'", "add-circle");
-            });
-
             dropDownMenu.addClickableListElement("Add Fork", event -> {
                 dropDownMenu.close();
 
@@ -368,6 +347,27 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 }, () -> { // Undo
                     component.removeJork(newJork);
                 }, "Added fork '" + newJork.toString() + "' to component '" + component.getName() + "'", "add-circle");
+            });
+
+            dropDownMenu.addClickableListElement("Add Join", event -> {
+                dropDownMenu.close();
+
+                final Jork newJork = new Jork(Jork.Type.JOIN);
+
+                double x = DropDownMenu.x - LocationPresentation.RADIUS / 2;
+                x = Math.round(x / GRID_SIZE) * GRID_SIZE;
+                newJork.setX(x);
+
+                double y = DropDownMenu.y - LocationPresentation.RADIUS / 2;
+                y = Math.round(y / GRID_SIZE) * GRID_SIZE;
+                newJork.setY(y);
+
+                // Add a new location
+                UndoRedoStack.push(() -> { // Perform
+                    component.addJork(newJork);
+                }, () -> { // Undo
+                    component.removeJork(newJork);
+                }, "Added join '" + newJork.toString() + "' to component '" + component.getName() + "'", "add-circle");
             });
 
             final DropDownMenu subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
