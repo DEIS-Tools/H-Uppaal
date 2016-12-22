@@ -2,7 +2,9 @@ package SW9.controllers;
 
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
+import SW9.abstractions.Jork;
 import SW9.abstractions.SubComponent;
+import SW9.code_analysis.CodeAnalysis;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.LocationPresentation;
 import SW9.utility.UndoRedoStack;
@@ -13,6 +15,7 @@ import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXTextField;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
@@ -27,10 +30,15 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 public class SubComponentController implements Initializable, SelectHelper.ColorSelectable {
+
+    private static final Map<SubComponent, Boolean> initializedInconsistentEdgeError = new HashMap<>();
 
     private final ObjectProperty<SubComponent> subComponent = new SimpleObjectProperty<>(null);
     private final ObjectProperty<Component> parentComponent = new SimpleObjectProperty<>(null);
@@ -48,6 +56,108 @@ public class SubComponentController implements Initializable, SelectHelper.Color
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         makeDraggable();
+    }
+
+    public void initializeInconsistentEdgeError() {
+        if (initializedInconsistentEdgeError.containsKey(getSubComponent())) return; // Already initialized
+        initializedInconsistentEdgeError.put(getSubComponent(), true); // Set initialized
+
+        final CodeAnalysis.Message onlyOneTypeOfStarters = new CodeAnalysis.Message("Sub components can not be started both in parallel and sequentially", CodeAnalysis.MessageType.ERROR, getSubComponent());
+        final CodeAnalysis.Message onlyOneFork = new CodeAnalysis.Message("Sub components can only be started by once, and only by a single fork", CodeAnalysis.MessageType.ERROR, getSubComponent());
+
+        final CodeAnalysis.Message onlyOneTypeOfFinishers = new CodeAnalysis.Message("Sub components can not end in both a join and locations", CodeAnalysis.MessageType.ERROR, getSubComponent());
+        final CodeAnalysis.Message onlyOneJoin = new CodeAnalysis.Message("Sub components can only be joined once, and only by a single join", CodeAnalysis.MessageType.ERROR, getSubComponent());
+
+
+        final Consumer<SubComponent> checkForInconsistentIncoming = (subComponent) -> {
+            if (subComponent != null) { // The subComponent is not null
+
+                // Get all incoming edges for the sub component
+                final List<Edge> incomingEdges = getParentComponent().getIncomingEdges(subComponent);
+
+                // Count the amount of forks to this sub component
+                int forks = 0;
+                for (final Edge edge : incomingEdges) {
+                    if (edge.getSourceJork() != null && edge.getSourceJork().getType().equals(Jork.Type.FORK)) {
+                        forks++;
+                    }
+                }
+
+                // If the component is started by multiple forks
+                if (forks > 1) {
+                    // Add the message to the UI
+                    CodeAnalysis.addMessage(getParentComponent(), onlyOneFork);
+                } else {
+                    // Remove the message from the UI
+                    CodeAnalysis.removeMessage(getParentComponent(), onlyOneFork);
+                }
+
+                // If there are inconsistent edges (eg from fork and a location)
+                if (incomingEdges.size() > forks && forks != 0) {
+                    // Add the message to the UI
+                    CodeAnalysis.addMessage(getParentComponent(), onlyOneTypeOfStarters);
+                } else {
+                    // Remove the message from the UI
+                    CodeAnalysis.removeMessage(getParentComponent(), onlyOneTypeOfStarters);
+                }
+
+            } else {
+                // Remove the messages
+                CodeAnalysis.removeMessage(getParentComponent(), onlyOneTypeOfStarters);
+                CodeAnalysis.removeMessage(getParentComponent(), onlyOneFork);
+            }
+        };
+
+        final Consumer<SubComponent> checkForInconsistentOutgoingEdges = (subComponent) -> {
+            if (subComponent != null) { // The subComponent is not null
+
+                // Get all outgoing edges for the sub component
+                final List<Edge> outGoingEdges = getParentComponent().getOutGoingEdges(subComponent);
+
+                // Count the amount of joins to this sub component
+                int joins = 0;
+                for (final Edge edge : outGoingEdges) {
+                    if (edge.getTargetJork() != null && edge.getTargetJork().getType().equals(Jork.Type.JOIN)) {
+                        joins++;
+                    }
+                }
+
+                // If the component is started by multiple joins
+                if (joins > 1) {
+                    // Add the message to the UI
+                    CodeAnalysis.addMessage(getParentComponent(), onlyOneJoin);
+                } else {
+                    // Remove the message from the UI
+                    CodeAnalysis.removeMessage(getParentComponent(), onlyOneJoin);
+                }
+
+                // If there are inconsistent edges (eg to join and a location)
+                if (outGoingEdges.size() > joins && joins != 0) {
+                    // Add the message to the UI
+                    CodeAnalysis.addMessage(getParentComponent(), onlyOneTypeOfFinishers);
+                } else {
+                    // Remove the message from the UI
+                    CodeAnalysis.removeMessage(getParentComponent(), onlyOneTypeOfFinishers);
+                }
+
+            } else {
+                // Remove the messages
+                CodeAnalysis.removeMessage(getParentComponent(), onlyOneTypeOfFinishers);
+                CodeAnalysis.removeMessage(getParentComponent(), onlyOneJoin);
+            }
+        };
+
+        final Consumer<SubComponent> checkIfErrorIsPresent = (subComponent) -> {
+            checkForInconsistentIncoming.accept(subComponent);
+            checkForInconsistentOutgoingEdges.accept(subComponent);
+        };
+
+        // When the list of edges are updated
+        final InvalidationListener listener = observable -> checkIfErrorIsPresent.accept(getSubComponent());
+        getParentComponent().getEdges().addListener(listener);
+
+        // Check if the error is present right now
+        checkIfErrorIsPresent.accept(getSubComponent());
     }
 
     private void makeDraggable() {

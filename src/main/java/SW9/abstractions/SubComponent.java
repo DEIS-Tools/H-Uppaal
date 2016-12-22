@@ -1,12 +1,13 @@
 package SW9.abstractions;
 
 import SW9.HUPPAAL;
+import SW9.code_analysis.Nearable;
 import SW9.utility.helpers.Circular;
 import SW9.utility.serialize.Serializable;
 import com.google.gson.JsonObject;
 import javafx.beans.property.*;
 
-public class SubComponent implements Serializable, Circular {
+public class SubComponent implements Serializable, Circular, Nearable {
 
     private static final String COMPONENT = "component";
     private static final String IDENTIFIER = "identifier";
@@ -146,5 +147,10 @@ public class SubComponent implements Serializable, Circular {
     @Override
     public DoubleProperty scaleProperty() {
         return new SimpleDoubleProperty(10);
+    }
+
+    @Override
+    public String generateNearString() {
+        return "Sub component " + getIdentifier();
     }
 }
