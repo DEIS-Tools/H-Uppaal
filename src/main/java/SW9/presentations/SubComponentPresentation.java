@@ -283,7 +283,7 @@ public class SubComponentPresentation extends StackPane implements SelectHelper.
     @Override
     public void deselect() {
         updateColorDelegates.forEach(colorConsumer -> {
-            final Component component = controller.getParentComponent();
+            final Component component = controller.getSubComponent().getComponent();
 
             colorConsumer.accept(component.getColor(), component.getColorIntensity());
         });
