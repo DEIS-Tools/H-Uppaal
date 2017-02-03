@@ -1,10 +1,8 @@
 package SW9.presentations;
 
 import SW9.HUPPAAL;
-import SW9.abstractions.Component;
 import SW9.abstractions.Query;
 import SW9.abstractions.QueryState;
-import SW9.backend.UPPAALDriver;
 import SW9.controllers.CanvasController;
 import SW9.utility.colors.Color;
 import com.jfoenix.controls.JFXPopup;
@@ -31,7 +29,6 @@ public class QueryPresentation extends AnchorPane {
 
     private final Query query;
     private JFXRippler actionButton;
-    private Runnable runQuery;
 
     public QueryPresentation(final Query query) {
         final URL location = this.getClass().getResource("QueryPresentation.fxml");
@@ -46,8 +43,6 @@ public class QueryPresentation extends AnchorPane {
 
             this.query = query;
 
-            initializeRunQuery();
-
             initializeStateIndicator();
             initializeProgressIndicator();
             initializeActionButton();
@@ -57,36 +52,6 @@ public class QueryPresentation extends AnchorPane {
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
-    }
-    private void initializeRunQuery() {
-        runQuery = () -> {
-            if (query.getQueryState().equals(QueryState.RUNNING)) {
-                // todo: Stop the query
-                query.setQueryState(QueryState.UNKNOWN);
-            } else {
-                query.setQueryState(QueryState.RUNNING);
-
-                final Component mainComponent = HUPPAAL.getProject().getMainComponent();
-
-                if (mainComponent == null) {
-                    return; // We cannot generate a UPPAAL file without a main component
-                }
-
-                UPPAALDriver.verify(query.getQuery(),
-                        aBoolean -> {
-                            if(aBoolean) {
-                                query.setQueryState(QueryState.SUCCESSFUL);
-                            } else {
-                                query.setQueryState(QueryState.ERROR);
-                            }
-                        },
-                        e -> {
-                            query.setQueryState(QueryState.SYNTAX_ERROR);
-                        },
-                        mainComponent
-                );
-            }
-        };
     }
 
     private void initializeTextFields() {
@@ -102,7 +67,7 @@ public class QueryPresentation extends AnchorPane {
 
         queryTextField.setOnKeyPressed(CanvasController.getEnterKeyHandler(keyEvent -> {
             if (keyEvent.getCode().equals(KeyCode.ENTER)) {
-                runQuery.run();
+                query.run();
             }
         }));
         commentTextField.setOnKeyPressed(CanvasController.getEnterKeyHandler());
@@ -182,7 +147,7 @@ public class QueryPresentation extends AnchorPane {
         actionButton.setMaskType(JFXRippler.RipplerMask.CIRCLE);
 
         actionButton.getChildren().get(0).setOnMousePressed(event -> {
-            runQuery.run();
+            query.run();
         });
     }
 

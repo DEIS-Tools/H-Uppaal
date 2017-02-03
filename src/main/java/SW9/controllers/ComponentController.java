@@ -414,7 +414,9 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 final String deadlockComment = "Does " + component.getName() + " contain a deadlock?";
 
                 // Add new query for this component
-                HUPPAAL.getProject().getQueries().add(new Query(deadlockQuery, deadlockComment, QueryState.UNKNOWN));
+                final Query query = new Query(deadlockQuery, deadlockComment, QueryState.UNKNOWN);
+                HUPPAAL.getProject().getQueries().add(query);
+                query.run();
 
                 dropDownMenu.close();
 

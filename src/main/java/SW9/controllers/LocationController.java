@@ -106,7 +106,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
         dropDownMenu.addSpacerElement();
 
-        dropDownMenu.addClickableListElement("Is reachable?", event -> {
+        dropDownMenu.addClickableListElement("Is " + getLocation().getId() + " reachable?", event -> {
             // Generate the query from the backend
             final String reachabilityQuery = UPPAALDriver.getLocationReachableQuery(getLocation(), getComponent());
 
@@ -114,7 +114,9 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
             final String reachabilityComment = "Is " + getLocation().getMostDescriptiveIdentifier() + " reachable?";
 
             // Add new query for this location
-            HUPPAAL.getProject().getQueries().add(new Query(reachabilityQuery, reachabilityComment, QueryState.UNKNOWN));
+            final Query query = new Query(reachabilityQuery, reachabilityComment, QueryState.UNKNOWN);
+            HUPPAAL.getProject().getQueries().add(query);
+            query.run();
 
             dropDownMenu.close();
         });
@@ -223,6 +225,16 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
     public ObjectProperty<Component> componentProperty() {
         return component;
+    }
+
+    @FXML
+    private void locationEntered() {
+        ((LocationPresentation) root).animateLocationEntered();
+    }
+
+    @FXML
+    private void locationExited() {
+        ((LocationPresentation) root).animateLocationExited();
     }
 
     @FXML
