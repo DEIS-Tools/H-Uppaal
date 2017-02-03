@@ -9,7 +9,6 @@ import SW9.presentations.UndoRedoHistoryPresentation;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.google.common.io.Files;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import javafx.application.Application;
@@ -25,12 +24,15 @@ import jiconfont.icons.GoogleMaterialDesignIcons;
 import jiconfont.javafx.IconFontFX;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.*;
 
 public class HUPPAAL extends Application {
 
     private static Project project;
     private Stage debugStage;
+    private static List<String> deserializationOrder = new ArrayList<>();
 
     public static void main(final String[] args) {
         launch(HUPPAAL.class, args);
@@ -91,32 +93,8 @@ public class HUPPAAL extends Application {
         final File projectFolder = new File("project");
         projectFolder.mkdir();
 
-        // Load the project from disk
-        for (final File file : projectFolder.listFiles()) {
-            if (!file.getName().equals("Queries.json")) {
-                final Component componentFromFile = new Component(file.getName().replace(".json", ""));
-                getProject().getComponents().add(componentFromFile);
-            }
-        }
-
-        // Load the project from disk
-        for (final File file : projectFolder.listFiles()) {
-            final String fileContent = Files.toString(file, Charset.defaultCharset());
-
-            final JsonParser parser = new JsonParser();
-            final JsonElement element = parser.parse(fileContent);
-
-            if (file.getName().equals("Queries.json")) {
-                element.getAsJsonArray().forEach(jsonElement -> {
-                    final Query newQuery = new Query((JsonObject) jsonElement);
-                    getProject().getQueries().add(newQuery);
-                });
-            } else {
-                final Component componentFromFile = HUPPAAL.getProject().getComponents().filtered(component -> component.getName().equals(file.getName().replace(".json", ""))).get(0);
-                componentFromFile.deserialize(element.getAsJsonObject());
-            }
-        }
-
+        // Deserialize the project
+        deserializeProject(projectFolder);
 
         // Generate all component presentations by making them the active component in the view one by one
         Component initialShownComponent = null;
@@ -172,6 +150,91 @@ public class HUPPAAL extends Application {
         }));
     }
 
+    private void deserializeProject(final File projectFolder) throws IOException {
+
+        final Map<String, JsonObject> componentJsonMap = new HashMap<>();
+        final Map<JsonObject, Integer> componentMaxDepthMap = new HashMap<>();
+        JsonObject mainJsonComponent = null;
+
+        for (final File file : projectFolder.listFiles()) {
+
+            final String fileContent = Files.toString(file, Charset.defaultCharset());
+
+            // If the file represents the queries
+            if (file.getName().equals("Queries.json")) {
+                new JsonParser().parse(fileContent).getAsJsonArray().forEach(jsonElement -> {
+                    final Query newQuery = new Query((JsonObject) jsonElement);
+                    getProject().getQueries().add(newQuery);
+                });
+
+                continue;
+            }
+
+            // Parse the file to an json object
+            final JsonObject jsonObject = new JsonParser().parse(fileContent).getAsJsonObject();
+
+            // Fetch the name of the component
+            final String componentName = jsonObject.get("name").getAsString();
+
+            // Add the name and the json object to the map
+            componentJsonMap.put(componentName, jsonObject);
+
+            // Initialize the max depth map
+            componentMaxDepthMap.put(jsonObject, 0);
+
+            // Find the main name of the main component
+            if(jsonObject.get("main").getAsBoolean()) {
+                mainJsonComponent = jsonObject;
+            }
+
+        }
+
+        updateDepthMap(mainJsonComponent, 0, componentJsonMap, componentMaxDepthMap);
+
+        final List list = new LinkedList(componentMaxDepthMap.entrySet());
+        // Defined Custom Comparator here
+        Collections.sort(list, (o1, o2) -> ((Comparable) ((Map.Entry) (o1)).getValue())
+                .compareTo(((Map.Entry) (o2)).getValue()));
+
+        final List<JsonObject> orderedJsonComponents = new ArrayList<>();
+
+        // Here I am copying the sorted list in HashMap
+        // using LinkedHashMap to preserve the insertion order
+        final HashMap sortedHashMap = new LinkedHashMap();
+        for (final Iterator it = list.iterator(); it.hasNext();) {
+            final Map.Entry entry = (Map.Entry) it.next();
+            sortedHashMap.put(entry.getKey(), entry.getValue());
+
+            orderedJsonComponents.add((JsonObject) entry.getKey());
+        }
+
+        // Reverse the list such that the greatest depth is first in the list
+        Collections.reverse(orderedJsonComponents);
+
+        orderedJsonComponents.forEach(jsonObject -> {
+            final String componentName = jsonObject.get("name").getAsString();
+            final Component newComponent = new Component(componentName);
+            newComponent.deserialize(jsonObject);
+            getProject().getComponents().add(newComponent);
+        });
+
+    }
+
+    private void updateDepthMap(final JsonObject jsonObject, final int depth, final Map<String, JsonObject> nameToJson, final Map<JsonObject, Integer> jsonToDpeth) {
+        if(jsonToDpeth.get(jsonObject) < depth) {
+            jsonToDpeth.put(jsonObject, depth);
+        }
+
+        final List<String> subComponentNames = new ArrayList<>();
+
+        jsonObject.get("sub_components").getAsJsonArray().forEach(jsonElement -> {
+            subComponentNames.add(jsonElement.getAsJsonObject().get("component").getAsString());
+        });
+
+        for (final String subComponentName: subComponentNames) {
+            updateDepthMap(nameToJson.get(subComponentName), depth + 1, nameToJson, jsonToDpeth);
+        }
+    }
 
     private void loadFonts() {
         Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-Black.ttf"), 14);
