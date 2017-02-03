@@ -1,5 +1,7 @@
 package SW9.abstractions;
 
+import SW9.HUPPAAL;
+import SW9.backend.UPPAALDriver;
 import SW9.utility.serialize.Serializable;
 import com.google.gson.JsonObject;
 import javafx.beans.property.ObjectProperty;
@@ -15,14 +17,20 @@ public class Query implements Serializable {
     private final StringProperty query = new SimpleStringProperty("");
     private final StringProperty comment = new SimpleStringProperty("");
 
+    private Runnable runQuery;
+
     public Query(final String query, final String comment, final QueryState queryState) {
         this.query.set(query);
         this.comment.set(comment);
         this.queryState.set(queryState);
+
+        initializeRunQuery();
     }
 
     public Query(final JsonObject jsonElement) {
         deserialize(jsonElement);
+
+        initializeRunQuery();
     }
 
     public QueryState getQueryState() {
@@ -61,6 +69,37 @@ public class Query implements Serializable {
         return comment;
     }
 
+    private void initializeRunQuery() {
+        runQuery = () -> {
+            if (getQueryState().equals(QueryState.RUNNING)) {
+                // todo: Stop the query
+                setQueryState(QueryState.UNKNOWN);
+            } else {
+                setQueryState(QueryState.RUNNING);
+
+                final Component mainComponent = HUPPAAL.getProject().getMainComponent();
+
+                if (mainComponent == null) {
+                    return; // We cannot generate a UPPAAL file without a main component
+                }
+
+                UPPAALDriver.verify(getQuery(),
+                        aBoolean -> {
+                            if (aBoolean) {
+                                setQueryState(QueryState.SUCCESSFUL);
+                            } else {
+                                setQueryState(QueryState.ERROR);
+                            }
+                        },
+                        e -> {
+                            setQueryState(QueryState.SYNTAX_ERROR);
+                        },
+                        mainComponent
+                );
+            }
+        };
+    }
+
     @Override
     public JsonObject serialize() {
         final JsonObject result = new JsonObject();
@@ -75,5 +114,9 @@ public class Query implements Serializable {
     public void deserialize(final JsonObject json) {
         setQuery(json.getAsJsonPrimitive(QUERY).getAsString());
         setComment(json.getAsJsonPrimitive(COMMENT).getAsString());
+    }
+
+    public void run() {
+        runQuery.run();
     }
 }

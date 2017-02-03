@@ -1,6 +1,7 @@
 package SW9.presentations;
 
 import SW9.HUPPAAL;
+import SW9.abstractions.Query;
 import SW9.code_analysis.CodeAnalysis;
 import SW9.controllers.HUPPAALController;
 import SW9.utility.UndoRedoStack;
@@ -376,6 +377,27 @@ public class HUPPAALPresentation extends StackPane {
         queryPaneAnimationProperty.addListener((observable, oldValue, newValue) -> {
             controller.queryPaneFillerElement.setMinWidth(newValue.doubleValue());
             controller.queryPaneFillerElement.setMaxWidth(newValue.doubleValue());
+        });
+
+        // When new queries are added, make sure that the query pane is open
+        HUPPAAL.getProject().getQueries().addListener(new ListChangeListener<Query>() {
+            @Override
+            public void onChanged(final Change<? extends Query> c) {
+                if (queryPaneOpen == null || openQueryPaneAnimation == null)
+                    return; // The query pane is not yet initialized
+
+                while (c.next()) {
+                    c.getAddedSubList().forEach(o -> {
+                        if (!queryPaneOpen.get()) {
+                            // Open the pane
+                            closeQueryPaneAnimation.play();
+
+                            // Toggle the open state
+                            queryPaneOpen.set(queryPaneOpen.not().get());
+                        }
+                    });
+                }
+            }
         });
     }
 
