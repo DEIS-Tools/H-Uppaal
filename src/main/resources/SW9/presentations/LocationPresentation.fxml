@@ -9,7 +9,9 @@
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="Group"
          fx:controller="SW9.controllers.LocationController"
-         fx:id="root">
+         fx:id="root"
+         onMouseEntered="#locationEntered"
+         onMouseExited="#locationExited">
 
     <Group onMouseEntered="#hiddenAreaEntered"
            onMouseExited="#hiddenAreaExited">

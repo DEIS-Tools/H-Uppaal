@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static javafx.util.Duration.millis;
 
@@ -42,6 +43,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private final Timeline initialAnimation = new Timeline();
     private final Timeline hoverAnimationEntered = new Timeline();
     private final Timeline hoverAnimationExited = new Timeline();
+    private final Timeline hiddenAreaAnimationEntered = new Timeline();
+    private final Timeline hiddenAreaAnimationExited = new Timeline();
     private final Timeline scaleShakeIndicatorBackgroundAnimation = new Timeline();
     private final Timeline shakeContentAnimation = new Timeline();
 
@@ -101,6 +104,11 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private void initializeHiddenAreaCircle() {
         controller.hiddenAreaCircle.opacityProperty().bind(Debug.hoverableAreaOpacity);
         controller.hiddenAreaCircle.setFill(Debug.hoverableAreaColor.getColor(Debug.hoverableAreaColorIntensity));
+
+        initializeDebugCircleAnimationEntered();
+        initializeDebugCircleAnimationExited();
+
+        hiddenAreaAnimationExited.play();
     }
 
     private void initializeIdLabel() {
@@ -249,6 +257,34 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         hoverAnimationExited.getKeyFrames().addAll(kf1, kf2);
     }
 
+    private void initializeDebugCircleAnimationEntered() {
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+
+        final Supplier<Double> getCurrentRadius = () -> getController().hiddenAreaCircle.getRadius();
+
+        final KeyValue scale1x = new KeyValue(controller.hiddenAreaCircle.radiusProperty(), getCurrentRadius.get(), interpolator);
+        final KeyValue scale2x = new KeyValue(controller.hiddenAreaCircle.radiusProperty(), 50, interpolator);
+
+        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale1x);
+        final KeyFrame kf2 = new KeyFrame(Duration.millis(50), scale2x);
+
+        hiddenAreaAnimationEntered.getKeyFrames().addAll(kf1, kf2);
+    }
+
+    private void initializeDebugCircleAnimationExited() {
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+
+        final Supplier<Double> getCurrentRadius = () -> getController().hiddenAreaCircle.getRadius();
+
+        final KeyValue scale2x = new KeyValue(controller.hiddenAreaCircle.radiusProperty(), getCurrentRadius.get(), interpolator);
+        final KeyValue scale1x = new KeyValue(controller.hiddenAreaCircle.radiusProperty(), 0, interpolator);
+
+        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale2x);
+        final KeyFrame kf2 = new KeyFrame(Duration.millis(2000), scale1x);
+
+        hiddenAreaAnimationExited.getKeyFrames().addAll(kf1, kf2);
+    }
+
     private void initializeInitialAnimation() {
         final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
         final KeyValue scale0x = new KeyValue(controller.scaleContent.scaleXProperty(), 0, interpolator);
@@ -387,6 +423,16 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         if (shakeContentAnimation.getStatus().equals(Animation.Status.RUNNING) || !interactable) return;
 
         hoverAnimationExited.play();
+    }
+
+    public void animateLocationEntered() {
+        hiddenAreaAnimationExited.stop();
+        hiddenAreaAnimationEntered.play();
+    }
+
+    public void animateLocationExited() {
+        hiddenAreaAnimationEntered.stop();
+        hiddenAreaAnimationExited.play();
     }
 
     private void initializeDeleteShakeAnimation() {

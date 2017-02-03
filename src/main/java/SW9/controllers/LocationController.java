@@ -226,6 +226,16 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     }
 
     @FXML
+    private void locationEntered() {
+        ((LocationPresentation) root).animateLocationEntered();
+    }
+
+    @FXML
+    private void locationExited() {
+        ((LocationPresentation) root).animateLocationExited();
+    }
+
+    @FXML
     private void mouseEntered() {
         final LocationPresentation locationPresentation = (LocationPresentation) this.root;
 
