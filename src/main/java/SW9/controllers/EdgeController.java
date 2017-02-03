@@ -577,8 +577,8 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
         }
 
         dropDownMenu.addClickableAndDisableableListElement(rowTitle, isDisabled, event -> {
-            final double nailX = Math.round(DropDownMenu.x / GRID_SIZE) * GRID_SIZE;
-            final double nailY = Math.round(DropDownMenu.y / GRID_SIZE) * GRID_SIZE;
+            final double nailX = Math.round((DropDownMenu.x - getComponent().getX()) / GRID_SIZE) * GRID_SIZE;
+            final double nailY = Math.round((DropDownMenu.y - getComponent().getY()) / GRID_SIZE) * GRID_SIZE;
 
             final Nail newNail = new Nail(nailX, nailY);
             newNail.setPropertyType(type);
