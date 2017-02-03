@@ -400,7 +400,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 }
             });
 
-            dropDownMenu.addSubMenu("Add SubComponent", subMenu, 3 * 35);
+            dropDownMenu.addSubMenu("Add Subcomponent", subMenu, 3 * 35);
 
             dropDownMenu.addSpacerElement();
 
