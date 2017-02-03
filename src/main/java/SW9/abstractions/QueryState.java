@@ -7,7 +7,7 @@ public enum QueryState {
     ERROR(Color.RED, Color.Intensity.I700, "✘"),
     RUNNING(Color.GREY_BLUE, Color.Intensity.I600, "···"),
     UNKNOWN(Color.GREY, Color.Intensity.I600, "?"),
-    SYNTAX_ERROR(Color.RED, Color.Intensity.I700, "!");
+    SYNTAX_ERROR(Color.PURPLE, Color.Intensity.I700, "!");
 
     private final Color color;
     private final Color.Intensity colorIntensity;
