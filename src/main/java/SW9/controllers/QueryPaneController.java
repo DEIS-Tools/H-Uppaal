@@ -99,6 +99,7 @@ public class QueryPaneController implements Initializable {
         HUPPAAL.getProject().getQueries().forEach(query -> {
             // Reset the status of the query
             query.setQueryState(QueryState.UNKNOWN);
+            query.setQueryState(QueryState.RUNNING);
 
             final Timeline timeline = new Timeline(new KeyFrame(
                     Duration.millis(1 + counter[0] * interval),
