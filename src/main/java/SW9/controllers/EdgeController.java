@@ -171,7 +171,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
         if (initializedEdgeToForkError.containsKey(getEdge())) return; // Already initialized
         initializedEdgeToForkError.put(getEdge(), true); // Set initialized
 
-        final CodeAnalysis.Message message = new CodeAnalysis.Message("Only sub components can run in parallel", CodeAnalysis.MessageType.ERROR, getEdge());
+        final CodeAnalysis.Message message = new CodeAnalysis.Message("Only subcomponents can run in parallel", CodeAnalysis.MessageType.ERROR, getEdge());
 
         final Consumer<Edge> checkIfErrorIsPresent = (edge) -> {
             if (edge != null // The edge is not null
@@ -208,7 +208,7 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
         if (initializedEdgeFromJoinError.containsKey(getEdge())) return; // Already initialized
         initializedEdgeFromJoinError.put(getEdge(), true); // Set initialized
 
-        final CodeAnalysis.Message message = new CodeAnalysis.Message("Only sub components that are running in parallel can be joined", CodeAnalysis.MessageType.ERROR, getEdge());
+        final CodeAnalysis.Message message = new CodeAnalysis.Message("Only subcomponents that are running in parallel can be joined", CodeAnalysis.MessageType.ERROR, getEdge());
 
         final Consumer<Edge> checkIfErrorIsPresent = (edge) -> {
             if (edge != null // The edge is not null

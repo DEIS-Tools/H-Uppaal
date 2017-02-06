@@ -91,11 +91,11 @@ public class SubComponentController implements Initializable, SelectHelper.Color
         if (initializedInconsistentEdgeError.containsKey(getSubComponent())) return; // Already initialized
         initializedInconsistentEdgeError.put(getSubComponent(), true); // Set initialized
 
-        final CodeAnalysis.Message onlyOneTypeOfStarters = new CodeAnalysis.Message("Sub components can not be started both in parallel and sequentially", CodeAnalysis.MessageType.ERROR, getSubComponent());
-        final CodeAnalysis.Message onlyOneFork = new CodeAnalysis.Message("Sub components can only be started by once, and only by a single fork", CodeAnalysis.MessageType.ERROR, getSubComponent());
+        final CodeAnalysis.Message onlyOneTypeOfStarters = new CodeAnalysis.Message("Subcomponents can not be started both in parallel and sequentially", CodeAnalysis.MessageType.ERROR, getSubComponent());
+        final CodeAnalysis.Message onlyOneFork = new CodeAnalysis.Message("Subcomponents can only be started by once, and only by a single fork", CodeAnalysis.MessageType.ERROR, getSubComponent());
 
-        final CodeAnalysis.Message onlyOneTypeOfFinishers = new CodeAnalysis.Message("Sub components can not end in both a join and locations", CodeAnalysis.MessageType.ERROR, getSubComponent());
-        final CodeAnalysis.Message onlyOneJoin = new CodeAnalysis.Message("Sub components can only be joined once, and only by a single join", CodeAnalysis.MessageType.ERROR, getSubComponent());
+        final CodeAnalysis.Message onlyOneTypeOfFinishers = new CodeAnalysis.Message("Subcomponents can not end in both a join and locations", CodeAnalysis.MessageType.ERROR, getSubComponent());
+        final CodeAnalysis.Message onlyOneJoin = new CodeAnalysis.Message("Subcomponents can only be joined once, and only by a single join", CodeAnalysis.MessageType.ERROR, getSubComponent());
 
 
         final Consumer<SubComponent> checkForInconsistentIncoming = (subComponent) -> {
@@ -220,7 +220,7 @@ public class SubComponentController implements Initializable, SelectHelper.Color
                     getParentComponent().addEdge(newEdge);
                 }, () -> { // Undo
                     getParentComponent().removeEdge(newEdge);
-                }, "Created edge starting from sub component " + getSubComponent().getIdentifier(), "add-circle");
+                }, "Created edge starting from subcomponent " + getSubComponent().getIdentifier(), "add-circle");
             } else {
                 // If the sub component is pressed twice open its corresponding component in the canvas
                 if(event.getClickCount() > 1) {

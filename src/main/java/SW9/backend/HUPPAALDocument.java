@@ -226,7 +226,7 @@ public class HUPPAALDocument {
                     if (edge.getTargetSubComponent() != null) {
                         subComponentsToRunInParallel.add(edge.getTargetSubComponent());
                     } else {
-                        throw new BackendException("Fork has an edge to something that is not a sub component");
+                        throw new BackendException("Fork has an edge to something that is not a subcomponent");
                     }
                 }
 
@@ -261,7 +261,7 @@ public class HUPPAALDocument {
                     if (edge.getSourceSubComponent() != null) {
                         subComponentsToRunInParallel.add(edge.getSourceSubComponent());
                     } else {
-                        throw new BackendException("Join has an edge from something that is not a sub component");
+                        throw new BackendException("Join has an edge from something that is not a subcomponent");
                     }
                 }
 
