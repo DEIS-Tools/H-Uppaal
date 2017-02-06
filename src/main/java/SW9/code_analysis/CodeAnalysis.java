@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CodeAnalysis {
@@ -129,6 +130,12 @@ public class CodeAnalysis {
             this.message = new SimpleStringProperty(message);
             this.messageType = messageType;
             Collections.addAll(this.nearables, nearables);
+        }
+
+        public Message(final String message, final MessageType messageType, final List<Nearable> nearables) {
+            this.message = new SimpleStringProperty(message);
+            this.messageType = messageType;
+            nearables.forEach(nearable -> this.nearables.add(nearable));
         }
 
         public MessageType getMessageType() {

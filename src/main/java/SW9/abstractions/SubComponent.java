@@ -17,6 +17,8 @@ public class SubComponent implements Serializable, Circular, Nearable {
     private static final String WIDTH = "width";
     private static final String HEIGHT = "height";
 
+    public final BooleanProperty selected = new SimpleBooleanProperty(false);
+
     // Verification properties
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
     private final StringProperty identifier = new SimpleStringProperty("");

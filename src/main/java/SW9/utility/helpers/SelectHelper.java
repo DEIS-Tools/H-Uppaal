@@ -1,5 +1,6 @@
 package SW9.utility.helpers;
 
+import SW9.code_analysis.Nearable;
 import SW9.utility.colors.Color;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,6 +12,8 @@ public class SelectHelper {
     public static final Color.Intensity SELECT_COLOR_INTENSITY_BORDER = Color.Intensity.I900;
 
     private static final ObservableList<ColorSelectable> selectedElements = FXCollections.observableArrayList();
+
+    public static ObservableList<Nearable> elementsToBeSelected = FXCollections.observableArrayList();
 
     public static void select(final ColorSelectable selectable) {
         // Check if the element is already selected
@@ -30,6 +33,10 @@ public class SelectHelper {
         selectedElements.add(selectable);
     }
 
+    public static void select(final Nearable nearable) {
+        elementsToBeSelected.add(nearable);
+    }
+
     public static void deselect(final ColorSelectable selectable) {
         selectable.deselect();
 
@@ -38,6 +45,8 @@ public class SelectHelper {
     }
 
     public static void clearSelectedElements() {
+        elementsToBeSelected.clear();
+
         while (selectedElements.size() > 0) {
             deselect(selectedElements.get(0));
         }

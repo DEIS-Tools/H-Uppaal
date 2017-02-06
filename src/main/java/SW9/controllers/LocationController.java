@@ -4,6 +4,7 @@ import SW9.HUPPAAL;
 import SW9.abstractions.*;
 import SW9.backend.UPPAALDriver;
 import SW9.code_analysis.CodeAnalysis;
+import SW9.code_analysis.Nearable;
 import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
@@ -16,6 +17,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
@@ -77,6 +79,28 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
         scaleContent.scaleYProperty().bind(scaleContent.scaleXProperty());
 
         //initializeReachabilityCheck();
+
+        initializeSelectListener();
+    }
+
+    private void initializeSelectListener() {
+        SelectHelper.elementsToBeSelected.addListener(new ListChangeListener<Nearable>() {
+            @Override
+            public void onChanged(final Change<? extends Nearable> c) {
+                while (c.next()) {
+                    if (c.getAddedSize() == 0) return;
+
+                    for (final Nearable nearable : SelectHelper.elementsToBeSelected) {
+                        if (nearable instanceof Location) {
+                            if (nearable.equals(getLocation())) {
+                                SelectHelper.addToSelection(LocationController.this);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public void initializeDropDownMenu() {

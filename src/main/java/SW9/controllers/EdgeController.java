@@ -2,6 +2,7 @@ package SW9.controllers;
 
 import SW9.abstractions.*;
 import SW9.code_analysis.CodeAnalysis;
+import SW9.code_analysis.Nearable;
 import SW9.model_canvas.arrow_heads.SimpleArrowHead;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.DropDownMenu;
@@ -80,6 +81,28 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
         initializeLinksListener();
 
         ensureNailsInFront();
+
+        initializeSelectListener();
+    }
+
+    private void initializeSelectListener() {
+        SelectHelper.elementsToBeSelected.addListener(new ListChangeListener<Nearable>() {
+            @Override
+            public void onChanged(final Change<? extends Nearable> c) {
+                while (c.next()) {
+                    if (c.getAddedSize() == 0) return;
+
+                    for (final Nearable nearable : SelectHelper.elementsToBeSelected) {
+                        if (nearable instanceof Edge) {
+                            if (nearable.equals(getEdge())) {
+                                SelectHelper.addToSelection(EdgeController.this);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public void initializeEdgeErrorFromTargetLocation() {

@@ -5,10 +5,9 @@ import SW9.abstractions.Edge;
 import SW9.abstractions.Jork;
 import SW9.abstractions.SubComponent;
 import SW9.code_analysis.CodeAnalysis;
+import SW9.code_analysis.Nearable;
 import SW9.presentations.CanvasPresentation;
-import SW9.presentations.ComponentPresentation;
 import SW9.presentations.LocationPresentation;
-import SW9.presentations.NailPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.ItemDragHelper;
@@ -22,6 +21,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
@@ -62,6 +62,28 @@ public class SubComponentController implements Initializable, SelectHelper.Color
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         makeDraggable();
+
+        initializeSelectListener();
+    }
+
+    private void initializeSelectListener() {
+        SelectHelper.elementsToBeSelected.addListener(new ListChangeListener<Nearable>() {
+            @Override
+            public void onChanged(final Change<? extends Nearable> c) {
+                while (c.next()) {
+                    if (c.getAddedSize() == 0) return;
+
+                    for (final Nearable nearable : SelectHelper.elementsToBeSelected) {
+                        if (nearable instanceof SubComponent) {
+                            if (nearable.equals(getSubComponent())) {
+                                SelectHelper.addToSelection(SubComponentController.this);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public void initializeInconsistentEdgeError() {
