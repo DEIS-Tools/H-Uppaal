@@ -41,11 +41,11 @@ public class ItemDragHelper {
         final DoubleProperty yDiff = new SimpleDoubleProperty();
 
         mouseSubject.setOnMousePressed(event -> {
+            pressed.accept(event);
             previousX.set(dragSubject.getLayoutX());
             previousY.set(dragSubject.getLayoutY());
             xDiff.set(event.getX());
             yDiff.set(event.getY());
-            pressed.accept(event);
         });
 
         mouseSubject.setOnMouseDragged(event -> {

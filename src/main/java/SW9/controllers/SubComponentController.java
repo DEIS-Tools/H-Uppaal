@@ -6,7 +6,9 @@ import SW9.abstractions.Jork;
 import SW9.abstractions.SubComponent;
 import SW9.code_analysis.CodeAnalysis;
 import SW9.presentations.CanvasPresentation;
+import SW9.presentations.ComponentPresentation;
 import SW9.presentations.LocationPresentation;
+import SW9.presentations.NailPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.ItemDragHelper;
@@ -16,7 +18,9 @@ import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXTextField;
 import javafx.beans.InvalidationListener;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -35,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class SubComponentController implements Initializable, SelectHelper.ColorSelectable {
 
@@ -163,7 +168,14 @@ public class SubComponentController implements Initializable, SelectHelper.Color
 
     private void makeDraggable() {
 
-        Consumer<MouseEvent> startEdgeFromSubComponent = (event) -> {
+        final DoubleProperty mouseXDiff = new SimpleDoubleProperty(0);
+        final DoubleProperty mouseYDiff = new SimpleDoubleProperty(0);
+
+        final Consumer<MouseEvent> startEdgeFromSubComponent = (event) -> {
+
+            // Store where in the subcomponent the mouse is dragging
+            mouseXDiff.set(event.getX());
+            mouseYDiff.set(event.getY());
 
             event.consume();
 
@@ -191,11 +203,43 @@ public class SubComponentController implements Initializable, SelectHelper.Color
             }
         };
 
+        final Supplier<Double> supplyX = () -> {
+            // Calculate the potential new x alongside min and max values
+            final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getParentComponent().xProperty()).get();
+            final double minX = mouseXDiff.get();
+            final double maxX = getParentComponent().getWidth() - getSubComponent().getWidth() + mouseXDiff.get();
+
+            // Drag according to min and max
+            if (newX < minX) {
+                return minX;
+            } else if (newX > maxX) {
+                return maxX;
+            } else {
+                return newX;
+            }
+        };
+
+        final Supplier<Double> supplyY = () -> {
+            // Calculate the potential new y alongside min and max values
+            final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getParentComponent().yProperty()).doubleValue();
+            final double minY = mouseYDiff.get();
+            final double maxY = getParentComponent().getHeight() - getSubComponent().getHeight() + mouseYDiff.get();
+
+            // Drag according to min and max
+            if (newY < minY) {
+                return minY;
+            } else if (newY > maxY) {
+                return maxY;
+            } else {
+                return newY;
+            }
+        };
+
         ItemDragHelper.makeDraggable(
                 root,
                 root,
-                () -> CanvasPresentation.mouseTracker.gridXProperty().subtract(getParentComponent().xProperty()).get(),
-                () -> CanvasPresentation.mouseTracker.gridYProperty().subtract(getParentComponent().yProperty()).get(),
+                supplyX,
+                supplyY,
                 startEdgeFromSubComponent,
                 () -> {},
                 () -> {}
