@@ -2,14 +2,18 @@ package SW9.presentations;
 
 import SW9.abstractions.Component;
 import SW9.code_analysis.CodeAnalysis;
+import SW9.controllers.CanvasController;
 import SW9.utility.colors.Color;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
+import javafx.scene.Cursor;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -94,6 +98,27 @@ public class MessageCollectionPresentation extends VBox {
 
         headline.setText(component.getName());
         headline.textProperty().bind(component.nameProperty());
+
+        final EventHandler<MouseEvent> onMouseEntered = event -> {
+            setCursor(Cursor.HAND);
+            headline.setStyle("-fx-underline: true;");
+        };
+
+        final EventHandler<MouseEvent> onMouseExited = event -> {
+            setCursor(Cursor.DEFAULT);
+            headline.setStyle("-fx-underline: false;");
+        };
+
+        final EventHandler<MouseEvent> onMousePressed = event -> {
+            CanvasController.setActiveComponent(component);
+        };
+
+        headline.setOnMouseEntered(onMouseEntered);
+        headline.setOnMouseExited(onMouseExited);
+        headline.setOnMousePressed(onMousePressed);
+        indicator.setOnMouseEntered(onMouseEntered);
+        indicator.setOnMouseExited(onMouseExited);
+        indicator.setOnMousePressed(onMousePressed);
 
         final BiConsumer<Color, Color.Intensity> updateColor = (color, intensity) -> {
             indicator.setFill(color.getColor(component.getColorIntensity()));

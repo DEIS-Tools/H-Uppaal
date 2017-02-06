@@ -10,8 +10,8 @@
 
     <HBox>
         <StackPane>
-            <Circle id="indicator" radius="16" fill="pink"/>
-            <FontIcon iconLiteral="gmi-description" iconSize="22" fill="white"/>
+            <Circle id="indicator" radius="16"/>
+            <FontIcon iconLiteral="gmi-description" iconSize="22" fill="white" mouseTransparent="true"/>
         </StackPane>
 
         <Label fx:id="headline" styleClass="body2" style="-fx-font-weight: 600;" translateX="8" translateY="6"/>
