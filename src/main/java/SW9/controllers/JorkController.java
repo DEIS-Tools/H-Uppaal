@@ -79,7 +79,12 @@ public class JorkController implements Initializable, SelectHelper.ColorSelectab
             mouseXDiff.set(event.getX());
             mouseYDiff.set(event.getY());
 
-            SelectHelper.select(this);
+            if (event.isShortcutDown()) {
+                SelectHelper.addToSelection(this);
+            } else {
+                SelectHelper.select(this);
+            }
+
             final Component component = getComponent();
             final Edge unfinishedEdge = component.getUnfinishedEdge();
             if (unfinishedEdge != null) {

@@ -226,7 +226,11 @@ public class SubComponentController implements Initializable, SelectHelper.Color
                 if(event.getClickCount() > 1) {
                     CanvasController.setActiveComponent(getSubComponent().getComponent());
                 } else {
-                    SelectHelper.select(this);
+                    if (event.isShortcutDown()) {
+                        SelectHelper.addToSelection(this);
+                    } else {
+                        SelectHelper.select(this);
+                    }
                 }
             }
         };

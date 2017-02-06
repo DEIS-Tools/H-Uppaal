@@ -660,7 +660,12 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
     public void edgePressed(final MouseEvent event) {
         if (!event.isShiftDown()) {
             event.consume();
-            SelectHelper.select(this);
+
+            if (event.isShortcutDown()) {
+                SelectHelper.addToSelection(this);
+            } else {
+                SelectHelper.select(this);
+            }
         }
     }
 

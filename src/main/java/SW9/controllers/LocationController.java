@@ -364,7 +364,11 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                 // Otherwise, select the location
                 else {
                     if(((LocationPresentation) root).isInteractable()) {
-                        SelectHelper.select(this);
+                        if (event.isShortcutDown()) {
+                            SelectHelper.addToSelection(this);
+                        } else {
+                            SelectHelper.select(this);
+                        }
                     }
                 }
 

@@ -4,14 +4,12 @@ import SW9.Debug;
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.abstractions.Nail;
-import SW9.presentations.*;
-import SW9.utility.UndoRedoStack;
+import SW9.presentations.CanvasPresentation;
+import SW9.presentations.ComponentPresentation;
+import SW9.presentations.TagPresentation;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.ItemDragHelper;
-import SW9.utility.helpers.NailHelper;
 import SW9.utility.helpers.SelectHelper;
-import SW9.utility.keyboard.Keybind;
-import SW9.utility.keyboard.KeyboardTracker;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -20,8 +18,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -77,9 +73,14 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
         final DoubleProperty mouseYDiff = new SimpleDoubleProperty(0);
 
         final Consumer<MouseEvent> mousePressedOnNail = (event) -> {
-                mouseXDiff.set(event.getX());
-                mouseYDiff.set(event.getY());
+            mouseXDiff.set(event.getX());
+            mouseYDiff.set(event.getY());
+
+            if (event.isShortcutDown()) {
+                SelectHelper.addToSelection(this);
+            } else {
                 SelectHelper.select(this);
+            }
         };
 
         final Supplier<Double> supplyX = () -> {
@@ -153,12 +154,12 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
         return edge.get();
     }
 
-    public ObjectProperty<Edge> edgeProperty() {
-        return edge;
-    }
-
     public void setEdge(final Edge edge) {
         this.edge.set(edge);
+    }
+
+    public ObjectProperty<Edge> edgeProperty() {
+        return edge;
     }
 
     @Override

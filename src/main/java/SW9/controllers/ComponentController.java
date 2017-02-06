@@ -784,7 +784,12 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 () -> CanvasPresentation.mouseTracker.getGridY(),
                 (event) -> {
                     event.consume();
-                    SelectHelper.select(this);
+
+                    if (event.isShortcutDown()) {
+                        SelectHelper.addToSelection(this);
+                    } else {
+                        SelectHelper.select(this);
+                    }
                 },
                 () -> {},
                 () -> {}
