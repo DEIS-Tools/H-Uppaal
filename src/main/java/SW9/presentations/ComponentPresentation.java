@@ -168,21 +168,21 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             final DoubleProperty minHeight = new SimpleDoubleProperty(10 * GRID_SIZE);
 
             component.getSubComponents().forEach(subComponent -> {
-                minHeight.set(Math.max(minHeight.doubleValue(), subComponent.getHeight() + subComponent.getY()));
+                minHeight.set(Math.max(minHeight.doubleValue(), subComponent.getHeight() + subComponent.getY() + GRID_SIZE));
             });
 
             component.getLocations().forEach(location -> {
-                minHeight.set(Math.max(minHeight.doubleValue(), location.getRadius() + location.getY()));
+                minHeight.set(Math.max(minHeight.doubleValue(), location.getRadius() + location.getY() + GRID_SIZE));
             });
 
             component.getEdges().forEach(edge -> {
                 edge.getNails().forEach(nail -> {
-                    minHeight.set(Math.max(minHeight.doubleValue(), nail.getRadius() + nail.getY()));
+                    minHeight.set(Math.max(minHeight.doubleValue(), nail.getY() + GRID_SIZE));
                 });
             });
 
             component.getJorks().forEach(jork-> {
-                minHeight.set(Math.max(minHeight.doubleValue(), jork.getY() + JorkPresentation.JORK_HEIGHT + JorkPresentation.JORK_Y_TRANSLATE));
+                minHeight.set(Math.max(minHeight.doubleValue(), jork.getY() + JorkPresentation.JORK_HEIGHT + GRID_SIZE));
             });
 
             return minHeight.get();
@@ -239,21 +239,21 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             final DoubleProperty minWidth = new SimpleDoubleProperty(10 * GRID_SIZE);
 
             component.getSubComponents().forEach(subComponent -> {
-                minWidth.set(Math.max(minWidth.doubleValue(), subComponent.getWidth() + subComponent.getX()));
+                minWidth.set(Math.max(minWidth.doubleValue(), subComponent.getWidth() + subComponent.getX() + GRID_SIZE));
             });
 
             component.getLocations().forEach(location -> {
-                minWidth.set(Math.max(minWidth.doubleValue(), location.getRadius() + location.getX()));
+                minWidth.set(Math.max(minWidth.doubleValue(), location.getRadius() + location.getX() + GRID_SIZE));
             });
 
             component.getEdges().forEach(edge -> {
                 edge.getNails().forEach(nail -> {
-                    minWidth.set(Math.max(minWidth.doubleValue(), nail.getRadius() + nail.getX()));
+                    minWidth.set(Math.max(minWidth.doubleValue(), nail.getX() + GRID_SIZE));
                 });
             });
 
             component.getJorks().forEach(jork-> {
-                minWidth.set(Math.max(minWidth.doubleValue(), jork.getX() + JorkPresentation.JORK_WIDTH));
+                minWidth.set(Math.max(minWidth.doubleValue(), jork.getX() + JorkPresentation.JORK_WIDTH + GRID_SIZE));
             });
 
             return minWidth.get();

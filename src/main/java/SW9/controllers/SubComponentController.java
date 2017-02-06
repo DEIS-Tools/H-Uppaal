@@ -206,8 +206,8 @@ public class SubComponentController implements Initializable, SelectHelper.Color
         final Supplier<Double> supplyX = () -> {
             // Calculate the potential new x alongside min and max values
             final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getParentComponent().xProperty()).get();
-            final double minX = mouseXDiff.get();
-            final double maxX = getParentComponent().getWidth() - getSubComponent().getWidth() + mouseXDiff.get();
+            final double minX = mouseXDiff.get() + CanvasPresentation.GRID_SIZE;
+            final double maxX = getParentComponent().getWidth() - getSubComponent().getWidth() - CanvasPresentation.GRID_SIZE + mouseXDiff.get();
 
             // Drag according to min and max
             if (newX < minX) {
@@ -222,8 +222,8 @@ public class SubComponentController implements Initializable, SelectHelper.Color
         final Supplier<Double> supplyY = () -> {
             // Calculate the potential new y alongside min and max values
             final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getParentComponent().yProperty()).doubleValue();
-            final double minY = mouseYDiff.get();
-            final double maxY = getParentComponent().getHeight() - getSubComponent().getHeight() + mouseYDiff.get();
+            final double minY = mouseYDiff.get() + ComponentPresentation.TOOL_BAR_HEIGHT + CanvasPresentation.GRID_SIZE;
+            final double maxY = getParentComponent().getHeight() - getSubComponent().getHeight() - CanvasPresentation.GRID_SIZE + mouseYDiff.get();
 
             // Drag according to min and max
             if (newY < minY) {
