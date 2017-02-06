@@ -403,7 +403,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     @FXML
     private void mouseDragged(final MouseEvent event) {
         // If the location is not a normal location (not initial/final) make it draggable
-        if (getLocation().getType() == Location.Type.NORMAL) {
+        if (getLocation().getType() == Location.Type.NORMAL && ((LocationPresentation) root).isPlaced()) {
 
             // Calculate the potential new x alongside min and max values
             final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
