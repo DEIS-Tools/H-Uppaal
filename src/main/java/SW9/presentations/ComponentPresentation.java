@@ -17,6 +17,7 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
@@ -32,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -161,6 +163,31 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         final DoubleProperty prevY = new SimpleDoubleProperty();
         final DoubleProperty prevHeight = new SimpleDoubleProperty();
 
+        final Supplier<Double> componentMinHeight = () -> {
+
+            final DoubleProperty minHeight = new SimpleDoubleProperty(10 * GRID_SIZE);
+
+            component.getSubComponents().forEach(subComponent -> {
+                minHeight.set(Math.max(minHeight.doubleValue(), subComponent.getHeight() + subComponent.getY()));
+            });
+
+            component.getLocations().forEach(location -> {
+                minHeight.set(Math.max(minHeight.doubleValue(), location.getRadius() + location.getY()));
+            });
+
+            component.getEdges().forEach(edge -> {
+                edge.getNails().forEach(nail -> {
+                    minHeight.set(Math.max(minHeight.doubleValue(), nail.getRadius() + nail.getY()));
+                });
+            });
+
+            component.getJorks().forEach(jork-> {
+                minHeight.set(Math.max(minHeight.doubleValue(), jork.getY() + JorkPresentation.JORK_HEIGHT + JorkPresentation.JORK_Y_TRANSLATE));
+            });
+
+            return minHeight.get();
+        };
+
         bottomAnchor.setOnMousePressed(event -> {
             prevY.set(event.getScreenY());
             prevHeight.set(component.getHeight());
@@ -169,7 +196,11 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         bottomAnchor.setOnMouseDragged(event -> {
             double diff = event.getScreenY() - prevY.get();
             diff -= diff % GRID_SIZE;
-            component.setHeight(Math.max(prevHeight.get() + diff, GRID_SIZE * 10));
+
+            final double newHeight = prevHeight.get() + diff;
+            final double minHeight = componentMinHeight.get();
+
+            component.setHeight(Math.max(newHeight, minHeight));
             wasResized.set(true);
         });
 
@@ -203,6 +234,31 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         final DoubleProperty prevX = new SimpleDoubleProperty();
         final DoubleProperty prevWidth = new SimpleDoubleProperty();
 
+        final Supplier<Double> componentMinWidth = () -> {
+
+            final DoubleProperty minWidth = new SimpleDoubleProperty(10 * GRID_SIZE);
+
+            component.getSubComponents().forEach(subComponent -> {
+                minWidth.set(Math.max(minWidth.doubleValue(), subComponent.getWidth() + subComponent.getX()));
+            });
+
+            component.getLocations().forEach(location -> {
+                minWidth.set(Math.max(minWidth.doubleValue(), location.getRadius() + location.getX()));
+            });
+
+            component.getEdges().forEach(edge -> {
+                edge.getNails().forEach(nail -> {
+                    minWidth.set(Math.max(minWidth.doubleValue(), nail.getRadius() + nail.getX()));
+                });
+            });
+
+            component.getJorks().forEach(jork-> {
+                minWidth.set(Math.max(minWidth.doubleValue(), jork.getX() + JorkPresentation.JORK_WIDTH));
+            });
+
+            return minWidth.get();
+        };
+
         rightAnchor.setOnMousePressed(event -> {
             prevX.set(event.getScreenX());
             prevWidth.set(component.getWidth());
@@ -211,7 +267,10 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         rightAnchor.setOnMouseDragged(event -> {
             double diff = event.getScreenX() - prevX.get();
             diff -= diff % GRID_SIZE;
-            component.setWidth(Math.max(prevWidth.get() + diff, GRID_SIZE * 10));
+
+            final double newWidth = prevWidth.get() + diff;
+            final double minWidth = componentMinWidth.get();
+            component.setWidth(Math.max(newWidth, minWidth));
             wasResized.set(true);
         });
 
@@ -232,6 +291,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
 
             wasResized.set(false);
         });
+
 
     }
 
