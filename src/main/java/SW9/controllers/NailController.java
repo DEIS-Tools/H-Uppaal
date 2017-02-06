@@ -5,21 +5,30 @@ import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.abstractions.Nail;
 import SW9.presentations.*;
+import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.ItemDragHelper;
+import SW9.utility.helpers.NailHelper;
 import SW9.utility.helpers.SelectHelper;
+import SW9.utility.keyboard.Keybind;
+import SW9.utility.keyboard.KeyboardTracker;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class NailController implements Initializable, SelectHelper.ColorSelectable {
@@ -64,11 +73,20 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
 
     private void makeDraggable() {
 
+        final DoubleProperty mouseXDiff = new SimpleDoubleProperty(0);
+        final DoubleProperty mouseYDiff = new SimpleDoubleProperty(0);
+
+        final Consumer<MouseEvent> mousePressedOnNail = (event) -> {
+                mouseXDiff.set(event.getX());
+                mouseYDiff.set(event.getY());
+                SelectHelper.select(this);
+        };
+
         final Supplier<Double> supplyX = () -> {
             // Calculate the potential new x alongside min and max values
             final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
-            final double minX = 0;
-            final double maxX = getComponent().getWidth();
+            final double minX = mouseXDiff.get();
+            final double maxX = getComponent().getWidth() + mouseXDiff.get();
 
             // Drag according to min and max
             if (newX < minX) {
@@ -83,8 +101,8 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
         final Supplier<Double> supplyY = () -> {
             // Calculate the potential new y alongside min and max values
             final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
-            final double minY = ComponentPresentation.TOOL_BAR_HEIGHT + CanvasPresentation.GRID_SIZE + NailPresentation.HOVERED_RADIUS;
-            final double maxY = getComponent().getHeight();
+            final double minY = mouseYDiff.get() + ComponentPresentation.TOOL_BAR_HEIGHT + CanvasPresentation.GRID_SIZE;
+            final double maxY = getComponent().getHeight() + mouseYDiff.get();
 
             // Drag according to min and max
             if (newY < minY) {
@@ -101,10 +119,7 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
                 dragGroup,
                 supplyX,
                 supplyY,
-                (event) -> {
-                    event.consume();
-                    SelectHelper.select(this);
-                },
+                mousePressedOnNail,
                 () -> nailBeingDragged = true,
                 () -> nailBeingDragged =false
         );
