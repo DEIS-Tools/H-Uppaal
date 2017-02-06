@@ -38,8 +38,6 @@ public class CodeAnalysis {
     private static void removeFromWarnings(final Component component, final Message message) {
         final ObservableList<Message> list = getWarnings(component);
 
-        if (list.contains(message)) return;
-
         list.remove(message);
         warnings.remove(message);
     }

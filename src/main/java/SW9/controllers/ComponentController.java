@@ -44,6 +44,7 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
@@ -51,6 +52,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
     private static final Map<Component, Timer> COMPONENT_SUBCOMPONENT_NAME_CHECK_TIMER_MAP = new HashMap<>();
     private static final Map<Component, ListChangeListener<Location>> locationListChangeListenerMap = new HashMap<>();
+    private static final Map<Component, Boolean> errorsAndWarningsInitialized = new HashMap<>();
     private static Location placingLocation = null;
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
     private final Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
@@ -180,7 +182,88 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
         initializeDropDownMenu();
 
-        initializeSubComponentUniqueNameError();
+        component.addListener((obs, old, component) -> {
+            if (component == null) return;
+
+            if (!errorsAndWarningsInitialized.containsKey(component) || !errorsAndWarningsInitialized.get(component)) {
+                initializeSubComponentUniqueNameError();
+                initializeNoIncomingEdgesWarning();
+                errorsAndWarningsInitialized.put(component, true);
+            }
+        });
+    }
+
+    private void initializeNoIncomingEdgesWarning() {
+        final Map<Location, CodeAnalysis.Message> messages = new HashMap<>();
+
+        final Function<Location, Boolean> hasIncomingEdges = location -> {
+            for (final Edge edge : getComponent().getEdges()) {
+                final Location targetLocation = edge.getTargetLocation();
+                if (targetLocation != null && targetLocation.equals(location)) return true;
+            }
+
+            return false;
+        };
+
+        final Consumer<Component> checkLocations = (component) -> {
+            final List<Location> ignored = new ArrayList<>();
+
+            // Run through all of the locations we are currently displaying a warning for, checking if we should remove them
+            final Set<Location> removeMessages = new HashSet<>();
+            messages.keySet().forEach(location -> {
+                // Check if the location has some incoming edges
+                final boolean result = hasIncomingEdges.apply(location);
+
+                // The location has at least one incoming edge
+                if (result) {
+                    CodeAnalysis.removeMessage(component, messages.get(location));
+                    removeMessages.add(location);
+                }
+
+                // Ignore this location from now on (we already checked it)
+                ignored.add(location);
+            });
+            removeMessages.forEach(messages::remove);
+
+            // Run through all non-ignored locations
+            for (final Location location : component.getLocations()) {
+                if (ignored.contains(location)) continue; // Skip ignored
+                if (messages.containsKey(location)) continue; // Skip locations that already have warnings associated
+
+                // Check if the location has some incoming edges
+                final boolean result = hasIncomingEdges.apply(location);
+
+                // The location has no incoming edge
+                if (!result) {
+                    final CodeAnalysis.Message message = new CodeAnalysis.Message("Location has no incoming edges", CodeAnalysis.MessageType.WARNING, location);
+                    messages.put(location, message);
+                    CodeAnalysis.addMessage(component, message);
+                }
+            }
+        };
+
+        final Component component = getComponent();
+        checkLocations.accept(component);
+
+        // Check location whenever we get new edges
+        component.getEdges().addListener(new ListChangeListener<Edge>() {
+            @Override
+            public void onChanged(final Change<? extends Edge> c) {
+                while (c.next()) {
+                    checkLocations.accept(component);
+                }
+            }
+        });
+
+        // Check location whenever we get new locations
+        component.getLocations().addListener(new ListChangeListener<Location>() {
+            @Override
+            public void onChanged(final Change<? extends Location> c) {
+                while (c.next()) {
+                    checkLocations.accept(component);
+                }
+            }
+        });
     }
 
     private void initializeJorkHandling(final Component newComponent) {
@@ -261,23 +344,21 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         };
 
         // Wait until component is not null
-        component.addListener((obs, oldComponent, newComponent) -> {
-            if (!COMPONENT_SUBCOMPONENT_NAME_CHECK_TIMER_MAP.containsKey(newComponent)) {
-                TimerTask reachabilityCheckTask = new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (getComponent() == null) return;
-                        checkNames.run();
-                    }
-                };
+        if (!COMPONENT_SUBCOMPONENT_NAME_CHECK_TIMER_MAP.containsKey(getComponent())) {
+            final TimerTask reachabilityCheckTask = new TimerTask() {
+                @Override
+                public void run() {
+                    if (getComponent() == null) return;
+                    checkNames.run();
+                }
+            };
 
-                final int interval = 2000; // ms
-                final Timer timer = new Timer();
-                timer.schedule(reachabilityCheckTask, 0, interval);
+            final int interval = 2000; // ms
+            final Timer timer = new Timer();
+            timer.schedule(reachabilityCheckTask, 0, interval);
 
-                COMPONENT_SUBCOMPONENT_NAME_CHECK_TIMER_MAP.put(getComponent(), timer);
-            }
-        });
+            COMPONENT_SUBCOMPONENT_NAME_CHECK_TIMER_MAP.put(getComponent(), timer);
+        }
 
         // Cancel timers when the component is removed
         HUPPAAL.getProject().getComponents().addListener(new ListChangeListener<Component>() {
