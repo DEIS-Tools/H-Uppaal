@@ -153,6 +153,6 @@ public class SubComponent implements Serializable, Circular, Nearable {
 
     @Override
     public String generateNearString() {
-        return "Sub component " + getIdentifier();
+        return "Subcomponent " + getIdentifier();
     }
 }
