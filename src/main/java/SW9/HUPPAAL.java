@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import jiconfont.icons.GoogleMaterialDesignIcons;
 import jiconfont.javafx.IconFontFX;
+import on.J;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +33,6 @@ public class HUPPAAL extends Application {
 
     private static Project project;
     private Stage debugStage;
-    private static List<String> deserializationOrder = new ArrayList<>();
 
     public static void main(final String[] args) {
         launch(HUPPAAL.class, args);
@@ -98,7 +98,7 @@ public class HUPPAAL extends Application {
 
         // Generate all component presentations by making them the active component in the view one by one
         Component initialShownComponent = null;
-        for (Component component : HUPPAAL.getProject().getComponents()) {
+        for (final Component component : HUPPAAL.getProject().getComponents()) {
             // The first component should be shown if there is no main
             if(initialShownComponent == null) {
                 initialShownComponent = component;
@@ -152,11 +152,16 @@ public class HUPPAAL extends Application {
 
     private void deserializeProject(final File projectFolder) throws IOException {
 
+        // If there are no files do not try to deserialize
+        final File[] projectFiles = projectFolder.listFiles();
+        if (projectFiles == null || projectFiles.length == 0) return;
+
+        // Create maps for deserialization
         final Map<String, JsonObject> componentJsonMap = new HashMap<>();
         final Map<JsonObject, Integer> componentMaxDepthMap = new HashMap<>();
         JsonObject mainJsonComponent = null;
 
-        for (final File file : projectFolder.listFiles()) {
+        for (final File file : projectFiles) {
 
             final String fileContent = Files.toString(file, Charset.defaultCharset());
 
@@ -166,7 +171,7 @@ public class HUPPAAL extends Application {
                     final Query newQuery = new Query((JsonObject) jsonElement);
                     getProject().getQueries().add(newQuery);
                 });
-
+                // Do not parse Queries.json as a component
                 continue;
             }
 
@@ -191,33 +196,28 @@ public class HUPPAAL extends Application {
 
         updateDepthMap(mainJsonComponent, 0, componentJsonMap, componentMaxDepthMap);
 
-        final List list = new LinkedList(componentMaxDepthMap.entrySet());
+        final List<Map.Entry<JsonObject,Integer>> list = new LinkedList<>(componentMaxDepthMap.entrySet());
         // Defined Custom Comparator here
-        Collections.sort(list, (o1, o2) -> ((Comparable) ((Map.Entry) (o1)).getValue())
-                .compareTo(((Map.Entry) (o2)).getValue()));
+        Collections.sort(list, (o1, o2) -> o1.getValue().compareTo(o2.getValue()));
 
         final List<JsonObject> orderedJsonComponents = new ArrayList<>();
 
-        // Here I am copying the sorted list in HashMap
-        // using LinkedHashMap to preserve the insertion order
-        final HashMap sortedHashMap = new LinkedHashMap();
-        for (final Iterator it = list.iterator(); it.hasNext();) {
-            final Map.Entry entry = (Map.Entry) it.next();
-            sortedHashMap.put(entry.getKey(), entry.getValue());
 
-            orderedJsonComponents.add((JsonObject) entry.getKey());
+        for (final Map.Entry<JsonObject,Integer> mapEntry : list) {
+            orderedJsonComponents.add(mapEntry.getKey());
         }
 
         // Reverse the list such that the greatest depth is first in the list
         Collections.reverse(orderedJsonComponents);
 
+        // Add the components to the list
         orderedJsonComponents.forEach(jsonObject -> {
-            final String componentName = jsonObject.get("name").getAsString();
-            final Component newComponent = new Component(componentName);
-            newComponent.deserialize(jsonObject);
-            getProject().getComponents().add(newComponent);
-        });
 
+            // It is important that the components are added the list prior to deserialiation
+            final Component newComponent = new Component();
+            getProject().getComponents().add(newComponent);
+            newComponent.deserialize(jsonObject);
+        });
     }
 
     private void updateDepthMap(final JsonObject jsonObject, final int depth, final Map<String, JsonObject> nameToJson, final Map<JsonObject, Integer> jsonToDpeth) {
