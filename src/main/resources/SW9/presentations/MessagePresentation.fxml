@@ -11,5 +11,8 @@
     <Region minWidth="8"/>
 
     <Label styleClass="body1" fx:id="nearLabel"/>
+    <HBox fx:id="nearLabels">
+
+    </HBox>
 
 </fx:root>

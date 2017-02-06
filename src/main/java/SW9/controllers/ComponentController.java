@@ -4,6 +4,7 @@ import SW9.HUPPAAL;
 import SW9.abstractions.*;
 import SW9.backend.UPPAALDriver;
 import SW9.code_analysis.CodeAnalysis;
+import SW9.code_analysis.Nearable;
 import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
@@ -330,7 +331,16 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                     messages.remove(messageToRemove);
                     Platform.runLater(() -> CodeAnalysis.removeMessage(getComponent(), messageToRemove));
                 } else if (addedErrors < foundErrors) { // There are too few errors in the view
-                    final CodeAnalysis.Message identifierIsNotUnique = new CodeAnalysis.Message("Identifier '" + id + "' is multiply defined", CodeAnalysis.MessageType.ERROR);
+                    // Find all subcomponents with that name
+                    final List<Nearable> clashingSubcomponents = new ArrayList<>();
+
+                    getComponent().getSubComponents().forEach(subComponent -> {
+                        if (subComponent.getIdentifier().equals(id)) {
+                            clashingSubcomponents.add(subComponent);
+                        }
+                    });
+
+                    final CodeAnalysis.Message identifierIsNotUnique = new CodeAnalysis.Message("Identifier '" + id + "' is multiply defined", CodeAnalysis.MessageType.ERROR, clashingSubcomponents);
                     messages.add(identifierIsNotUnique);
                     Platform.runLater(() -> CodeAnalysis.addMessage(getComponent(), identifierIsNotUnique));
                 }

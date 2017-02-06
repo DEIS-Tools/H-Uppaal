@@ -15,9 +15,11 @@ public class Jork implements Serializable, Nearable {
     private static final String ID = "id";
     private static final String TYPE = "type";
     private static AtomicInteger idGenerator = new AtomicInteger();
+
     // Modeling properties
     private final StringProperty id = new SimpleStringProperty("");
     private final ObjectProperty<Type> type = new SimpleObjectProperty<>(Type.JOIN);
+
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
