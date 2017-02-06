@@ -93,6 +93,7 @@ public class MessageCollectionPresentation extends VBox {
         final Line line = (Line) lookup("#line");
 
         headline.setText(component.getName());
+        headline.textProperty().bind(component.nameProperty());
 
         final BiConsumer<Color, Color.Intensity> updateColor = (color, intensity) -> {
             indicator.setFill(color.getColor(component.getColorIntensity()));
