@@ -199,7 +199,12 @@ public class SubComponentController implements Initializable, SelectHelper.Color
                     getParentComponent().removeEdge(newEdge);
                 }, "Created edge starting from sub component " + getSubComponent().getIdentifier(), "add-circle");
             } else {
-                SelectHelper.select(this);
+                // If the sub component is pressed twice open its corresponding component in the canvas
+                if(event.getClickCount() > 1) {
+                    CanvasController.setActiveComponent(getSubComponent().getComponent());
+                } else {
+                    SelectHelper.select(this);
+                }
             }
         };
 
