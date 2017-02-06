@@ -179,7 +179,10 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
                 edge.getNails().forEach(nail -> {
                     minHeight.set(Math.max(minHeight.doubleValue(), nail.getRadius() + nail.getY()));
                 });
+            });
 
+            component.getJorks().forEach(jork-> {
+                minHeight.set(Math.max(minHeight.doubleValue(), jork.getY() + JorkPresentation.JORK_HEIGHT + JorkPresentation.JORK_Y_TRANSLATE));
             });
 
             return minHeight.get();
@@ -247,7 +250,10 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
                 edge.getNails().forEach(nail -> {
                     minWidth.set(Math.max(minWidth.doubleValue(), nail.getRadius() + nail.getX()));
                 });
+            });
 
+            component.getJorks().forEach(jork-> {
+                minWidth.set(Math.max(minWidth.doubleValue(), jork.getX() + JorkPresentation.JORK_WIDTH));
             });
 
             return minWidth.get();
