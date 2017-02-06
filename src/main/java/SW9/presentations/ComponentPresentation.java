@@ -172,7 +172,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             });
 
             component.getLocations().forEach(location -> {
-                minHeight.set(Math.max(minHeight.doubleValue(), location.getRadius() + location.getY() + GRID_SIZE));
+                minHeight.set(Math.max(minHeight.doubleValue(), location.getY() + GRID_SIZE * 2));
             });
 
             component.getEdges().forEach(edge -> {
@@ -243,7 +243,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             });
 
             component.getLocations().forEach(location -> {
-                minWidth.set(Math.max(minWidth.doubleValue(), location.getRadius() + location.getX() + GRID_SIZE));
+                minWidth.set(Math.max(minWidth.doubleValue(), location.getX() + GRID_SIZE * 2));
             });
 
             component.getEdges().forEach(edge -> {

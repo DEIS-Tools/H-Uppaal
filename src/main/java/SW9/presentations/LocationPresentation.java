@@ -47,6 +47,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private final Timeline hiddenAreaAnimationExited = new Timeline();
     private final Timeline scaleShakeIndicatorBackgroundAnimation = new Timeline();
     private final Timeline shakeContentAnimation = new Timeline();
+    private final Timeline quickShakeAnimation = new Timeline();
 
     private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
     private final DoubleProperty animation = new SimpleDoubleProperty(0);
@@ -93,6 +94,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             initializeHoverAnimationExited();
             initializeDeleteShakeAnimation();
             initializeShakeAnimation();
+            initializeQuickShake();
             initializeHiddenAreaCircle();
             initializeCircle();
 
@@ -560,6 +562,27 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             shakeContentAnimation.playFromStart();
             shakeContentAnimation.stop();
         }
+    }
+
+    private void initializeQuickShake() {
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+        final double translateX = getTranslateX();
+
+        final KeyValue kv1 = new KeyValue(this.translateXProperty(), translateX -5, interpolator);
+        final KeyValue kv2 = new KeyValue(this.translateXProperty(), translateX + 5, interpolator);
+        final KeyValue kv3 = new KeyValue(this.translateXProperty(), translateX, interpolator);
+        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), kv1);
+        final KeyFrame kf2 = new KeyFrame(Duration.millis(50), kv2);
+        final KeyFrame kf3 = new KeyFrame(Duration.millis(100), kv1);
+        final KeyFrame kf4 = new KeyFrame(Duration.millis(150), kv2);
+        final KeyFrame kf5 = new KeyFrame(Duration.millis(200), kv3);
+
+
+        quickShakeAnimation.getKeyFrames().addAll(kf1, kf2, kf3, kf4, kf5);
+    }
+
+    public void quickShake() {
+        quickShakeAnimation.play();
     }
 
     @Override

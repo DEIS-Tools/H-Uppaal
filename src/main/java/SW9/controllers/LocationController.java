@@ -350,18 +350,29 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
             }
         } else {
 
-            // Unbind presentation root x and y coordinates (bind the view properly to enable dragging)
-            root.layoutXProperty().unbind();
-            root.layoutYProperty().unbind();
+            // Allowed x and y coordinates
+            final double minX = GRID_SIZE * 2;
+            final double maxX = getComponent().getWidth() - GRID_SIZE * 2;
+            final double minY = ComponentPresentation.TOOL_BAR_HEIGHT + GRID_SIZE * 2;
+            final double maxY = getComponent().getHeight() - GRID_SIZE * 2;
 
-            // Bind the location to the presentation root x and y
-            getLocation().xProperty().bind(root.layoutXProperty());
-            getLocation().yProperty().bind(root.layoutYProperty());
+            if(root.getLayoutX() >= minX && root.getLayoutX() <= maxX && root.getLayoutY() >= minY && root.getLayoutY() <= maxY) {
+                // Unbind presentation root x and y coordinates (bind the view properly to enable dragging)
+                root.layoutXProperty().unbind();
+                root.layoutYProperty().unbind();
 
-            // Notify that the location was placed
-            ((LocationPresentation) root).setPlaced(true);
-            ComponentController.setPlacingLocation(null);
-            KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_LOCATION);
+                // Bind the location to the presentation root x and y
+                getLocation().xProperty().bind(root.layoutXProperty());
+                getLocation().yProperty().bind(root.layoutYProperty());
+
+                // Notify that the location was placed
+                ((LocationPresentation) root).setPlaced(true);
+                ComponentController.setPlacingLocation(null);
+                KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_LOCATION);
+            } else {
+                ((LocationPresentation) root).quickShake();
+            }
+
         }
     }
 
@@ -372,8 +383,8 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
             // Calculate the potential new x alongside min and max values
             final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
-            final double minX = LocationPresentation.RADIUS + GRID_SIZE;
-            final double maxX = getComponent().getWidth() - LocationPresentation.RADIUS - GRID_SIZE;
+            final double minX = GRID_SIZE * 2;
+            final double maxX = getComponent().getWidth() - GRID_SIZE * 2;
 
             // Drag according to min and max
             if (newX < minX) {
@@ -386,8 +397,8 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
             // Calculate the potential new y alongside min and max values
             final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
-            final double minY = LocationPresentation.RADIUS + ComponentPresentation.TOOL_BAR_HEIGHT + GRID_SIZE;
-            final double maxY = getComponent().getHeight() - LocationPresentation.RADIUS - GRID_SIZE;
+            final double minY = ComponentPresentation.TOOL_BAR_HEIGHT + GRID_SIZE * 2;
+            final double maxY = getComponent().getHeight() - GRID_SIZE * 2;
 
             // Drag according to min and max
             if (newY < minY) {
