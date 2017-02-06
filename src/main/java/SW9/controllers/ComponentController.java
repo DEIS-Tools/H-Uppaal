@@ -197,6 +197,9 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
         final Map<Location, CodeAnalysis.Message> messages = new HashMap<>();
 
         final Function<Location, Boolean> hasIncomingEdges = location -> {
+            if (!getComponent().getLocations().contains(location))
+                return true; // Do now show messages for locations not in the set of locations
+
             for (final Edge edge : getComponent().getEdges()) {
                 final Location targetLocation = edge.getTargetLocation();
                 if (targetLocation != null && targetLocation.equals(location)) return true;

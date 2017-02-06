@@ -163,9 +163,45 @@ public class HUPPAALController implements Initializable {
             componentMessageCollectionPresentationMapForErrors.put(component, messageCollectionPresentationErrors);
             errorsList.getChildren().add(messageCollectionPresentationErrors);
 
+            final Runnable addIfErrors = () -> {
+                if (CodeAnalysis.getErrors(component).size() == 0) {
+                    errorsList.getChildren().remove(messageCollectionPresentationErrors);
+                } else if (!errorsList.getChildren().contains(messageCollectionPresentationErrors)) {
+                    errorsList.getChildren().add(messageCollectionPresentationErrors);
+                }
+            };
+
+            addIfErrors.run();
+            CodeAnalysis.getErrors(component).addListener(new ListChangeListener<CodeAnalysis.Message>() {
+                @Override
+                public void onChanged(final Change<? extends CodeAnalysis.Message> c) {
+                    while (c.next()) {
+                        addIfErrors.run();
+                    }
+                }
+            });
+
             final MessageCollectionPresentation messageCollectionPresentationWarnings = new MessageCollectionPresentation(component, CodeAnalysis.getWarnings(component));
             componentMessageCollectionPresentationMapForWarnings.put(component, messageCollectionPresentationWarnings);
             warningsList.getChildren().add(messageCollectionPresentationWarnings);
+
+            final Runnable addIfWarnings = () -> {
+                if (CodeAnalysis.getWarnings(component).size() == 0) {
+                    warningsList.getChildren().remove(messageCollectionPresentationWarnings);
+                } else if (!warningsList.getChildren().contains(messageCollectionPresentationWarnings)) {
+                    warningsList.getChildren().add(messageCollectionPresentationWarnings);
+                }
+            };
+
+            addIfWarnings.run();
+            CodeAnalysis.getWarnings(component).addListener(new ListChangeListener<CodeAnalysis.Message>() {
+                @Override
+                public void onChanged(final Change<? extends CodeAnalysis.Message> c) {
+                    while (c.next()) {
+                        addIfWarnings.run();
+                    }
+                }
+            });
         };
 
         HUPPAAL.getProject().getComponents().forEach(addComponent);
