@@ -7,6 +7,7 @@ import SW9.abstractions.SubComponent;
 import SW9.code_analysis.CodeAnalysis;
 import SW9.code_analysis.Nearable;
 import SW9.presentations.CanvasPresentation;
+import SW9.presentations.ComponentPresentation;
 import SW9.presentations.LocationPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
