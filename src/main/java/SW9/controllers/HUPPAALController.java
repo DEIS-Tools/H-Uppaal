@@ -288,12 +288,6 @@ public class HUPPAALController implements Initializable {
 
         tabPane.getSelectionModel().clearSelection();
 
-        tabPane.setOnKeyPressed(event -> {
-            System.out.println(event);
-            tabPane.getScene().getWindow().fireEvent(event);
-            event.consume();
-        });
-
         tabPane.setTabMinHeight(35);
         tabPane.setTabMaxHeight(35);
     }
