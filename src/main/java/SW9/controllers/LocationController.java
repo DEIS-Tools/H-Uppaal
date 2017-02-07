@@ -398,7 +398,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
                 ComponentController.setPlacingLocation(null);
                 KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_LOCATION);
             } else {
-                ((LocationPresentation) root).quickShake();
+                ((LocationPresentation) root).shake();
             }
 
         }
