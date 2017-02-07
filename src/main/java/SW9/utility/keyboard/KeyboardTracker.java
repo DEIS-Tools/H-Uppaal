@@ -36,6 +36,14 @@ public class KeyboardTracker {
     public static final String COLOR_SELECTED = "COLOR_SELECTED";
     public static final String ABANDON_LOCATION = "ABANDON_LOCATION";
     public static final String ABANDON_EDGE = "ABANDON_EDGE";
+    public static final String NUDGE_UP = "NUDGE_UP";
+    public static final String NUDGE_DOWN = "NUDGE_DOWN";
+    public static final String NUDGE_LEFT = "NUDGE_LEFT";
+    public static final String NUDGE_RIGHT = "NUDGE_RIGHT";
+    public static final String NUDGE_W = "NUDGE_W";
+    public static final String NUDGE_A = "NUDGE_A";
+    public static final String NUDGE_S = "NUDGE_S";
+    public static final String NUDGE_D = "NUDGE_D";
 
     private static final Map<String, Keybind> keyMap = new HashMap<>();
     public static final EventHandler<KeyEvent> handleKeyPress = event -> {
