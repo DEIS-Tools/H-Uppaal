@@ -13,6 +13,8 @@ import SW9.utility.helpers.NailHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
+import SW9.utility.keyboard.NudgeDirection;
+import SW9.utility.keyboard.Nudgeable;
 import com.jfoenix.controls.JFXPopup;
 import javafx.beans.binding.When;
 import javafx.beans.property.*;
@@ -39,7 +41,7 @@ import java.util.function.Supplier;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
-public class LocationController implements Initializable, SelectHelper.ColorSelectable {
+public class LocationController implements Initializable, SelectHelper.ColorSelectable, Nudgeable {
 
     private static final Map<Location, Boolean> invalidNameError = new HashMap<>();
 
@@ -511,5 +513,11 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     @Override
     public void deselect() {
         ((SelectHelper.Selectable) root).deselect();
+    }
+
+    @Override
+    public void nudge(final NudgeDirection direction) {
+        root.layoutXProperty().set(root.getLayoutX() + direction.getXOffset());
+        root.layoutYProperty().set(root.getLayoutY() + direction.getYOffset());
     }
 }

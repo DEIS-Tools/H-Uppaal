@@ -22,7 +22,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import jiconfont.icons.GoogleMaterialDesignIcons;
 import jiconfont.javafx.IconFontFX;
-import on.J;
 
 import java.io.File;
 import java.io.IOException;
@@ -121,7 +120,7 @@ public class HUPPAAL extends Application {
         stage.show();
 
         // Register a key-bind for showing debug-information
-        KeyboardTracker.registerKeybind("DEBUG", new Keybind(new KeyCodeCombination(KeyCode.D), () -> {
+        KeyboardTracker.registerKeybind("DEBUG", new Keybind(new KeyCodeCombination(KeyCode.F12), () -> {
             // Toggle the debug mode for the debug class (will update misc. debug variables which presentations bind to)
             Debug.debugModeEnabled.set(!Debug.debugModeEnabled.get());
 

@@ -10,6 +10,8 @@ import SW9.utility.colors.EnabledColor;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
+import SW9.utility.keyboard.NudgeDirection;
+import SW9.utility.keyboard.Nudgeable;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXTabPane;
@@ -19,6 +21,7 @@ import javafx.animation.Transition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -111,6 +114,32 @@ public class HUPPAALController implements Initializable {
         KeyboardTracker.registerKeybind("DIALOG", new Keybind(new KeyCodeCombination(KeyCode.I), () -> {
             System.out.println(CodeAnalysis.getErrors(CanvasController.getActiveComponent()));
         }));
+
+        // Keybind for nudging the selected elements
+        KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_UP, new Keybind(new KeyCodeCombination(KeyCode.UP), (event) -> {
+            event.consume();
+            nudgeSelected(NudgeDirection.UP);
+        }));
+
+        KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_DOWN, new Keybind(new KeyCodeCombination(KeyCode.DOWN), (event) -> {
+            event.consume();
+            nudgeSelected(NudgeDirection.DOWN);
+        }));
+
+        KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_LEFT, new Keybind(new KeyCodeCombination(KeyCode.LEFT), (event) -> {
+            event.consume();
+            nudgeSelected(NudgeDirection.LEFT);
+        }));
+
+        KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_RIGHT, new Keybind(new KeyCodeCombination(KeyCode.RIGHT), (event) -> {
+            event.consume();
+            nudgeSelected(NudgeDirection.RIGHT);
+        }));
+
+        KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_W, new Keybind(new KeyCodeCombination(KeyCode.W), () -> nudgeSelected(NudgeDirection.UP)));
+        KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_A, new Keybind(new KeyCodeCombination(KeyCode.A), () -> nudgeSelected(NudgeDirection.LEFT)));
+        KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_S, new Keybind(new KeyCodeCombination(KeyCode.S), () -> nudgeSelected(NudgeDirection.DOWN)));
+        KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_D, new Keybind(new KeyCodeCombination(KeyCode.D), () -> nudgeSelected(NudgeDirection.RIGHT)));
 
         // Keybind for deleting the selected elements
         KeyboardTracker.registerKeybind(KeyboardTracker.DELETE_SELECTED, new Keybind(new KeyCodeCombination(KeyCode.DELETE), this::deleteSelectedClicked));
@@ -315,6 +344,26 @@ public class HUPPAALController implements Initializable {
                 e -> System.out.println("ERROR"),
                 mainComponent
         );
+    }
+
+    private void nudgeSelected(final NudgeDirection direction) {
+        final ObservableList<SelectHelper.ColorSelectable> selectedElements = SelectHelper.getSelectedElements();
+
+        UndoRedoStack.push(() -> { // Perform
+                    selectedElements.forEach(selectable -> {
+                        if (selectable instanceof Nudgeable) {
+                            ((Nudgeable) selectable).nudge(direction);
+                        }
+                    });
+                }, () -> { // Undo
+                    selectedElements.forEach(selectable -> {
+                        if (selectable instanceof Nudgeable) {
+                            ((Nudgeable) selectable).nudge(direction.reverse());
+                        }
+                    });
+                },
+                "Nudge " + selectedElements + " in direction: " + direction,
+                "open-with");
     }
 
     @FXML
