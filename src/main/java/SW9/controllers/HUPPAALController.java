@@ -18,16 +18,14 @@ import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextField;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
+import javafx.beans.binding.When;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tab;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -90,21 +88,13 @@ public class HUPPAALController implements Initializable {
     public Tab backendErrorsTab;
     public ScrollPane backendErrorsScrollPane;
     public VBox backendErrorsList;
+    public MenuItem menuBarViewFilePanel;
+    public MenuItem menuBarViewQueryPanel;
     private double tabPanePreviousY = 0;
     private boolean shouldISkipOpeningTheMessagesContainer = true;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-
-        // Keybind for toggling the query pane
-        KeyboardTracker.registerKeybind(KeyboardTracker.TOGGLE_QUERY_PANE, new Keybind(new KeyCodeCombination(KeyCode.Q), () -> {
-            ((HUPPAALPresentation) root).toggleQueryPane();
-        }));
-
-        // Keybind for toggling the file pane
-        KeyboardTracker.registerKeybind(KeyboardTracker.TOGGLE_FILE_PANE, new Keybind(new KeyCodeCombination(KeyCode.F), () -> {
-            ((HUPPAALPresentation) root).toggleFilePane();
-        }));
 
         dialog.setDialogContainer(dialogContainer);
         dialogContainer.opacityProperty().bind(dialog.getChildren().get(0).scaleXProperty());
@@ -181,6 +171,24 @@ public class HUPPAALController implements Initializable {
 
         initializeTabPane();
         initializeMessages();
+
+        initializeMenuBar();
+    }
+
+    private void initializeMenuBar() {
+        menuBarViewFilePanel.getGraphic().setOpacity(1);
+        menuBarViewFilePanel.setAccelerator(new KeyCodeCombination(KeyCode.F));
+        menuBarViewFilePanel.setOnAction(event -> {
+            final BooleanProperty isOpen = HUPPAAL.toggleFilePane();
+            menuBarViewFilePanel.getGraphic().opacityProperty().bind(new When(isOpen).then(1).otherwise(0));
+        });
+
+        menuBarViewQueryPanel.getGraphic().setOpacity(0);
+        menuBarViewQueryPanel.setAccelerator(new KeyCodeCombination(KeyCode.Q));
+        menuBarViewQueryPanel.setOnAction(event -> {
+            final BooleanProperty isOpen = HUPPAAL.toggleQueryPane();
+            menuBarViewQueryPanel.getGraphic().opacityProperty().bind(new When(isOpen).then(1).otherwise(0));
+        });
     }
 
     private void initializeMessages() {
