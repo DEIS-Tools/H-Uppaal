@@ -76,6 +76,7 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
             mouseXDiff.set(event.getX());
             mouseYDiff.set(event.getY());
 
+            event.consume();
             if (event.isShortcutDown()) {
                 SelectHelper.addToSelection(this);
             } else {
