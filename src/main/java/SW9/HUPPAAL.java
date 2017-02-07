@@ -12,6 +12,7 @@ import com.google.common.io.Files;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -31,6 +32,7 @@ import java.util.*;
 public class HUPPAAL extends Application {
 
     private static Project project;
+    private static HUPPAALPresentation presentation;
     private Stage debugStage;
 
     public static void main(final String[] args) {
@@ -39,6 +41,14 @@ public class HUPPAAL extends Application {
 
     public static Project getProject() {
         return project;
+    }
+
+    public static BooleanProperty toggleFilePane() {
+        return presentation.toggleFilePane();
+    }
+
+    public static BooleanProperty toggleQueryPane() {
+        return presentation.toggleQueryPane();
     }
 
     @Override
@@ -59,6 +69,7 @@ public class HUPPAAL extends Application {
 
         // Make the view used for the application
         final HUPPAALPresentation huppaal = new HUPPAALPresentation();
+        presentation = huppaal;
 
         // Make the scene that we will use, and set its size to 80% of the primary screen
         final Screen screen = Screen.getPrimary();

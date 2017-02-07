@@ -513,7 +513,7 @@ public class HUPPAALPresentation extends StackPane {
                 ));
     }
 
-    public void toggleQueryPane() {
+    public BooleanProperty toggleQueryPane() {
         if (queryPaneOpen.get()) {
             openQueryPaneAnimation.play();
         } else {
@@ -522,9 +522,11 @@ public class HUPPAALPresentation extends StackPane {
 
         // Toggle the open state
         queryPaneOpen.set(queryPaneOpen.not().get());
+
+        return queryPaneOpen;
     }
 
-    public void toggleFilePane() {
+    public BooleanProperty toggleFilePane() {
         if (filePaneOpen.get()) {
             openFilePaneAnimation.play();
         } else {
@@ -533,5 +535,7 @@ public class HUPPAALPresentation extends StackPane {
 
         // Toggle the open state
         filePaneOpen.set(filePaneOpen.not().get());
+
+        return filePaneOpen;
     }
 }
