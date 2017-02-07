@@ -363,7 +363,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
                 if (event.getButton().equals(MouseButton.SECONDARY)) {
                     initializeDropDownMenu();
-                    dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 50, 50);
+                    dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 20, 20);
                     return;
                 }
 
