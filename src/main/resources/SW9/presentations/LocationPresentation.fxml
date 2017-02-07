@@ -28,10 +28,7 @@
 
     <Group fx:id="scaleContent"
            onMouseEntered="#mouseEntered"
-           onMouseExited="#mouseExited"
-           onMousePressed="#mousePressed"
-           onMouseReleased="#mouseReleased"
-           onMouseDragged="#mouseDragged">
+           onMouseExited="#mouseExited">
 
         <!-- Circular locationAware -->
         <Circle fx:id="circle" strokeType="INSIDE" opacity="0"/>
