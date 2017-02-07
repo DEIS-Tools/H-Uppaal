@@ -17,7 +17,6 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
@@ -346,7 +345,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
 
         // Center the text vertically and aff a left padding of CORNER_SIZE
         controller.name.setPadding(new Insets(2, 0, 0, CORNER_SIZE));
-        controller.name.setOnKeyPressed(CanvasController.getEnterKeyHandler());
+        controller.name.setOnKeyPressed(CanvasController.getLeaveTextAreaKeyHandler());
     }
 
     private void initializeInitialLocation() {

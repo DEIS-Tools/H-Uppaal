@@ -1,6 +1,7 @@
 package SW9.presentations;
 
 import SW9.abstractions.Component;
+import SW9.controllers.CanvasController;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.LocationAware;
@@ -203,11 +204,7 @@ public class TagPresentation extends StackPane {
         });
 
         // When enter or escape is pressed release focus
-        textField.setOnKeyPressed((keyEvent) -> {
-            if (keyEvent.getCode().equals(KeyCode.ENTER) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-                getScene().getFocusOwner().getParent().requestFocus();
-            }
-        });
+        textField.setOnKeyPressed(CanvasController.getLeaveTextAreaKeyHandler());
     }
 
     public void bindToColor(final ObjectProperty<Color> color, final ObjectProperty<Color.Intensity> intensity) {

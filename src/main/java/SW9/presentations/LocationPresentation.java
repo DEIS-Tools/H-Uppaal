@@ -222,8 +222,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             BindingHelper.bind(controller.invariantTagLine, controller.invariantTag);
         };
 
-        controller.nameTag.setOnKeyPressed(CanvasController.getEnterKeyHandler());
-        controller.invariantTag.setOnKeyPressed(CanvasController.getEnterKeyHandler());
+        controller.nameTag.setOnKeyPressed(CanvasController.getLeaveTextAreaKeyHandler());
+        controller.invariantTag.setOnKeyPressed(CanvasController.getLeaveTextAreaKeyHandler());
 
         // Update the tags when the loc updates
         controller.locationProperty().addListener(observable -> updateTags.accept(loc));
