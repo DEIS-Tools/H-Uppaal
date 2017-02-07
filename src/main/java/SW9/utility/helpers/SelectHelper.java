@@ -11,11 +11,11 @@ public class SelectHelper {
     public static final Color.Intensity SELECT_COLOR_INTENSITY_NORMAL = Color.Intensity.I700;
     public static final Color.Intensity SELECT_COLOR_INTENSITY_BORDER = Color.Intensity.I900;
 
-    private static final ObservableList<ColorSelectable> selectedElements = FXCollections.observableArrayList();
+    private static final ObservableList<ItemSelectable> selectedElements = FXCollections.observableArrayList();
 
     public static ObservableList<Nearable> elementsToBeSelected = FXCollections.observableArrayList();
 
-    public static void select(final ColorSelectable selectable) {
+    public static void select(final ItemSelectable selectable) {
         // Check if the element is already selected
         if (selectedElements.contains(selectable)) return;
 
@@ -25,7 +25,7 @@ public class SelectHelper {
         addToSelection(selectable);
     }
 
-    public static void addToSelection(final ColorSelectable selectable) {
+    public static void addToSelection(final ItemSelectable selectable) {
         // Check if the element is already selected
         if (selectedElements.contains(selectable)) return;
 
@@ -37,7 +37,7 @@ public class SelectHelper {
         elementsToBeSelected.add(nearable);
     }
 
-    public static void deselect(final ColorSelectable selectable) {
+    public static void deselect(final ItemSelectable selectable) {
         selectable.deselect();
 
         // deselect the element
@@ -52,7 +52,7 @@ public class SelectHelper {
         }
     }
 
-    public static ObservableList<ColorSelectable> getSelectedElements() {
+    public static ObservableList<ItemSelectable> getSelectedElements() {
         return selectedElements;
     }
 
@@ -74,12 +74,14 @@ public class SelectHelper {
         void deselect();
     }
 
-    public interface ColorSelectable extends Selectable, LocationAware {
+    public interface ItemSelectable extends Selectable, LocationAware {
         void color(Color color, Color.Intensity intensity);
 
         Color getColor();
 
         Color.Intensity getColorIntensity();
+
+        ItemDragHelper.DragBounds getDragBounds();
     }
 
 }

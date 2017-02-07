@@ -5,14 +5,12 @@ import SW9.controllers.ComponentController;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.ComponentPresentation;
 import SW9.utility.UndoRedoStack;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +32,36 @@ public class ItemDragHelper {
             this.maxX = maxX;
             this.minY = minY;
             this.maxY = maxY;
+        }
+
+        public DragBounds(final List<DragBounds> dragBoundses) {
+             minX = new SimpleDoubleProperty(Double.MIN_VALUE);
+             maxX = new SimpleDoubleProperty(Double.MAX_VALUE);
+             minY = new SimpleDoubleProperty(Double.MIN_VALUE);
+             maxY = new SimpleDoubleProperty(Double.MAX_VALUE);
+
+            for (final DragBounds dragBounds : dragBoundses) {
+                if (dragBounds.minX.get() > minX.get()) {
+                    minX = dragBounds.minX;
+                }
+
+                if (dragBounds.maxX.get() < maxX.get()) {
+                    maxX = dragBounds.maxX;
+                }
+
+                if (dragBounds.minY.get() > minY.get()) {
+                    minY = dragBounds.minY;
+                }
+
+                if (dragBounds.maxY.get() < maxY.get()) {
+                    maxY = dragBounds.maxY;
+                }
+            }
+
+        }
+
+        public static DragBounds generateLooseDragBounds() {
+            return new ItemDragHelper.DragBounds(new SimpleDoubleProperty(Double.MIN_VALUE), new SimpleDoubleProperty(Double.MAX_VALUE),new SimpleDoubleProperty(Double.MIN_VALUE), new SimpleDoubleProperty(Double.MAX_VALUE));
         }
 
         public double trimX(final ObservableDoubleValue x) {
@@ -64,7 +92,7 @@ public class ItemDragHelper {
 
     }
 
-    public static class DragStatus {
+    private static class DragStatus {
         final double previousX;
         final double previousY;
         final double offsetX;
@@ -80,40 +108,42 @@ public class ItemDragHelper {
         }
     }
 
-    public static void makeDraggablePisseLigeGlad(final Node mouseSubject,
-                                                  final DragBounds dragBounds) {
+    public static void makeDraggablePisseLigeGlad(final Node mouseSubject) {
 
-        final List<SelectHelper.ColorSelectable> selectedElements =  SelectHelper.getSelectedElements();
-        final Map<SelectHelper.ColorSelectable, DragStatus> dragStatusMap = new HashMap<>();
+        final SimpleObjectProperty<List<SelectHelper.ItemSelectable>> selectedElements = new SimpleObjectProperty<>(SelectHelper.getSelectedElements());
+        final Map<SelectHelper.ItemSelectable, DragStatus> dragStatusMap = new HashMap<>();
 
-        final DoubleProperty xDiff = new SimpleDoubleProperty();
-        final DoubleProperty yDiff = new SimpleDoubleProperty();
-
+        final DragBounds[] dragBounds = {null};
 
         mouseSubject.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            selectedElements.set(SelectHelper.getSelectedElements());
 
-            xDiff.set(event.getX());
-            yDiff.set(event.getY());
+            final List<DragBounds> selectElementsBounds = new ArrayList<>();
 
-            selectedElements.forEach(colorSelectable -> {
+            selectedElements.get().forEach(colorSelectable -> {
 
-                final double previousX = colorSelectable.getX();
-                final double previousY = colorSelectable.getY();
+                final double previousX = colorSelectable.xProperty().doubleValue();
+                final double previousY = colorSelectable.yProperty().doubleValue();
                 final double offsetX = previousX - CanvasPresentation.mouseTracker.getGridX() - CanvasController.getActiveComponent().getX();
                 final double offsetY = previousY - CanvasPresentation.mouseTracker.getGridY() - CanvasController.getActiveComponent().getY();
 
                 dragStatusMap.put(colorSelectable, new DragStatus(previousX, previousY, offsetX, offsetY));
+                selectElementsBounds.add(colorSelectable.getDragBounds());
             });
+
+            dragBounds[0] = new DragBounds(selectElementsBounds);
         });
 
         mouseSubject.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
 
+            if(dragBounds[0] == null) return;
+
             final double newX = CanvasPresentation.mouseTracker.getGridX() - CanvasController.getActiveComponent().getX();
             final double newY = CanvasPresentation.mouseTracker.getGridY() - CanvasController.getActiveComponent().getY();
 
-            selectedElements.forEach(colorSelectable -> {
-                final double unRoundedX = dragBounds.trimX(newX + dragStatusMap.get(colorSelectable).offsetX);
-                final double unRoundedY = dragBounds.trimY(newY + dragStatusMap.get(colorSelectable).offsetY);
+            selectedElements.get().forEach(colorSelectable -> {
+                final double unRoundedX = dragBounds[0].trimX(newX + dragStatusMap.get(colorSelectable).offsetX);
+                final double unRoundedY = dragBounds[0].trimY(newY + dragStatusMap.get(colorSelectable).offsetY);
                 double finalNewX = unRoundedX - unRoundedX % GRID_SIZE;
                 double finalNewY = unRoundedY - unRoundedY % GRID_SIZE;
                 if(colorSelectable instanceof ComponentController) {
@@ -128,9 +158,9 @@ public class ItemDragHelper {
         });
 
         mouseSubject.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
-            selectedElements.forEach(colorSelectable -> {
-                final double currentX = colorSelectable.getX();
-                final double currentY = colorSelectable.getY();
+            selectedElements.get().forEach(colorSelectable -> {
+                final double currentX = colorSelectable.xProperty().doubleValue();
+                final double currentY = colorSelectable.yProperty().doubleValue();
                 final double storePreviousX = dragStatusMap.get(colorSelectable).previousX;
                 final double storePreviousY = dragStatusMap.get(colorSelectable).previousY;
 

@@ -14,6 +14,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
@@ -23,10 +24,8 @@ import javafx.scene.shape.Line;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
-public class NailController implements Initializable, SelectHelper.ColorSelectable {
+public class NailController implements Initializable, SelectHelper.ItemSelectable {
 
     public static boolean nailBeingDragged = false;
 
@@ -63,67 +62,24 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
         dragCircle.opacityProperty().bind(Debug.draggableAreaOpacity);
         dragCircle.setFill(Debug.draggableAreaColor.getColor(Debug.draggableAreaColorIntensity));
 
-        makeDraggable();
+        initializeMouseControls();
     }
 
-    private void makeDraggable() {
+    private void initializeMouseControls() {
 
-        final DoubleProperty mouseXDiff = new SimpleDoubleProperty(0);
-        final DoubleProperty mouseYDiff = new SimpleDoubleProperty(0);
-
-        final Consumer<MouseEvent> mousePressedOnNail = (event) -> {
-            mouseXDiff.set(event.getX());
-            mouseYDiff.set(event.getY());
-
+        root.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             event.consume();
             if (event.isShortcutDown()) {
                 SelectHelper.addToSelection(this);
             } else {
                 SelectHelper.select(this);
             }
-        };
+        });
 
-        final Supplier<Double> supplyX = () -> {
-            // Calculate the potential new x alongside min and max values
-            final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
-            final double minX = mouseXDiff.get() + CanvasPresentation.GRID_SIZE;
-            final double maxX = getComponent().getWidth() + mouseXDiff.get() - CanvasPresentation.GRID_SIZE;
+        root.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> nailBeingDragged = true);
+        root.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> nailBeingDragged = false);
 
-            // Drag according to min and max
-            if (newX < minX) {
-                return minX;
-            } else if (newX > maxX) {
-                return maxX;
-            } else {
-                return newX;
-            }
-        };
-
-        final Supplier<Double> supplyY = () -> {
-            // Calculate the potential new y alongside min and max values
-            final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
-            final double minY = mouseYDiff.get() + ComponentPresentation.TOOL_BAR_HEIGHT + CanvasPresentation.GRID_SIZE;
-            final double maxY = getComponent().getHeight() + mouseYDiff.get() - CanvasPresentation.GRID_SIZE;
-
-            // Drag according to min and max
-            if (newY < minY) {
-                return minY;
-            } else if (newY > maxY) {
-                return maxY;
-            } else {
-                return newY;
-            }
-        };
-
-        ItemDragHelper.makeDraggable(
-                root,
-                root,
-                supplyX,
-                supplyY,
-                mousePressedOnNail,
-                () -> nailBeingDragged = true,
-                () -> nailBeingDragged =false
-        );
+        ItemDragHelper.makeDraggablePisseLigeGlad(root);
     }
 
     public Nail getNail() {
@@ -175,6 +131,16 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
     @Override
     public Color.Intensity getColorIntensity() {
         return getComponent().getColorIntensity();
+    }
+
+    @Override
+    public ItemDragHelper.DragBounds getDragBounds() {
+        final ObservableDoubleValue minX = new SimpleDoubleProperty(CanvasPresentation.GRID_SIZE);
+        final ObservableDoubleValue maxX = getComponent().widthProperty().subtract(CanvasPresentation.GRID_SIZE);
+        final ObservableDoubleValue minY = new SimpleDoubleProperty(ComponentPresentation.TOOL_BAR_HEIGHT + CanvasPresentation.GRID_SIZE);
+        final ObservableDoubleValue maxY = getComponent().heightProperty().subtract(CanvasPresentation.GRID_SIZE);
+
+        return new ItemDragHelper.DragBounds(minX, maxX, minY, maxY);
     }
 
     @Override

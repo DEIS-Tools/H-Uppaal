@@ -12,6 +12,7 @@ import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.Circular;
+import SW9.utility.helpers.ItemDragHelper;
 import SW9.utility.helpers.SelectHelper;
 import com.jfoenix.controls.JFXPopup;
 import javafx.animation.KeyFrame;
@@ -41,7 +42,7 @@ import java.util.function.Consumer;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
-public class EdgeController implements Initializable, SelectHelper.ColorSelectable {
+public class EdgeController implements Initializable, SelectHelper.ItemSelectable {
     private static final Map<Edge, Boolean> initializedEdgeFromTargetError = new HashMap<>();
     private static final Map<Edge, Boolean> initializedEdgeToInitialError = new HashMap<>();
     private static final Map<Edge, Boolean> initializedEdgeToForkError = new HashMap<>();
@@ -683,6 +684,11 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
     @Override
     public Color.Intensity getColorIntensity() {
         return getEdge().getColorIntensity();
+    }
+
+    @Override
+    public ItemDragHelper.DragBounds getDragBounds() {
+        return ItemDragHelper.DragBounds.generateLooseDragBounds();
     }
 
     @Override

@@ -136,7 +136,7 @@ public class HUPPAALController implements Initializable {
         // Keybinds for coloring the selected elements
         EnabledColor.enabledColors.forEach(enabledColor -> {
             KeyboardTracker.registerKeybind(KeyboardTracker.COLOR_SELECTED + "_" + enabledColor.keyCode.getName(), new Keybind(new KeyCodeCombination(enabledColor.keyCode), () -> {
-                final List<Pair<SelectHelper.ColorSelectable, EnabledColor>> previousColor = new ArrayList<>();
+                final List<Pair<SelectHelper.ItemSelectable, EnabledColor>> previousColor = new ArrayList<>();
 
                 SelectHelper.getSelectedElements().forEach(selectable -> {
                     previousColor.add(new Pair<>(selectable, new EnabledColor(selectable.getColor(), selectable.getColorIntensity())));
@@ -354,7 +354,7 @@ public class HUPPAALController implements Initializable {
     }
 
     private void nudgeSelected(final NudgeDirection direction) {
-        final List<SelectHelper.ColorSelectable> selectedElements = SelectHelper.getSelectedElements();
+        final List<SelectHelper.ItemSelectable> selectedElements = SelectHelper.getSelectedElements();
 
         final List<Nudgeable> nudgedElements = new ArrayList<>();
 

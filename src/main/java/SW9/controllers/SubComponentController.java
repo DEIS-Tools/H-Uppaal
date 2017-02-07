@@ -24,6 +24,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -44,7 +45,7 @@ import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class SubComponentController implements Initializable, SelectHelper.ColorSelectable {
+public class SubComponentController implements Initializable, SelectHelper.ItemSelectable {
 
     private static final Map<SubComponent, Boolean> initializedInconsistentEdgeError = new HashMap<>();
 
@@ -225,15 +226,7 @@ public class SubComponentController implements Initializable, SelectHelper.Color
 
     private void makeDraggable() {
 
-        final DoubleProperty mouseXDiff = new SimpleDoubleProperty(0);
-        final DoubleProperty mouseYDiff = new SimpleDoubleProperty(0);
-
-        final Consumer<MouseEvent> startEdgeFromSubComponent = (event) -> {
-
-            // Store where in the subcomponent the mouse is dragging
-            mouseXDiff.set(event.getX());
-            mouseYDiff.set(event.getY());
-
+        root.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             event.consume();
 
             final Edge unfinishedEdge = getParentComponent().getUnfinishedEdge();
@@ -270,49 +263,9 @@ public class SubComponentController implements Initializable, SelectHelper.Color
                     }
                 }
             }
-        };
+        });
 
-        final Supplier<Double> supplyX = () -> {
-            // Calculate the potential new x alongside min and max values
-            final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getParentComponent().xProperty()).get();
-            final double minX = mouseXDiff.get() + CanvasPresentation.GRID_SIZE;
-            final double maxX = getParentComponent().getWidth() - getSubComponent().getWidth() - CanvasPresentation.GRID_SIZE + mouseXDiff.get();
-
-            // Drag according to min and max
-            if (newX < minX) {
-                return minX;
-            } else if (newX > maxX) {
-                return maxX;
-            } else {
-                return newX;
-            }
-        };
-
-        final Supplier<Double> supplyY = () -> {
-            // Calculate the potential new y alongside min and max values
-            final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getParentComponent().yProperty()).doubleValue();
-            final double minY = mouseYDiff.get() + ComponentPresentation.TOOL_BAR_HEIGHT + CanvasPresentation.GRID_SIZE;
-            final double maxY = getParentComponent().getHeight() - getSubComponent().getHeight() - CanvasPresentation.GRID_SIZE + mouseYDiff.get();
-
-            // Drag according to min and max
-            if (newY < minY) {
-                return minY;
-            } else if (newY > maxY) {
-                return maxY;
-            } else {
-                return newY;
-            }
-        };
-
-        ItemDragHelper.makeDraggable(
-                root,
-                root,
-                supplyX,
-                supplyY,
-                startEdgeFromSubComponent,
-                () -> {},
-                () -> {}
-        );
+        ItemDragHelper.makeDraggablePisseLigeGlad(root);
     }
 
     public SubComponent getSubComponent() {
@@ -352,6 +305,15 @@ public class SubComponentController implements Initializable, SelectHelper.Color
     @Override
     public Color.Intensity getColorIntensity() {
         return null;
+    }
+
+    @Override
+    public ItemDragHelper.DragBounds getDragBounds() {
+        final ObservableDoubleValue minX = new SimpleDoubleProperty(CanvasPresentation.GRID_SIZE);
+        final ObservableDoubleValue maxX = getParentComponent().widthProperty().subtract(getSubComponent().widthProperty().subtract(CanvasPresentation.GRID_SIZE));
+        final ObservableDoubleValue minY = new SimpleDoubleProperty(ComponentPresentation.TOOL_BAR_HEIGHT + CanvasPresentation.GRID_SIZE);
+        final ObservableDoubleValue maxY = getParentComponent().heightProperty().subtract(getSubComponent().heightProperty().subtract(CanvasPresentation.GRID_SIZE));
+        return new ItemDragHelper.DragBounds(minX, maxX, minY, maxY);
     }
 
     @Override

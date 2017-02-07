@@ -24,6 +24,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -40,6 +41,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import on.D;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.StyleClassedTextArea;
 
@@ -50,7 +52,7 @@ import java.util.function.Function;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
-public class ComponentController implements Initializable, SelectHelper.ColorSelectable {
+public class ComponentController implements Initializable, SelectHelper.ItemSelectable {
 
     private static final Map<Component, Timer> COMPONENT_SUBCOMPONENT_NAME_CHECK_TIMER_MAP = new HashMap<>();
     private static final Map<Component, ListChangeListener<Location>> locationListChangeListenerMap = new HashMap<>();
@@ -758,6 +760,11 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
     }
 
     @Override
+    public ItemDragHelper.DragBounds getDragBounds() {
+        return ItemDragHelper.DragBounds.generateLooseDragBounds();
+    }
+
+    @Override
     public void select() {
         ((SelectHelper.Selectable) root).select();
 
@@ -778,23 +785,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
 
     private void makeDraggable() {
 
-        ItemDragHelper.makeDraggable(
-                root,
-                toolbar,
-                () -> CanvasPresentation.mouseTracker.getGridX(),
-                () -> CanvasPresentation.mouseTracker.getGridY(),
-                (event) -> {
-                    event.consume();
-
-                    if (event.isShortcutDown()) {
-                        SelectHelper.addToSelection(this);
-                    } else {
-                        SelectHelper.select(this);
-                    }
-                },
-                () -> {},
-                () -> {}
-        );
+        ItemDragHelper.makeDraggablePisseLigeGlad(root);
     }
 
     @Override

@@ -246,7 +246,7 @@ public class HUPPAALPresentation extends StackPane {
             });
 
             child.setOnMouseClicked(event -> {
-                final List<Pair<SelectHelper.ColorSelectable, EnabledColor>> previousColor = new ArrayList<>();
+                final List<Pair<SelectHelper.ItemSelectable, EnabledColor>> previousColor = new ArrayList<>();
 
                 SelectHelper.getSelectedElements().forEach(selectable -> {
                     previousColor.add(new Pair<>(selectable, new EnabledColor(selectable.getColor(), selectable.getColorIntensity())));
@@ -307,9 +307,9 @@ public class HUPPAALPresentation extends StackPane {
         initializeToolbarButton(button);
 
         // The color button should only be enabled when an element is selected
-        SelectHelper.getSelectedElements().addListener(new ListChangeListener<SelectHelper.ColorSelectable>() {
+        SelectHelper.getSelectedElements().addListener(new ListChangeListener<SelectHelper.ItemSelectable>() {
             @Override
-            public void onChanged(final Change<? extends SelectHelper.ColorSelectable> c) {
+            public void onChanged(final Change<? extends SelectHelper.ItemSelectable> c) {
                 if (SelectHelper.getSelectedElements().size() > 0) {
                     button.setEnabled(true);
 

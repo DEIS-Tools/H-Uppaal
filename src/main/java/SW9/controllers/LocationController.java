@@ -40,7 +40,7 @@ import java.util.function.Consumer;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
-public class LocationController implements Initializable, SelectHelper.ColorSelectable, Nudgeable {
+public class LocationController implements Initializable, SelectHelper.ItemSelectable, Nudgeable {
 
     private static final Map<Location, Boolean> invalidNameError = new HashMap<>();
 
@@ -62,7 +62,6 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     private TimerTask reachabilityCheckTask;
     private DropDownMenu dropDownMenu;
     private boolean dropDownMenuInitialized = false;
-    private ItemDragHelper.DragBounds bounds;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -441,16 +440,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
             root.addEventHandler(MouseEvent.MOUSE_PRESSED, mousePressed::accept);
 
             if(newLocation.getType() == Location.Type.NORMAL) {
-                final ObservableDoubleValue newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty());
-                final ObservableDoubleValue newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty());
-
-                final ObservableDoubleValue minX = new SimpleDoubleProperty(GRID_SIZE * 2);
-                final ObservableDoubleValue maxX = getComponent().widthProperty().subtract(GRID_SIZE * 2);
-                final ObservableDoubleValue minY = new SimpleDoubleProperty(ComponentPresentation.TOOL_BAR_HEIGHT + GRID_SIZE * 2);
-                final ObservableDoubleValue maxY = getComponent().heightProperty().subtract(GRID_SIZE * 2);
-                bounds = new ItemDragHelper.DragBounds(minX, maxX, minY, maxY);
-
-                ItemDragHelper.makeDraggablePisseLigeGlad(root, bounds);
+                ItemDragHelper.makeDraggablePisseLigeGlad(root);
             }
         });
 
@@ -478,6 +468,15 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     }
 
     @Override
+    public ItemDragHelper.DragBounds getDragBounds() {
+        final ObservableDoubleValue minX = new SimpleDoubleProperty(GRID_SIZE * 2);
+        final ObservableDoubleValue maxX = getComponent().widthProperty().subtract(GRID_SIZE * 2);
+        final ObservableDoubleValue minY = new SimpleDoubleProperty(ComponentPresentation.TOOL_BAR_HEIGHT + GRID_SIZE * 2);
+        final ObservableDoubleValue maxY = getComponent().heightProperty().subtract(GRID_SIZE * 2);
+        return new ItemDragHelper.DragBounds(minX, maxX, minY, maxY);
+    }
+
+    @Override
     public void select() {
         ((SelectHelper.Selectable) root).select();
     }
@@ -491,11 +490,11 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public boolean nudge(final NudgeDirection direction) {
 
         final double oldX = root.getLayoutX();
-        final double newX = bounds.trimX(root.getLayoutX() + direction.getXOffset());
+        final double newX = getDragBounds().trimX(root.getLayoutX() + direction.getXOffset());
         root.layoutXProperty().set(newX);
 
         final double oldY = root.getLayoutY();
-        final double newY = bounds.trimY(root.getLayoutY() + direction.getYOffset());
+        final double newY = getDragBounds().trimY(root.getLayoutY() + direction.getYOffset());
         root.layoutYProperty().set(newY);
 
         return oldX != newX || oldY != newY;
@@ -520,4 +519,5 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public double getY() {
         return yProperty().get();
     }
+
 }
