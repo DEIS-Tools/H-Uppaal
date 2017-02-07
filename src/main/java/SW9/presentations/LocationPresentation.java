@@ -47,7 +47,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private final Timeline hiddenAreaAnimationExited = new Timeline();
     private final Timeline scaleShakeIndicatorBackgroundAnimation = new Timeline();
     private final Timeline shakeContentAnimation = new Timeline();
-    private final Timeline quickShakeAnimation = new Timeline();
 
     private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
     private final DoubleProperty animation = new SimpleDoubleProperty(0);
@@ -93,7 +92,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             initializeHoverAnimationExited();
             initializeDeleteShakeAnimation();
             initializeShakeAnimation();
-            initializeHiddenAreaCircle();
             initializeCircle();
 
         } catch (final IOException ioe) {
@@ -101,15 +99,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         }
     }
 
-    private void initializeHiddenAreaCircle() {
-        controller.hiddenAreaCircle.opacityProperty().bind(Debug.hoverableAreaOpacity);
-        controller.hiddenAreaCircle.setFill(Debug.hoverableAreaColor.getColor(Debug.hoverableAreaColorIntensity));
-
-        initializeDebugCircleAnimationEntered();
-        initializeDebugCircleAnimationExited();
-
-        hiddenAreaAnimationExited.play();
-    }
 
     private void initializeIdLabel() {
         final Location location = controller.getLocation();
@@ -147,18 +136,18 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
     private void initializeTags() {
         if(!interactable) {
-            controller.nameTag.setVisible(false);
+            controller.nicknameTag.setVisible(false);
             controller.invariantTag.setVisible(false);
             return;
         }
 
-        controller.nameTag.replaceSpace();
+        controller.nicknameTag.replaceSpace();
 
         // Set the layout from the model (if they are not both 0)
         final Location loc = controller.getLocation();
         if((loc.getNicknameX() != 0) && (loc.getNicknameY() != 0)) {
-            controller.nameTag.setTranslateX(loc.getNicknameX());
-            controller.nameTag.setTranslateY(loc.getNicknameY());
+            controller.nicknameTag.setTranslateX(loc.getNicknameX());
+            controller.nicknameTag.setTranslateY(loc.getNicknameY());
         }
 
         if((loc.getInvariantX() != 0) && (loc.getInvariantY() != 0)) {
@@ -167,35 +156,38 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         }
 
         // Bind the model to the layout
-        loc.nicknameXProperty().bind(controller.nameTag.translateXProperty());
-        loc.nicknameYProperty().bind(controller.nameTag.translateYProperty());
+        loc.nicknameXProperty().bind(controller.nicknameTag.translateXProperty());
+        loc.nicknameYProperty().bind(controller.nicknameTag.translateYProperty());
         loc.invariantXProperty().bind(controller.invariantTag.translateXProperty());
         loc.invariantYProperty().bind(controller.invariantTag.translateYProperty());
 
         final Consumer<Location> updateTags = location -> {
             // Update the color
-            controller.nameTag.bindToColor(location.colorProperty(), location.colorIntensityProperty(), true);
+            controller.nicknameTag.bindToColor(location.colorProperty(), location.colorIntensityProperty(), true);
             controller.invariantTag.bindToColor(location.colorProperty(), location.colorIntensityProperty(), false);
 
             // Update the invariant
-            controller.nameTag.setAndBindString(location.nicknameProperty());
+            controller.nicknameTag.setAndBindString(location.nicknameProperty());
             controller.invariantTag.setAndBindString(location.invariantProperty());
 
             // Update the placeholder
-            controller.nameTag.setPlaceholder("No name");
+            controller.nicknameTag.setPlaceholder("No name");
             controller.invariantTag.setPlaceholder("No invariant");
 
             // Set the visibility of the name tag depending on the nickname
             final Consumer<String> updateVisibilityFromNickName = (nickname) -> {
-                if (nickname.equals("")) {
-                    controller.nameTag.setOpacity(0);
-                } else {
-                    controller.nameTag.setOpacity(1);
+                if (nickname.equals("") && !controller.nicknameTag.textFieldFocusProperty().get()) {
+                    controller.nicknameTag.setOpacity(0);
+                } else {controller.nicknameTag.setOpacity(1);
                 }
             };
 
+            controller.nicknameTag.textFieldFocusProperty().addListener((obs, oldFocus, newFocus) -> {
+                updateVisibilityFromNickName.accept(controller.getLocation().getNickname());
+            });
+
             // Update the visibility according to if the location have been placed
-            controller.nameTag.visibleProperty().bind(isPlaced);
+            controller.nicknameTag.visibleProperty().bind(isPlaced);
             controller.invariantTag.visibleProperty().bind(isPlaced);
 
             location.nicknameProperty().addListener((obs, oldNickname, newNickname) -> updateVisibilityFromNickName.accept(newNickname));
@@ -203,26 +195,30 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
             // Set the visibility of the invariant tag depending on the invariant
             final Consumer<String> updateVisibilityFromInvariant = (invariant) -> {
-                if (invariant.equals("")) {
+                if (invariant.equals("") && !controller.invariantTag.textFieldFocusProperty().get()) {
                     controller.invariantTag.setOpacity(0);
                 } else {
                     controller.invariantTag.setOpacity(1);
                 }
             };
 
+            controller.invariantTag.textFieldFocusProperty().addListener((obs, oldFocus, newFocus) -> {
+                updateVisibilityFromInvariant.accept(controller.getLocation().getInvariant());
+            });
+
             location.invariantProperty().addListener((obs, oldInvariant, newInvariant) -> updateVisibilityFromInvariant.accept(newInvariant));
             updateVisibilityFromInvariant.accept(location.getInvariant());
 
-            controller.nameTag.setComponent(controller.getComponent());
-            controller.nameTag.setLocationAware(location);
-            BindingHelper.bind(controller.nameTagLine, controller.nameTag);
+            controller.nicknameTag.setComponent(controller.getComponent());
+            controller.nicknameTag.setLocationAware(location);
+            BindingHelper.bind(controller.nameTagLine, controller.nicknameTag);
 
             controller.invariantTag.setComponent(controller.getComponent());
             controller.invariantTag.setLocationAware(location);
             BindingHelper.bind(controller.invariantTagLine, controller.invariantTag);
         };
 
-        controller.nameTag.setOnKeyPressed(CanvasController.getLeaveTextAreaKeyHandler());
+        controller.nicknameTag.setOnKeyPressed(CanvasController.getLeaveTextAreaKeyHandler());
         controller.invariantTag.setOnKeyPressed(CanvasController.getLeaveTextAreaKeyHandler());
 
         // Update the tags when the loc updates
@@ -232,6 +228,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         updateTags.accept(loc);
 
     }
+
+
 
     private void initializeHoverAnimationEntered() {
         final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
@@ -255,34 +253,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         final KeyFrame kf2 = new KeyFrame(Duration.millis(100), scale1x);
 
         hoverAnimationExited.getKeyFrames().addAll(kf1, kf2);
-    }
-
-    private void initializeDebugCircleAnimationEntered() {
-        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
-
-        final Supplier<Double> getCurrentRadius = () -> getController().hiddenAreaCircle.getRadius();
-
-        final KeyValue scale1x = new KeyValue(controller.hiddenAreaCircle.radiusProperty(), getCurrentRadius.get(), interpolator);
-        final KeyValue scale2x = new KeyValue(controller.hiddenAreaCircle.radiusProperty(), 50, interpolator);
-
-        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale1x);
-        final KeyFrame kf2 = new KeyFrame(Duration.millis(50), scale2x);
-
-        hiddenAreaAnimationEntered.getKeyFrames().addAll(kf1, kf2);
-    }
-
-    private void initializeDebugCircleAnimationExited() {
-        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
-
-        final Supplier<Double> getCurrentRadius = () -> getController().hiddenAreaCircle.getRadius();
-
-        final KeyValue scale2x = new KeyValue(controller.hiddenAreaCircle.radiusProperty(), getCurrentRadius.get(), interpolator);
-        final KeyValue scale1x = new KeyValue(controller.hiddenAreaCircle.radiusProperty(), 0, interpolator);
-
-        final KeyFrame kf1 = new KeyFrame(Duration.millis(0), scale2x);
-        final KeyFrame kf2 = new KeyFrame(Duration.millis(2000), scale1x);
-
-        hiddenAreaAnimationExited.getKeyFrames().addAll(kf1, kf2);
     }
 
     private void initializeInitialAnimation() {

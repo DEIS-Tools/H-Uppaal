@@ -51,9 +51,8 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public Circle circle;
     public Circle circleShakeIndicator;
     public Group scaleContent;
-    public TagPresentation nameTag;
+    public TagPresentation nicknameTag;
     public TagPresentation invariantTag;
-    public Circle hiddenAreaCircle;
     public Path locationShape;
     public Label idLabel;
     public Line nameTagLine;
@@ -106,6 +105,22 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
         dropDownMenuInitialized = true;
 
         dropDownMenu = new DropDownMenu(((Pane) root.getParent().getParent().getParent()), root, 230, true);
+
+        dropDownMenu.addClickableListElement("Add Invariant", event -> {
+            invariantTag.setOpacity(1);
+            invariantTag.requestTextFieldFocus();
+            dropDownMenu.close();
+        });
+
+        dropDownMenu.addSpacerElement();
+
+        dropDownMenu.addClickableListElement("Add Nickname", event -> {
+            nicknameTag.setOpacity(1);
+            nicknameTag.requestTextFieldFocus();
+            dropDownMenu.close();
+        });
+
+        dropDownMenu.addSpacerElement();
 
         dropDownMenu.addListElement("Set Urgency");
 
@@ -310,8 +325,6 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
             }
 
         }));
-
-        hiddenAreaEntered();
     }
 
     @FXML
@@ -325,8 +338,6 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
         KeyboardTracker.unregisterKeybind(KeyboardTracker.MAKE_LOCATION_URGENT);
         KeyboardTracker.unregisterKeybind(KeyboardTracker.MAKE_LOCATION_COMMITTED);
-
-        hiddenAreaExited();
     }
 
     private void initializeMouseControls() {
@@ -467,27 +478,6 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
     }
 
-
-    @FXML
-    private void hiddenAreaEntered() {
-        invariantTag.setOpacity(1);
-        nameTag.setOpacity(1);
-    }
-
-    @FXML
-    private void hiddenAreaExited() {
-        if (getLocation().getInvariant().equals("")) {
-            invariantTag.setOpacity(0);
-        } else {
-            invariantTag.setOpacity(1);
-        }
-
-        if(getLocation().getNickname().equals("")) {
-            nameTag.setOpacity(0);
-        } else {
-            nameTag.setOpacity(1);
-        }
-    }
 
     @Override
     public void color(final Color color, final Color.Intensity intensity) {

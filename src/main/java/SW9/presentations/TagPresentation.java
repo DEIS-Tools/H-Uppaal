@@ -9,9 +9,11 @@ import com.jfoenix.controls.JFXTextField;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.When;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
@@ -157,6 +159,8 @@ public class TagPresentation extends StackPane {
         });
 
         shape.setOnMouseDragged(event -> {
+            event.consume();
+
             final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).subtract(getLocationAware().xProperty()).doubleValue() - getMinWidth() / 2;
             setTranslateX(newX);
 
@@ -257,6 +261,11 @@ public class TagPresentation extends StackPane {
     public void requestTextFieldFocus() {
         final JFXTextField textField = (JFXTextField) lookup("#textField");
         Platform.runLater(textField::requestFocus);
+    }
+
+    public ObservableBooleanValue textFieldFocusProperty() {
+        final JFXTextField textField = (JFXTextField) lookup("#textField");
+        return textField.focusedProperty();
     }
 
     public Component getComponent() {
