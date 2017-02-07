@@ -8,6 +8,7 @@ import SW9.code_analysis.CodeAnalysis;
 import SW9.code_analysis.Nearable;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.ComponentPresentation;
+import SW9.presentations.DropDownMenu;
 import SW9.presentations.LocationPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
@@ -16,6 +17,7 @@ import SW9.utility.helpers.NailHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
+import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXTextField;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.DoubleProperty;
@@ -59,12 +61,44 @@ public class SubComponentController implements Initializable, SelectHelper.Color
     public Line line2;
     public Pane defaultLocationsContainer;
     public Label description;
+    private DropDownMenu dropDownMenu;
+    private boolean dropDownMenuInitialized = false;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         makeDraggable();
 
         initializeSelectListener();
+    }
+
+    private void initializeDropDownMenu() {
+        if (dropDownMenuInitialized) return;
+        dropDownMenuInitialized = true;
+
+        dropDownMenu = new DropDownMenu(((Pane) root.getParent().getParent().getParent()), root, 230, true);
+
+        dropDownMenu.addClickableListElement("Open", event -> {
+            CanvasController.setActiveComponent(getSubComponent().getComponent());
+        });
+
+        dropDownMenu.addSpacerElement();
+
+        dropDownMenu.addClickableListElement("Delete", mouseEvent -> {
+            dropDownMenu.close();
+
+            final SubComponent subcomponent = getSubComponent();
+            final Component parentComponent = getParentComponent();
+
+            final List<Edge> relatedEdges = parentComponent.getRelatedEdges(subcomponent);
+
+            UndoRedoStack.push(() -> { // Perform
+                parentComponent.removeSubComponent(subcomponent);
+                relatedEdges.forEach(parentComponent::removeEdge);
+            }, () -> { // Undo
+                parentComponent.addSubComponent(subcomponent);
+                relatedEdges.forEach(parentComponent::addEdge);
+            }, "Deleted subcomponent " + subcomponent, "delete");
+        });
     }
 
     private void initializeSelectListener() {
@@ -221,6 +255,9 @@ public class SubComponentController implements Initializable, SelectHelper.Color
                 }, () -> { // Undo
                     getParentComponent().removeEdge(newEdge);
                 }, "Created edge starting from subcomponent " + getSubComponent().getIdentifier(), "add-circle");
+            } else if (event.isSecondaryButtonDown()) {
+                initializeDropDownMenu();
+                dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, event.getX() - 5, event.getY() - 5);
             } else {
                 // If the sub component is pressed twice open its corresponding component in the canvas
                 if(event.getClickCount() > 1) {
