@@ -14,6 +14,7 @@ import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXPopup;
+import javafx.beans.binding.When;
 import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -106,19 +107,23 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
         dropDownMenu = new DropDownMenu(((Pane) root.getParent().getParent().getParent()), root, 230, true);
 
-        dropDownMenu.addClickableListElement("Add Invariant", event -> {
-            invariantTag.setOpacity(1);
-            invariantTag.requestTextFieldFocus();
-            dropDownMenu.close();
-        });
+        dropDownMenu.addClickableAndDisableableListElement("Add Nickname",
+                getLocation().nicknameProperty().isNotEmpty().or(nicknameTag.textFieldFocusProperty()),
+                event -> {
+                nicknameTag.setOpacity(1);
+                nicknameTag.requestTextFieldFocus();
+                dropDownMenu.close();
+                }
+        );
 
-        dropDownMenu.addSpacerElement();
-
-        dropDownMenu.addClickableListElement("Add Nickname", event -> {
-            nicknameTag.setOpacity(1);
-            nicknameTag.requestTextFieldFocus();
-            dropDownMenu.close();
-        });
+        dropDownMenu.addClickableAndDisableableListElement("Add Invariant",
+                getLocation().invariantProperty().isNotEmpty().or(invariantTag.textFieldFocusProperty()),
+                event -> {
+                    invariantTag.setOpacity(1);
+                    invariantTag.requestTextFieldFocus();
+                    dropDownMenu.close();
+                }
+        );
 
         dropDownMenu.addSpacerElement();
 
