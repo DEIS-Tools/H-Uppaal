@@ -3,6 +3,6 @@ package SW9.utility.keyboard;
 
 public interface Nudgeable {
 
-    void nudge(NudgeDirection direction);
+    boolean nudge(NudgeDirection direction);
 
 }

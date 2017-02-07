@@ -21,7 +21,6 @@ import javafx.animation.Transition;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -347,20 +346,32 @@ public class HUPPAALController implements Initializable {
     }
 
     private void nudgeSelected(final NudgeDirection direction) {
-        final ObservableList<SelectHelper.ColorSelectable> selectedElements = SelectHelper.getSelectedElements();
+        final List<SelectHelper.ColorSelectable> selectedElements = SelectHelper.getSelectedElements();
+
+        final List<Nudgeable> nudgedElements = new ArrayList<>();
 
         UndoRedoStack.push(() -> { // Perform
+
+                    final boolean[] foundUnNudgableElement = {false};
                     selectedElements.forEach(selectable -> {
                         if (selectable instanceof Nudgeable) {
-                            ((Nudgeable) selectable).nudge(direction);
+                            final Nudgeable nudgeable = (Nudgeable) selectable;
+                            if (nudgeable.nudge(direction)) {
+                                nudgedElements.add(nudgeable);
+                            } else {
+                                foundUnNudgableElement[0] = true;
+                            }
                         }
                     });
+
+                    // If some one was not able to nudge disallow the current nudge and remove from the undo stack
+                    if(foundUnNudgableElement[0]){
+                        nudgedElements.forEach(nudgedElement -> nudgedElement.nudge(direction.reverse()));
+                        UndoRedoStack.forgetLast();
+                    }
+
                 }, () -> { // Undo
-                    selectedElements.forEach(selectable -> {
-                        if (selectable instanceof Nudgeable) {
-                            ((Nudgeable) selectable).nudge(direction.reverse());
-                        }
-                    });
+                    nudgedElements.forEach(nudgedElement -> nudgedElement.nudge(direction.reverse()));
                 },
                 "Nudge " + selectedElements + " in direction: " + direction,
                 "open-with");

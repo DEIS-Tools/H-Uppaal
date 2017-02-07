@@ -14,7 +14,6 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
@@ -188,4 +187,23 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
         ((SelectHelper.Selectable) root).deselect();
     }
 
+    @Override
+    public DoubleProperty xProperty() {
+        return root.layoutXProperty();
+    }
+
+    @Override
+    public DoubleProperty yProperty() {
+        return root.layoutYProperty();
+    }
+
+    @Override
+    public double getX() {
+        return xProperty().get();
+    }
+
+    @Override
+    public double getY() {
+        return yProperty().get();
+    }
 }

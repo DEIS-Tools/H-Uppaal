@@ -19,10 +19,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -704,5 +701,25 @@ public class EdgeController implements Initializable, SelectHelper.ColorSelectab
                 ((SelectHelper.Selectable) node).deselect();
             }
         });
+    }
+
+    @Override
+    public DoubleProperty xProperty() {
+        return edgeRoot.layoutXProperty();
+    }
+
+    @Override
+    public DoubleProperty yProperty() {
+        return edgeRoot.layoutYProperty();
+    }
+
+    @Override
+    public double getX() {
+        return xProperty().get();
+    }
+
+    @Override
+    public double getY() {
+        return yProperty().get();
     }
 }

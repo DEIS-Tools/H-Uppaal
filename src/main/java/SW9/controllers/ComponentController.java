@@ -22,6 +22,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
@@ -113,7 +114,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                     if (isPlacingLocation()) {
                         component.get().removeLocation(placingLocation);
                         ComponentController.setPlacingLocation(null);
-                        UndoRedoStack.forget();
+                        UndoRedoStack.forgetLast();
                     }
                 }
             });
@@ -125,7 +126,7 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 if (isPlacingLocation()) {
                     component.get().removeLocation(placingLocation);
                     ComponentController.setPlacingLocation(null);
-                    UndoRedoStack.forget();
+                    UndoRedoStack.forgetLast();
                 }
 
             }));
@@ -794,5 +795,25 @@ public class ComponentController implements Initializable, SelectHelper.ColorSel
                 () -> {},
                 () -> {}
         );
+    }
+
+    @Override
+    public DoubleProperty xProperty() {
+        return root.layoutXProperty();
+    }
+
+    @Override
+    public DoubleProperty yProperty() {
+        return root.layoutYProperty();
+    }
+
+    @Override
+    public double getX() {
+        return xProperty().get();
+    }
+
+    @Override
+    public double getY() {
+        return yProperty().get();
     }
 }

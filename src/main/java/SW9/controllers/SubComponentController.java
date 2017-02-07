@@ -247,7 +247,7 @@ public class SubComponentController implements Initializable, SelectHelper.Color
 
                 KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
                     getParentComponent().removeEdge(newEdge);
-                    UndoRedoStack.forget();
+                    UndoRedoStack.forgetLast();
                 }));
 
                 UndoRedoStack.push(() -> { // Perform
@@ -366,5 +366,25 @@ public class SubComponentController implements Initializable, SelectHelper.Color
         ((SelectHelper.Selectable) root).deselect();
 
         defaultLocationsContainer.getChildren().forEach(node -> ((LocationPresentation) node).deselect());
+    }
+
+    @Override
+    public DoubleProperty xProperty() {
+        return root.layoutXProperty();
+    }
+
+    @Override
+    public DoubleProperty yProperty() {
+        return root.layoutYProperty();
+    }
+
+    @Override
+    public double getX() {
+        return xProperty().get();
+    }
+
+    @Override
+    public double getY() {
+        return yProperty().get();
     }
 }

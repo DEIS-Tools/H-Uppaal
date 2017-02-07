@@ -74,7 +74,7 @@ public class SelectHelper {
         void deselect();
     }
 
-    public interface ColorSelectable extends Selectable {
+    public interface ColorSelectable extends Selectable, LocationAware {
         void color(Color color, Color.Intensity intensity);
 
         Color getColor();

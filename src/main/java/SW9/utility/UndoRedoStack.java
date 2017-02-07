@@ -63,7 +63,7 @@ public class UndoRedoStack {
         updateState();
     }
 
-    public static void forget() {
+    public static void forgetLast() {
         try {
             undoStack.pop();
         } catch (EmptyStackException e) {

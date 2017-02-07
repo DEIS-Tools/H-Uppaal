@@ -95,7 +95,7 @@ public class JorkController implements Initializable, SelectHelper.ColorSelectab
 
                 KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
                     component.removeEdge(newEdge);
-                    UndoRedoStack.forget();
+                    UndoRedoStack.forgetLast();
                 }));
 
                 UndoRedoStack.push(() -> { // Perform
@@ -179,5 +179,25 @@ public class JorkController implements Initializable, SelectHelper.ColorSelectab
         LOCATION,
         SUB_COMPONENT,
         UNKNOWN
+    }
+
+    @Override
+    public DoubleProperty xProperty() {
+        return root.layoutXProperty();
+    }
+
+    @Override
+    public DoubleProperty yProperty() {
+        return root.layoutYProperty();
+    }
+
+    @Override
+    public double getX() {
+        return xProperty().get();
+    }
+
+    @Override
+    public double getY() {
+        return yProperty().get();
     }
 }
