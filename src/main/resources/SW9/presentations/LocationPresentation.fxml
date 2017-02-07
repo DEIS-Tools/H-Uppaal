@@ -16,7 +16,7 @@
     <Group>
 
     <!-- This circle makes the dropdown menu crisp -->
-    <Circle radius="50" mouseTransparent="true" opacity="0"/>
+    <Circle radius="20" mouseTransparent="true" opacity="0"/>
 
         <Line fx:id="nameTagLine" strokeDashOffset="2" strokeDashArray="3,3" stroke="#666" mouseTransparent="true"/>
         <TagPresentation fx:id="nicknameTag" translateX="30" translateY="-10"/>

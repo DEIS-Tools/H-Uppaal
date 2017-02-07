@@ -159,8 +159,8 @@ public class SubComponentPresentation extends StackPane implements SelectHelper.
 
     private void initializeInitialLocation() {
         initialLocationPresentation.setLocation(controller.getSubComponent().getComponent().getInitialLocation());
-        initialLocationPresentation.setTranslateX(CORNER_SIZE / 2 + 1 - initialLocationPresentation.getLayoutX());
-        initialLocationPresentation.setTranslateY(CORNER_SIZE / 2 + 1 - initialLocationPresentation.getLayoutY());
+        initialLocationPresentation.setTranslateX(CORNER_SIZE / 2 - initialLocationPresentation.getLayoutX());
+        initialLocationPresentation.setTranslateY(CORNER_SIZE / 2 - initialLocationPresentation.getLayoutY());
 
         StackPane.setAlignment(initialLocationPresentation, Pos.TOP_LEFT);
     }
@@ -169,8 +169,8 @@ public class SubComponentPresentation extends StackPane implements SelectHelper.
         final Component component = controller.getSubComponent().getComponent();
 
         finalLocationPresentation.setLocation(component.getFinalLocation());
-        finalLocationPresentation.setTranslateX(getMinWidth() - CORNER_SIZE / 2 - 1 - finalLocationPresentation.getLayoutX());
-        finalLocationPresentation.setTranslateY(getMinHeight() - CORNER_SIZE / 2 - 1 - finalLocationPresentation.getLayoutY());
+        finalLocationPresentation.setTranslateX(getMinWidth() - CORNER_SIZE / 2 - finalLocationPresentation.getLayoutX());
+        finalLocationPresentation.setTranslateY(getMinHeight() - CORNER_SIZE / 2 - finalLocationPresentation.getLayoutY());
 
         StackPane.setAlignment(finalLocationPresentation, Pos.BOTTOM_RIGHT);
     }

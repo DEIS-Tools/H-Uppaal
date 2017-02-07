@@ -118,7 +118,7 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
 
         ItemDragHelper.makeDraggable(
                 root,
-                dragGroup,
+                root,
                 supplyX,
                 supplyY,
                 mousePressedOnNail,
