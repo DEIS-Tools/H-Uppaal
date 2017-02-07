@@ -137,6 +137,8 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
                     propertyLabel.setTranslateY(-7);
                     propertyTag.setAndBindString(controller.getEdge().updateProperty());
                 }
+
+                propertyTag.requestTextFieldFocus();
             }
         };
 

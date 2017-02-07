@@ -6,6 +6,7 @@ import SW9.utility.colors.Color;
 import SW9.utility.helpers.LocationAware;
 import com.jfoenix.controls.JFXTextField;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.beans.binding.When;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -15,6 +16,8 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -124,20 +127,6 @@ public class TagPresentation extends StackPane {
 
         label.textProperty().bind(new When(textField.textProperty().isNotEmpty()).then(textField.textProperty()).otherwise(textField.promptTextProperty()));
 
-        textField.focusedProperty().addListener((obs, oldFocused, newFocused) -> {
-            if (!newFocused && textField.getText().isEmpty()) {
-                setOpacity(0);
-            }
-        });
-
-        // Show and hide the tag according to focus of the text field
-        opacityProperty().addListener((obs, oldOpacity, newOpacity) -> {
-            if (newOpacity.doubleValue() < 1) {
-                if (textFieldIsFocused()) {
-                    setOpacity(1);
-                }
-            }
-        });
     }
 
     private void initializeShape() {
@@ -212,6 +201,13 @@ public class TagPresentation extends StackPane {
             }
 
         });
+
+        // When enter or escape is pressed release focus
+        textField.setOnKeyPressed((keyEvent) -> {
+            if (keyEvent.getCode().equals(KeyCode.ENTER) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+                getScene().getFocusOwner().getParent().requestFocus();
+            }
+        });
     }
 
     public void bindToColor(final ObjectProperty<Color> color, final ObjectProperty<Color.Intensity> intensity) {
@@ -247,13 +243,6 @@ public class TagPresentation extends StackPane {
     public void setAndBindString(final StringProperty string) {
         final JFXTextField textField = (JFXTextField) lookup("#textField");
 
-        // If the content of the tag is going to be empty, start out by hiding it
-        if(string.get().equals("")) {
-            setOpacity(0);
-        } else {
-            setOpacity(1);
-        }
-
         textField.textProperty().unbind();
         textField.setText(string.get());
         string.bind(textField.textProperty());
@@ -268,10 +257,9 @@ public class TagPresentation extends StackPane {
         initializeTextAid();
     }
 
-    public boolean textFieldIsFocused() {
+    public void requestTextFieldFocus() {
         final JFXTextField textField = (JFXTextField) lookup("#textField");
-
-        return textField.isFocused();
+        Platform.runLater(textField::requestFocus);
     }
 
     public Component getComponent() {
