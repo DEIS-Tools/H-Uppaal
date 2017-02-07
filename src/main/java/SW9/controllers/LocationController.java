@@ -64,6 +64,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     private double previousY;
     private boolean wasDragged = false;
     private DropDownMenu dropDownMenu;
+    private boolean dropDownMenuInitialized = false;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -104,7 +105,10 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     }
 
     public void initializeDropDownMenu() {
-        dropDownMenu = new DropDownMenu(((Pane) root.getParent()), root, 230, true);
+        if (dropDownMenuInitialized) return;
+        dropDownMenuInitialized = true;
+
+        dropDownMenu = new DropDownMenu(((Pane) root.getParent().getParent().getParent()), root, 230, true);
 
         dropDownMenu.addListElement("Set Urgency");
 
@@ -333,7 +337,8 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
         final Component component = getComponent();
 
         if (event.getButton().equals(MouseButton.SECONDARY)) {
-            dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 380, 160);
+            initializeDropDownMenu();
+            dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 50, 50);
             return;
         }
 
