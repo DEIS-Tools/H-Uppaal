@@ -188,18 +188,4 @@ public class NailController implements Initializable, SelectHelper.ColorSelectab
         ((SelectHelper.Selectable) root).deselect();
     }
 
-    @FXML
-    private void mouseEntered() {
-        propertyTag.setOpacity(1);
-    }
-
-    @FXML
-    private void mouseExited() {
-        if (getEdge().getProperty(getNail().getPropertyType()).equals("")) {
-            propertyTag.setOpacity(0);
-        } else {
-            propertyTag.setOpacity(1);
-        }
-
-    }
 }

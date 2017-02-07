@@ -40,11 +40,11 @@ public class CanvasController implements Initializable {
         return activeComponent;
     }
 
-    public static EventHandler<KeyEvent> getEnterKeyHandler() {
-        return getEnterKeyHandler(keyEvent -> {});
+    public static EventHandler<KeyEvent> getLeaveTextAreaKeyHandler() {
+        return getLeaveTextAreaKeyHandler(keyEvent -> {});
     }
 
-    public static EventHandler<KeyEvent> getEnterKeyHandler(final Consumer<KeyEvent> afterEnter) {
+    public static EventHandler<KeyEvent> getLeaveTextAreaKeyHandler(final Consumer<KeyEvent> afterEnter) {
         return (keyEvent) -> {
             leaveOnEnterPressed.accept(keyEvent);
             afterEnter.accept(keyEvent);
@@ -84,7 +84,7 @@ public class CanvasController implements Initializable {
         });
 
         leaveOnEnterPressed = (keyEvent) -> {
-            if (keyEvent.getCode().equals(KeyCode.ENTER)) {
+            if (keyEvent.getCode().equals(KeyCode.ENTER) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
                 root.requestFocus();
             }
         };

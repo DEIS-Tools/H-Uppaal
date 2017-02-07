@@ -65,12 +65,12 @@ public class QueryPresentation extends AnchorPane {
         query.commentProperty().bind(commentTextField.textProperty());
 
 
-        queryTextField.setOnKeyPressed(CanvasController.getEnterKeyHandler(keyEvent -> {
+        queryTextField.setOnKeyPressed(CanvasController.getLeaveTextAreaKeyHandler(keyEvent -> {
             if (keyEvent.getCode().equals(KeyCode.ENTER)) {
                 query.run();
             }
         }));
-        commentTextField.setOnKeyPressed(CanvasController.getEnterKeyHandler());
+        commentTextField.setOnKeyPressed(CanvasController.getLeaveTextAreaKeyHandler());
     }
 
     private void initializeDetailsButton() {

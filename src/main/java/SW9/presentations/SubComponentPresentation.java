@@ -151,7 +151,7 @@ public class SubComponentPresentation extends StackPane implements SelectHelper.
 
         // Center the text vertically and aff a left padding of CORNER_SIZE
         controller.identifier.setPadding(new Insets(2, 0, 0, CORNER_SIZE));
-        controller.identifier.setOnKeyPressed(CanvasController.getEnterKeyHandler());
+        controller.identifier.setOnKeyPressed(CanvasController.getLeaveTextAreaKeyHandler());
 
         controller.originalComponent.setPadding(new Insets(2, 5, 0, 0));
         controller.originalComponent.textProperty().bind(subComponent.getComponent().nameProperty());

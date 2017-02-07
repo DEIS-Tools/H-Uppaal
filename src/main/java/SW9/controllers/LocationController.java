@@ -8,6 +8,7 @@ import SW9.code_analysis.Nearable;
 import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
+import SW9.utility.helpers.ItemDragHelper;
 import SW9.utility.helpers.NailHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
@@ -15,10 +16,8 @@ import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.keyboard.NudgeDirection;
 import SW9.utility.keyboard.Nudgeable;
 import com.jfoenix.controls.JFXPopup;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.binding.When;
+import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -38,6 +37,7 @@ import javafx.scene.shape.Path;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
@@ -54,17 +54,13 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
     public Circle circle;
     public Circle circleShakeIndicator;
     public Group scaleContent;
-    public TagPresentation nameTag;
+    public TagPresentation nicknameTag;
     public TagPresentation invariantTag;
-    public Circle hiddenAreaCircle;
     public Path locationShape;
     public Label idLabel;
     public Line nameTagLine;
     public Line invariantTagLine;
     private TimerTask reachabilityCheckTask;
-    private double previousX;
-    private double previousY;
-    private boolean wasDragged = false;
     private DropDownMenu dropDownMenu;
     private boolean dropDownMenuInitialized = false;
 
@@ -84,6 +80,7 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
         //initializeReachabilityCheck();
 
         initializeSelectListener();
+        initializeMouseControls();
     }
 
     private void initializeSelectListener() {
@@ -111,6 +108,26 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
         dropDownMenuInitialized = true;
 
         dropDownMenu = new DropDownMenu(((Pane) root.getParent().getParent().getParent()), root, 230, true);
+
+        dropDownMenu.addClickableAndDisableableListElement("Add Nickname",
+                getLocation().nicknameProperty().isNotEmpty().or(nicknameTag.textFieldFocusProperty()),
+                event -> {
+                nicknameTag.setOpacity(1);
+                nicknameTag.requestTextFieldFocus();
+                dropDownMenu.close();
+                }
+        );
+
+        dropDownMenu.addClickableAndDisableableListElement("Add Invariant",
+                getLocation().invariantProperty().isNotEmpty().or(invariantTag.textFieldFocusProperty()),
+                event -> {
+                    invariantTag.setOpacity(1);
+                    invariantTag.requestTextFieldFocus();
+                    dropDownMenu.close();
+                }
+        );
+
+        dropDownMenu.addSpacerElement();
 
         dropDownMenu.addListElement("Set Urgency");
 
@@ -315,8 +332,6 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
             }
 
         }));
-
-        hiddenAreaEntered();
     }
 
     @FXML
@@ -330,92 +345,93 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
         KeyboardTracker.unregisterKeybind(KeyboardTracker.MAKE_LOCATION_URGENT);
         KeyboardTracker.unregisterKeybind(KeyboardTracker.MAKE_LOCATION_COMMITTED);
-
-        hiddenAreaExited();
     }
 
-    @FXML
-    private void mousePressed(final MouseEvent event) {
-        final Component component = getComponent();
+    private void initializeMouseControls() {
 
-        if (event.getButton().equals(MouseButton.SECONDARY)) {
-            initializeDropDownMenu();
-            dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 50, 50);
-            return;
-        }
+        final DoubleProperty mouseXDiff = new SimpleDoubleProperty(0);
+        final DoubleProperty mouseYDiff = new SimpleDoubleProperty(0);
 
-        event.consume();
-        if (((LocationPresentation) root).isPlaced()) {
-            final Edge unfinishedEdge = component.getUnfinishedEdge();
+        final Consumer<MouseEvent> mousePressed = (event) -> {
+            mouseXDiff.set(event.getX());
+            mouseYDiff.set(event.getY());
 
-            if (unfinishedEdge != null) {
-                unfinishedEdge.setTargetLocation(getLocation());
-                NailHelper.addMissingNails(unfinishedEdge);
+            event.consume();
 
-            } else {
-                // If shift is being held down, start drawing a new edge
-                if (event.isShiftDown()) {
-                    final Edge newEdge = new Edge(getLocation());
+            final Component component = getComponent();
 
-                    KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
-                        component.removeEdge(newEdge);
-                        UndoRedoStack.forget();
-                    }));
+            event.consume();
+            if (((LocationPresentation) root).isPlaced()) {
 
-                    UndoRedoStack.push(() -> { // Perform
-                        component.addEdge(newEdge);
-                    }, () -> { // Undo
-                        component.removeEdge(newEdge);
-                    }, "Created edge starting from location " + getLocation().getNickname(), "add-circle");
+                if (event.getButton().equals(MouseButton.SECONDARY)) {
+                    initializeDropDownMenu();
+                    dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 50, 50);
+                    return;
                 }
-                // Otherwise, select the location
-                else {
-                    if(((LocationPresentation) root).isInteractable()) {
-                        if (event.isShortcutDown()) {
-                            SelectHelper.addToSelection(this);
-                        } else {
-                            SelectHelper.select(this);
+
+                final Edge unfinishedEdge = component.getUnfinishedEdge();
+
+                if (unfinishedEdge != null) {
+                    unfinishedEdge.setTargetLocation(getLocation());
+                    NailHelper.addMissingNails(unfinishedEdge);
+
+                } else {
+                    // If shift is being held down, start drawing a new edge
+                    if (event.isShiftDown()) {
+                        final Edge newEdge = new Edge(getLocation());
+
+                        KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+                            component.removeEdge(newEdge);
+                            UndoRedoStack.forget();
+                        }));
+
+                        UndoRedoStack.push(() -> { // Perform
+                            component.addEdge(newEdge);
+                        }, () -> { // Undo
+                            component.removeEdge(newEdge);
+                        }, "Created edge starting from location " + getLocation().getNickname(), "add-circle");
+                    }
+                    // Otherwise, select the location
+                    else {
+                        if(((LocationPresentation) root).isInteractable()) {
+                            if (event.isShortcutDown()) {
+                                SelectHelper.addToSelection(this);
+                            } else {
+                                SelectHelper.select(this);
+                            }
                         }
                     }
                 }
-
-                // Update position for undo dragging
-                previousX = root.getLayoutX();
-                previousY = root.getLayoutY();
-            }
-        } else {
-
-            // Allowed x and y coordinates
-            final double minX = GRID_SIZE * 2;
-            final double maxX = getComponent().getWidth() - GRID_SIZE * 2;
-            final double minY = ComponentPresentation.TOOL_BAR_HEIGHT + GRID_SIZE * 2;
-            final double maxY = getComponent().getHeight() - GRID_SIZE * 2;
-
-            if(root.getLayoutX() >= minX && root.getLayoutX() <= maxX && root.getLayoutY() >= minY && root.getLayoutY() <= maxY) {
-                // Unbind presentation root x and y coordinates (bind the view properly to enable dragging)
-                root.layoutXProperty().unbind();
-                root.layoutYProperty().unbind();
-
-                // Bind the location to the presentation root x and y
-                getLocation().xProperty().bind(root.layoutXProperty());
-                getLocation().yProperty().bind(root.layoutYProperty());
-
-                // Notify that the location was placed
-                ((LocationPresentation) root).setPlaced(true);
-                ComponentController.setPlacingLocation(null);
-                KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_LOCATION);
             } else {
-                ((LocationPresentation) root).shake();
+
+                // Allowed x and y coordinates
+                final double minX = GRID_SIZE * 2;
+                final double maxX = getComponent().getWidth() - GRID_SIZE * 2;
+                final double minY = ComponentPresentation.TOOL_BAR_HEIGHT + GRID_SIZE * 2;
+                final double maxY = getComponent().getHeight() - GRID_SIZE * 2;
+
+                if(root.getLayoutX() >= minX && root.getLayoutX() <= maxX && root.getLayoutY() >= minY && root.getLayoutY() <= maxY) {
+                    // Unbind presentation root x and y coordinates (bind the view properly to enable dragging)
+                    root.layoutXProperty().unbind();
+                    root.layoutYProperty().unbind();
+
+                    // Bind the location to the presentation root x and y
+                    getLocation().xProperty().bind(root.layoutXProperty());
+                    getLocation().yProperty().bind(root.layoutYProperty());
+
+                    // Notify that the location was placed
+                    ((LocationPresentation) root).setPlaced(true);
+                    ComponentController.setPlacingLocation(null);
+                    KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_LOCATION);
+                } else {
+                    ((LocationPresentation) root).shake();
+                }
+
             }
 
-        }
-    }
+        };
 
-    @FXML
-    private void mouseDragged(final MouseEvent event) {
-        // If the location is not a normal location (not initial/final) make it draggable
-        if (getLocation().getType() == Location.Type.NORMAL && ((LocationPresentation) root).isPlaced()) {
-
+        final Supplier<Double> supplyX = () -> {
             // Calculate the potential new x alongside min and max values
             final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
             final double minX = GRID_SIZE * 2;
@@ -423,13 +439,15 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
             // Drag according to min and max
             if (newX < minX) {
-                root.setLayoutX(minX);
+                return minX;
             } else if (newX > maxX) {
-                root.setLayoutX(maxX);
+                return maxX;
             } else {
-                root.setLayoutX(newX);
+                return newX;
             }
+        };
 
+        final Supplier<Double> supplyY = () -> {
             // Calculate the potential new y alongside min and max values
             final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
             final double minY = ComponentPresentation.TOOL_BAR_HEIGHT + GRID_SIZE * 2;
@@ -437,59 +455,36 @@ public class LocationController implements Initializable, SelectHelper.ColorSele
 
             // Drag according to min and max
             if (newY < minY) {
-                root.setLayoutY(minY);
+                return minY;
             } else if (newY > maxY) {
-                root.setLayoutY(maxY);
+                return maxY;
             } else {
-                root.setLayoutY(newY);
+                return newY;
             }
+        };
 
-            // Tell the mouse release action that we can store an update
-            wasDragged = true;
-        }
+        locationProperty().addListener((obs, oldLocation, newLocation) -> {
+
+            if(newLocation == null) return;
+
+            if(newLocation.getType() != Location.Type.NORMAL) {
+                root.setOnMousePressed(mousePressed::accept);
+            } else {
+                ItemDragHelper.makeDraggable(
+                        root,
+                        root,
+                        supplyX,
+                        supplyY,
+                        mousePressed,
+                        () -> {},
+                        () -> {}
+                );
+            }
+        });
+
+
     }
 
-    @FXML
-    private void mouseReleased(final MouseEvent event) {
-        if (wasDragged) {
-            // Add to undo redo stack
-            final double currentX = root.getLayoutX();
-            final double currentY = root.getLayoutY();
-            final double storePreviousX = previousX;
-            final double storePreviousY = previousY;
-            UndoRedoStack.push(() -> {
-                        root.setLayoutX(currentX);
-                        root.setLayoutY(currentY);
-            }, () -> {
-                root.setLayoutX(storePreviousX);
-                root.setLayoutY(storePreviousY);
-            }, String.format("Moved location from (%.0f,%.0f) to (%.0f,%.0f)", currentX, currentY, storePreviousX, storePreviousY), "pin-drop");
-
-            // Reset the was dragged boolean
-            wasDragged = false;
-        }
-    }
-
-    @FXML
-    private void hiddenAreaEntered() {
-        invariantTag.setOpacity(1);
-        nameTag.setOpacity(1);
-    }
-
-    @FXML
-    private void hiddenAreaExited() {
-        if (getLocation().getInvariant().equals("")) {
-            invariantTag.setOpacity(0);
-        } else {
-            invariantTag.setOpacity(1);
-        }
-
-        if(getLocation().getNickname().equals("")) {
-            nameTag.setOpacity(0);
-        } else {
-            nameTag.setOpacity(1);
-        }
-    }
 
     @Override
     public void color(final Color color, final Color.Intensity intensity) {

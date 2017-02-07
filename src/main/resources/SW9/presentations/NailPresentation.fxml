@@ -9,8 +9,7 @@
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="Group"
          fx:controller="SW9.controllers.NailController"
-         fx:id="root"
-         onMouseEntered="#mouseEntered" onMouseExited="#mouseExited">
+         fx:id="root">
 
     <Line fx:id="propertyTagLine" strokeDashOffset="2" strokeDashArray="3,3" stroke="#666" mouseTransparent="true"/>
     <TagPresentation fx:id="propertyTag" translateX="10" translateY="-10"/>
