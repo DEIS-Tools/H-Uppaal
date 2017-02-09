@@ -370,7 +370,7 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
 
                 } else {
                     // If shift is being held down, start drawing a new edge
-                    if (event.isShiftDown()) {
+                    if ((event.isAltDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
                         final Edge newEdge = new Edge(getLocation());
 
                         KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
