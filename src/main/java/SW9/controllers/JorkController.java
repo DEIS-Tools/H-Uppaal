@@ -92,10 +92,10 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
 
             final Component component = getComponent();
             final Edge unfinishedEdge = component.getUnfinishedEdge();
-            if (unfinishedEdge != null) {
+            if (event.isPrimaryButtonDown() || event.isMiddleButtonDown() && unfinishedEdge != null) {
                 unfinishedEdge.setTargetJork(getJork());
                 NailHelper.addMissingNails(unfinishedEdge);
-            } else if (event.isShiftDown()) {
+            } else if ((event.isAltDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
                 final Edge newEdge = new Edge(getJork());
 
                 KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
@@ -152,12 +152,6 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
         return oldX != newX || oldY != newY;
     }
 
-    private enum JorkType {
-        LOCATION,
-        SUB_COMPONENT,
-        UNKNOWN
-    }
-
     @Override
     public DoubleProperty xProperty() {
         return root.layoutXProperty();
@@ -176,5 +170,11 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
     @Override
     public double getY() {
         return yProperty().get();
+    }
+
+    private enum JorkType {
+        LOCATION,
+        SUB_COMPONENT,
+        UNKNOWN
     }
 }
