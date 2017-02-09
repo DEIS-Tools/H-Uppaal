@@ -348,13 +348,7 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
 
     private void initializeMouseControls() {
 
-        final DoubleProperty mouseXDiff = new SimpleDoubleProperty(0);
-        final DoubleProperty mouseYDiff = new SimpleDoubleProperty(0);
-
         final Consumer<MouseEvent> mousePressed = (event) -> {
-            mouseXDiff.set(event.getX());
-            mouseYDiff.set(event.getY());
-
             event.consume();
 
             final Component component = getComponent();
