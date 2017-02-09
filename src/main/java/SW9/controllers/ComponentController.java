@@ -7,13 +7,8 @@ import SW9.code_analysis.CodeAnalysis;
 import SW9.code_analysis.Nearable;
 import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
-import SW9.utility.colors.Color;
 import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.Circular;
-import SW9.utility.helpers.ItemDragHelper;
-import SW9.utility.helpers.SelectHelper;
-import SW9.utility.keyboard.Keybind;
-import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.mouse.MouseTracker;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
@@ -22,17 +17,13 @@ import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -41,7 +32,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import on.D;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.StyleClassedTextArea;
 
@@ -97,42 +87,6 @@ public class ComponentController implements Initializable {
     public void initialize(final URL location, final ResourceBundle resources) {
 
         declaration.setParagraphGraphicFactory(LineNumberFactory.get(declaration));
-
-        // Register a keybind for adding new locations
-        KeyboardTracker.registerKeybind(KeyboardTracker.ADD_NEW_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.L), () -> {
-            if (isPlacingLocation()) return;
-
-            final Location newLocation = new Location();
-            setPlacingLocation(newLocation);
-
-            UndoRedoStack.push(() -> { // Perform
-                component.get().addLocation(newLocation);
-            }, () -> { // Undo
-                component.get().removeLocation(newLocation);
-            }, "Added new location: " + newLocation.getNickname(), "add-circle");
-
-            CanvasController.activeComponentProperty().addListener((observable, oldValue, newValue) -> {
-                if(!newValue.equals(getComponent())) {
-                    if (isPlacingLocation()) {
-                        component.get().removeLocation(placingLocation);
-                        ComponentController.setPlacingLocation(null);
-                        UndoRedoStack.forgetLast();
-                    }
-                }
-            });
-
-            newLocation.setColorIntensity(getComponent().getColorIntensity());
-            newLocation.setColor(getComponent().getColor());
-
-            KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_LOCATION, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
-                if (isPlacingLocation()) {
-                    component.get().removeLocation(placingLocation);
-                    ComponentController.setPlacingLocation(null);
-                    UndoRedoStack.forgetLast();
-                }
-
-            }));
-        }));
 
         component.addListener((obs, oldComponent, newComponent) -> {
             // Bind the width and the height of the abstraction to the values in the view todo: reflect the height and width from the presentation into the abstraction
@@ -698,7 +652,41 @@ public class ComponentController implements Initializable {
 
         final Edge unfinishedEdge = getComponent().getUnfinishedEdge();
 
-        if (event.isSecondaryButtonDown() && unfinishedEdge == null) {
+
+        if (event.isMiddleButtonDown() || event.isAltDown()) {
+
+            final Location location = new Location();
+
+            double x = event.getX();
+            x = Math.round(x / GRID_SIZE) * GRID_SIZE;
+            location.setX(x);
+
+            double y = event.getY();
+            y = Math.round(y / GRID_SIZE) * GRID_SIZE;
+            location.setY(y);
+
+            location.setColorIntensity(getComponent().getColorIntensity());
+            location.setColor(getComponent().getColor());
+
+            if (unfinishedEdge != null) {
+                unfinishedEdge.setTargetLocation(location);
+            }
+
+            // Add a new location
+            UndoRedoStack.push(() -> { // Perform
+                getComponent().addLocation(location);
+                if (unfinishedEdge != null) {
+                    UndoRedoStack.redo();
+                }
+            }, () -> { // Undo
+                getComponent().removeLocation(location);
+                if (unfinishedEdge != null) {
+                    UndoRedoStack.undo();
+                }
+            }, "Finished edge '" + unfinishedEdge + "' by adding '" + location + "' to component '" + component.getName() + "'", "add-circle");
+
+
+        } else if (event.isSecondaryButtonDown() && unfinishedEdge == null) {
             dropDownMenuHelperCircle.setLayoutX(event.getX());
             dropDownMenuHelperCircle.setLayoutY(event.getY());
             DropDownMenu.x = event.getX();
