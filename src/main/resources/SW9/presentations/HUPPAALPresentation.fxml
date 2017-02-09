@@ -123,6 +123,14 @@
             <!-- Menu bar for "file" etc (only visible on windows) -->
             <MenuBar fx:id="menuBar">
 
+                <Menu text="File">
+                    <MenuItem fx:id="menuBarFileSave" text="Save Project">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-save" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                </Menu>
+
                 <Menu text="View">
                     <MenuItem fx:id="menuBarViewFilePanel" text="File Panel">
                         <graphic>

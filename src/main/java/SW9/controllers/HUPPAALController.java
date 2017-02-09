@@ -26,8 +26,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
-import javafx.scene.input.KeyCombination.ModifierValue;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -38,8 +40,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
-
-import static javafx.scene.input.KeyCombination.ModifierValue.*;
 
 public class HUPPAALController implements Initializable {
 
@@ -90,6 +90,7 @@ public class HUPPAALController implements Initializable {
     public VBox backendErrorsList;
     public MenuItem menuBarViewFilePanel;
     public MenuItem menuBarViewQueryPanel;
+    public MenuItem menuBarFileSave;
     private double tabPanePreviousY = 0;
     private boolean shouldISkipOpeningTheMessagesContainer = true;
 
@@ -176,6 +177,12 @@ public class HUPPAALController implements Initializable {
     }
 
     private void initializeMenuBar() {
+        menuBarFileSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
+        menuBarFileSave.setOnAction(event -> {
+            System.out.println();
+            HUPPAAL.save();
+        });
+
         menuBarViewFilePanel.getGraphic().setOpacity(1);
         menuBarViewFilePanel.setAccelerator(new KeyCodeCombination(KeyCode.F));
         menuBarViewFilePanel.setOnAction(event -> {

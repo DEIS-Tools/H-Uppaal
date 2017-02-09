@@ -5,9 +5,6 @@ import SW9.abstractions.Component;
 import SW9.presentations.DropDownMenu;
 import SW9.presentations.FilePresentation;
 import SW9.utility.UndoRedoStack;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXTextArea;
@@ -20,12 +17,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -205,42 +197,7 @@ public class ProjectPaneController implements Initializable {
 
     @FXML
     private void saveProjectClicked() {
-        // Clear the project folder
-        try {
-            FileUtils.cleanDirectory(new File("project"));
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-
-        HUPPAAL.getProject().getComponents().forEach(component -> {
-            try {
-                final Writer writer = new FileWriter(String.format("project/%s.json", component.getName()));
-                final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-                gson.toJson(component.serialize(), writer);
-
-                writer.close();
-            } catch (final IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        final JsonArray queries = new JsonArray();
-        HUPPAAL.getProject().getQueries().forEach(query -> {
-            queries.add(query.serialize());
-        });
-
-        final Writer writer;
-        try {
-            writer = new FileWriter("project/Queries.json");
-            final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-            gson.toJson(queries, writer);
-            writer.close();
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-
+        HUPPAAL.save();
     }
 
     @FXML

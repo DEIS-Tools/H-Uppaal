@@ -9,24 +9,25 @@ import SW9.presentations.UndoRedoHistoryPresentation;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import com.google.common.io.Files;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import jiconfont.icons.GoogleMaterialDesignIcons;
 import jiconfont.javafx.IconFontFX;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -42,6 +43,44 @@ public class HUPPAAL extends Application {
 
     public static Project getProject() {
         return project;
+    }
+
+    public static void save() {
+        // Clear the project folder
+        try {
+            FileUtils.cleanDirectory(new File("project"));
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+
+        HUPPAAL.getProject().getComponents().forEach(component -> {
+            try {
+                final Writer writer = new FileWriter(String.format("project/%s.json", component.getName()));
+                final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+                gson.toJson(component.serialize(), writer);
+
+                writer.close();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        final JsonArray queries = new JsonArray();
+        HUPPAAL.getProject().getQueries().forEach(query -> {
+            queries.add(query.serialize());
+        });
+
+        final Writer writer;
+        try {
+            writer = new FileWriter("project/Queries.json");
+            final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+            gson.toJson(queries, writer);
+            writer.close();
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static BooleanProperty toggleFilePane() {
