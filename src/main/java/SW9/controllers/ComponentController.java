@@ -52,7 +52,7 @@ import java.util.function.Function;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
-public class ComponentController implements Initializable, SelectHelper.ItemSelectable {
+public class ComponentController implements Initializable {
 
     private static final Map<Component, Timer> COMPONENT_SUBCOMPONENT_NAME_CHECK_TIMER_MAP = new HashMap<>();
     private static final Map<Component, ListChangeListener<Location>> locationListChangeListenerMap = new HashMap<>();
@@ -644,8 +644,6 @@ public class ComponentController implements Initializable, SelectHelper.ItemSele
         });
 
         newSubComponent.getSubComponents().forEach(handleAddedSubComponent);
-
-        makeDraggable();
     }
 
     public void toggleDeclaration(final MouseEvent mouseEvent) {
@@ -726,85 +724,4 @@ public class ComponentController implements Initializable, SelectHelper.ItemSele
         return mouseTracker;
     }
 
-    @Override
-    public void color(final Color color, final Color.Intensity intensity) {
-        final Component component = getComponent();
-
-        final Color componentColor = component.getColor();
-
-        final Consumer<Location> locationPainter = location -> {
-            if (!location.getColor().equals(componentColor)) return; // Do not color something of a different color
-
-            location.setColorIntensity(intensity);
-            location.setColor(color);
-        };
-
-        // Set the color for all locations that are of the same color
-        component.getLocations().forEach(locationPainter);
-        locationPainter.accept(component.getInitialLocation());
-        locationPainter.accept(component.getFinalLocation());
-
-        // Set the color of the component
-        component.setColorIntensity(intensity);
-        component.setColor(color);
-    }
-
-    @Override
-    public Color getColor() {
-        return getComponent().getColor();
-    }
-
-    @Override
-    public Color.Intensity getColorIntensity() {
-        return getComponent().getColorIntensity();
-    }
-
-    @Override
-    public ItemDragHelper.DragBounds getDragBounds() {
-        return ItemDragHelper.DragBounds.generateLooseDragBounds();
-    }
-
-    @Override
-    public void select() {
-        ((SelectHelper.Selectable) root).select();
-
-        final Consumer<Node> selectLocations = node -> {
-            if (node instanceof LocationPresentation) {
-                SelectHelper.addToSelection(((LocationPresentation) node).getController());
-            }
-        };
-
-        modelContainerLocation.getChildren().forEach(selectLocations);
-        defaultLocationsContainer.getChildren().forEach(selectLocations);
-    }
-
-    @Override
-    public void deselect() {
-        ((SelectHelper.Selectable) root).deselect();
-    }
-
-    private void makeDraggable() {
-
-        ItemDragHelper.makeDraggablePisseLigeGlad(root);
-    }
-
-    @Override
-    public DoubleProperty xProperty() {
-        return root.layoutXProperty();
-    }
-
-    @Override
-    public DoubleProperty yProperty() {
-        return root.layoutYProperty();
-    }
-
-    @Override
-    public double getX() {
-        return xProperty().get();
-    }
-
-    @Override
-    public double getY() {
-        return yProperty().get();
-    }
 }

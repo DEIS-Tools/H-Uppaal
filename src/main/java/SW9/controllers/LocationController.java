@@ -430,23 +430,18 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
 
         };
 
-
-
-
-
         locationProperty().addListener((obs, oldLocation, newLocation) -> {
             if(newLocation == null) return;
 
             root.addEventHandler(MouseEvent.MOUSE_PRESSED, mousePressed::accept);
 
             if(newLocation.getType() == Location.Type.NORMAL) {
-                ItemDragHelper.makeDraggablePisseLigeGlad(root);
+                ItemDragHelper.makeDraggable(root, this::getDragBounds);
             }
         });
 
 
     }
-
 
     @Override
     public void color(final Color color, final Color.Intensity intensity) {
@@ -488,6 +483,9 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
 
     @Override
     public boolean nudge(final NudgeDirection direction) {
+
+        // Do not nudge initial and final location
+        if(!getLocation().getType().equals(Location.Type.NORMAL)) return false;
 
         final double oldX = root.getLayoutX();
         final double newX = getDragBounds().trimX(root.getLayoutX() + direction.getXOffset());

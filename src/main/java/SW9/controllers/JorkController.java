@@ -60,9 +60,9 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
     @Override
     public ItemDragHelper.DragBounds getDragBounds() {
         final ObservableDoubleValue minX = new SimpleDoubleProperty(CanvasPresentation.GRID_SIZE);
-        final ObservableDoubleValue maxX = getComponent().widthProperty().subtract(JorkPresentation.JORK_WIDTH - CanvasPresentation.GRID_SIZE);
+        final ObservableDoubleValue maxX = getComponent().widthProperty().subtract(JorkPresentation.JORK_WIDTH + CanvasPresentation.GRID_SIZE);
         final ObservableDoubleValue minY = new SimpleDoubleProperty(ComponentPresentation.TOOL_BAR_HEIGHT + CanvasPresentation.GRID_SIZE);
-        final ObservableDoubleValue maxY = getComponent().heightProperty().subtract(JorkPresentation.JORK_HEIGHT - CanvasPresentation.GRID_SIZE);
+        final ObservableDoubleValue maxY = getComponent().heightProperty().subtract(JorkPresentation.JORK_HEIGHT + CanvasPresentation.GRID_SIZE);
         return new ItemDragHelper.DragBounds(minX, maxX, minY, maxY);
     }
 
@@ -79,6 +79,9 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
     private void initializeMouseControls() {
 
         root.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+
+            event.consume();
+
             if (event.isShortcutDown()) {
                 SelectHelper.addToSelection(this);
             } else {
@@ -106,7 +109,7 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
             }
         });
 
-        ItemDragHelper.makeDraggablePisseLigeGlad(root);
+        ItemDragHelper.makeDraggable(root, this::getDragBounds);
     }
 
     public Jork getJork() {

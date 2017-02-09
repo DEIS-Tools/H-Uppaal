@@ -79,7 +79,7 @@ public class NailController implements Initializable, SelectHelper.ItemSelectabl
         root.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> nailBeingDragged = true);
         root.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> nailBeingDragged = false);
 
-        ItemDragHelper.makeDraggablePisseLigeGlad(root);
+        ItemDragHelper.makeDraggable(root, this::getDragBounds);
     }
 
     public Nail getNail() {

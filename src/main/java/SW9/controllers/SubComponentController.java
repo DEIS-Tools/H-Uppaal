@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class SubComponentController implements Initializable, SelectHelper.ItemSelectable {
 
@@ -265,7 +264,7 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
             }
         });
 
-        ItemDragHelper.makeDraggablePisseLigeGlad(root);
+        ItemDragHelper.makeDraggable(root, this::getDragBounds);
     }
 
     public SubComponent getSubComponent() {
@@ -310,9 +309,9 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
     @Override
     public ItemDragHelper.DragBounds getDragBounds() {
         final ObservableDoubleValue minX = new SimpleDoubleProperty(CanvasPresentation.GRID_SIZE);
-        final ObservableDoubleValue maxX = getParentComponent().widthProperty().subtract(getSubComponent().widthProperty().subtract(CanvasPresentation.GRID_SIZE));
+        final ObservableDoubleValue maxX = getParentComponent().widthProperty().subtract(getSubComponent().widthProperty().add(CanvasPresentation.GRID_SIZE));
         final ObservableDoubleValue minY = new SimpleDoubleProperty(ComponentPresentation.TOOL_BAR_HEIGHT + CanvasPresentation.GRID_SIZE);
-        final ObservableDoubleValue maxY = getParentComponent().heightProperty().subtract(getSubComponent().heightProperty().subtract(CanvasPresentation.GRID_SIZE));
+        final ObservableDoubleValue maxY = getParentComponent().heightProperty().subtract(getSubComponent().heightProperty().add(CanvasPresentation.GRID_SIZE));
         return new ItemDragHelper.DragBounds(minX, maxX, minY, maxY);
     }
 
