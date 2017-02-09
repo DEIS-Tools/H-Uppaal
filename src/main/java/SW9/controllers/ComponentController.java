@@ -692,7 +692,7 @@ public class ComponentController implements Initializable {
             DropDownMenu.x = event.getX();
             DropDownMenu.y = event.getY();
             dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
-        } else {
+        } else if(event.isPrimaryButtonDown()) {
             // We are drawing an edge
             if (unfinishedEdge != null) {
                 // Calculate the position for the new nail (based on the component position and the canvas mouse tracker)
