@@ -32,7 +32,6 @@ public class ProjectPaneController implements Initializable {
     public ScrollPane scrollPane;
     public VBox filesList;
     public JFXRippler createComponent;
-    public JFXRippler saveProject;
     public VBox mainComponentContainer;
 
     @Override
@@ -193,11 +192,6 @@ public class ProjectPaneController implements Initializable {
     private void handleRemovedComponent(final Component component) {
         filesList.getChildren().remove(componentPresentationMap.get(component));
         componentPresentationMap.remove(component);
-    }
-
-    @FXML
-    private void saveProjectClicked() {
-        HUPPAAL.save();
     }
 
     @FXML

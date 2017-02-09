@@ -25,15 +25,6 @@
             </StackPane>
 
             <HBox AnchorPane.rightAnchor="16" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
-                <!-- SAVE PROJECT -->
-                <JFXRippler fx:id="saveProject">
-                    <StackPane minWidth="40" minHeight="40" onMouseClicked="#saveProjectClicked">
-                        <FontIcon iconLiteral="gmi-save" iconSize="24" fill="white"/>
-                    </StackPane>
-                </JFXRippler>
-
-                <Region minWidth="8"/>
-
                 <!-- CREATE COMPONENT -->
                 <JFXRippler fx:id="createComponent">
                     <StackPane minWidth="40" minHeight="40" onMouseClicked="#createComponentClicked">

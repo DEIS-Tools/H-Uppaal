@@ -34,7 +34,6 @@ public class ProjectPanePresentation extends StackPane {
             initializeToolbar();
 
             initializeToolbarButton(controller.createComponent);
-            initializeToolbarButton(controller.saveProject);
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
