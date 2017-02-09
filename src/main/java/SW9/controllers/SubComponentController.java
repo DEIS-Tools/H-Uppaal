@@ -232,7 +232,7 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
 
             final Edge unfinishedEdge = getParentComponent().getUnfinishedEdge();
 
-            if (unfinishedEdge != null) {
+            if (event.isPrimaryButtonDown() && unfinishedEdge != null) {
                 unfinishedEdge.setTargetSubComponent(getSubComponent());
                 NailHelper.addMissingNails(unfinishedEdge);
             } else if (event.isShiftDown()) {
@@ -249,10 +249,10 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
                 }, () -> { // Undo
                     getParentComponent().removeEdge(newEdge);
                 }, "Created edge starting from subcomponent " + getSubComponent().getIdentifier(), "add-circle");
-            } else if (event.isSecondaryButtonDown()) {
+            } else if (event.isSecondaryButtonDown() && unfinishedEdge == null) {
                 initializeDropDownMenu();
                 dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, event.getX() - 5, event.getY() - 5);
-            } else {
+            } else if(event.isPrimaryButtonDown()) {
                 // If the sub component is pressed twice open its corresponding component in the canvas
                 if(event.getClickCount() > 1) {
                     CanvasController.setActiveComponent(getSubComponent().getComponent());
