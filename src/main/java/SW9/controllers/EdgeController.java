@@ -539,7 +539,7 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                         DropDownMenu.y = CanvasPresentation.mouseTracker.getGridY();
 
 
-                    } else if (event.isShiftDown()) {
+                    } else if ((event.isAltDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
                         final double nailX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).doubleValue();
                         final double nailY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).doubleValue();
 
