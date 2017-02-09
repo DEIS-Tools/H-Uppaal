@@ -436,11 +436,11 @@ public class ComponentController implements Initializable {
 
                         final SubComponent newSubComponent = new SubComponent(c);
 
-                        double x = DropDownMenu.x - newSubComponent.getWidth() / 2;
+                        double x = DropDownMenu.x - GRID_SIZE * 2;
                         x -= x % GRID_SIZE;
                         newSubComponent.setX(x);
 
-                        double y = DropDownMenu.y - newSubComponent.getHeight() / 4;
+                        double y = DropDownMenu.y - GRID_SIZE * 2;
                         y -= y % GRID_SIZE;
                         newSubComponent.setY(y);
 
