@@ -232,11 +232,11 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
 
             final Edge unfinishedEdge = getParentComponent().getUnfinishedEdge();
 
-            if (event.isPrimaryButtonDown() && unfinishedEdge != null) {
+            if ((event.isPrimaryButtonDown() || event.isMiddleButtonDown()) && unfinishedEdge != null) {
                 unfinishedEdge.setTargetSubComponent(getSubComponent());
                 NailHelper.addMissingNails(unfinishedEdge);
-            } else if (event.isShiftDown()) {
-                event.consume();
+            } else if ((event.isAltDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
+
                 final Edge newEdge = new Edge(getSubComponent());
 
                 KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
