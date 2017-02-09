@@ -1,6 +1,7 @@
 package SW9.abstractions;
 
 import SW9.code_analysis.Nearable;
+import SW9.utility.helpers.LocationAware;
 import SW9.utility.serialize.Serializable;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -8,7 +9,7 @@ import javafx.beans.property.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Jork implements Serializable, Nearable {
+public class Jork implements Serializable, Nearable, LocationAware {
 
     private static final String X = "x";
     private static final String Y = "y";

@@ -9,6 +9,7 @@ import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.Circular;
+import SW9.utility.helpers.LocationAware;
 import SW9.utility.mouse.MouseTracker;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
@@ -18,6 +19,7 @@ import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -72,7 +74,8 @@ public class ComponentController implements Initializable {
     public Pane modelContainerEdge;
     public Pane modelContainerJork;
     private MouseTracker mouseTracker;
-    private DropDownMenu dropDownMenu;
+    private DropDownMenu contextMenu;
+    private DropDownMenu finishEdgeContextMenu;
     private Circle dropDownMenuHelperCircle;
 
     public static boolean isPlacingLocation() {
@@ -138,7 +141,7 @@ public class ComponentController implements Initializable {
         // The root view have been inflated, initialize the mouse tracker on it
         mouseTracker = new MouseTracker(root);
 
-        initializeDropDownMenu();
+        initializeComponentContextMenu();
 
         component.addListener((obs, old, component) -> {
             if (component == null) return;
@@ -345,7 +348,7 @@ public class ComponentController implements Initializable {
         });
     }
 
-    private void initializeDropDownMenu() {
+    private void initializeComponentContextMenu() {
         dropDownMenuHelperCircle = new Circle(5);
         dropDownMenuHelperCircle.setOpacity(0);
         dropDownMenuHelperCircle.setMouseTransparent(true);
@@ -357,10 +360,10 @@ public class ComponentController implements Initializable {
                 return;
             }
 
-            dropDownMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 230, true);
+            contextMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 230, true);
 
-            dropDownMenu.addClickableListElement("Add Location", event -> {
-                dropDownMenu.close();
+            contextMenu.addClickableListElement("Add Location", event -> {
+                contextMenu.close();
 
                 final Location newLocation = new Location();
 
@@ -383,8 +386,8 @@ public class ComponentController implements Initializable {
                 }, "Added location '" + newLocation.toString() + "' to component '" + component.getName() + "'", "add-circle");
             });
 
-            dropDownMenu.addClickableListElement("Add Fork", event -> {
-                dropDownMenu.close();
+            contextMenu.addClickableListElement("Add Fork", event -> {
+                contextMenu.close();
 
                 final Jork newJork = new Jork(Jork.Type.FORK);
 
@@ -404,8 +407,8 @@ public class ComponentController implements Initializable {
                 }, "Added fork '" + newJork.toString() + "' to component '" + component.getName() + "'", "add-circle");
             });
 
-            dropDownMenu.addClickableListElement("Add Join", event -> {
-                dropDownMenu.close();
+            contextMenu.addClickableListElement("Add Join", event -> {
+                contextMenu.close();
 
                 final Jork newJork = new Jork(Jork.Type.JOIN);
 
@@ -429,7 +432,7 @@ public class ComponentController implements Initializable {
             HUPPAAL.getProject().getComponents().forEach(c -> {
                 if (!c.equals(component)) {
                     subMenu.addClickableListElement(c.getName(), event -> {
-                        dropDownMenu.close();
+                        contextMenu.close();
 
                         final SubComponent newSubComponent = new SubComponent(c);
 
@@ -451,12 +454,12 @@ public class ComponentController implements Initializable {
                 }
             });
 
-            dropDownMenu.addSubMenu("Add Subcomponent", subMenu, 3 * 35);
+            contextMenu.addSubMenu("Add Subcomponent", subMenu, 3 * 35);
 
-            dropDownMenu.addSpacerElement();
+            contextMenu.addSpacerElement();
 
-            dropDownMenu.addClickableListElement("Contains deadlock?", event -> {
-                dropDownMenu.close();
+            contextMenu.addClickableListElement("Contains deadlock?", event -> {
+                contextMenu.close();
 
                 // Generate the query
                 final String deadlockQuery = UPPAALDriver.getExistDeadlockQuery(getComponent());
@@ -469,15 +472,15 @@ public class ComponentController implements Initializable {
                 HUPPAAL.getProject().getQueries().add(query);
                 query.run();
 
-                dropDownMenu.close();
+                contextMenu.close();
 
             });
 
-            dropDownMenu.addSpacerElement();
+            contextMenu.addSpacerElement();
 
-            dropDownMenu.addListElement("Color");
+            contextMenu.addListElement("Color");
 
-            dropDownMenu.addColorPicker(component, component::color);
+            contextMenu.addColorPicker(component, component::color);
         };
 
 
@@ -490,6 +493,125 @@ public class ComponentController implements Initializable {
             public void onChanged(final Change<? extends Component> c) {
                 initializeDropDownMenu.accept(getComponent());
             }
+        });
+
+        initializeDropDownMenu.accept(getComponent());
+    }
+
+    private void initializeFinishEdgeContextMenu(final Edge unfinishedEdge) {
+
+        final Consumer<Component> initializeDropDownMenu = (component) -> {
+            if (component == null) {
+                return;
+            }
+
+            final Consumer<LocationAware> setCoordinates = (locationAware) -> {
+                double x = DropDownMenu.x;
+                x = Math.round(x / GRID_SIZE) * GRID_SIZE;
+
+                double y = DropDownMenu.y;
+                y = Math.round(y / GRID_SIZE) * GRID_SIZE;
+
+                locationAware.xProperty().set(x);
+                locationAware.yProperty().set(y);
+            };
+
+            finishEdgeContextMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 230, true);
+
+            finishEdgeContextMenu.addListElement("Finish edge in a:");
+
+            finishEdgeContextMenu.addClickableListElement("Location", event -> {
+                finishEdgeContextMenu.close();
+
+                final Location location = new Location();
+
+                location.setColorIntensity(getComponent().getColorIntensity());
+                location.setColor(getComponent().getColor());
+
+                unfinishedEdge.setTargetLocation(location);
+
+                setCoordinates.accept(location);
+
+                // Add a new location
+                UndoRedoStack.push(() -> { // Perform
+                    getComponent().addLocation(location);
+                    UndoRedoStack.redo();
+                }, () -> { // Undo
+                    getComponent().removeLocation(location);
+                    UndoRedoStack.undo();
+                }, "Finished edge '" + unfinishedEdge + "' by adding '" + location + "' to component '" + component.getName() + "'", "add-circle");
+            });
+
+            finishEdgeContextMenu.addClickableAndDisableableListElement("Fork", new SimpleBooleanProperty(unfinishedEdge.getSourceLocation() == null), event -> {
+                finishEdgeContextMenu.close();
+
+                final Jork jork = new Jork(Jork.Type.FORK);
+
+                unfinishedEdge.setTargetJork(jork);
+
+                setCoordinates.accept(jork);
+
+                // Add a new jork
+                UndoRedoStack.push(() -> { // Perform
+                    getComponent().addJork(jork);
+                    UndoRedoStack.redo();
+                }, () -> { // Undo
+                    getComponent().removeJork(jork);
+                    UndoRedoStack.undo();
+                }, "Finished edge '" + unfinishedEdge + "' by adding '" + jork + "' to component '" + component.getName() + "'", "add-circle");
+            });
+
+            finishEdgeContextMenu.addClickableAndDisableableListElement("Join", new SimpleBooleanProperty(unfinishedEdge.getSourceSubComponent() == null), event -> {
+                finishEdgeContextMenu.close();
+
+                final Jork jork = new Jork(Jork.Type.JOIN);
+
+                unfinishedEdge.setTargetJork(jork);
+
+                setCoordinates.accept(jork);
+
+                // Add a new jork
+                UndoRedoStack.push(() -> { // Perform
+                    getComponent().addJork(jork);
+                    UndoRedoStack.redo();
+                }, () -> { // Undo
+                    getComponent().removeJork(jork);
+                    UndoRedoStack.undo();
+                }, "Finished edge '" + unfinishedEdge + "' by adding '" + jork + "' to component '" + component.getName() + "'", "add-circle");
+            });
+
+            final DropDownMenu subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
+            HUPPAAL.getProject().getComponents().forEach(c -> {
+                if (!c.equals(component)) {
+                    subMenu.addClickableListElement(c.getName(), event -> {
+                        contextMenu.close();
+
+                        final SubComponent newSubComponent = new SubComponent(c);
+
+                        unfinishedEdge.setTargetSubComponent(newSubComponent);
+
+                        setCoordinates.accept(newSubComponent);
+                        newSubComponent.setX(newSubComponent.getX() - GRID_SIZE * 2);
+                        newSubComponent.setY(newSubComponent.getY() - GRID_SIZE * 2);
+
+                        // Add a new sub-component
+                        UndoRedoStack.push(() -> { // Perform
+                            component.addSubComponent(newSubComponent);
+                            UndoRedoStack.redo();
+                        }, () -> { // Undo
+                            component.removeSubComponent(newSubComponent);
+                            UndoRedoStack.undo();
+                        }, "Finished edge '" + unfinishedEdge + "' by adding '" + newSubComponent + "' to component '" + component.getName() + "'", "add-circle");
+                    });
+                }
+            });
+
+            finishEdgeContextMenu.addSubMenu("Subcomponent", subMenu, 4 * 35);
+
+        };
+
+        component.addListener((obs, oldComponent, newComponent) -> {
+            initializeDropDownMenu.accept(newComponent);
         });
 
         initializeDropDownMenu.accept(getComponent());
@@ -686,12 +808,18 @@ public class ComponentController implements Initializable {
             }, "Finished edge '" + unfinishedEdge + "' by adding '" + location + "' to component '" + component.getName() + "'", "add-circle");
 
 
-        } else if (event.isSecondaryButtonDown() && unfinishedEdge == null) {
+        } else if (event.isSecondaryButtonDown()) {
             dropDownMenuHelperCircle.setLayoutX(event.getX());
             dropDownMenuHelperCircle.setLayoutY(event.getY());
             DropDownMenu.x = event.getX();
             DropDownMenu.y = event.getY();
-            dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
+
+            if (unfinishedEdge == null) {
+                contextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
+            } else {
+                initializeFinishEdgeContextMenu(unfinishedEdge);
+                finishEdgeContextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
+            }
         } else if(event.isPrimaryButtonDown()) {
             // We are drawing an edge
             if (unfinishedEdge != null) {
@@ -704,7 +832,6 @@ public class ComponentController implements Initializable {
                 unfinishedEdge.addNail(newNail);
             }
         }
-
 
     }
 
