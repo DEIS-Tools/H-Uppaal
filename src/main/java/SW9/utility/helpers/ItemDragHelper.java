@@ -100,6 +100,8 @@ public class ItemDragHelper {
         final DoubleProperty yDiff = new SimpleDoubleProperty();
 
         mouseSubject.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            if(!event.isPrimaryButtonDown()) return;
+            
             previousX.set(mouseSubject.getLayoutX());
             previousY.set(mouseSubject.getLayoutY());
             xDiff.set(event.getX());
@@ -107,6 +109,7 @@ public class ItemDragHelper {
         });
 
         mouseSubject.addEventHandler(MouseEvent.MOUSE_DRAGGED, event -> {
+            if(!event.isPrimaryButtonDown()) return;
 
             final DragBounds dragBounds = getDragBounds.get();
 
@@ -128,6 +131,8 @@ public class ItemDragHelper {
         });
 
         mouseSubject.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
+            if(!event.isPrimaryButtonDown()) return;
+
             final double currentX = mouseSubject.getLayoutX();
             final double currentY = mouseSubject.getLayoutY();
             final double storePreviousX = previousX.get();
