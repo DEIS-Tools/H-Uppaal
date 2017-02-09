@@ -17,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -53,6 +54,7 @@ public class HUPPAAL extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
+
         // Load or create new project
         project = new Project();
 

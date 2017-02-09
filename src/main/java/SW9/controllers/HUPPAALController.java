@@ -26,9 +26,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
+import javafx.scene.input.KeyCombination.ModifierValue;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -39,6 +38,8 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
+
+import static javafx.scene.input.KeyCombination.ModifierValue.*;
 
 public class HUPPAALController implements Initializable {
 

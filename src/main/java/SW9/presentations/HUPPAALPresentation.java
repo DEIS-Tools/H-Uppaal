@@ -476,29 +476,23 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private void initializeTopBar() {
-        final String os = System.getProperty("os.name");
-        if (os != null && os.startsWith("Mac")) {
-            controller.menuBar.useSystemMenuBarProperty().set(true);
-            controller.menuBar.setVisible(false);
-        } else {
-            final Color color = Color.GREY_BLUE;
-            final Color.Intensity intensity = Color.Intensity.I800;
+        final Color color = Color.GREY_BLUE;
+        final Color.Intensity intensity = Color.Intensity.I800;
 
-            // Set the background for the top toolbar
-            controller.menuBar.setBackground(
-                    new Background(new BackgroundFill(color.getColor(intensity),
-                            CornerRadii.EMPTY,
-                            Insets.EMPTY)
-                    ));
+        // Set the background for the top toolbar
+        controller.menuBar.setBackground(
+                new Background(new BackgroundFill(color.getColor(intensity),
+                        CornerRadii.EMPTY,
+                        Insets.EMPTY)
+                ));
 
-            // Set the bottom border
-            controller.menuBar.setBorder(new Border(new BorderStroke(
-                    color.getColor(intensity.next()),
-                    BorderStrokeStyle.SOLID,
-                    CornerRadii.EMPTY,
-                    new BorderWidths(0, 0, 1, 0)
-            )));
-        }
+        // Set the bottom border
+        controller.menuBar.setBorder(new Border(new BorderStroke(
+                color.getColor(intensity.next()),
+                BorderStrokeStyle.SOLID,
+                CornerRadii.EMPTY,
+                new BorderWidths(0, 0, 1, 0)
+        )));
     }
 
     private void initializeToolbar() {
