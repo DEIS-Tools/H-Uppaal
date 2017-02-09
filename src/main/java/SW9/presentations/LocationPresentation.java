@@ -99,7 +99,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         }
     }
 
-
     private void initializeIdLabel() {
         final Location location = controller.getLocation();
         final Label idLabel = controller.idLabel;
@@ -228,8 +227,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         updateTags.accept(loc);
 
     }
-
-
 
     private void initializeHoverAnimationEntered() {
         final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);

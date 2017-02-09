@@ -63,10 +63,15 @@ public class TagPresentation extends StackPane {
 
             initializeShape();
             initializeLabel();
+            initializeMouseTransparency();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeMouseTransparency() {
+        mouseTransparentProperty().bind(opacityProperty().isEqualTo(0, 0.00f));
     }
 
     private void initializeTextAid() {
