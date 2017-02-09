@@ -512,7 +512,7 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
             public void onChanged(final Change<? extends Link> c) {
                 links.forEach((link) -> link.setOnMousePressed(event -> {
 
-                    if (event.isSecondaryButtonDown()) {
+                    if (event.isSecondaryButtonDown() && getComponent().getUnfinishedEdge() == null) {
                         event.consume();
 
                         final DropDownMenu dropDownMenu = new DropDownMenu(((Pane) edgeRoot.getParent().getParent().getParent().getParent()), dropDownMenuHelperCircle, 230, true);
