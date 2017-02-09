@@ -13,6 +13,8 @@ import SW9.utility.helpers.NailHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
+import SW9.utility.keyboard.NudgeDirection;
+import SW9.utility.keyboard.Nudgeable;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -29,7 +31,7 @@ import javafx.scene.shape.Path;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class JorkController implements Initializable, SelectHelper.ItemSelectable {
+public class JorkController implements Initializable, SelectHelper.ItemSelectable, Nudgeable {
 
     private final ObjectProperty<Jork> jork = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
@@ -134,6 +136,20 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
 
     public ObjectProperty<Component> componentProperty() {
         return component;
+    }
+
+    @Override
+    public boolean nudge(final NudgeDirection direction) {
+
+        final double oldX = root.getLayoutX();
+        final double newX = getDragBounds().trimX(root.getLayoutX() + direction.getXOffset());
+        root.layoutXProperty().set(newX);
+
+        final double oldY = root.getLayoutY();
+        final double newY = getDragBounds().trimY(root.getLayoutY() + direction.getYOffset());
+        root.layoutYProperty().set(newY);
+
+        return oldX != newX || oldY != newY;
     }
 
     private enum JorkType {

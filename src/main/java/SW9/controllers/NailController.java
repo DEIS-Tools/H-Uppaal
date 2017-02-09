@@ -10,6 +10,8 @@ import SW9.presentations.TagPresentation;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.ItemDragHelper;
 import SW9.utility.helpers.SelectHelper;
+import SW9.utility.keyboard.NudgeDirection;
+import SW9.utility.keyboard.Nudgeable;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -25,7 +27,7 @@ import javafx.scene.shape.Line;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class NailController implements Initializable, SelectHelper.ItemSelectable {
+public class NailController implements Initializable, SelectHelper.ItemSelectable, Nudgeable {
 
     public static boolean nailBeingDragged = false;
 
@@ -171,5 +173,18 @@ public class NailController implements Initializable, SelectHelper.ItemSelectabl
     @Override
     public double getY() {
         return yProperty().get();
+    }
+
+    @Override
+    public boolean nudge(final NudgeDirection direction) {
+        final double oldX = root.getLayoutX();
+        final double newX = getDragBounds().trimX(root.getLayoutX() + direction.getXOffset());
+        root.layoutXProperty().set(newX);
+
+        final double oldY = root.getLayoutY();
+        final double newY = getDragBounds().trimY(root.getLayoutY() + direction.getYOffset());
+        root.layoutYProperty().set(newY);
+
+        return oldX != newX || oldY != newY;
     }
 }

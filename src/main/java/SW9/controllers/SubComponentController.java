@@ -17,6 +17,8 @@ import SW9.utility.helpers.NailHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
+import SW9.utility.keyboard.NudgeDirection;
+import SW9.utility.keyboard.Nudgeable;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXTextField;
 import javafx.beans.InvalidationListener;
@@ -44,7 +46,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
-public class SubComponentController implements Initializable, SelectHelper.ItemSelectable {
+public class SubComponentController implements Initializable, SelectHelper.ItemSelectable, Nudgeable {
 
     private static final Map<SubComponent, Boolean> initializedInconsistentEdgeError = new HashMap<>();
 
@@ -347,5 +349,19 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
     @Override
     public double getY() {
         return yProperty().get();
+    }
+
+    @Override
+    public boolean nudge(final NudgeDirection direction) {
+
+        final double oldX = root.getLayoutX();
+        final double newX = getDragBounds().trimX(root.getLayoutX() + direction.getXOffset());
+        root.layoutXProperty().set(newX);
+
+        final double oldY = root.getLayoutY();
+        final double newY = getDragBounds().trimY(root.getLayoutY() + direction.getYOffset());
+        root.layoutYProperty().set(newY);
+
+        return oldX != newX || oldY != newY;
     }
 }
