@@ -9,7 +9,6 @@ import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.ItemDragHelper;
-import SW9.utility.helpers.NailHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
@@ -366,7 +365,6 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
 
                 if (unfinishedEdge != null) {
                     unfinishedEdge.setTargetLocation(getLocation());
-                    NailHelper.addMissingNails(unfinishedEdge);
 
                 } else {
                     // If shift is being held down, start drawing a new edge

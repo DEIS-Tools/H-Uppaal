@@ -13,7 +13,6 @@ import SW9.presentations.LocationPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.ItemDragHelper;
-import SW9.utility.helpers.NailHelper;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
@@ -234,7 +233,7 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
 
             if ((event.isPrimaryButtonDown() || event.isMiddleButtonDown()) && unfinishedEdge != null) {
                 unfinishedEdge.setTargetSubComponent(getSubComponent());
-                NailHelper.addMissingNails(unfinishedEdge);
+
             } else if ((event.isAltDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
 
                 final Edge newEdge = new Edge(getSubComponent());
