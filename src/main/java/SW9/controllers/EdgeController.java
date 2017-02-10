@@ -14,6 +14,7 @@ import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.Circular;
 import SW9.utility.helpers.ItemDragHelper;
 import SW9.utility.helpers.SelectHelper;
+import SW9.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXPopup;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -421,6 +422,8 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                 final Nail lastNail = nails.get(nails.size() - 1);
                 BindingHelper.bind(lastLink, simpleArrowHead, lastNail, newEdge.getTargetCircular());
             }
+
+            KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_EDGE);
 
             // When the target location is set the
             edgeRoot.setMouseTransparent(false);
