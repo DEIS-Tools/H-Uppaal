@@ -179,7 +179,6 @@ public class HUPPAALController implements Initializable {
     private void initializeMenuBar() {
         menuBarFileSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
         menuBarFileSave.setOnAction(event -> {
-            System.out.println();
             HUPPAAL.save();
         });
 

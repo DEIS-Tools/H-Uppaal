@@ -5,7 +5,10 @@ import SW9.abstractions.*;
 import SW9.backend.UPPAALDriver;
 import SW9.code_analysis.CodeAnalysis;
 import SW9.code_analysis.Nearable;
-import SW9.presentations.*;
+import SW9.presentations.ComponentPresentation;
+import SW9.presentations.DropDownMenu;
+import SW9.presentations.LocationPresentation;
+import SW9.presentations.TagPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.ItemDragHelper;
@@ -353,18 +356,14 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
 
             final Component component = getComponent();
 
-            event.consume();
             if (((LocationPresentation) root).isPlaced()) {
-
-                if (event.getButton().equals(MouseButton.SECONDARY)) {
-                    initializeDropDownMenu();
-                    dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 20, 20);
-                    return;
-                }
 
                 final Edge unfinishedEdge = component.getUnfinishedEdge();
 
-                if (unfinishedEdge != null) {
+                if (unfinishedEdge == null && event.getButton().equals(MouseButton.SECONDARY)) {
+                    initializeDropDownMenu();
+                    dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 20, 20);
+                } else if (unfinishedEdge != null) {
                     unfinishedEdge.setTargetLocation(getLocation());
                     NailHelper.addMissingNails(unfinishedEdge);
 
