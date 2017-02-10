@@ -24,7 +24,7 @@
                        text="Project"/>
             </StackPane>
 
-            <HBox AnchorPane.rightAnchor="16" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+            <HBox AnchorPane.rightAnchor="8" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
                 <!-- CREATE COMPONENT -->
                 <JFXRippler fx:id="createComponent">
                     <StackPane minWidth="40" minHeight="40" onMouseClicked="#createComponentClicked">
