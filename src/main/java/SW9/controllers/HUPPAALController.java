@@ -128,6 +128,10 @@ public class HUPPAALController implements Initializable {
             nudgeSelected(NudgeDirection.RIGHT);
         }));
 
+        KeyboardTracker.registerKeybind(KeyboardTracker.DESELECT, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), (event) -> {
+            SelectHelper.clearSelectedElements();
+        }));
+
         KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_W, new Keybind(new KeyCodeCombination(KeyCode.W), () -> nudgeSelected(NudgeDirection.UP)));
         KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_A, new Keybind(new KeyCodeCombination(KeyCode.A), () -> nudgeSelected(NudgeDirection.LEFT)));
         KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_S, new Keybind(new KeyCodeCombination(KeyCode.S), () -> nudgeSelected(NudgeDirection.DOWN)));
@@ -173,7 +177,6 @@ public class HUPPAALController implements Initializable {
 
         initializeTabPane();
         initializeMessages();
-
         initializeMenuBar();
     }
 

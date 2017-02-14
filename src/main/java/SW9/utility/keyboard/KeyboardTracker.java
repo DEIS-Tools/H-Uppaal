@@ -44,6 +44,7 @@ public class KeyboardTracker {
     public static final String NUDGE_A = "NUDGE_A";
     public static final String NUDGE_S = "NUDGE_S";
     public static final String NUDGE_D = "NUDGE_D";
+    public static final String DESELECT = "DESELECT";
 
     private static final Map<String, Keybind> keyMap = new HashMap<>();
     public static final EventHandler<KeyEvent> handleKeyPress = event -> {
