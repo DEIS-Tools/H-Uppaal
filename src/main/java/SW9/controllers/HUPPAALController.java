@@ -21,6 +21,7 @@ import javafx.animation.Transition;
 import javafx.beans.binding.When;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -479,8 +480,8 @@ public class HUPPAALController implements Initializable {
                             edge.setProperty(nail.getPropertyType(), "");
                         },
                         () -> {
-                            edge.insertNailAt(nail, index);
                             edge.setProperty(nail.getPropertyType(), restoreProperty);
+                            edge.insertNailAt(nail, index);
                         },
                         "Nail removed",
                         "delete"

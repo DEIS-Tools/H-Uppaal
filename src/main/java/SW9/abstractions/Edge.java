@@ -442,12 +442,16 @@ public class Edge implements Serializable, Nearable {
 
     public void setProperty(final PropertyType propertyType, final String newProperty) {
         if (propertyType.equals(PropertyType.SELECTION)) {
+            selectProperty().unbind();
             setSelect(newProperty);
         } else if (propertyType.equals(PropertyType.GUARD)) {
+            guardProperty().unbind();
             setGuard(newProperty);
         } else if (propertyType.equals(PropertyType.SYNCHRONIZATION)) {
+            syncProperty().unbind();
             setSync(newProperty);
         } else if (propertyType.equals(PropertyType.UPDATE)) {
+            updateProperty().unbind();
             setUpdate(newProperty);
         }
     }
