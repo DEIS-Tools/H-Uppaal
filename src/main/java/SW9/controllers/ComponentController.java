@@ -10,6 +10,7 @@ import SW9.utility.UndoRedoStack;
 import SW9.utility.helpers.BindingHelper;
 import SW9.utility.helpers.Circular;
 import SW9.utility.helpers.LocationAware;
+import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
@@ -830,6 +831,8 @@ public class ComponentController implements Initializable {
                 // Create the abstraction for the new nail and add it to the unfinished edge
                 final Nail newNail = new Nail(x, y);
                 unfinishedEdge.addNail(newNail);
+            } else {
+                SelectHelper.clearSelectedElements();
             }
         }
 
