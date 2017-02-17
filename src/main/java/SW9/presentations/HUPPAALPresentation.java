@@ -10,6 +10,7 @@ import SW9.utility.colors.EnabledColor;
 import SW9.utility.helpers.SelectHelper;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
+import com.jfoenix.controls.JFXSnackbar;
 import javafx.animation.*;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -83,6 +84,8 @@ public class HUPPAALPresentation extends StackPane {
 
             initializeMessageContainer();
 
+            initializeSnackbar();
+
             // Open the file and query panel initially
             final BooleanProperty ranInitialToggle = new SimpleBooleanProperty(false);
             controller.filePane.widthProperty().addListener((observable) -> {
@@ -94,6 +97,15 @@ public class HUPPAALPresentation extends StackPane {
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeSnackbar() {
+        controller.snackbar.registerSnackbarContainer(controller.root);
+        controller.snackbar.setPrefWidth(568);
+        controller.snackbar.autosize();
+
+        final StackPane parentFix = (StackPane) controller.root.lookup(".jfx-snackbar-toast").getParent();
+        parentFix.setPadding(new Insets(14, 24, 14, 24));
     }
 
     private void initializeMessageContainer() {
@@ -531,5 +543,11 @@ public class HUPPAALPresentation extends StackPane {
         filePaneOpen.set(filePaneOpen.not().get());
 
         return filePaneOpen;
+    }
+
+    public void showSnackbarMessage(final String message) {
+        controller.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(message, "", 3000, event -> {
+
+        }));
     }
 }

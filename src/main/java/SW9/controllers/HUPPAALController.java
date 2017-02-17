@@ -12,10 +12,7 @@ import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.keyboard.NudgeDirection;
 import SW9.utility.keyboard.Nudgeable;
-import com.jfoenix.controls.JFXDialog;
-import com.jfoenix.controls.JFXRippler;
-import com.jfoenix.controls.JFXTabPane;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.*;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.beans.binding.When;
@@ -91,6 +88,7 @@ public class HUPPAALController implements Initializable {
     public MenuItem menuBarViewFilePanel;
     public MenuItem menuBarViewQueryPanel;
     public MenuItem menuBarFileSave;
+    public JFXSnackbar snackbar;
     private double tabPanePreviousY = 0;
     private boolean shouldISkipOpeningTheMessagesContainer = true;
 

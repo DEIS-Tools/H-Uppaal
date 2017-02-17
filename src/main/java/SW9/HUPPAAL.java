@@ -78,6 +78,8 @@ public class HUPPAAL extends Application {
 
             gson.toJson(queries, writer);
             writer.close();
+
+            presentation.showSnackbarMessage("Project saved!");
         } catch (final IOException e) {
             e.printStackTrace();
         }

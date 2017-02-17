@@ -200,3 +200,20 @@
 	-fx-fill: -green-700;
 	-fx-font-weight: bold;
 }
+
+.jfx-snackbar-content {
+	-fx-background-color: #323232;
+	-fx-font-family: "Roboto Medium";
+	-fx-font-size: 13.0;
+}
+
+.jfx-snackbar-toast {
+	-fx-text-fill: WHITE;
+
+	-fx-padding-left: 24;
+	-fx-padding-right: 24;
+}
+
+.jfx-snackbar-action {
+	-fx-text-fill: WHITE;
+}
