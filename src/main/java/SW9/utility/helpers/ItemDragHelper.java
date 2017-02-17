@@ -131,10 +131,9 @@ public class ItemDragHelper {
         });
 
         mouseSubject.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
-            if(!event.isPrimaryButtonDown()) return;
-
             final double currentX = mouseSubject.getLayoutX();
-            final double currentY = mouseSubject.getLayoutY();
+            final double currentY = mouseSubject.getLayoutY
+                    ();
             final double storePreviousX = previousX.get();
             final double storePreviousY = previousY.get();
 

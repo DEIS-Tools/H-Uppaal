@@ -206,6 +206,10 @@ public class UPPAALDriver {
     private static List<String> getTemplateNames(final Component component) {
         final List<String> subComponentInstanceNames = new ArrayList<>();
 
+        if(component.isIsMain()) {
+            subComponentInstanceNames.add(component.getName());
+        }
+
         // Run through all sub components in main
         for (final SubComponent subComp : HUPPAAL.getProject().getMainComponent().getSubComponents()) {
             subComponentInstanceNames.addAll(getTemplateNames("", subComp, component));
