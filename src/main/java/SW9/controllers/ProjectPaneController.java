@@ -179,7 +179,10 @@ public class ProjectPaneController implements Initializable {
         component.isMainProperty().addListener((obs, oldIsMain, newIsMain) -> {
             final Component mainComponent = HUPPAAL.getProject().getMainComponent();
 
-            if (component.equals(mainComponent)) return;
+            if (component.equals(mainComponent) && !newIsMain) {
+                HUPPAAL.getProject().setMainComponent(null);
+                return;
+            }
 
             if (mainComponent != null && newIsMain) {
                 mainComponent.setIsMain(false);

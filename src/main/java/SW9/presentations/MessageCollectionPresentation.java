@@ -96,6 +96,14 @@ public class MessageCollectionPresentation extends VBox {
         final Circle indicator = (Circle) lookup("#indicator");
         final Line line = (Line) lookup("#line");
 
+        line.setStroke(Color.GREY.getColor(Color.Intensity.I400));
+
+        // This is an project wide message that is not specific to a component
+        if(component == null) {
+            headline.setText("Project");
+            return;
+        }
+
         headline.setText(component.getName());
         headline.textProperty().bind(component.nameProperty());
 
@@ -126,8 +134,6 @@ public class MessageCollectionPresentation extends VBox {
 
         updateColor.accept(component.getColor(), component.getColorIntensity());
         component.colorProperty().addListener((observable, oldColor, newColor) -> updateColor.accept(newColor, component.getColorIntensity()));
-
-        line.setStroke(Color.GREY.getColor(Color.Intensity.I400));
     }
 
 }
