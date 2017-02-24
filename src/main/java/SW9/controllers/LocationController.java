@@ -110,6 +110,25 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
 
         dropDownMenu = new DropDownMenu(((Pane) root.getParent().getParent().getParent()), root, 230, true);
 
+        dropDownMenu.addClickableListElement("Draw edge",
+                (event) -> {
+                        final Edge newEdge = new Edge(getLocation());
+
+                        KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+                            getComponent().removeEdge(newEdge);
+                            UndoRedoStack.forgetLast();
+                        }));
+
+                        UndoRedoStack.push(() -> { // Perform
+                            getComponent().addEdge(newEdge);
+                        }, () -> { // Undo
+                            getComponent().removeEdge(newEdge);
+                        }, "Created edge starting from location " + getLocation().getNickname(), "add-circle");
+
+                        dropDownMenu.close();
+                    }
+                );
+
         dropDownMenu.addClickableAndDisableableListElement("Add Nickname",
                 getLocation().nicknameProperty().isNotEmpty().or(nicknameTag.textFieldFocusProperty()),
                 event -> {
