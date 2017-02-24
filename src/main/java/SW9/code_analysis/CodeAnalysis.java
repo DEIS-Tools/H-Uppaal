@@ -70,10 +70,6 @@ public class CodeAnalysis {
     }
 
     public static void addMessage(final Component component, final Message message) {
-        if (component == null) {
-            System.out.println("Component is null!!");
-        }
-
         if (message.getMessageType().equals(MessageType.WARNING)) {
             addToWarnings(component, message);
         } else if (message.getMessageType().equals(MessageType.ERROR)) {
