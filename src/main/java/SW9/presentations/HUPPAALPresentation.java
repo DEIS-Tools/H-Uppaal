@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static SW9.utility.colors.EnabledColor.enabledColors;
-import static javafx.scene.paint.Color.TRANSPARENT;
 
 public class HUPPAALPresentation extends StackPane {
 
@@ -364,14 +363,6 @@ public class HUPPAALPresentation extends StackPane {
                 CornerRadii.EMPTY,
                 Insets.EMPTY
         )));
-
-        // Set the color of the query text field
-        controller.queryTextField.setUnFocusColor(TRANSPARENT);
-        controller.queryTextField.setFocusColor(modalBarColor.getColor(modalBarColorIntensity));
-
-        // Set the color of the comment text field
-        controller.commentTextField.setUnFocusColor(TRANSPARENT);
-        controller.commentTextField.setFocusColor(modalBarColor.getColor(modalBarColorIntensity));
     }
 
     private void initializeToggleQueryPaneFunctionality() {
@@ -549,5 +540,10 @@ public class HUPPAALPresentation extends StackPane {
         controller.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(message, "", 3000, event -> {
 
         }));
+    }
+
+    public void showHelp() {
+        controller.dialogContainer.setVisible(true);
+        controller.dialog.show(controller.dialogContainer);
     }
 }

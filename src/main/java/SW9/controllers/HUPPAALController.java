@@ -18,7 +18,6 @@ import javafx.animation.Transition;
 import javafx.beans.binding.When;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -90,6 +89,7 @@ public class HUPPAALController implements Initializable {
     public MenuItem menuBarViewQueryPanel;
     public MenuItem menuBarFileSave;
     public JFXSnackbar snackbar;
+    public MenuItem menuBarHelpHelp;
     private double tabPanePreviousY = 0;
     private boolean shouldISkipOpeningTheMessagesContainer = true;
 
@@ -197,6 +197,8 @@ public class HUPPAALController implements Initializable {
             final BooleanProperty isOpen = HUPPAAL.toggleQueryPane();
             menuBarViewQueryPanel.getGraphic().opacityProperty().bind(new When(isOpen).then(1).otherwise(0));
         });
+
+        menuBarHelpHelp.setOnAction(event -> HUPPAAL.showHelp());
     }
 
     private void initializeMessages() {
@@ -500,6 +502,11 @@ public class HUPPAALController implements Initializable {
     @FXML
     private void redoClicked() {
         UndoRedoStack.redo();
+    }
+
+    @FXML
+    private void closeDialog() {
+        dialog.close();
     }
 
 }

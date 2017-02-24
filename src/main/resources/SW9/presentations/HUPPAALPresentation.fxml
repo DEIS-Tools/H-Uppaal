@@ -5,11 +5,9 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Rectangle?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.text.Text?>
 <?import org.kordamp.ikonli.javafx.*?>
-<?import SW9.presentations.CanvasPresentation?>
-<?import SW9.presentations.ProjectPanePresentation?>
-<?import SW9.presentations.QueryPanePresentation?>
+<?import SW9.presentations.*?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
@@ -144,6 +142,14 @@
                     </MenuItem>
                 </Menu>
 
+                <Menu text="Help">
+                    <MenuItem fx:id="menuBarHelpHelp" text="Help">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-help" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                </Menu>
+
             </MenuBar>
         </top>
 
@@ -218,52 +224,103 @@
                 <VBox>
 
                     <VBox style="-fx-padding: 24px;">
-                        <Text text="Detailed Query Information" styleClass="title"/>
+                        <Text text="Help" styleClass="title"/>
 
                         <Region minHeight="20"/>
 
-                        <JFXTextField fx:id="queryTextField"
-                                      text="A[] not deadlock"
-                                      styleClass="subhead" style="-fx-padding: 0;"/>
+                        <HBox>
+                            <LocationPresentation>
+                                <initial>INITIAL</initial>
+                            </LocationPresentation>
+                            <Label styleClass="body1" style="-fx-padding: 9 0 0 5">
+                                This is an initial location (top left in a component)
+                            </Label>
+                        </HBox>
+
+                        <HBox>
+                            <LocationPresentation>
+                                <initial>FINAL</initial>
+                            </LocationPresentation>
+                            <Label styleClass="body1" style="-fx-padding: 9 0 0 5">
+                                This is a final location (bottom right in a component)
+                            </Label>
+                        </HBox>
+
+                        <HBox>
+                            <LocationPresentation>
+                                <initial>URGENT</initial>
+                            </LocationPresentation>
+                            <Label styleClass="body1" style="-fx-padding: 9 0 0 5">
+                                This is an urgent location
+                            </Label>
+                        </HBox>
+
+                        <HBox>
+                            <LocationPresentation>
+                                <initial>COMMITTED</initial>
+                            </LocationPresentation>
+                            <Label styleClass="body1" style="-fx-padding: 9 0 0 5">
+                                This is a committed location
+                            </Label>
+                        </HBox>
+
+                        <Region minHeight="16"/>
+                        <HBox minHeight="1" style="-fx-background-color: #eee;"/>
+                        <Region minHeight="16"/>
+
+                        <HBox>
+                            <Label styleClass="body2">
+                                Alt-click and middle-click:
+                            </Label>
+                            <Region minWidth="8"/>
+                            <Label styleClass="body1">
+                                Adds locations and draws edges
+                            </Label>
+                        </HBox>
 
                         <Region minHeight="8"/>
 
-                        <JFXTextField fx:id="commentTextField"
-                                      text="There is no deadlock in the model"
-                                      styleClass="subhead" style="-fx-padding: 0;"/>
-
-                        <Region minHeight="16"/>
-
-                        <!-- States explored -->
                         <HBox>
-                            <Text styleClass="subhead" style="-fx-font-weight: bold;">States explored:</Text>
-                            <Region minWidth="4"/>
-                            <Text styleClass="subhead">802.102</Text>
-                        </HBox>
-
-                        <Region minHeight="4"/>
-
-                        <!-- RAM Usage -->
-                        <HBox>
-                            <Text styleClass="subhead" style="-fx-font-weight: bold;">RAM Usage:</Text>
-                            <Region minWidth="4"/>
-                            <Text styleClass="subhead">96MB / 6.327MB / 0MB</Text>
+                            <Label styleClass="body2">
+                                Right-click:
+                            </Label>
+                            <Region minWidth="8"/>
+                            <Label styleClass="body1">
+                                Opens context menus
+                            </Label>
                         </HBox>
 
                         <Region minHeight="16"/>
+                        <HBox minHeight="1" style="-fx-background-color: #eee;"/>
+                        <Region minHeight="16"/>
+
+                        <HBox>
+                            <VBox>
+                                <JorkPresentation>
+                                    <type>FORK</type>
+                                </JorkPresentation>
+                                <Label alignment="BASELINE_CENTER" style="-fx-padding: 6 20 0 20;" styleClass="caption">
+                                    Fork
+                                </Label>
+                            </VBox>
+                            <VBox>
+                                <JorkPresentation>
+                                    <type>JOIN</type>
+                                </JorkPresentation>
+                                <Label alignment="BASELINE_CENTER" style="-fx-padding: 6 20 0 20;" styleClass="caption">
+                                    Join
+                                </Label>
+                            </VBox>
+                            <Label styleClass="body1" style="-fx-padding: 2 0 0 5">
+                                Models parallelization of subcomponents
+                            </Label>
+                        </HBox>
 
                     </VBox>
 
-                    <!--
-                    <Region style="-fx-background-color: -grey-100;" minHeight="1" />
-                    -->
-
-                    <JFXProgressBar/>
-
                     <HBox style="-fx-padding: 8px;">
                         <Region HBox.hgrow="ALWAYS"/>
-
-                        <JFXButton text="Stop Query"/>
+                        <JFXButton text="CLOSE" onMouseClicked="#closeDialog"/>
                     </HBox>
 
                 </VBox>

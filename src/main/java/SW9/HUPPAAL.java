@@ -85,6 +85,10 @@ public class HUPPAAL extends Application {
         }
     }
 
+    public static void showHelp() {
+        presentation.showHelp();
+    }
+
     public static BooleanProperty toggleFilePane() {
         return presentation.toggleFilePane();
     }

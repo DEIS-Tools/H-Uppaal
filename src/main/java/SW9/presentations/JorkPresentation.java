@@ -5,6 +5,7 @@ import SW9.abstractions.Jork;
 import SW9.controllers.JorkController;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.SelectHelper;
+import javafx.beans.NamedArg;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
@@ -24,6 +25,10 @@ public class JorkPresentation extends Group implements SelectHelper.Selectable {
     public static final double CORNER_SIZE = GRID_SIZE * 1.5;
 
     private final JorkController controller;
+
+    public JorkPresentation(@NamedArg("type") final String type) {
+        this(new Jork(type.equals("JOIN") ? Jork.Type.JOIN : Jork.Type.FORK), new Component());
+    }
 
     public JorkPresentation(final Jork newJork, final Component component) {
         final URL url = this.getClass().getResource("JorkPresentation.fxml");

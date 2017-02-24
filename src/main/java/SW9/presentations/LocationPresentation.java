@@ -1,6 +1,5 @@
 package SW9.presentations;
 
-import SW9.Debug;
 import SW9.abstractions.Component;
 import SW9.abstractions.Location;
 import SW9.controllers.CanvasController;
@@ -11,6 +10,7 @@ import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
 import javafx.animation.*;
+import javafx.beans.NamedArg;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.When;
 import javafx.beans.property.*;
@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import static javafx.util.Duration.millis;
 
@@ -37,8 +36,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
     public static final double RADIUS = 15;
     public static final double INITIAL_RADIUS = RADIUS / 4 * 3;
+    private static int id = 0;
     private final LocationController controller;
-
     private final MouseTracker mouseTracker = new MouseTracker(this);
     private final Timeline initialAnimation = new Timeline();
     private final Timeline hoverAnimationEntered = new Timeline();
@@ -47,15 +46,16 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private final Timeline hiddenAreaAnimationExited = new Timeline();
     private final Timeline scaleShakeIndicatorBackgroundAnimation = new Timeline();
     private final Timeline shakeContentAnimation = new Timeline();
-
     private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
     private final DoubleProperty animation = new SimpleDoubleProperty(0);
     private final DoubleBinding reverseAnimation = new SimpleDoubleProperty(1).subtract(animation);
-
     private final boolean interactable;
-
     private BooleanProperty isPlaced = new SimpleBooleanProperty(true);
     private Timeline shakeDeleteAnimation = new Timeline();
+
+    public LocationPresentation(@NamedArg("initial") final String initial) {
+        this(initialHelpDialogLocation(initial), new Component(), false);
+    }
 
     public LocationPresentation(final Location location, final Component component) {
         this(location, component, true);
@@ -97,6 +97,23 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private static Location initialHelpDialogLocation(final String initial) {
+        final Location location = new Location();
+        location.setId("L" + id++);
+
+        if (initial.equals("INITIAL")) {
+            location.setType(Location.Type.INITIAL);
+        } else if (initial.equals("FINAL")) {
+            location.setType(Location.Type.FINAl);
+        } else if (initial.equals("URGENT")) {
+            location.setUrgency(Location.Urgency.URGENT);
+        } else if (initial.equals("COMMITTED")) {
+            location.setUrgency(Location.Urgency.COMMITTED);
+        }
+
+        return location;
     }
 
     private void initializeIdLabel() {
