@@ -5,6 +5,7 @@ import SW9.abstractions.Edge;
 import SW9.abstractions.Jork;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.ComponentPresentation;
+import SW9.presentations.DropDownMenu;
 import SW9.presentations.JorkPresentation;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
@@ -14,6 +15,7 @@ import SW9.utility.keyboard.Keybind;
 import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.keyboard.NudgeDirection;
 import SW9.utility.keyboard.Nudgeable;
+import com.jfoenix.controls.JFXPopup;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -25,9 +27,11 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Path;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class JorkController implements Initializable, SelectHelper.ItemSelectable, Nudgeable {
@@ -94,6 +98,8 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
             if (event.isPrimaryButtonDown() && unfinishedEdge != null) {
                 unfinishedEdge.setTargetJork(getJork());
 
+            } else if (event.isSecondaryButtonDown()) {
+                showContextMenu();
             } else if ((event.isAltDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
                 final Edge newEdge = new Edge(getJork());
 
@@ -111,6 +117,54 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
         });
 
         ItemDragHelper.makeDraggable(root, this::getDragBounds);
+    }
+
+    private void showContextMenu() {
+
+        final DropDownMenu contextMenu = new DropDownMenu(((Pane) root.getParent().getParent().getParent().getParent()), root, 230, true);
+
+        contextMenu.addClickableListElement("Draw edge",
+                (event) -> {
+                    final Edge newEdge = new Edge(getJork());
+
+                    KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+                        getComponent().removeEdge(newEdge);
+                        UndoRedoStack.forgetLast();
+                    }));
+
+                    UndoRedoStack.push(() -> { // Perform
+                        getComponent().addEdge(newEdge);
+                    }, () -> { // Undo
+                        getComponent().removeEdge(newEdge);
+                    }, "Created edge starting from " + getJork(), "add-circle");
+
+                    contextMenu.close();
+                }
+        );
+
+        contextMenu.addSpacerElement();
+
+        contextMenu.addClickableListElement("Delete", (mouseEvent -> {
+            final Component component = CanvasController.getActiveComponent();
+            final Jork jork = getJork();
+
+            final List<Edge> relatedEdges = component.getRelatedEdges(jork);
+
+            UndoRedoStack.push(() -> { // Perform
+                // Remove the jork
+                component.getJorks().remove(jork);
+                relatedEdges.forEach(component::removeEdge);
+            }, () -> { // Undo
+                // Re-all the jork
+                component.getJorks().add(jork);
+                relatedEdges.forEach(component::addEdge);
+            }, String.format("Deleted %s", jork), "delete");
+
+
+            contextMenu.close();
+        }));
+
+        contextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
     }
 
     public Jork getJork() {

@@ -79,9 +79,29 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
 
         dropDownMenu = new DropDownMenu(((Pane) root.getParent().getParent().getParent()), root, 230, true);
 
-        dropDownMenu.addClickableListElement("Open", event -> {
+        dropDownMenu.addClickableListElement("Open in canvas", event -> {
             CanvasController.setActiveComponent(getSubComponent().getComponent());
         });
+
+
+        dropDownMenu.addClickableListElement("Draw edge",
+                (event) -> {
+                    final Edge newEdge = new Edge(getSubComponent());
+
+                    KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+                        getParentComponent().removeEdge(newEdge);
+                        UndoRedoStack.forgetLast();
+                    }));
+
+                    UndoRedoStack.push(() -> { // Perform
+                        getParentComponent().addEdge(newEdge);
+                    }, () -> { // Undo
+                        getParentComponent().removeEdge(newEdge);
+                    }, "Created edge starting from " + getSubComponent(), "add-circle");
+
+                    dropDownMenu.close();
+                }
+        );
 
         dropDownMenu.addSpacerElement();
 
