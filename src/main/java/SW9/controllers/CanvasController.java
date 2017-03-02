@@ -40,6 +40,10 @@ public class CanvasController implements Initializable {
         return activeComponent;
     }
 
+    public static void leaveTextAreas() {
+        leaveTextAreas.run();
+    }
+
     public static EventHandler<KeyEvent> getLeaveTextAreaKeyHandler() {
         return getLeaveTextAreaKeyHandler(keyEvent -> {});
     }
@@ -52,6 +56,7 @@ public class CanvasController implements Initializable {
     }
 
     private static Consumer<KeyEvent> leaveOnEnterPressed;
+    private static Runnable leaveTextAreas;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -83,9 +88,11 @@ public class CanvasController implements Initializable {
             root.requestFocus();
         });
 
+        leaveTextAreas = () -> {root.requestFocus();};
+
         leaveOnEnterPressed = (keyEvent) -> {
             if (keyEvent.getCode().equals(KeyCode.ENTER) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-                root.requestFocus();
+                leaveTextAreas();
             }
         };
 

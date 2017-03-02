@@ -1,6 +1,7 @@
 package SW9.utility.helpers;
 
 import SW9.code_analysis.Nearable;
+import SW9.controllers.CanvasController;
 import SW9.utility.colors.Color;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,6 +17,9 @@ public class SelectHelper {
     public static ObservableList<Nearable> elementsToBeSelected = FXCollections.observableArrayList();
 
     public static void select(final ItemSelectable selectable) {
+
+        CanvasController.leaveTextAreas();
+
         // Check if the element is already selected
         if (selectedElements.contains(selectable)) return;
 

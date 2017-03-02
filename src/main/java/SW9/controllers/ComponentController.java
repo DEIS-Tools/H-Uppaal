@@ -773,6 +773,8 @@ public class ComponentController implements Initializable {
     private void modelContainerPressed(final MouseEvent event) {
         event.consume();
 
+        CanvasController.leaveTextAreas();
+
         final Edge unfinishedEdge = getComponent().getUnfinishedEdge();
 
 
