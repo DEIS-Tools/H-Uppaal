@@ -590,4 +590,12 @@ public class Edge implements Serializable, Nearable {
         }
     }
 
+    public boolean isSelfLoop() {
+
+        return (getSourceLocation() != null && getSourceLocation().equals(getTargetLocation())) ||
+                (getSourceSubComponent() != null && getSourceSubComponent().equals(getTargetSubComponent())) ||
+                (getSourceJork() != null && getSourceJork().equals(getTargetJork()));
+
+    }
+
 }

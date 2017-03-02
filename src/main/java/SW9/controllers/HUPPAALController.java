@@ -490,21 +490,37 @@ public class HUPPAALController implements Initializable {
             } else if (selectable instanceof NailController) {
                 final NailController nailController = (NailController) selectable;
                 final Edge edge = nailController.getEdge();
+                final Component component = nailController.getComponent();
                 final Nail nail = nailController.getNail();
                 final int index = edge.getNails().indexOf(nail);
 
                 final String restoreProperty = edge.getProperty(nail.getPropertyType());
 
+                // If the last nail on a self loop for a location or join/fork delete the edge also
+                final boolean shouldDeleteEdgeAlso = edge.isSelfLoop() && edge.getNails().size() == 1 && edge.getSourceSubComponent() != null;
+
+                // Create an undo redo description based, add extra comment if edge is also deleted
+                String message =  String.format("Deleted %s", selectable.toString());
+                if(shouldDeleteEdgeAlso) {
+                    message += String.format("(Was last Nail on self loop edge --> %s also deleted)", edge.toString());
+                }
+
                 UndoRedoStack.push(
                         () -> {
                             edge.removeNail(nail);
                             edge.setProperty(nail.getPropertyType(), "");
+                            if(shouldDeleteEdgeAlso) {
+                                component.getEdges().remove(edge);
+                            }
                         },
                         () -> {
+                            if(shouldDeleteEdgeAlso) {
+                                component.getEdges().add(edge);
+                            }
                             edge.setProperty(nail.getPropertyType(), restoreProperty);
                             edge.insertNailAt(nail, index);
                         },
-                        "Nail removed",
+                        message,
                         "delete"
                 );
             }
