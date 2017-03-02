@@ -91,7 +91,7 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
 
             final Component component = getComponent();
             final Edge unfinishedEdge = component.getUnfinishedEdge();
-            if ((event.isPrimaryButtonDown() && event.isAltDown() || event.isMiddleButtonDown()) && unfinishedEdge != null) {
+            if (event.isPrimaryButtonDown() && unfinishedEdge != null) {
                 unfinishedEdge.setTargetJork(getJork());
 
             } else if ((event.isAltDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
