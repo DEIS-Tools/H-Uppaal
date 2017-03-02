@@ -143,7 +143,7 @@ public class SubComponentPresentation extends StackPane implements SelectHelper.
             controller.identifier.setFocusColor(color.getTextColor(colorIntensity));
             controller.identifier.setUnFocusColor(javafx.scene.paint.Color.TRANSPARENT);
 
-            controller.originalComponent.setStyle("-fx-text-fill: " + color.getTextColorRgbaString(colorIntensity) + ";");
+            controller.originalComponentLabel.setStyle("-fx-text-fill: " + color.getTextColorRgbaString(colorIntensity) + ";");
         };
 
         controller.getSubComponent().getComponent().colorProperty().addListener(observable -> updateColor.run());
@@ -153,8 +153,8 @@ public class SubComponentPresentation extends StackPane implements SelectHelper.
         controller.identifier.setPadding(new Insets(2, 0, 0, CORNER_SIZE));
         controller.identifier.setOnKeyPressed(CanvasController.getLeaveTextAreaKeyHandler());
 
-        controller.originalComponent.setPadding(new Insets(2, 5, 0, 0));
-        controller.originalComponent.textProperty().bind(subComponent.getComponent().nameProperty());
+        controller.originalComponentLabel.setPadding(new Insets(0, 5, 0, 15));
+        controller.originalComponentLabel.textProperty().bind(subComponent.getComponent().nameProperty());
     }
 
     private void initializeInitialLocation() {

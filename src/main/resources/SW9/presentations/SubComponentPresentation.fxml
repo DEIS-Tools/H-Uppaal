@@ -16,14 +16,14 @@
 
     <BorderPane fx:id="frame">
         <top>
-            <BorderPane fx:id="toolbar">
-                <left>
+            <HBox fx:id="toolbar">
+
                     <JFXTextField fx:id="identifier" styleClass="sub-caption" translateY="1"/>
-                </left>
-                <right>
-                    <Label fx:id="originalComponent" styleClass="sub-caption" translateY="1"/>
-                </right>
-            </BorderPane>
+                <VBox alignment="CENTER_RIGHT" prefWidth="200.0">
+                    <Label style="-fx" HBox.hgrow="ALWAYS" textAlignment="RIGHT" fx:id="originalComponentLabel"
+                           styleClass="sub-caption" translateY="-1"/>
+                </VBox>
+            </HBox>
         </top>
 
         <center>

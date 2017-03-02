@@ -33,6 +33,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Line;
@@ -52,11 +53,11 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
     private final ObjectProperty<SubComponent> subComponent = new SimpleObjectProperty<>(null);
     private final ObjectProperty<Component> parentComponent = new SimpleObjectProperty<>(null);
 
-    public BorderPane toolbar;
+    public HBox toolbar;
     public Rectangle background;
     public BorderPane frame;
     public JFXTextField identifier;
-    public Label originalComponent;
+    public Label originalComponentLabel;
     public StackPane root;
     public Line line1;
     public Line line2;
