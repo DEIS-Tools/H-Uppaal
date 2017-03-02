@@ -523,6 +523,21 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
 
                         dropDownMenu.addSpacerElement();
 
+                        dropDownMenu.addClickableListElement("Add Nail", mouseEvent -> {
+                            final double nailX = Math.round((DropDownMenu.x - getComponent().getX()) / GRID_SIZE) * GRID_SIZE;
+                            final double nailY = Math.round((DropDownMenu.y - getComponent().getY()) / GRID_SIZE) * GRID_SIZE;
+                            final Nail newNail = new Nail(nailX, nailY);
+
+                            UndoRedoStack.push(
+                                    () -> getEdge().insertNailAt(newNail, links.indexOf(link)),
+                                    () -> getEdge().removeNail(newNail),
+                                    "Nail added",
+                                    "add-circle"
+                            );
+                            dropDownMenu.close();
+                        });
+                        dropDownMenu.addSpacerElement();
+
                         dropDownMenu.addClickableListElement("Delete", mouseEvent -> {
                             dropDownMenu.close();
                             UndoRedoStack.push(() -> { // Perform
