@@ -22,6 +22,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.*;
 import javafx.util.Duration;
+import org.w3c.dom.css.Rect;
 
 import java.io.IOException;
 import java.net.URL;
@@ -85,7 +86,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
             initializeIdLabel();
             initializeTypeGraphics();
-            initializeLocationShape();
+            initializeLocationShapes();
             initializeTags();
             initializeInitialAnimation();
             initializeHoverAnimationEntered();
@@ -306,10 +307,21 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         colorIntensity.addListener((obs, old, newIntensity) -> updateColor.accept(color.get(), newIntensity));
     }
 
-    private void initializeLocationShape() {
-        final Path path = controller.locationShape;
+    private void initializeLocationShapes() {
+        final Path normalAndUrgentShape = controller.locationShape;
+        final Rectangle committedShape = controller.committedShape;
+        final Rectangle initialCommittedShape = controller.initialCommittedShape;
 
-        initializeLocationShape(path, RADIUS);
+        initializeLocationShapes(normalAndUrgentShape, RADIUS);
+
+        committedShape.setWidth(RADIUS * 2);
+        committedShape.setHeight(RADIUS * 2);
+        committedShape.setTranslateX(-RADIUS);
+        committedShape.setTranslateY(-RADIUS);
+        initialCommittedShape.setWidth(INITIAL_RADIUS * 2);
+        initialCommittedShape.setHeight(INITIAL_RADIUS * 2);
+        initialCommittedShape.setTranslateX(-INITIAL_RADIUS);
+        initialCommittedShape.setTranslateY(-INITIAL_RADIUS);
 
         final Location location = controller.getLocation();
 
@@ -345,9 +357,9 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             }
 
             if(newUrgency.equals(Location.Urgency.COMMITTED)) {
-                path.setStrokeWidth(3);
+                committedShape.setVisible(true);
             } else {
-                path.setStrokeWidth(1);
+                committedShape.setVisible(false);
             }
         };
 
@@ -363,8 +375,10 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
         // Delegate to style the label based on the color of the location
         final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
-            path.setFill(newColor.getColor(newIntensity));
-            path.setStroke(newColor.getColor(newIntensity.next(2)));
+            normalAndUrgentShape.setFill(newColor.getColor(newIntensity));
+            normalAndUrgentShape.setStroke(newColor.getColor(newIntensity.next(2)));
+            committedShape.setFill(newColor.getColor(newIntensity));
+            committedShape.setStroke(newColor.getColor(newIntensity.next(2)));
         };
 
         updateColorDelegates.add(updateColor);
@@ -380,11 +394,13 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         final Location location = controller.getLocation();
 
         final Path initialIndicator = controller.initialIndicator;
+        final Rectangle initialCommittedShape = controller.initialCommittedShape;
         final StackPane finalIndicator = controller.finalIndicator;
 
-        initializeLocationShape(initialIndicator, INITIAL_RADIUS);
+        initializeLocationShapes(initialIndicator, INITIAL_RADIUS);
 
-        initialIndicator.visibleProperty().bind(new When(location.typeProperty().isEqualTo(Location.Type.INITIAL)).then(true).otherwise(false));
+        initialIndicator.visibleProperty().bind(new When(location.typeProperty().isEqualTo(Location.Type.INITIAL).and(location.urgencyProperty().isNotEqualTo(Location.Urgency.COMMITTED))).then(true).otherwise(false));
+        initialCommittedShape.visibleProperty().bind(new When(location.typeProperty().isEqualTo(Location.Type.INITIAL).and(location.urgencyProperty().isEqualTo(Location.Urgency.COMMITTED))).then(true).otherwise(false));
         finalIndicator.visibleProperty().bind(new When(location.typeProperty().isEqualTo(Location.Type.FINAl)).then(true).otherwise(false));
     }
 
@@ -564,7 +580,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         return controller;
     }
 
-    private void initializeLocationShape(final Path locationShape, final double radius) {
+    private void initializeLocationShapes(final Path locationShape, final double radius) {
         final double c = 0.551915024494;
         final double circleToOctagonLineRatio = 0.35;
 

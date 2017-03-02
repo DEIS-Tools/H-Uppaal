@@ -35,6 +35,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Path;
+import javafx.scene.shape.Rectangle;
 
 import java.net.URL;
 import java.util.*;
@@ -61,6 +62,8 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
     public Label idLabel;
     public Line nameTagLine;
     public Line invariantTagLine;
+    public Rectangle committedShape;
+    public Rectangle initialCommittedShape;
     private TimerTask reachabilityCheckTask;
     private DropDownMenu dropDownMenu;
     private boolean dropDownMenuInitialized = false;
