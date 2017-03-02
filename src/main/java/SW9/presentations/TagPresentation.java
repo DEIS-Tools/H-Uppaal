@@ -47,6 +47,7 @@ public class TagPresentation extends StackPane {
     private double previousX;
     private double previousY;
     private boolean wasDragged;
+    private boolean hadInitialFocus = false;
 
     private static double TAG_HEIGHT = 1.6 * GRID_SIZE;
 
@@ -64,10 +65,22 @@ public class TagPresentation extends StackPane {
             initializeShape();
             initializeLabel();
             initializeMouseTransparency();
+            initializeTextFocusHandler();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeTextFocusHandler() {
+
+        // When a label is loaded do not request focus initially
+        textFieldFocusProperty().addListener((observable, oldValue, newValue) -> {
+            if(!hadInitialFocus && newValue) {
+                hadInitialFocus = true;
+                CanvasController.leaveTextAreas();
+            }
+        });
     }
 
     private void initializeMouseTransparency() {
