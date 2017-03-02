@@ -149,6 +149,8 @@ public class HUPPAALPresentation extends StackPane {
                     controller.backendErrorsTab.setText("Backend Errors");
                 } else {
                     controller.backendErrorsTab.setText("Backend Errors (" + errors + ")");
+                    controller.expandMessagesContainer.play();
+                    controller.tabPane.getSelectionModel().select(controller.backendErrorsTab);
                 }
             }
         });
@@ -163,6 +165,8 @@ public class HUPPAALPresentation extends StackPane {
                     controller.errorsTab.setText("Errors");
                 } else {
                     controller.errorsTab.setText("Errors (" + errors + ")");
+                    controller.expandMessagesContainer.play();
+                    controller.tabPane.getSelectionModel().select(controller.errorsTab);
                 }
             }
         });

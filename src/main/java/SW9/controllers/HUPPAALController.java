@@ -64,7 +64,7 @@ public class HUPPAALController implements Initializable {
     public Tab warningsTab;
     public Rectangle tabPaneResizeElement;
     public StackPane tabPaneContainer;
-    private final Transition expandMessagesContainer = new Transition() {
+    public final Transition expandMessagesContainer = new Transition() {
         {
             setInterpolator(Interpolator.SPLINE(0.645, 0.045, 0.355, 1));
             setCycleDuration(Duration.millis(200));
@@ -497,7 +497,7 @@ public class HUPPAALController implements Initializable {
                 final String restoreProperty = edge.getProperty(nail.getPropertyType());
 
                 // If the last nail on a self loop for a location or join/fork delete the edge also
-                final boolean shouldDeleteEdgeAlso = edge.isSelfLoop() && edge.getNails().size() == 1 && edge.getSourceSubComponent() != null;
+                final boolean shouldDeleteEdgeAlso = edge.isSelfLoop() && edge.getNails().size() == 1 && edge.getSourceSubComponent() == null;
 
                 // Create an undo redo description based, add extra comment if edge is also deleted
                 String message =  String.format("Deleted %s", selectable.toString());
