@@ -72,8 +72,8 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
 
             // Invalidate the list of edges (to update UI and errors)
             newEdge.targetCircularProperty().addListener(observable -> {
-                getComponent().getEdges().remove(getEdge());
-                getComponent().getEdges().add(getEdge());
+                getComponent().removeEdge(getEdge());
+                getComponent().addEdge(getEdge());
             });
         });
 
@@ -541,9 +541,9 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                         dropDownMenu.addClickableListElement("Delete", mouseEvent -> {
                             dropDownMenu.close();
                             UndoRedoStack.push(() -> { // Perform
-                                getComponent().getEdges().remove(getEdge());
+                                getComponent().removeEdge(getEdge());
                             }, () -> { // Undo
-                                getComponent().getEdges().add(getEdge());
+                                getComponent().addEdge(getEdge());
                             }, "Deleted edge " + getEdge(), "delete");
                         });
 

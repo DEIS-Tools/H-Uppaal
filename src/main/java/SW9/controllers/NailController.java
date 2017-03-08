@@ -98,12 +98,12 @@ public class NailController implements Initializable, SelectHelper.ItemSelectabl
                         edge.removeNail(nail);
                         edge.setProperty(nail.getPropertyType(), "");
                         if(shouldDeleteEdgeAlso) {
-                            component.getEdges().remove(edge);
+                            component.removeEdge(edge);
                         }
                     },
                     () -> {
                         if(shouldDeleteEdgeAlso) {
-                            component.getEdges().add(edge);
+                            component.addEdge(edge);
                         }
                         edge.setProperty(nail.getPropertyType(), restoreProperty);
                         edge.insertNailAt(nail, index);

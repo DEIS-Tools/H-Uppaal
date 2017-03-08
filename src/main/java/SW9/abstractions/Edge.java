@@ -1,6 +1,7 @@
 package SW9.abstractions;
 
 import SW9.code_analysis.Nearable;
+import SW9.controllers.HUPPAALController;
 import SW9.presentations.JorkPresentation;
 import SW9.utility.colors.Color;
 import SW9.utility.helpers.Circular;
@@ -53,25 +54,29 @@ public class Edge implements Serializable, Nearable {
 
     public Edge(final Location sourceLocation) {
         setSourceLocation(sourceLocation);
+        bindReachabilityAnalysis();
     }
 
     public Edge(final SubComponent sourceComponent) {
         setSourceSubComponent(sourceComponent);
+        bindReachabilityAnalysis();
     }
 
     public Edge(final Jork sourceJork) {
         setSourceJork(sourceJork);
+        bindReachabilityAnalysis();
     }
 
     public Edge(final JsonObject jsonObject, final Component component) {
         deserialize(jsonObject, component);
+        bindReachabilityAnalysis();
     }
 
     public Location getSourceLocation() {
         return sourceLocation.get();
     }
 
-    public void setSourceLocation(final Location sourceLocation) {
+    private void setSourceLocation(final Location sourceLocation) {
         this.sourceLocation.set(sourceLocation);
         updateSourceCircular();
     }
@@ -97,7 +102,7 @@ public class Edge implements Serializable, Nearable {
         return select.get();
     }
 
-    public void setSelect(final String select) {
+    private void setSelect(final String select) {
         this.select.set(select);
     }
 
@@ -109,7 +114,7 @@ public class Edge implements Serializable, Nearable {
         return guard.get();
     }
 
-    public void setGuard(final String guard) {
+    private void setGuard(final String guard) {
         this.guard.set(guard);
     }
 
@@ -121,7 +126,7 @@ public class Edge implements Serializable, Nearable {
         return update.get();
     }
 
-    public void setUpdate(final String update) {
+    private void setUpdate(final String update) {
         this.update.set(update);
     }
 
@@ -133,7 +138,7 @@ public class Edge implements Serializable, Nearable {
         return sync.get();
     }
 
-    public void setSync(final String sync) {
+    private void setSync(final String sync) {
         this.sync.set(sync);
     }
 
@@ -596,6 +601,14 @@ public class Edge implements Serializable, Nearable {
                 (getSourceSubComponent() != null && getSourceSubComponent().equals(getTargetSubComponent())) ||
                 (getSourceJork() != null && getSourceJork().equals(getTargetJork()));
 
+    }
+
+    private void bindReachabilityAnalysis() {
+
+        selectProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
+        guardProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
+        syncProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
+        updateProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
     }
 
 }

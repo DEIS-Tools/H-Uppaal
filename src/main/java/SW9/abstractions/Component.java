@@ -1,5 +1,6 @@
 package SW9.abstractions;
 
+import SW9.controllers.HUPPAALController;
 import SW9.presentations.DropDownMenu;
 import SW9.utility.UndoRedoStack;
 import SW9.utility.colors.Color;
@@ -9,6 +10,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
@@ -80,11 +82,14 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         finalLocation.setColorIntensity(getColorIntensity());
         finalLocation.setColor(getColor());
         this.finalLocation.set(finalLocation);
+
+        bindReachabilityAnalysis();
     }
 
     public Component(final JsonObject object) {
         hiddenID.incrementAndGet();
         deserialize(object);
+        bindReachabilityAnalysis();
     }
 
     public String getName() {
@@ -113,6 +118,14 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     }
 
     public ObservableList<Location> getLocations() {
+        return locations;
+    }
+
+    public List<Location> getLocationsWithInitialAndFinal() {
+        final List<Location> locations = new ArrayList<>();
+        locations.addAll(getLocations());
+        locations.add(initialLocation.get());
+        locations.add(finalLocation.get());
         return locations;
     }
 
@@ -499,5 +512,11 @@ public class Component implements Serializable, DropDownMenu.HasColor {
                 location.setColor(previousLocationColors.get(location).getKey());
             });
         }, String.format("Changed the color of %s to %s", this, color.name()), "color-lens");
+    }
+
+    private void bindReachabilityAnalysis() {
+        locations.addListener((ListChangeListener<? super Location>) c -> HUPPAALController.runReachabilityAnalysis());
+        edges.addListener((ListChangeListener<? super Edge>) c -> HUPPAALController.runReachabilityAnalysis());
+        declarationsProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
     }
 }

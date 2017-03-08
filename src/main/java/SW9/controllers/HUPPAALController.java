@@ -98,6 +98,8 @@ public class HUPPAALController implements Initializable {
 
     // Reachability analysis
     private static ExecutorService reachabilityService;
+    public static boolean reachabilityServiceEnabled = false;
+    private static long lastReachabilityServiceRun = 0;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -194,6 +196,7 @@ public class HUPPAALController implements Initializable {
             if(newMain == null) {
                 CodeAnalysis.addMessage(null, noMainComponentErrorMessage);
             } else {
+                HUPPAALController.runReachabilityAnalysis();
                 CodeAnalysis.removeMessage(null, noMainComponentErrorMessage);
             }
         });
@@ -458,10 +461,10 @@ public class HUPPAALController implements Initializable {
 
                 UndoRedoStack.push(() -> { // Perform
                     // Remove the edge
-                    component.getEdges().remove(edge);
+                    component.removeEdge(edge);
                 }, () -> { // Undo
                     // Re-all the edge
-                    component.getEdges().add(edge);
+                    component.addEdge(edge);
                 }, String.format("Deleted %s", selectable.toString()), "delete");
             } else if (selectable instanceof JorkController) {
                 final Component component = CanvasController.getActiveComponent();
@@ -517,12 +520,12 @@ public class HUPPAALController implements Initializable {
                             edge.removeNail(nail);
                             edge.setProperty(nail.getPropertyType(), "");
                             if(shouldDeleteEdgeAlso) {
-                                component.getEdges().remove(edge);
+                                component.removeEdge(edge);
                             }
                         },
                         () -> {
                             if(shouldDeleteEdgeAlso) {
-                                component.getEdges().add(edge);
+                                component.addEdge(edge);
                             }
                             edge.setProperty(nail.getPropertyType(), restoreProperty);
                             edge.insertNailAt(nail, index);
@@ -553,16 +556,20 @@ public class HUPPAALController implements Initializable {
 
 
     public static void runReachabilityAnalysis() {
+        if(!reachabilityServiceEnabled) return;
+
         if(reachabilityService != null) {
             reachabilityService.shutdownNow();
         }
+
+        System.out.println("Reachbility Analysis");
 
         reachabilityService = Executors.newFixedThreadPool(10);
 
         final Component mainComponent = HUPPAAL.getProject().getMainComponent();
 
         HUPPAAL.getProject().getComponents().forEach(component -> {
-            component.getLocations().forEach(location -> {
+            component.getLocationsWithInitialAndFinal().forEach(location -> {
                 reachabilityService.submit(() -> {
                             try {
                                 final Thread verifyThread = UPPAALDriver.verify(
@@ -577,7 +584,7 @@ public class HUPPAALController implements Initializable {
                                         (e) -> location.setReachability(Location.Reachability.UNKNOWN),
                                         mainComponent);
 
-                                final Thread timoutThread = new Thread(() -> {
+                                final Thread timeoutThread = new Thread(() -> {
                                     try {
                                         Thread.sleep(2000);
                                         if (verifyThread.isAlive()) {
@@ -590,7 +597,7 @@ public class HUPPAALController implements Initializable {
                                     }
                                 });
 
-                                timoutThread.start();
+                                timeoutThread.start();
                                 verifyThread.join();
 
                             } catch (InterruptedException e) {

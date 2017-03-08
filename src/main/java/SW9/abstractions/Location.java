@@ -1,6 +1,7 @@
 package SW9.abstractions;
 
 import SW9.code_analysis.Nearable;
+import SW9.controllers.HUPPAALController;
 import SW9.presentations.DropDownMenu;
 import SW9.utility.colors.Color;
 import SW9.utility.colors.EnabledColor;
@@ -53,11 +54,13 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
 
     public Location() {
         setId("L" + hiddenID.getAndIncrement());
+        bindReachabilityAnalysis();
     }
 
     public Location(final JsonObject jsonObject) {
         hiddenID.incrementAndGet();
         deserialize(jsonObject);
+        bindReachabilityAnalysis();
     }
 
     public String getNickname() {
@@ -113,6 +116,7 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
     }
 
     public void setUrgency(final Urgency urgency) {
+        HUPPAALController.runReachabilityAnalysis();
         this.urgency.set(urgency);
     }
 
@@ -235,6 +239,7 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
     }
 
     public void setInvariantY(final double invariantY) {
+        HUPPAALController.runReachabilityAnalysis();
         this.invariantY.set(invariantY);
     }
 
@@ -322,6 +327,12 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
 
     public enum Reachability {
         REACHABLE, UNREACHABLE, UNKNOWN
+    }
+
+    private void bindReachabilityAnalysis() {
+
+        invariantProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
+        urgencyProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
     }
 
 

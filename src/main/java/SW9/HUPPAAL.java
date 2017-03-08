@@ -4,6 +4,7 @@ import SW9.abstractions.Component;
 import SW9.abstractions.Project;
 import SW9.abstractions.Query;
 import SW9.controllers.CanvasController;
+import SW9.controllers.HUPPAALController;
 import SW9.presentations.HUPPAALPresentation;
 import SW9.presentations.UndoRedoHistoryPresentation;
 import SW9.utility.keyboard.Keybind;
@@ -176,6 +177,9 @@ public class HUPPAAL extends Application {
 
         // We're now ready! Let the curtains fall!
         stage.show();
+
+        HUPPAALController.reachabilityServiceEnabled = true;
+        HUPPAALController.runReachabilityAnalysis();
 
         // Register a key-bind for showing debug-information
         KeyboardTracker.registerKeybind("DEBUG", new Keybind(new KeyCodeCombination(KeyCode.F12), () -> {
