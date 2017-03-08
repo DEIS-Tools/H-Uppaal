@@ -562,8 +562,6 @@ public class HUPPAALController implements Initializable {
             reachabilityService.shutdownNow();
         }
 
-        System.out.println("Reachbility Analysis");
-
         reachabilityService = Executors.newFixedThreadPool(10);
 
         final Component mainComponent = HUPPAAL.getProject().getMainComponent();
