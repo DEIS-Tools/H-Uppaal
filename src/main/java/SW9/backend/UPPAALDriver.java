@@ -22,17 +22,17 @@ import java.util.function.Consumer;
 
 public class UPPAALDriver {
 
-    public static void verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final Component component) {
-        verify(query, success, failure, TraceType.NONE, e -> {
+    public static Thread verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final Component component) {
+        return verify(query, success, failure, TraceType.NONE, e -> {
         }, component);
     }
 
-    public static void verify(final String query,
-                              final Consumer<Boolean> success,
-                              final Consumer<BackendException> failure,
-                              final TraceType traceType,
-                              final Consumer<Trace> traceCallBack,
-                              final Component component) {
+    public static Thread verify(final String query,
+                                final Consumer<Boolean> success,
+                                final Consumer<BackendException> failure,
+                                final TraceType traceType,
+                                final Consumer<Trace> traceCallBack,
+                                final Component component) {
         // The task that should be executed on the background thread
         // calls success if no exception happens with the result
         // otherwise calls failure with the exception
@@ -51,7 +51,9 @@ public class UPPAALDriver {
         };
 
         // Start a new thread
-        new Thread(task).start();
+        final Thread verifyThread = new Thread(task);
+        verifyThread.start();
+        return verifyThread;
     }
 
     private static synchronized boolean verify(final String query, final TraceType traceType, final Consumer<Trace> traceCallback, final Component component) throws BackendException {

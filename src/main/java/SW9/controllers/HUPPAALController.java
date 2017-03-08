@@ -36,6 +36,8 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public class HUPPAALController implements Initializable {
@@ -93,6 +95,10 @@ public class HUPPAALController implements Initializable {
     private double tabPanePreviousY = 0;
     private boolean shouldISkipOpeningTheMessagesContainer = true;
 
+
+    // Reachability analysis
+    private static ExecutorService reachabilityService;
+
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
 
@@ -107,6 +113,7 @@ public class HUPPAALController implements Initializable {
 
         // Keybind for nudging the selected elements
         KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_UP, new Keybind(new KeyCodeCombination(KeyCode.UP), (event) -> {
+            runReachabilityAnalysis();
             event.consume();
             nudgeSelected(NudgeDirection.UP);
         }));
@@ -542,6 +549,57 @@ public class HUPPAALController implements Initializable {
     @FXML
     private void closeDialog() {
         dialog.close();
+    }
+
+
+    public static void runReachabilityAnalysis() {
+        if(reachabilityService != null) {
+            reachabilityService.shutdownNow();
+        }
+
+        reachabilityService = Executors.newFixedThreadPool(10);
+
+        final Component mainComponent = HUPPAAL.getProject().getMainComponent();
+
+        HUPPAAL.getProject().getComponents().forEach(component -> {
+            component.getLocations().forEach(location -> {
+                reachabilityService.submit(() -> {
+                            try {
+                                final Thread verifyThread = UPPAALDriver.verify(
+                                        UPPAALDriver.getLocationReachableQuery(location, component),
+                                        (result -> {
+                                            if (result) {
+                                                location.setReachability(Location.Reachability.REACHABLE);
+                                            } else {
+                                                location.setReachability(Location.Reachability.UNREACHABLE);
+                                            }
+                                        }),
+                                        (e) -> location.setReachability(Location.Reachability.UNKNOWN),
+                                        mainComponent);
+
+                                final Thread timoutThread = new Thread(() -> {
+                                    try {
+                                        Thread.sleep(2000);
+                                        if (verifyThread.isAlive()) {
+                                            verifyThread.interrupt();
+                                            location.setReachability(Location.Reachability.UNKNOWN);
+                                        }
+
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+
+                                timoutThread.start();
+                                verifyThread.join();
+
+                            } catch (InterruptedException e) {
+                                // Det er sku okay du
+                            }
+                        }
+                );
+            });
+        });
     }
 
 }

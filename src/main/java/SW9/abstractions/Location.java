@@ -49,6 +49,8 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
     private final DoubleProperty invariantX = new SimpleDoubleProperty(0d);
     private final DoubleProperty invariantY = new SimpleDoubleProperty(0d);
 
+    private final ObjectProperty<Reachability> reachability = new SimpleObjectProperty<>();
+
     public Location() {
         setId("L" + hiddenID.getAndIncrement());
     }
@@ -248,6 +250,18 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
         }
     }
 
+    public Reachability getReachability() {
+        return reachability.get();
+    }
+
+    public ObjectProperty<Reachability> reachabilityProperty() {
+        return reachability;
+    }
+
+    public void setReachability(final Reachability reachability) {
+        this.reachability.set(reachability);
+    }
+
     @Override
     public JsonObject serialize() {
         final JsonObject result = new JsonObject();
@@ -292,19 +306,23 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
         setInvariantY(json.getAsJsonPrimitive(INVARIANT_Y).getAsDouble());
     }
 
+
+
     @Override
     public String generateNearString() {
         return "Location " + (!Strings.isNullOrEmpty(getNickname()) ? (getNickname() + " (" + getId() + ")") : getId());
     }
-
     public enum Type {
-        NORMAL, INITIAL, FINAl
+        NORMAL, INITIAL, FINAl;
     }
 
     public enum Urgency {
         NORMAL, URGENT, COMMITTED
     }
 
+    public enum Reachability {
+        REACHABLE, UNREACHABLE, UNKNOWN
+    }
 
 
 }

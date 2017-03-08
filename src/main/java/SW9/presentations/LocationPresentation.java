@@ -94,10 +94,39 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             initializeDeleteShakeAnimation();
             initializeShakeAnimation();
             initializeCircle();
+            initializeReachabilityStyle();
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeReachabilityStyle() {
+
+        final Consumer<Location.Reachability> updateReachability = (reachability) -> {
+
+            if(reachability == null) return;
+
+            final DropShadow ds = new DropShadow();
+            ds.setRadius(2);
+            ds.setSpread(1);
+
+            if(reachability.equals(Location.Reachability.REACHABLE)) {
+                ds.setColor(javafx.scene.paint.Color.GREEN);
+            } else if(reachability.equals(Location.Reachability.UNREACHABLE)) {
+                ds.setColor(javafx.scene.paint.Color.RED);
+            } else if(reachability.equals(Location.Reachability.UNKNOWN)) {
+                ds.setColor(javafx.scene.paint.Color.YELLOW);
+            }
+
+            this.setEffect(ds);
+        };
+
+        controller.getLocation().reachabilityProperty().addListener((obs, oldReachability, newReachability) -> {
+            updateReachability.accept(newReachability);
+        });
+
+        updateReachability.accept(controller.getLocation().getReachability());
     }
 
     private static Location initialHelpDialogLocation(final String initial) {

@@ -64,7 +64,6 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
     public Line invariantTagLine;
     public Rectangle committedShape;
     public Rectangle initialCommittedShape;
-    private TimerTask reachabilityCheckTask;
     private DropDownMenu dropDownMenu;
     private boolean dropDownMenuInitialized = false;
 
@@ -80,8 +79,6 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
 
         // Scale x and y 1:1 (based on the x-scale)
         scaleContent.scaleYProperty().bind(scaleContent.scaleXProperty());
-
-        //initializeReachabilityCheck();
 
         initializeSelectListener();
         initializeMouseControls();
@@ -221,45 +218,6 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
             updateNickNameCheck.accept(newNickName);
         });
         updateNickNameCheck.accept(location.getNickname());
-    }
-
-    public void initializeReachabilityCheck() {
-        final int interval = 5000; // ms
-
-        // Could not run query
-        reachabilityCheckTask = new TimerTask() {
-
-            @Override
-            public void run() {
-                if (getComponent() == null || getLocation() == null) return;
-
-                // The location might have been remove from the component (through ctrl + z)
-                if (getLocation().getType() == Location.Type.NORMAL && !getComponent().getLocations().contains(getLocation())) return;
-
-                final Component mainComponent = HUPPAAL.getProject().getMainComponent();
-
-                if (mainComponent == null) {
-                    return; // We cannot generate a UPPAAL file without a main component
-                }
-
-                UPPAALDriver.verify(
-                        "E<> " + getComponent().getName() + "." + getLocation().getId(),
-                        result -> {
-                            final LocationPresentation locationPresentation = (LocationPresentation) LocationController.this.root;
-
-                            locationPresentation.animateShakeWarning(!result);
-                        },
-                        e -> {
-                            // Could not run query
-                            System.out.println(e);
-                        },
-                        mainComponent
-                );
-            }
-
-        };
-
-        new Timer().schedule(reachabilityCheckTask, 0, interval);
     }
 
     public Location getLocation() {
