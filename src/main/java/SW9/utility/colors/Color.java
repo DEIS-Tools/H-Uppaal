@@ -323,6 +323,11 @@ public enum Color {
         return colorMap.get(intensity).getColor();
     }
 
+    public javafx.scene.paint.Color getColor(final Intensity intensity, final double opacity) {
+        final javafx.scene.paint.Color color = colorMap.get(intensity).getColor();
+        return new javafx.scene.paint.Color(color.getRed(), color.getGreen(), color.getBlue(), opacity);
+    }
+
     public javafx.scene.paint.Color getTextColor(final Intensity intensity) {
         return colorMap.get(intensity).getTextColor();
     }

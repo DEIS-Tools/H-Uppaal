@@ -18,11 +18,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.*;
 import javafx.util.Duration;
-import org.w3c.dom.css.Rect;
 
 import java.io.IOException;
 import java.net.URL;
@@ -101,34 +101,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         }
     }
 
-    private void initializeReachabilityStyle() {
-
-        final Consumer<Location.Reachability> updateReachability = (reachability) -> {
-
-            if(reachability == null) return;
-
-            final DropShadow ds = new DropShadow();
-            ds.setRadius(2);
-            ds.setSpread(1);
-
-            if(reachability.equals(Location.Reachability.REACHABLE)) {
-                ds.setColor(javafx.scene.paint.Color.GREEN);
-            } else if(reachability.equals(Location.Reachability.UNREACHABLE)) {
-                ds.setColor(javafx.scene.paint.Color.RED);
-            } else if(reachability.equals(Location.Reachability.UNKNOWN)) {
-                ds.setColor(javafx.scene.paint.Color.YELLOW);
-            }
-
-            this.setEffect(ds);
-        };
-
-        controller.getLocation().reachabilityProperty().addListener((obs, oldReachability, newReachability) -> {
-            updateReachability.accept(newReachability);
-        });
-
-        updateReachability.accept(controller.getLocation().getReachability());
-    }
-
     private static Location initialHelpDialogLocation(final String initial) {
         final Location location = new Location();
         location.setId("L" + id++);
@@ -144,6 +116,34 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         }
 
         return location;
+    }
+
+    private void initializeReachabilityStyle() {
+
+        final Consumer<Location.Reachability> updateReachability = (reachability) -> {
+            if(reachability == null) return;
+
+            final DropShadow ds = new DropShadow();
+            ds.setSpread(0.8);
+            ds.setRadius(5);
+            ds.setBlurType(BlurType.GAUSSIAN);
+
+            if(reachability.equals(Location.Reachability.REACHABLE)) {
+                ds.setColor(javafx.scene.paint.Color.TRANSPARENT);
+            } else if(reachability.equals(Location.Reachability.UNREACHABLE)) {
+                ds.setColor(Color.RED.getColor(Color.Intensity.I700, 0.75));
+            } else if(reachability.equals(Location.Reachability.UNKNOWN)) {
+                ds.setColor(Color.YELLOW.getColor(Color.Intensity.I900, 0.75));
+            }
+
+            controller.scaleContent.setEffect(ds);
+        };
+
+        controller.getLocation().reachabilityProperty().addListener((obs, oldReachability, newReachability) -> {
+            updateReachability.accept(newReachability);
+        });
+
+        updateReachability.accept(controller.getLocation().getReachability());
     }
 
     private void initializeIdLabel() {
