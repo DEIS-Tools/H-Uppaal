@@ -144,15 +144,24 @@ public class UPPAALDriver {
     }
 
     private static String getOSDependentServerPath() {
-        final String basePath = "src/main/resources/SW9";
+        final String basePath = "servers";
         final String os = System.getProperty("os.name");
+
+        File file;
+
         if (os.contains("Mac")) {
-            return new File(basePath + "/servers/bin-MacOS/server").getPath();
+            file = new File(basePath + "/bin-MacOS/server");
         } else if (os.contains("Linux")) {
-            return new File(basePath + "/servers/bin-Linux/server").getPath();
+            file = new File(basePath + "/bin-Linux/server");
         } else {
-            return new File(basePath + "/servers/bin-Win32/server.exe").getPath();
+            file = new File(basePath + "/bin-Win32/server.exe");
         }
+
+        if (!file.exists()) {
+            System.out.println("Could not find backend-file: " + file.getAbsolutePath() + ". Please make sure to copy UPPAAL binaries to this location.");
+        }
+
+        return file.getPath();
     }
 
     private static void storeUppaalFile(final Document uppaalDocument, final String fileName) {
@@ -162,15 +171,6 @@ public class UPPAALDriver {
         } catch (final IOException e) {
             // TODO Handle exception
             e.printStackTrace();
-        }
-    }
-
-    public enum TraceType {
-        NONE, SOME, SHORTEST, FASTEST;
-
-        @Override
-        public String toString() {
-            return "trace " + this.ordinal();
         }
     }
 
@@ -235,5 +235,14 @@ public class UPPAALDriver {
         }
 
         return subComponentInstanceNames;
+    }
+
+    public enum TraceType {
+        NONE, SOME, SHORTEST, FASTEST;
+
+        @Override
+        public String toString() {
+            return "trace " + this.ordinal();
+        }
     }
 }
