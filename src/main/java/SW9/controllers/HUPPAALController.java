@@ -579,7 +579,7 @@ public class HUPPAALController implements Initializable {
                                                 location.setReachability(Location.Reachability.UNREACHABLE);
                                             }
                                         }),
-                                        (e) -> location.setReachability(Location.Reachability.UNKNOWN),
+                                        (e) -> {e.printStackTrace(); location.setReachability(Location.Reachability.UNKNOWN);},
                                         mainComponent);
 
                                 final Thread timeoutThread = new Thread(() -> {

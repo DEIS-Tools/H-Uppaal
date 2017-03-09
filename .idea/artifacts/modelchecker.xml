@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" name="modelchecker">
+  <artifact type="javafx" build-on-make="true" name="modelchecker">
     <output-path>$PROJECT_DIR$/build/classes/artifacts/modelchecker</output-path>
     <properties id="javafx-properties">
       <options>
