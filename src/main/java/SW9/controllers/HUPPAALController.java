@@ -99,7 +99,6 @@ public class HUPPAALController implements Initializable {
     // Reachability analysis
     private static ExecutorService reachabilityService;
     public static boolean reachabilityServiceEnabled = false;
-    private static long lastReachabilityServiceRun = 0;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -115,7 +114,6 @@ public class HUPPAALController implements Initializable {
 
         // Keybind for nudging the selected elements
         KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_UP, new Keybind(new KeyCodeCombination(KeyCode.UP), (event) -> {
-            runReachabilityAnalysis();
             event.consume();
             nudgeSelected(NudgeDirection.UP);
         }));
@@ -172,6 +170,8 @@ public class HUPPAALController implements Initializable {
 
         final BooleanProperty hasChanged = new SimpleBooleanProperty(false);
 
+
+
         HUPPAAL.getProject().getComponents().addListener(new ListChangeListener<Component>() {
             @Override
             public void onChanged(final Change<? extends Component> c) {
@@ -179,6 +179,12 @@ public class HUPPAALController implements Initializable {
                     CanvasController.setActiveComponent(HUPPAAL.getProject().getComponents().get(0));
                     hasChanged.set(true);
                 }
+
+                if(HUPPAAL.serializationDone && HUPPAAL.getProject().getComponents().size() - 1 == 0 && HUPPAAL.getProject().getMainComponent() == null) {
+                    c.next();
+                    c.getAddedSubList().get(0).setIsMain(true);
+                }
+
             }
         });
 

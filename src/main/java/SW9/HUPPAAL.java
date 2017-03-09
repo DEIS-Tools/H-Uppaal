@@ -42,6 +42,7 @@ public class HUPPAAL extends Application {
     private static HUPPAALPresentation presentation;
     private static String projectDirectory;
     private Stage debugStage;
+    public static boolean serializationDone = false;
 
     {
         try {
@@ -222,6 +223,8 @@ public class HUPPAAL extends Application {
         if(initialShownComponent != null) {
             CanvasController.setActiveComponent(initialShownComponent);
         }
+
+        serializationDone = true;
 
         // We're now ready! Let the curtains fall!
         stage.show();
