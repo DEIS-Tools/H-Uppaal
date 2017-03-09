@@ -29,14 +29,40 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.security.CodeSource;
 import java.util.*;
 
 public class HUPPAAL extends Application {
 
+    public static String serverDirectory;
+    public static String debugDirectory;
     private static Project project;
     private static HUPPAALPresentation presentation;
+    private static String projectDirectory;
     private Stage debugStage;
+
+    {
+        try {
+            final CodeSource codeSource = HUPPAAL.class.getProtectionDomain().getCodeSource();
+            final File jarFile = new File(codeSource.getLocation().toURI().getPath());
+            final String rootDirectory = jarFile.getParentFile().getPath() + File.separator;
+            projectDirectory = rootDirectory + "project";
+            serverDirectory = rootDirectory + "servers";
+            debugDirectory = rootDirectory + "uppaal-debug";
+
+            FileUtils.forceMkdir(new File(projectDirectory));
+            FileUtils.forceMkdir(new File(serverDirectory));
+            FileUtils.forceMkdir(new File(debugDirectory));
+        } catch (final URISyntaxException e) {
+            System.out.println("Could not create project directory!");
+            System.exit(1);
+        } catch (final IOException e) {
+            System.out.println("Could not create project directory!");
+            System.exit(2);
+        }
+    }
 
     public static void main(final String[] args) {
         launch(HUPPAAL.class, args);
@@ -49,14 +75,17 @@ public class HUPPAAL extends Application {
     public static void save() {
         // Clear the project folder
         try {
-            FileUtils.cleanDirectory(new File("project"));
+            final File directory = new File(projectDirectory);
+
+            FileUtils.forceMkdir(directory);
+            FileUtils.cleanDirectory(directory);
         } catch (final IOException e) {
             e.printStackTrace();
         }
 
         HUPPAAL.getProject().getComponents().forEach(component -> {
             try {
-                final Writer writer = new FileWriter(String.format("project/%s.json", component.getName()));
+                final Writer writer = new FileWriter(String.format(projectDirectory + File.separator + "%s.json", component.getName()));
                 final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
                 gson.toJson(component.serialize(), writer);
@@ -74,7 +103,7 @@ public class HUPPAAL extends Application {
 
         final Writer writer;
         try {
-            writer = new FileWriter("project/Queries.json");
+            writer = new FileWriter(projectDirectory + File.separator + "Queries.json");
             final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
             gson.toJson(queries, writer);
@@ -100,7 +129,6 @@ public class HUPPAAL extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
-
         // Load or create new project
         project = new Project();
 
@@ -148,11 +176,11 @@ public class HUPPAAL extends Application {
         );
 
         // Make sure that the project directory exists
-        final File projectFolder = new File("project");
-        projectFolder.mkdir();
+        final File directory = new File(projectDirectory);
+        FileUtils.forceMkdir(directory);
 
         // Deserialize the project
-        deserializeProject(projectFolder);
+        deserializeProject(directory);
 
         // Generate all component presentations by making them the active component in the view one by one
         Component initialShownComponent = null;

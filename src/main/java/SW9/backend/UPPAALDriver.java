@@ -60,7 +60,7 @@ public class UPPAALDriver {
         final HUPPAALDocument huppaalDocument = new HUPPAALDocument(component);
 
         // Store the debug document
-        storeUppaalFile(huppaalDocument.toUPPAALDocument(), "uppaal-debug/debug.xml");
+        storeUppaalFile(huppaalDocument.toUPPAALDocument(), HUPPAAL.debugDirectory + File.separator + "debug.xml");
 
         final QueryListener queryListener = new QueryListener(huppaalDocument, traceCallback);
 
@@ -144,17 +144,16 @@ public class UPPAALDriver {
     }
 
     private static String getOSDependentServerPath() {
-        final String basePath = "servers";
         final String os = System.getProperty("os.name");
 
-        File file;
+        final File file;
 
         if (os.contains("Mac")) {
-            file = new File(basePath + "/bin-MacOS/server");
+            file = new File(HUPPAAL.serverDirectory + File.separator + "bin-MacOS" + File.separator + "server");
         } else if (os.contains("Linux")) {
-            file = new File(basePath + "/bin-Linux/server");
+            file = new File(HUPPAAL.serverDirectory + File.separator + "bin-Linux" + File.separator + "server");
         } else {
-            file = new File(basePath + "/bin-Win32/server.exe");
+            file = new File(HUPPAAL.serverDirectory + File.separator + "bin-Win32" + File.separator + "server.exe");
         }
 
         if (!file.exists()) {
