@@ -115,7 +115,8 @@ public class QueryPaneController implements Initializable {
                                 query.setQueryState(QueryState.SYNTAX_ERROR);
                             },
                             mainComponent
-                    )));
+                    ).start()
+            ));
             timeline.play();
 
             counter[0]++;

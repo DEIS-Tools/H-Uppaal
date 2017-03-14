@@ -1,11 +1,18 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" build-on-make="true" name="modelchecker">
+  <artifact type="javafx" name="modelchecker">
     <output-path>$PROJECT_DIR$/build/classes/artifacts/modelchecker</output-path>
     <properties id="javafx-properties">
       <options>
         <option name="appClass" value="SW9.HUPPAAL" />
         <option name="description" value="" />
         <option name="htmlPlaceholderId" value="" />
+        <option name="icons">
+          <JavaFxApplicationIcons>
+            <option name="linuxIcon" value="$PROJECT_DIR$/src/main/resources/SW9/ic_launcher/mipmap-xxxhdpi/ic_launcher.png" />
+            <option name="macIcon" value="$PROJECT_DIR$/src/main/resources/SW9/ic_launcher/mipmap-xxxhdpi/ic_launcher.png" />
+            <option name="windowsIcon" value="$PROJECT_DIR$/src/main/resources/SW9/ic_launcher/mipmap-xxxhdpi/ic_launcher.png" />
+          </JavaFxApplicationIcons>
+        </option>
         <option name="nativeBundle" value="exe" />
         <option name="title" value="" />
         <option name="vendor" value="" />

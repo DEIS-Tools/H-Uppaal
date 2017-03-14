@@ -1,5 +1,6 @@
 package SW9.controllers;
 
+import SW9.Debug;
 import SW9.HUPPAAL;
 import SW9.abstractions.*;
 import SW9.backend.UPPAALDriver;
@@ -42,6 +43,9 @@ import java.util.function.Consumer;
 
 public class HUPPAALController implements Initializable {
 
+    public static boolean reachabilityServiceEnabled = false;
+    // Reachability analysis
+    private static ExecutorService reachabilityService;
     public StackPane root;
     public QueryPanePresentation queryPane;
     public ProjectPanePresentation filePane;
@@ -95,10 +99,74 @@ public class HUPPAALController implements Initializable {
     private double tabPanePreviousY = 0;
     private boolean shouldISkipOpeningTheMessagesContainer = true;
 
+    public static void runReachabilityAnalysis() {
+        if (!reachabilityServiceEnabled) return;
 
-    // Reachability analysis
-    private static ExecutorService reachabilityService;
-    public static boolean reachabilityServiceEnabled = false;
+        if (reachabilityService != null) {
+            reachabilityService.shutdownNow();
+        }
+
+        reachabilityService = Executors.newFixedThreadPool(10);
+
+        while (Debug.backgroundThreads.size() > 0) {
+            final Thread thread = Debug.backgroundThreads.get(0);
+            thread.interrupt();
+            Debug.removeThread(thread);
+        }
+
+        final Component mainComponent = HUPPAAL.getProject().getMainComponent();
+
+        HUPPAAL.getProject().getComponents().forEach(component -> {
+            component.getLocationsWithInitialAndFinal().forEach(location -> {
+                final String locationReachableQuery = UPPAALDriver.getLocationReachableQuery(location, component);
+                final Thread verifyThread = UPPAALDriver.verify(
+                        locationReachableQuery,
+                        (result -> {
+                            if (result) {
+                                location.setReachability(Location.Reachability.REACHABLE);
+                            } else {
+                                location.setReachability(Location.Reachability.UNREACHABLE);
+                            }
+                        }),
+                        (e) -> {
+                            e.printStackTrace();
+                            location.setReachability(Location.Reachability.UNKNOWN);
+                        },
+                        mainComponent);
+
+                verifyThread.setName(locationReachableQuery + " (" + verifyThread.getName() + ")");
+                Debug.addThread(verifyThread);
+
+                reachabilityService.submit(() -> {
+                            try {
+                                verifyThread.start();
+
+                                final Thread timeoutThread = new Thread(() -> {
+                                    try {
+                                        Thread.sleep(2000);
+                                        if (verifyThread.isAlive()) {
+                                            verifyThread.interrupt();
+                                            location.setReachability(Location.Reachability.UNKNOWN);
+                                        }
+
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+
+                                timeoutThread.start();
+                                verifyThread.join();
+
+                                Debug.removeThread(verifyThread);
+
+                            } catch (InterruptedException e) {
+                                // Det er sku okay du
+                            }
+                        }
+                );
+            });
+        });
+    }
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -396,7 +464,7 @@ public class HUPPAALController implements Initializable {
                 aBoolean -> System.out.println("Generated UPPAAL file!"),
                 e -> System.out.println("ERROR"),
                 mainComponent
-        );
+        ).start();
     }
 
     private void nudgeSelected(final NudgeDirection direction) {
@@ -558,59 +626,6 @@ public class HUPPAALController implements Initializable {
     @FXML
     private void closeDialog() {
         dialog.close();
-    }
-
-
-    public static void runReachabilityAnalysis() {
-        if(!reachabilityServiceEnabled) return;
-
-        if(reachabilityService != null) {
-            reachabilityService.shutdownNow();
-        }
-
-        reachabilityService = Executors.newFixedThreadPool(10);
-
-        final Component mainComponent = HUPPAAL.getProject().getMainComponent();
-
-        HUPPAAL.getProject().getComponents().forEach(component -> {
-            component.getLocationsWithInitialAndFinal().forEach(location -> {
-                reachabilityService.submit(() -> {
-                            try {
-                                final Thread verifyThread = UPPAALDriver.verify(
-                                        UPPAALDriver.getLocationReachableQuery(location, component),
-                                        (result -> {
-                                            if (result) {
-                                                location.setReachability(Location.Reachability.REACHABLE);
-                                            } else {
-                                                location.setReachability(Location.Reachability.UNREACHABLE);
-                                            }
-                                        }),
-                                        (e) -> {e.printStackTrace(); location.setReachability(Location.Reachability.UNKNOWN);},
-                                        mainComponent);
-
-                                final Thread timeoutThread = new Thread(() -> {
-                                    try {
-                                        Thread.sleep(2000);
-                                        if (verifyThread.isAlive()) {
-                                            verifyThread.interrupt();
-                                            location.setReachability(Location.Reachability.UNKNOWN);
-                                        }
-
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                });
-
-                                timeoutThread.start();
-                                verifyThread.join();
-
-                            } catch (InterruptedException e) {
-                                // Det er sku okay du
-                            }
-                        }
-                );
-            });
-        });
     }
 
 }

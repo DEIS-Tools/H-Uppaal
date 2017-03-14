@@ -95,7 +95,7 @@ public class Query implements Serializable {
                             setQueryState(QueryState.SYNTAX_ERROR);
                         },
                         mainComponent
-                );
+                ).start();
             }
         };
     }

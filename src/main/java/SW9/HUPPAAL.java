@@ -5,6 +5,7 @@ import SW9.abstractions.Project;
 import SW9.abstractions.Query;
 import SW9.controllers.CanvasController;
 import SW9.controllers.HUPPAALController;
+import SW9.presentations.BackgroundThreadPresentation;
 import SW9.presentations.HUPPAALPresentation;
 import SW9.presentations.UndoRedoHistoryPresentation;
 import SW9.utility.keyboard.Keybind;
@@ -17,6 +18,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -38,11 +41,11 @@ public class HUPPAAL extends Application {
 
     public static String serverDirectory;
     public static String debugDirectory;
+    public static boolean serializationDone = false;
     private static Project project;
     private static HUPPAALPresentation presentation;
     private static String projectDirectory;
     private Stage debugStage;
-    public static boolean serializationDone = false;
 
     {
         try {
@@ -62,27 +65,6 @@ public class HUPPAAL extends Application {
             System.out.println("Could not create project directory!");
             System.exit(2);
         }
-    }
-
-    private void createFolderWithPermission(final String directoryPath) throws IOException {
-
-        final File directory = new File(directoryPath);
-        FileUtils.forceMkdir(directory);
-
-        setFilePermissionRecursive(directory);
-    }
-
-    private void setFilePermissionRecursive(final File file) {
-        file.setReadable(true, false);
-        file.setExecutable(true, false);
-        file.setWritable(true, false);
-
-        if (file.isDirectory() && file.listFiles() != null) {
-            for (final File innerFile : file.listFiles()) {
-                setFilePermissionRecursive(innerFile);
-            }
-        }
-
     }
 
     public static void main(final String[] args) {
@@ -146,6 +128,27 @@ public class HUPPAAL extends Application {
 
     public static BooleanProperty toggleQueryPane() {
         return presentation.toggleQueryPane();
+    }
+
+    private void createFolderWithPermission(final String directoryPath) throws IOException {
+
+        final File directory = new File(directoryPath);
+        FileUtils.forceMkdir(directory);
+
+        setFilePermissionRecursive(directory);
+    }
+
+    private void setFilePermissionRecursive(final File file) {
+        file.setReadable(true, false);
+        file.setExecutable(true, false);
+        file.setWritable(true, false);
+
+        if (file.isDirectory() && file.listFiles() != null) {
+            for (final File innerFile : file.listFiles()) {
+                setFilePermissionRecursive(innerFile);
+            }
+        }
+
     }
 
     @Override
@@ -245,8 +248,19 @@ public class HUPPAAL extends Application {
 
             try {
                 final UndoRedoHistoryPresentation undoRedoHistoryPresentation = new UndoRedoHistoryPresentation();
+                undoRedoHistoryPresentation.setMinWidth(100);
+
+                final BackgroundThreadPresentation backgroundThreadPresentation = new BackgroundThreadPresentation();
+                backgroundThreadPresentation.setMinWidth(100);
+
+                final HBox root = new HBox(undoRedoHistoryPresentation, backgroundThreadPresentation);
+                root.setStyle("-fx-background-color: brown;");
+                HBox.setHgrow(undoRedoHistoryPresentation, Priority.ALWAYS);
+                HBox.setHgrow(backgroundThreadPresentation, Priority.ALWAYS);
+
+
                 debugStage = new Stage();
-                debugStage.setScene(new Scene(undoRedoHistoryPresentation));
+                debugStage.setScene(new Scene(root));
 
                 debugStage.getScene().getStylesheets().add("SW9/main.css");
                 debugStage.getScene().getStylesheets().add("SW9/colors.css");

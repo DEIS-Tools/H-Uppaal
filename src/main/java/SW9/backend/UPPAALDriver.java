@@ -1,5 +1,6 @@
 package SW9.backend;
 
+import SW9.Debug;
 import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.abstractions.Location;
@@ -39,21 +40,24 @@ public class UPPAALDriver {
         final Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
+                final Thread currentThread = Thread.currentThread();
+
                 {
                     try {
                         success.accept(UPPAALDriver.verify(query, traceType, traceCallBack, component));
                     } catch (final BackendException backendException) {
                         failure.accept(backendException);
+                    } finally {
+                        Debug.removeThread(currentThread);
                     }
                 }
+
                 return null;
             }
         };
 
-        // Start a new thread
-        final Thread verifyThread = new Thread(task);
-        verifyThread.start();
-        return verifyThread;
+        // Return the thread (caller must start it)
+        return new Thread(task);
     }
 
     private static synchronized boolean verify(final String query, final TraceType traceType, final Consumer<Trace> traceCallback, final Component component) throws BackendException {
