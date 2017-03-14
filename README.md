@@ -37,7 +37,7 @@ huppaal/
 |   |   |-- verifyta.exe
 ```
 
-## Saving HUPPAAL models
+## Saving H-UPPAAL models
 When saving a HUPPAAL model, it will be saved in the `project/` folder located in the same directory as the .jar file. A `Queries.json` file can also be found here. This file contains all queries specified in the model. 
 
 ```
