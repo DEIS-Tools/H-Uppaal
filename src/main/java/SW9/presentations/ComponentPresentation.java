@@ -1,5 +1,6 @@
 package SW9.presentations;
 
+import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.abstractions.Location;
 import SW9.controllers.CanvasController;
@@ -17,6 +18,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
@@ -144,8 +146,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         initialLocationGuideLabel.setRotate(180);
         initialLocationGuideLabel.setTranslateY(10.5);
         initialLocationGuideContainer.toFront();
-
-        playIndicatorAnimations(Location.Type.INITIAL, initialLocationGuideContainer);
+        initialLocationGuideContainer.setOpacity(0);
 
         // Final indicator
         final Group finalLocationGuideContainer = controller.finalLocationGuideContainer;
@@ -158,8 +159,17 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         finalLocationGuideContainer.setTranslateY(-3.8 * GRID_SIZE);
         finalLocationGuideLabel.setTranslateY(10.5);
         finalLocationGuideContainer.toFront();
+        finalLocationGuideContainer.setOpacity(0);
 
-        playIndicatorAnimations(Location.Type.FINAl, finalLocationGuideContainer);
+        if (!controller.getComponent().isFirsTimeShown()) {
+            initialLocationGuideContainer.setOpacity(1);
+            finalLocationGuideContainer.setOpacity(1);
+            playIndicatorAnimations(Location.Type.INITIAL, initialLocationGuideContainer);
+            playIndicatorAnimations(Location.Type.FINAl, finalLocationGuideContainer);
+            controller.getComponent().setFirsTimeShown(true);
+        }
+
+
     }
 
     private void drawIndicatorArrow(final Path initialLocationGuideArrow) {
@@ -225,6 +235,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         final KeyFrame kf1 = new KeyFrame(millis(3000), kvPresent);
         final KeyFrame kf2 = new KeyFrame(millis(3500), kvGone);
         disappearAnimation.getKeyFrames().addAll(kf1, kf2);
+
 
         moveAnimation.play();
         disappearAnimation.play();
