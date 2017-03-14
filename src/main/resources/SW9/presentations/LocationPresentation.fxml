@@ -36,7 +36,6 @@
 
         <!-- The transformable locationAware shape -->
         <Path fx:id="locationShape" strokeType="INSIDE"/>
-        <Rectangle fx:id="committedShape" strokeType="INSIDE"/>
 
         <Group fx:id="shakeContent">
             <StackPane fx:id="finalIndicator" mouseTransparent="true" translateX="-8" translateY="-8">
@@ -45,7 +44,6 @@
             </StackPane>
 
             <!-- The initial indicator -->
-            <Rectangle fx:id="initialCommittedShape" strokeType="INSIDE"  style="-fx-stroke: -white; -fx-fill: transparent;" mouseTransparent="true"/>
             <Path fx:id="initialIndicator" strokeType="INSIDE"  style="-fx-stroke: -white; -fx-fill: transparent;" mouseTransparent="true"/>
 
 

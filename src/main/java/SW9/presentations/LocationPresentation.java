@@ -12,7 +12,6 @@ import SW9.utility.mouse.MouseTracker;
 import javafx.animation.*;
 import javafx.beans.NamedArg;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.binding.When;
 import javafx.beans.property.*;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
@@ -107,7 +106,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
         if (initial.equals("INITIAL")) {
             location.setType(Location.Type.INITIAL);
-        } else if (initial.equals("FINAL")) {
+        } else if (initial.equals("FINAl")) {
             location.setType(Location.Type.FINAl);
         } else if (initial.equals("URGENT")) {
             location.setUrgency(Location.Urgency.URGENT);
@@ -338,19 +337,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
     private void initializeLocationShapes() {
         final Path normalAndUrgentShape = controller.locationShape;
-        final Rectangle committedShape = controller.committedShape;
-        final Rectangle initialCommittedShape = controller.initialCommittedShape;
 
         initializeLocationShapes(normalAndUrgentShape, RADIUS);
-
-        committedShape.setWidth(RADIUS * 2);
-        committedShape.setHeight(RADIUS * 2);
-        committedShape.setTranslateX(-RADIUS);
-        committedShape.setTranslateY(-RADIUS);
-        initialCommittedShape.setWidth(INITIAL_RADIUS * 2);
-        initialCommittedShape.setHeight(INITIAL_RADIUS * 2);
-        initialCommittedShape.setTranslateX(-INITIAL_RADIUS);
-        initialCommittedShape.setTranslateY(-INITIAL_RADIUS);
 
         final Location location = controller.getLocation();
 
@@ -386,9 +374,9 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             }
 
             if(newUrgency.equals(Location.Urgency.COMMITTED)) {
-                committedShape.setVisible(true);
+                normalAndUrgentShape.setStrokeWidth(3);
             } else {
-                committedShape.setVisible(false);
+                normalAndUrgentShape.setStrokeWidth(1);
             }
         };
 
@@ -406,8 +394,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
             normalAndUrgentShape.setFill(newColor.getColor(newIntensity));
             normalAndUrgentShape.setStroke(newColor.getColor(newIntensity.next(2)));
-            committedShape.setFill(newColor.getColor(newIntensity));
-            committedShape.setStroke(newColor.getColor(newIntensity.next(2)));
         };
 
         updateColorDelegates.add(updateColor);
@@ -423,14 +409,12 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         final Location location = controller.getLocation();
 
         final Path initialIndicator = controller.initialIndicator;
-        final Rectangle initialCommittedShape = controller.initialCommittedShape;
         final StackPane finalIndicator = controller.finalIndicator;
 
         initializeLocationShapes(initialIndicator, INITIAL_RADIUS);
 
-        initialIndicator.visibleProperty().bind(new When(location.typeProperty().isEqualTo(Location.Type.INITIAL).and(location.urgencyProperty().isNotEqualTo(Location.Urgency.COMMITTED))).then(true).otherwise(false));
-        initialCommittedShape.visibleProperty().bind(new When(location.typeProperty().isEqualTo(Location.Type.INITIAL).and(location.urgencyProperty().isEqualTo(Location.Urgency.COMMITTED))).then(true).otherwise(false));
-        finalIndicator.visibleProperty().bind(new When(location.typeProperty().isEqualTo(Location.Type.FINAl)).then(true).otherwise(false));
+        initialIndicator.visibleProperty().bind(location.typeProperty().isEqualTo(Location.Type.INITIAL));
+        finalIndicator.visibleProperty().bind(location.typeProperty().isEqualTo(Location.Type.FINAl));
     }
 
     public void setLocation(final Location location) {

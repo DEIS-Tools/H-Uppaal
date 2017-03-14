@@ -62,8 +62,6 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
     public Label idLabel;
     public Line nameTagLine;
     public Line invariantTagLine;
-    public Rectangle committedShape;
-    public Rectangle initialCommittedShape;
     private DropDownMenu dropDownMenu;
     private boolean dropDownMenuInitialized = false;
 

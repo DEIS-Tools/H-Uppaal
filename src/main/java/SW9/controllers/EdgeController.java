@@ -143,6 +143,7 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
         final CodeAnalysis.Message message = new CodeAnalysis.Message("Incoming edges to an initial location are not allowed", CodeAnalysis.MessageType.ERROR, getEdge());
 
         final Consumer<Location> checkIfErrorIsPresent = (targetLocation) -> {
+
             if (targetLocation != null
                     && targetLocation.getType().equals(Location.Type.INITIAL)
                     && getComponent().getEdges().contains(getEdge())) {
