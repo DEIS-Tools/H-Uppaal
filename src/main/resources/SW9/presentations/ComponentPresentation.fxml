@@ -18,6 +18,11 @@
         <Label fx:id="initialLocationGuideLabel" styleClass="body1" text="Initial" textFill="white"/>
     </Group>
 
+    <Group fx:id="finalLocationGuideContainer" StackPane.alignment="BOTTOM_RIGHT">
+        <Path fx:id="finalLocationGuideArrow" fill="black"/>
+        <Label fx:id="finalLocationGuideLabel" styleClass="body1" text="Final" textFill="white"/>
+    </Group>
+
 
     <Rectangle fx:id="background" StackPane.alignment="TOP_LEFT"/>
 

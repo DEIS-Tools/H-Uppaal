@@ -73,15 +73,21 @@ public class ComponentController implements Initializable {
     public Pane modelContainerLocation;
     public Pane modelContainerEdge;
     public Pane modelContainerJork;
+
     private MouseTracker mouseTracker;
     private DropDownMenu contextMenu;
     private DropDownMenu finishEdgeContextMenu;
     private Circle dropDownMenuHelperCircle;
 
-    // Guiding indicator for initial location
+    // Guiding indicator for initial and final location
     public Group initialLocationGuideContainer;
     public Path initialLocationGuideArrow;
     public Label initialLocationGuideLabel;
+
+    public Group finalLocationGuideContainer;
+    public Path finalLocationGuideArrow;
+    public Label finalLocationGuideLabel;
+
 
     public static boolean isPlacingLocation() {
         return placingLocation != null;
