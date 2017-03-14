@@ -25,15 +25,14 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.*;
 import javafx.util.Duration;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.StyleClassedTextArea;
@@ -78,6 +77,11 @@ public class ComponentController implements Initializable {
     private DropDownMenu contextMenu;
     private DropDownMenu finishEdgeContextMenu;
     private Circle dropDownMenuHelperCircle;
+
+    // Guiding indicator for initial location
+    public Group initialLocationGuideContainer;
+    public Path initialLocationGuideArrow;
+    public Label initialLocationGuideLabel;
 
     public static boolean isPlacingLocation() {
         return placingLocation != null;

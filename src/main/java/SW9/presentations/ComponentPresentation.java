@@ -17,11 +17,10 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
+import javafx.scene.shape.*;
 import org.fxmisc.richtext.StyleSpans;
 import org.fxmisc.richtext.StyleSpansBuilder;
 
@@ -104,6 +103,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             initializeName();
             initializeDragAnchors();
             onUpdateSize.run();
+            initializeLocationTypeIndicatorArrows();
 
 
             // Re run initialisation on update of width and height property
@@ -121,6 +121,38 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeLocationTypeIndicatorArrows() {
+
+        final Group initialLocationGuideContainer = controller.initialLocationGuideContainer;
+        final Path initialLocationGuideArrow = controller.initialLocationGuideArrow;
+        final Label initialLocationGuideLabel = controller.initialLocationGuideLabel;
+
+        final MoveTo i1 = new MoveTo(-1 * GRID_SIZE, GRID_SIZE);
+        final LineTo i2 = new LineTo(4 * GRID_SIZE, GRID_SIZE);
+        final LineTo i3 = new LineTo(4 * GRID_SIZE, 0);
+        final LineTo i4 = new LineTo(6 * GRID_SIZE, 2 * GRID_SIZE);
+        final LineTo i5 = new LineTo(4 * GRID_SIZE, 4 * GRID_SIZE);
+        final LineTo i6 = new LineTo(4 * GRID_SIZE, 3 * GRID_SIZE);
+        final LineTo i7 = new LineTo(-1 * GRID_SIZE, 3 * GRID_SIZE);
+        final LineTo i8 = new LineTo(-1 * GRID_SIZE, GRID_SIZE);
+
+        initialLocationGuideArrow.getElements().addAll(i1, i2, i3, i4, i5, i6, i7, i8);
+        final Color componentColor = controller.getComponent().getColor();
+        final Color.Intensity componentColorIntensity = controller.getComponent().getColorIntensity();
+
+        initialLocationGuideArrow.setFill(componentColor.getColor(componentColorIntensity.next(-1)));
+        initialLocationGuideArrow.setStroke(componentColor.getColor(componentColorIntensity.next(2)));
+
+        initialLocationGuideContainer.setRotate(-45-90);
+        initialLocationGuideContainer.setTranslateX(2.3 * GRID_SIZE);
+        initialLocationGuideContainer.setTranslateY(3.8 * GRID_SIZE);
+        initialLocationGuideContainer.toFront();
+
+        initialLocationGuideLabel.setRotate(180);
+        initialLocationGuideLabel.setTranslateY(10.5);
+
     }
 
     private static StyleSpans<Collection<String>> computeHighlighting(final String text) {
