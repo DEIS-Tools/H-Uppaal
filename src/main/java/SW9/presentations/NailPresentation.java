@@ -53,7 +53,7 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
             // Bind the nail with the one of the controller
             controller.setNail(nail);
 
-            initializeNailCircle();
+            initializeNailCircleColor();
             initializePropertyTag();
             initializeRadius();
             initializeShakeAnimation();
@@ -151,13 +151,15 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
         updatePropertyType.accept(controller.getNail().getPropertyType());
     }
 
-    private void initializeNailCircle() {
+    private void initializeNailCircleColor() {
         final Runnable updateNailColor = () -> {
             final Color color = controller.getComponent().getColor();
             final Color.Intensity colorIntensity = controller.getComponent().getColorIntensity();
 
-            controller.nailCircle.setFill(color.getColor(colorIntensity));
-            controller.nailCircle.setStroke(color.getColor(colorIntensity.next(2)));
+            if(!controller.getNail().getPropertyType().equals(Edge.PropertyType.NONE)) {
+                controller.nailCircle.setFill(color.getColor(colorIntensity));
+                controller.nailCircle.setStroke(color.getColor(colorIntensity.next(2)));
+            }
         };
 
         // When the color of the component updates, update the nail indicator as well
