@@ -14,13 +14,13 @@ Before installing H-UPPAAL, make sure that you have Java 8 and JavaFX installed.
 
 -----
 
-If you are using Linux, please make sure that you have JavaFX installed:
+If you are using Linux, you may install JavaFX with the following command:
 ```
 $ sudo apt-get install openjfx
 ```
 
 ## Using the UPPAAL backend
-When running the program, please make sure that you have the following folder structure (relative to the ```huppaal.jar```-file). Feel free to only include binary-files for you operating system that you are using, e.g. ```bin-Win32```. These binaries are found in the UPPAAL distibution and can simply be copied over to the ```huppaal.jar``` location.
+When running the program, please make sure that you have the following folder structure (relative to the `huppaal.jar`-file). Feel free to only include binary-files for you operating system that you are using, e.g. `bin-Win32`. These binaries are found in the UPPAAL distibution and can simply be copied over to the `huppaal.jar` location.
 
 ```
 huppaal/
@@ -38,7 +38,7 @@ huppaal/
 ```
 
 ## Saving HUPPAAL models
-When saving a HUPPAAL model, it will be saved in the ```project/``` folder located in the same directory as the .jar file. A ```Queries.json``` file can also be found here. This file contains all queries specified in the model. 
+When saving a HUPPAAL model, it will be saved in the `project/` folder located in the same directory as the .jar file. A `Queries.json` file can also be found here. This file contains all queries specified in the model. 
 
 ```
 |-- huppaal.jar
