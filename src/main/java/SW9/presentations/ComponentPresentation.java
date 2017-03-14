@@ -1,6 +1,8 @@
 package SW9.presentations;
 
+import SW9.HUPPAAL;
 import SW9.abstractions.Component;
+import SW9.abstractions.Location;
 import SW9.controllers.CanvasController;
 import SW9.controllers.ComponentController;
 import SW9.utility.UndoRedoStack;
@@ -8,22 +10,27 @@ import SW9.utility.colors.Color;
 import SW9.utility.helpers.MouseTrackable;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
+import javafx.scene.shape.*;
 import org.fxmisc.richtext.StyleSpans;
 import org.fxmisc.richtext.StyleSpansBuilder;
+import org.reactfx.util.TriConsumer;
 
 import java.io.IOException;
 import java.net.URL;
@@ -37,6 +44,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
+import static javafx.util.Duration.millis;
 
 public class ComponentPresentation extends StackPane implements MouseTrackable, SelectHelper.Selectable {
 
@@ -104,6 +112,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             initializeName();
             initializeDragAnchors();
             onUpdateSize.run();
+            initializeLocationTypeIndicatorArrows();
 
 
             // Re run initialisation on update of width and height property
@@ -121,6 +130,115 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
+    }
+
+    private void initializeLocationTypeIndicatorArrows() {
+
+        // Initial indicator
+        final Group initialLocationGuideContainer = controller.initialLocationGuideContainer;
+        final Path initialLocationGuideArrow = controller.initialLocationGuideArrow;
+        final Label initialLocationGuideLabel = controller.initialLocationGuideLabel;
+
+        drawIndicatorArrow(initialLocationGuideArrow);
+        initialLocationGuideContainer.setRotate(-45-90);
+        initialLocationGuideContainer.setTranslateX(2.3 * GRID_SIZE);
+        initialLocationGuideContainer.setTranslateY(3.8 * GRID_SIZE);
+        initialLocationGuideLabel.setRotate(180);
+        initialLocationGuideLabel.setTranslateY(10.5);
+        initialLocationGuideContainer.toFront();
+        initialLocationGuideContainer.setOpacity(0);
+
+        // Final indicator
+        final Group finalLocationGuideContainer = controller.finalLocationGuideContainer;
+        final Path finalLocationGuideArrow = controller.finalLocationGuideArrow;
+        final Label finalLocationGuideLabel = controller.finalLocationGuideLabel;
+
+        drawIndicatorArrow(finalLocationGuideArrow);
+        finalLocationGuideContainer.setRotate(45);
+        finalLocationGuideContainer.setTranslateX(-2.3 * GRID_SIZE);
+        finalLocationGuideContainer.setTranslateY(-3.8 * GRID_SIZE);
+        finalLocationGuideLabel.setTranslateY(10.5);
+        finalLocationGuideContainer.toFront();
+        finalLocationGuideContainer.setOpacity(0);
+
+        if (!controller.getComponent().isFirsTimeShown()) {
+            initialLocationGuideContainer.setOpacity(1);
+            finalLocationGuideContainer.setOpacity(1);
+            playIndicatorAnimations(Location.Type.INITIAL, initialLocationGuideContainer);
+            playIndicatorAnimations(Location.Type.FINAl, finalLocationGuideContainer);
+            controller.getComponent().setFirsTimeShown(true);
+        }
+
+
+    }
+
+    private void drawIndicatorArrow(final Path initialLocationGuideArrow) {
+        final MoveTo i1 = new MoveTo(-1 * GRID_SIZE, GRID_SIZE);
+        final LineTo i2 = new LineTo(4 * GRID_SIZE, GRID_SIZE);
+        final LineTo i3 = new LineTo(4 * GRID_SIZE, 0);
+        final LineTo i4 = new LineTo(6 * GRID_SIZE, 2 * GRID_SIZE);
+        final LineTo i5 = new LineTo(4 * GRID_SIZE, 4 * GRID_SIZE);
+        final LineTo i6 = new LineTo(4 * GRID_SIZE, 3 * GRID_SIZE);
+        final LineTo i7 = new LineTo(-1 * GRID_SIZE, 3 * GRID_SIZE);
+        final LineTo i8 = new LineTo(-1 * GRID_SIZE, GRID_SIZE);
+
+        initialLocationGuideArrow.getElements().addAll(i1, i2, i3, i4, i5, i6, i7, i8);
+        final Color componentColor = controller.getComponent().getColor();
+        final Color.Intensity componentColorIntensity = controller.getComponent().getColorIntensity();
+
+        initialLocationGuideArrow.setFill(componentColor.getColor(componentColorIntensity.next(-1)));
+        initialLocationGuideArrow.setStroke(componentColor.getColor(componentColorIntensity.next(2)));
+    }
+
+    private void playIndicatorAnimations(final Location.Type type, final Group container) {
+        final Timeline moveAnimation = new Timeline();
+        final Timeline disappearAnimation = new Timeline();
+
+        final double startX = container.getTranslateX();
+        final double startY = container.getTranslateY();
+
+        final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
+
+        double otherX = 0, otherY = 0;
+
+        if(type.equals(Location.Type.INITIAL))
+        {
+            otherX = startX + 2 * GRID_SIZE;
+            otherY = startY + 2 * GRID_SIZE;
+        } else {
+            otherX = startX - 2 * GRID_SIZE;
+            otherY = startY - 2 * GRID_SIZE;
+        }
+
+        final KeyValue kvx1 = new KeyValue(container.translateXProperty(), otherX, interpolator);
+        final KeyValue kvx2 = new KeyValue(container.translateXProperty(), startX, interpolator);
+
+        final KeyValue kvy1 = new KeyValue(container.translateYProperty(), otherY, interpolator);
+        final KeyValue kvy2 = new KeyValue(container.translateYProperty(), startY, interpolator);
+
+        final List<KeyFrame> frames = new ArrayList<>();
+
+        frames.add(new KeyFrame(millis(400), kvx2, kvy2));
+
+        for(int i = 1; i < 6; i ++) {
+            if(i % 2 == 1) {
+                frames.add(new KeyFrame(millis(400 * (i + 1)), kvx2, kvy2));
+            } else {
+                frames.add(new KeyFrame(millis(400 * (i + 1)), kvx1, kvy1));
+            }
+        }
+
+        moveAnimation.getKeyFrames().addAll(frames);
+
+        final KeyValue kvPresent = new KeyValue(container.opacityProperty(), 1, interpolator);
+        final KeyValue kvGone = new KeyValue(container.opacityProperty(), 0, interpolator);
+        final KeyFrame kf1 = new KeyFrame(millis(3000), kvPresent);
+        final KeyFrame kf2 = new KeyFrame(millis(3500), kvGone);
+        disappearAnimation.getKeyFrames().addAll(kf1, kf2);
+
+
+        moveAnimation.play();
+        disappearAnimation.play();
     }
 
     private static StyleSpans<Collection<String>> computeHighlighting(final String text) {

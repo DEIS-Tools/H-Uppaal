@@ -62,6 +62,8 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     private final ObjectProperty<Color> color = new SimpleObjectProperty<>(Color.GREY_BLUE);
     private final ObjectProperty<Color.Intensity> colorIntensity = new SimpleObjectProperty<>(Color.Intensity.I700);
 
+    private final BooleanProperty firsTimeShown = new SimpleBooleanProperty(false);
+
     public Component() {
         this("Component" + hiddenID.getAndIncrement());
     }
@@ -90,6 +92,7 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         hiddenID.incrementAndGet();
         deserialize(object);
         bindReachabilityAnalysis();
+        setFirsTimeShown(true);
     }
 
     public String getName() {
@@ -392,6 +395,18 @@ public class Component implements Serializable, DropDownMenu.HasColor {
 
     public StringProperty descriptionProperty() {
         return description;
+    }
+
+    public boolean isFirsTimeShown() {
+        return firsTimeShown.get();
+    }
+
+    public BooleanProperty firsTimeShownProperty() {
+        return firsTimeShown;
+    }
+
+    public void setFirsTimeShown(final boolean firsTimeShown) {
+        this.firsTimeShown.set(firsTimeShown);
     }
 
     @Override
