@@ -3,6 +3,7 @@ package SW9.controllers;
 import SW9.Debug;
 import SW9.HUPPAAL;
 import SW9.abstractions.*;
+import SW9.backend.BackendException;
 import SW9.backend.UPPAALDriver;
 import SW9.code_analysis.CodeAnalysis;
 import SW9.presentations.*;
@@ -14,6 +15,7 @@ import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.keyboard.NudgeDirection;
 import SW9.utility.keyboard.Nudgeable;
 import com.jfoenix.controls.*;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.beans.binding.When;
@@ -458,10 +460,13 @@ public class HUPPAALController implements Initializable {
             return; // We cannot generate a UPPAAL file without a main component
         }
 
-        UPPAALDriver.verify("E<> true", // todo: consider creating an interface for generating the model instead of this query
-                aBoolean -> System.out.println("Generated UPPAAL file!"),
-                e -> System.out.println("ERROR")
-        ).start();
+        try {
+            UPPAALDriver.generateDebugUPPAALModel();
+            HUPPAAL.showToast("UPPAAL debug file stored");
+        } catch (InvalidArgumentException | BackendException e) {
+            HUPPAAL.showToast("Could not store UPPAAL debug model due to an error");
+            e.printStackTrace();
+        }
     }
 
     private void nudgeSelected(final NudgeDirection direction) {

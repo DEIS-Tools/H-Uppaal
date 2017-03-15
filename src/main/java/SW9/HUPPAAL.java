@@ -112,10 +112,14 @@ public class HUPPAAL extends Application {
             gson.toJson(queries, writer);
             writer.close();
 
-            presentation.showSnackbarMessage("Project saved!");
+            showToast("Project saved!");
         } catch (final IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void showToast(final String message) {
+        presentation.showSnackbarMessage(message);
     }
 
     public static void showHelp() {

@@ -64,7 +64,7 @@ public class UPPAALDriver {
         return new Thread(task);
     }
 
-    private static synchronized boolean verify(final String query, final TraceType traceType, final Consumer<Trace> traceCallback) throws BackendException, InvalidArgumentException {
+    public static void generateDebugUPPAALModel() throws InvalidArgumentException, BackendException {
         final Component mainComponent = HUPPAAL.getProject().getMainComponent();
         if (mainComponent == null) {
             throw new InvalidArgumentException(new String[]{"Main component is null"});
@@ -73,6 +73,16 @@ public class UPPAALDriver {
         // Generate and store the debug document
         final HUPPAALDocument huppaalDocument = new HUPPAALDocument(mainComponent);
         storeUppaalFile(huppaalDocument.toUPPAALDocument(), HUPPAAL.debugDirectory + File.separator + "debug.xml");
+    }
+
+    private static synchronized boolean verify(final String query, final TraceType traceType, final Consumer<Trace> traceCallback) throws BackendException, InvalidArgumentException {
+        final Component mainComponent = HUPPAAL.getProject().getMainComponent();
+        if (mainComponent == null) {
+            throw new InvalidArgumentException(new String[]{"Main component is null"});
+        }
+
+        // Generate HUPPAAL document based on the main component
+        final HUPPAALDocument huppaalDocument = new HUPPAALDocument(mainComponent);
 
         // Will catch feedback from the UPPAAL backend
         final QueryListener queryListener = new QueryListener(huppaalDocument, traceCallback);
