@@ -24,6 +24,8 @@ import java.util.function.Consumer;
 
 public class UPPAALDriver {
 
+    private static HUPPAALDocument huppaalDocument;
+
     public static Thread verify(final String query,
                                 final Consumer<Boolean> success,
                                 final Consumer<BackendException> failure) {
@@ -65,30 +67,27 @@ public class UPPAALDriver {
     }
 
     public static void generateDebugUPPAALModel() throws InvalidArgumentException, BackendException {
-        final Component mainComponent = HUPPAAL.getProject().getMainComponent();
-        if (mainComponent == null) {
-            throw new InvalidArgumentException(new String[]{"Main component is null"});
-        }
-
         // Generate and store the debug document
-        final HUPPAALDocument huppaalDocument = new HUPPAALDocument(mainComponent);
+        buildHUPPAALDocument();
         storeUppaalFile(huppaalDocument.toUPPAALDocument(), HUPPAAL.debugDirectory + File.separator + "debug.xml");
     }
 
     private static synchronized boolean verify(final String query, final TraceType traceType, final Consumer<Trace> traceCallback) throws BackendException, InvalidArgumentException {
+        // Will catch feedback from the UPPAAL backend
+        final QueryListener queryListener = new QueryListener(huppaalDocument, traceCallback);
+
+        // Run the query
+        return runQuery(queryListener, query, traceType);
+    }
+
+    public static void buildHUPPAALDocument() throws InvalidArgumentException, BackendException {
         final Component mainComponent = HUPPAAL.getProject().getMainComponent();
         if (mainComponent == null) {
             throw new InvalidArgumentException(new String[]{"Main component is null"});
         }
 
         // Generate HUPPAAL document based on the main component
-        final HUPPAALDocument huppaalDocument = new HUPPAALDocument(mainComponent);
-
-        // Will catch feedback from the UPPAAL backend
-        final QueryListener queryListener = new QueryListener(huppaalDocument, traceCallback);
-
-        // Run the query
-        return runQuery(queryListener, query, traceType);
+        huppaalDocument = new HUPPAALDocument(mainComponent);
     }
 
     private static boolean runQuery(final QueryListener queryListener, final String query, final TraceType traceType) throws BackendException {

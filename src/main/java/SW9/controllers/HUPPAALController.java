@@ -116,56 +116,67 @@ public class HUPPAALController implements Initializable {
             Debug.removeThread(thread);
         }
 
-        HUPPAAL.getProject().getComponents().forEach(component -> {
-            component.getLocationsWithInitialAndFinal().forEach(location -> {
-                final String locationReachableQuery = UPPAALDriver.getLocationReachableQuery(location, component);
-                final Thread verifyThread = UPPAALDriver.verify(
-                        locationReachableQuery,
-                        (result -> {
-                            if (result) {
-                                location.setReachability(Location.Reachability.REACHABLE);
-                            } else {
-                                location.setReachability(Location.Reachability.UNREACHABLE);
+        try {
+            // Make sure that the model is generated
+            UPPAALDriver.buildHUPPAALDocument();
+
+            HUPPAAL.getProject().getComponents().forEach(component -> {
+                component.getLocationsWithInitialAndFinal().forEach(location -> {
+                    final String locationReachableQuery = UPPAALDriver.getLocationReachableQuery(location, component);
+                    final Thread verifyThread = UPPAALDriver.verify(
+                            locationReachableQuery,
+                            (result -> {
+                                if (result) {
+                                    location.setReachability(Location.Reachability.REACHABLE);
+                                } else {
+                                    location.setReachability(Location.Reachability.UNREACHABLE);
+                                }
+                            }),
+                            (e) -> {
+                                e.printStackTrace();
+                                location.setReachability(Location.Reachability.UNKNOWN);
                             }
-                        }),
-                        (e) -> {
-                            e.printStackTrace();
-                            location.setReachability(Location.Reachability.UNKNOWN);
-                        }
-                );
+                    );
 
-                verifyThread.setName(locationReachableQuery + " (" + verifyThread.getName() + ")");
-                Debug.addThread(verifyThread);
+                    verifyThread.setName(locationReachableQuery + " (" + verifyThread.getName() + ")");
+                    Debug.addThread(verifyThread);
 
-                reachabilityService.submit(() -> {
-                            try {
-                                verifyThread.start();
-
-                                final Thread timeoutThread = new Thread(() -> {
-                                    try {
-                                        Thread.sleep(2000);
-                                        if (verifyThread.isAlive()) {
-                                            verifyThread.interrupt();
-                                            location.setReachability(Location.Reachability.UNKNOWN);
-                                        }
-
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                });
-
-                                timeoutThread.start();
-                                verifyThread.join();
-
-                                Debug.removeThread(verifyThread);
-
-                            } catch (InterruptedException e) {
-                                // Det er sku okay du
+                    reachabilityService.submit(() -> {
+                        final TimerTask timeoutTask = new TimerTask() {
+                            @Override
+                            public void run() {
+                                if (verifyThread.isAlive()) {
+                                    location.setReachability(Location.Reachability.UNKNOWN);
+                                    verifyThread.interrupt();
+                                }
                             }
+                        };
+
+                        try {
+                            // Start the verification thread
+                            verifyThread.start();
+
+                            // Schedule the timeoutTask to stop the verify thread after a time threshold
+                            new Timer().schedule(timeoutTask, 2000);
+
+                            // Wait for the verification thread to complete
+                            // This thread will join once it is interrupted by the timeoutThread or when the query is done executing
+                            verifyThread.join();
+                            timeoutTask.cancel(); // Cancel the scheduling of the timeoutTask
+
+                            Debug.removeThread(verifyThread);
+                        } catch (final InterruptedException e) { // Thread is interrupted. We do this ourselves.
+                            // Stop the verification thread and cancel the timeout task.
+                            verifyThread.interrupt();
+                            timeoutTask.cancel();
                         }
-                );
+                    });
+                });
             });
-        });
+
+        } catch (InvalidArgumentException | BackendException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

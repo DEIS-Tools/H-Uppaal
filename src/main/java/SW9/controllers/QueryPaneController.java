@@ -4,11 +4,13 @@ import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.abstractions.Query;
 import SW9.abstractions.QueryState;
+import SW9.backend.BackendException;
 import SW9.backend.UPPAALDriver;
 import SW9.presentations.QueryPresentation;
 import SW9.utility.helpers.DropShadowHelper;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXRippler;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.collections.ListChangeListener;
@@ -103,18 +105,25 @@ public class QueryPaneController implements Initializable {
 
             final Timeline timeline = new Timeline(new KeyFrame(
                     Duration.millis(1 + counter[0] * interval),
-                    ae -> UPPAALDriver.verify(query.getQuery(),
-                            aBoolean -> {
-                                if(aBoolean) {
-                                    query.setQueryState(QueryState.SUCCESSFUL);
-                                } else {
-                                    query.setQueryState(QueryState.ERROR);
+                    ae -> {
+                        try {
+                            UPPAALDriver.buildHUPPAALDocument();
+                            UPPAALDriver.verify(query.getQuery(),
+                                    aBoolean -> {
+                                        if (aBoolean) {
+                                            query.setQueryState(QueryState.SUCCESSFUL);
+                                        } else {
+                                            query.setQueryState(QueryState.ERROR);
+                                        }
+                                    },
+                                    e -> {
+                                        query.setQueryState(QueryState.SYNTAX_ERROR);
                                 }
-                            },
-                            e -> {
-                                query.setQueryState(QueryState.SYNTAX_ERROR);
-                            }
-                    ).start()
+                            ).start();
+                        } catch (InvalidArgumentException | BackendException e) {
+                            e.printStackTrace();
+                        }
+                    }
             ));
             timeline.play();
 
