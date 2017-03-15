@@ -12,6 +12,8 @@ import SW9.utility.helpers.Circular;
 import SW9.utility.helpers.LocationAware;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
+import com.google.common.base.Strings;
+import com.hp.hpl.jena.reasoner.rulesys.builtins.Regex;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXTextField;
@@ -41,6 +43,8 @@ import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
@@ -126,6 +130,25 @@ public class ComponentController implements Initializable {
                 if (!first[0]) return;
                 first[0] = false;
                 declaration.replaceText(0, declaration.getLength(), newValue);
+            });
+
+            newComponent.declarationsProperty().addListener((observable, oldValue, newValue) -> {
+
+                final List<String> clocks = new ArrayList<String>();
+
+                final String strippedDecls = newValue.replaceAll("[\\r\\n]+", "");
+
+                Pattern pattern = Pattern.compile("clock (?<CLOCKS>[^;]*);");
+                Matcher matcher = pattern.matcher(strippedDecls);
+
+                while (matcher.find()) {
+                    final String clockStrings[] = matcher.group("CLOCKS").split(",");
+                    for (String clockString : clockStrings) {
+                        clocks.add(clockString.replaceAll("\\s",""));
+                    }
+                }
+
+                System.out.println(clocks);
             });
 
             initializeEdgeHandling(newComponent);
