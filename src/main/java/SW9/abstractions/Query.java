@@ -99,7 +99,7 @@ public class Query implements Serializable {
                                 setQueryState(QueryState.SYNTAX_ERROR);
                             }
                     ).start();
-                } catch (InvalidArgumentException | BackendException e) {
+                } catch (final Exception e) {
                     e.printStackTrace();
                 }
             }

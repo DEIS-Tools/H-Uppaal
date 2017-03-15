@@ -104,7 +104,7 @@ public class QueryPaneController implements Initializable {
                             query.setQueryState(QueryState.SYNTAX_ERROR);
                         }
                 ).start();
-            } catch (InvalidArgumentException | BackendException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });

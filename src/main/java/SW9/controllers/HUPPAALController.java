@@ -174,7 +174,7 @@ public class HUPPAALController implements Initializable {
                 });
             });
 
-        } catch (InvalidArgumentException | BackendException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -474,7 +474,7 @@ public class HUPPAALController implements Initializable {
         try {
             UPPAALDriver.generateDebugUPPAALModel();
             HUPPAAL.showToast("UPPAAL debug file stored");
-        } catch (InvalidArgumentException | BackendException e) {
+        } catch (final Exception e) {
             HUPPAAL.showToast("Could not store UPPAAL debug model due to an error");
             e.printStackTrace();
         }

@@ -3,6 +3,7 @@ package SW9;
 import SW9.abstractions.Component;
 import SW9.abstractions.Project;
 import SW9.abstractions.Query;
+import SW9.backend.UPPAALDriver;
 import SW9.controllers.CanvasController;
 import SW9.controllers.HUPPAALController;
 import SW9.presentations.BackgroundThreadPresentation;
@@ -214,12 +215,12 @@ public class HUPPAAL extends Application {
         Component initialShownComponent = null;
         for (final Component component : HUPPAAL.getProject().getComponents()) {
             // The first component should be shown if there is no main
-            if(initialShownComponent == null) {
+            if (initialShownComponent == null) {
                 initialShownComponent = component;
             }
 
             // If the component is the main show that one
-            if(component.isIsMain()) {
+            if (component.isIsMain()) {
                 initialShownComponent = component;
             }
 
@@ -227,7 +228,7 @@ public class HUPPAAL extends Application {
         }
 
         // If we found a component (preferably main) set that as active
-        if(initialShownComponent != null) {
+        if (initialShownComponent != null) {
             CanvasController.setActiveComponent(initialShownComponent);
         }
 
@@ -278,6 +279,14 @@ public class HUPPAAL extends Application {
                 e.printStackTrace();
             }
         }));
+
+        stage.setOnCloseRequest(event -> {
+            try {
+                UPPAALDriver.cleanServers();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void deserializeProject(final File projectFolder) throws IOException {
@@ -318,7 +327,7 @@ public class HUPPAAL extends Application {
             componentMaxDepthMap.put(jsonObject, 0);
 
             // Find the main name of the main component
-            if(jsonObject.get("main").getAsBoolean()) {
+            if (jsonObject.get("main").getAsBoolean()) {
                 mainJsonComponent = jsonObject;
             }
 
@@ -326,14 +335,14 @@ public class HUPPAAL extends Application {
 
         updateDepthMap(mainJsonComponent, 0, componentJsonMap, componentMaxDepthMap);
 
-        final List<Map.Entry<JsonObject,Integer>> list = new LinkedList<>(componentMaxDepthMap.entrySet());
+        final List<Map.Entry<JsonObject, Integer>> list = new LinkedList<>(componentMaxDepthMap.entrySet());
         // Defined Custom Comparator here
         Collections.sort(list, (o1, o2) -> o1.getValue().compareTo(o2.getValue()));
 
         final List<JsonObject> orderedJsonComponents = new ArrayList<>();
 
 
-        for (final Map.Entry<JsonObject,Integer> mapEntry : list) {
+        for (final Map.Entry<JsonObject, Integer> mapEntry : list) {
             orderedJsonComponents.add(mapEntry.getKey());
         }
 
@@ -351,7 +360,7 @@ public class HUPPAAL extends Application {
     }
 
     private void updateDepthMap(final JsonObject jsonObject, final int depth, final Map<String, JsonObject> nameToJson, final Map<JsonObject, Integer> jsonToDpeth) {
-        if(jsonToDpeth.get(jsonObject) < depth) {
+        if (jsonToDpeth.get(jsonObject) < depth) {
             jsonToDpeth.put(jsonObject, depth);
         }
 
@@ -361,7 +370,7 @@ public class HUPPAAL extends Application {
             subComponentNames.add(jsonElement.getAsJsonObject().get("component").getAsString());
         });
 
-        for (final String subComponentName: subComponentNames) {
+        for (final String subComponentName : subComponentNames) {
             updateDepthMap(nameToJson.get(subComponentName), depth + 1, nameToJson, jsonToDpeth);
         }
     }

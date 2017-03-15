@@ -15,6 +15,7 @@ import com.uppaal.model.core2.Document;
 import com.uppaal.model.system.UppaalSystem;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,13 +67,13 @@ public class UPPAALDriver {
         return new Thread(task);
     }
 
-    public static void generateDebugUPPAALModel() throws InvalidArgumentException, BackendException {
+    public static void generateDebugUPPAALModel() throws Exception, BackendException {
         // Generate and store the debug document
         buildHUPPAALDocument();
         storeUppaalFile(huppaalDocument.toUPPAALDocument(), HUPPAAL.debugDirectory + File.separator + "debug.xml");
     }
 
-    private static synchronized boolean verify(final String query, final TraceType traceType, final Consumer<Trace> traceCallback) throws BackendException, InvalidArgumentException {
+    private static boolean verify(final String query, final TraceType traceType, final Consumer<Trace> traceCallback) throws BackendException, InvalidArgumentException {
         // Will catch feedback from the UPPAAL backend
         final QueryListener queryListener = new QueryListener(huppaalDocument, traceCallback);
 
@@ -80,10 +81,10 @@ public class UPPAALDriver {
         return runQuery(queryListener, query, traceType);
     }
 
-    public static void buildHUPPAALDocument() throws InvalidArgumentException, BackendException {
+    public static void buildHUPPAALDocument() throws BackendException, Exception {
         final Component mainComponent = HUPPAAL.getProject().getMainComponent();
         if (mainComponent == null) {
-            throw new InvalidArgumentException(new String[]{"Main component is null"});
+            throw new Exception("Main component is null");
         }
 
         // Generate HUPPAAL document based on the main component
@@ -91,10 +92,8 @@ public class UPPAALDriver {
     }
 
     private static boolean runQuery(final QueryListener queryListener, final String query, final TraceType traceType) throws BackendException {
-
-        // Create the engine and set the correct server path
-        final Engine engine = new Engine();
-        engine.setServerPath(getOSDependentServerPath());
+        // "Create" the engine and set the correct server path
+        final Engine engine = getOSDependentEngine();
 
         try {
             engine.connect();
@@ -162,27 +161,87 @@ public class UPPAALDriver {
             throw new BackendException.BadUPPAALQueryException("Unable to run query", e);
         } finally {
             engine.disconnect();
+            releaseOSDependentEngine(engine);
         }
     }
 
-    private static String getOSDependentServerPath() {
-        final String os = System.getProperty("os.name");
+    private static final ArrayList<File> createdServers = new ArrayList<>();
+    private static final ArrayList<Engine> availableEngines = new ArrayList<>();
 
+    private static File findServerFile(final String serverName) {
+        final String os = System.getProperty("os.name");
         final File file;
 
         if (os.contains("Mac")) {
-            file = new File(HUPPAAL.serverDirectory + File.separator + "bin-MacOS" + File.separator + "server");
+            file = new File(HUPPAAL.serverDirectory + File.separator + "bin-MacOS" + File.separator + serverName);
         } else if (os.contains("Linux")) {
-            file = new File(HUPPAAL.serverDirectory + File.separator + "bin-Linux" + File.separator + "server");
+            file = new File(HUPPAAL.serverDirectory + File.separator + "bin-Linux" + File.separator + serverName);
         } else {
-            file = new File(HUPPAAL.serverDirectory + File.separator + "bin-Win32" + File.separator + "server.exe");
+            file = new File(HUPPAAL.serverDirectory + File.separator + "bin-Win32" + File.separator + serverName + ".exe");
         }
 
-        if (!file.exists()) {
-            System.out.println("Could not find backend-file: " + file.getAbsolutePath() + ". Please make sure to copy UPPAAL binaries to this location.");
+        return file;
+    }
+
+    private static Engine getAvailableEngineOrCreateNew() {
+        if (availableEngines.size() == 0) {
+            final String newServerName = "server_" + (new Object()).hashCode();
+            final File newServerFile = findServerFile(newServerName);
+
+            try {
+                final File originalServerFile = findServerFile("server");
+                if (!originalServerFile.exists()) {
+                    System.out.println("Could not find backend-file: " + originalServerFile.getAbsolutePath() + ". Please make sure to copy UPPAAL binaries to this location.");
+                }
+
+                FileUtils.copyFile(originalServerFile, newServerFile);
+                createdServers.add(newServerFile);
+
+                // Create a new engine, set the server path, and return it
+                final Engine engine = new Engine();
+                engine.setServerPath(newServerFile.getPath());
+                return engine;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            final Engine engine = availableEngines.get(0);
+            availableEngines.remove(0);
+            return engine;
         }
 
-        return file.getPath();
+        return null;
+    }
+
+    private static Engine getOSDependentEngine() {
+        // Wait for servers to be available
+        while (true) {
+            synchronized (createdServers) {
+                if(!(createdServers.size() >= 10 && availableEngines.size() == 0)) {
+                    final Engine engine = getAvailableEngineOrCreateNew();
+                    if (engine != null) {
+                        return engine;
+                    }
+                }
+            }
+
+            Thread.yield();
+        }
+    }
+
+    private static void releaseOSDependentEngine(final Engine engine) {
+        synchronized (createdServers) {
+            availableEngines.add(engine);
+        }
+    }
+
+    public static void cleanServers() throws IOException {
+        synchronized (createdServers) {
+            while (createdServers.size() != 0) {
+                FileUtils.forceDelete(createdServers.get(0));
+                createdServers.remove(0);
+            }
+        }
     }
 
     private static void storeUppaalFile(final Document uppaalDocument, final String fileName) {
@@ -229,7 +288,7 @@ public class UPPAALDriver {
     private static List<String> getTemplateNames(final Component component) {
         final List<String> subComponentInstanceNames = new ArrayList<>();
 
-        if(component.isIsMain()) {
+        if (component.isIsMain()) {
             subComponentInstanceNames.add(component.getName());
         }
 
