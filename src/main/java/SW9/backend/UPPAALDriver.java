@@ -7,6 +7,7 @@ import SW9.abstractions.Location;
 import SW9.abstractions.SubComponent;
 import SW9.code_analysis.CodeAnalysis;
 import com.google.common.base.Strings;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import com.uppaal.engine.Engine;
 import com.uppaal.engine.EngineException;
 import com.uppaal.engine.Problem;
@@ -23,17 +24,20 @@ import java.util.function.Consumer;
 
 public class UPPAALDriver {
 
-    public static Thread verify(final String query, final Consumer<Boolean> success, final Consumer<BackendException> failure, final Component component) {
-        return verify(query, success, failure, TraceType.NONE, e -> {
-        }, component);
+    public static Thread verify(final String query,
+                                final Consumer<Boolean> success,
+                                final Consumer<BackendException> failure) {
+
+        return verify(query, success, failure, TraceType.NONE, trace -> {
+        });
+
     }
 
     public static Thread verify(final String query,
                                 final Consumer<Boolean> success,
                                 final Consumer<BackendException> failure,
                                 final TraceType traceType,
-                                final Consumer<Trace> traceCallBack,
-                                final Component component) {
+                                final Consumer<Trace> traceCallBack) {
         // The task that should be executed on the background thread
         // calls success if no exception happens with the result
         // otherwise calls failure with the exception
@@ -44,7 +48,7 @@ public class UPPAALDriver {
 
                 {
                     try {
-                        success.accept(UPPAALDriver.verify(query, traceType, traceCallBack, component));
+                        success.accept(UPPAALDriver.verify(query, traceType, traceCallBack));
                     } catch (final BackendException backendException) {
                         failure.accept(backendException);
                     } finally {
@@ -60,12 +64,17 @@ public class UPPAALDriver {
         return new Thread(task);
     }
 
-    private static synchronized boolean verify(final String query, final TraceType traceType, final Consumer<Trace> traceCallback, final Component component) throws BackendException {
-        final HUPPAALDocument huppaalDocument = new HUPPAALDocument(component);
+    private static synchronized boolean verify(final String query, final TraceType traceType, final Consumer<Trace> traceCallback) throws BackendException, InvalidArgumentException {
+        final Component mainComponent = HUPPAAL.getProject().getMainComponent();
+        if (mainComponent == null) {
+            throw new InvalidArgumentException(new String[]{"Main component is null"});
+        }
 
-        // Store the debug document
+        // Generate and store the debug document
+        final HUPPAALDocument huppaalDocument = new HUPPAALDocument(mainComponent);
         storeUppaalFile(huppaalDocument.toUPPAALDocument(), HUPPAAL.debugDirectory + File.separator + "debug.xml");
 
+        // Will catch feedback from the UPPAAL backend
         final QueryListener queryListener = new QueryListener(huppaalDocument, traceCallback);
 
         // Run the query

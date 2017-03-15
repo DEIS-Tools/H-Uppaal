@@ -114,8 +114,6 @@ public class HUPPAALController implements Initializable {
             Debug.removeThread(thread);
         }
 
-        final Component mainComponent = HUPPAAL.getProject().getMainComponent();
-
         HUPPAAL.getProject().getComponents().forEach(component -> {
             component.getLocationsWithInitialAndFinal().forEach(location -> {
                 final String locationReachableQuery = UPPAALDriver.getLocationReachableQuery(location, component);
@@ -131,8 +129,8 @@ public class HUPPAALController implements Initializable {
                         (e) -> {
                             e.printStackTrace();
                             location.setReachability(Location.Reachability.UNKNOWN);
-                        },
-                        mainComponent);
+                        }
+                );
 
                 verifyThread.setName(locationReachableQuery + " (" + verifyThread.getName() + ")");
                 Debug.addThread(verifyThread);
@@ -462,8 +460,7 @@ public class HUPPAALController implements Initializable {
 
         UPPAALDriver.verify("E<> true", // todo: consider creating an interface for generating the model instead of this query
                 aBoolean -> System.out.println("Generated UPPAAL file!"),
-                e -> System.out.println("ERROR"),
-                mainComponent
+                e -> System.out.println("ERROR")
         ).start();
     }
 

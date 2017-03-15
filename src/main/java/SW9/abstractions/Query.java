@@ -93,8 +93,7 @@ public class Query implements Serializable {
                         },
                         e -> {
                             setQueryState(QueryState.SYNTAX_ERROR);
-                        },
-                        mainComponent
+                        }
                 ).start();
             }
         };
