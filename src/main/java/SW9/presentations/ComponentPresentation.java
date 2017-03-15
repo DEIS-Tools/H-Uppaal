@@ -232,8 +232,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
 
         final KeyValue kvPresent = new KeyValue(container.opacityProperty(), 1, interpolator);
         final KeyValue kvGone = new KeyValue(container.opacityProperty(), 0, interpolator);
-        final KeyFrame kf1 = new KeyFrame(millis(3000), kvPresent);
-        final KeyFrame kf2 = new KeyFrame(millis(3500), kvGone);
+        final KeyFrame kf1 = new KeyFrame(millis(5000), kvPresent);
+        final KeyFrame kf2 = new KeyFrame(millis(5500), kvGone);
         disappearAnimation.getKeyFrames().addAll(kf1, kf2);
 
 

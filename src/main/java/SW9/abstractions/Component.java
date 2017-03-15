@@ -90,9 +90,9 @@ public class Component implements Serializable, DropDownMenu.HasColor {
 
     public Component(final JsonObject object) {
         hiddenID.incrementAndGet();
+        setFirsTimeShown(true);
         deserialize(object);
         bindReachabilityAnalysis();
-        setFirsTimeShown(true);
     }
 
     public String getName() {
