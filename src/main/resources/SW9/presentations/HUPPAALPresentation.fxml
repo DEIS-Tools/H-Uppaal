@@ -8,6 +8,7 @@
 <?import javafx.scene.text.Text?>
 <?import org.kordamp.ikonli.javafx.*?>
 <?import SW9.presentations.*?>
+<?import javafx.scene.Group?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
@@ -157,7 +158,8 @@
 
     <!-- Message container -->
     <StackPane fx:id="tabPaneContainer" maxHeight="35"
-               StackPane.alignment="BOTTOM_CENTER">
+               StackPane.alignment="BOTTOM_CENTER"
+               style="-fx-padding: 0 0 20 0">
         <JFXTabPane fx:id="tabPane" style="-fx-background-color: -grey-200;">
 
             <Tab fx:id="backendErrorsTab" text="Backend Errors">
@@ -206,6 +208,31 @@
                    width="500" height="3"
                    fill="transparent" StackPane.alignment="TOP_CENTER"/>
     </StackPane>
+
+    <!-- Status container -->
+    <HBox minHeight="20" maxHeight="20" StackPane.alignment="BOTTOM_CENTER"
+          fx:id="statusBar"
+          style="-fx-padding: 0 10 0 10">
+
+        <StackPane>
+            <Label fx:id="statusLabel" styleClass="sub-caption"/>
+        </StackPane>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <HBox fx:id="queryStatusContainer">
+            <StackPane>
+                <Label fx:id="queryLabel" styleClass="sub-caption" text="Hest"/>
+            </StackPane>
+
+            <Region minWidth="5"/>
+
+            <StackPane>
+                <JFXSpinner radius="5"/>
+            </StackPane>
+        </HBox>
+
+    </HBox>
 
     <!-- Dialog -->
     <StackPane fx:id="dialogContainer" style="-fx-background-color: #0000007F;" visible="false">

@@ -7,6 +7,7 @@ import SW9.backend.UPPAALDriver;
 import SW9.code_analysis.CodeAnalysis;
 import SW9.presentations.*;
 import SW9.utility.UndoRedoStack;
+import SW9.utility.colors.Color;
 import SW9.utility.colors.EnabledColor;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.keyboard.Keybind;
@@ -16,20 +17,21 @@ import SW9.utility.keyboard.Nudgeable;
 import com.jfoenix.controls.*;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
+import javafx.application.Platform;
 import javafx.beans.binding.When;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -96,6 +98,10 @@ public class HUPPAALController implements Initializable {
     public MenuItem menuBarFileSave;
     public JFXSnackbar snackbar;
     public MenuItem menuBarHelpHelp;
+    public HBox statusBar;
+    public Label statusLabel;
+    public Label queryLabel;
+    public HBox queryStatusContainer;
     private double tabPanePreviousY = 0;
     private boolean shouldISkipOpeningTheMessagesContainer = true;
 
@@ -271,10 +277,42 @@ public class HUPPAALController implements Initializable {
         });
 
         initializeTabPane();
+        initializeStatusBar();
         initializeMessages();
         initializeMenuBar();
         initializeNoMainComponentError();
 
+    }
+
+    private void initializeStatusBar() {
+        statusBar.setBackground(new Background(new BackgroundFill(
+                Color.GREY_BLUE.getColor(Color.Intensity.I800),
+                CornerRadii.EMPTY,
+                Insets.EMPTY
+        )));
+
+        statusLabel.setTextFill(Color.GREY_BLUE.getColor(Color.Intensity.I50));
+        statusLabel.setText(HUPPAAL.projectDirectory);
+        statusLabel.setOpacity(0.5);
+
+        queryLabel.setTextFill(Color.GREY_BLUE.getColor(Color.Intensity.I50));
+        queryLabel.setOpacity(0.5);
+
+        Debug.backgroundThreads.addListener(new ListChangeListener<Thread>() {
+            @Override
+            public void onChanged(final Change<? extends Thread> c) {
+                while (c.next()) {
+                    Platform.runLater(() -> {
+                        if(Debug.backgroundThreads.size() == 0) {
+                            queryStatusContainer.setOpacity(0);
+                        } else {
+                            queryStatusContainer.setOpacity(1);
+                            queryLabel.setText(Debug.backgroundThreads.get(0).getName());
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private void initializeNoMainComponentError() {

@@ -45,7 +45,7 @@ public class HUPPAAL extends Application {
     public static boolean serializationDone = false;
     private static Project project;
     private static HUPPAALPresentation presentation;
-    private static String projectDirectory;
+    public static String projectDirectory;
     private Stage debugStage;
 
     {
