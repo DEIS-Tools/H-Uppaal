@@ -53,7 +53,7 @@ public class HUPPAAL extends Application {
             final CodeSource codeSource = HUPPAAL.class.getProtectionDomain().getCodeSource();
             final File jarFile = new File(codeSource.getLocation().toURI().getPath());
             final String rootDirectory = jarFile.getParentFile().getPath() + File.separator;
-            projectDirectory = rootDirectory + "project";
+            projectDirectory = rootDirectory + "projects/project";
             serverDirectory = rootDirectory + "servers";
             debugDirectory = rootDirectory + "uppaal-debug";
             createFolderWithPermission(projectDirectory);
