@@ -56,9 +56,9 @@ public class HUPPAAL extends Application {
             projectDirectory = rootDirectory + "projects/project";
             serverDirectory = rootDirectory + "servers";
             debugDirectory = rootDirectory + "uppaal-debug";
-            createFolderWithPermission(projectDirectory);
-            createFolderWithPermission(serverDirectory);
-            createFolderWithPermission(debugDirectory);
+            forceCreateFolder(projectDirectory);
+            forceCreateFolder(serverDirectory);
+            forceCreateFolder(debugDirectory);
         } catch (final URISyntaxException e) {
             System.out.println("Could not create project directory!");
             System.exit(1);
@@ -135,25 +135,9 @@ public class HUPPAAL extends Application {
         return presentation.toggleQueryPane();
     }
 
-    private void createFolderWithPermission(final String directoryPath) throws IOException {
-
+    private void forceCreateFolder(final String directoryPath) throws IOException {
         final File directory = new File(directoryPath);
         FileUtils.forceMkdir(directory);
-
-        setFilePermissionRecursive(directory);
-    }
-
-    private void setFilePermissionRecursive(final File file) {
-        file.setReadable(true, false);
-        file.setExecutable(true, false);
-        file.setWritable(true, false);
-
-        if (file.isDirectory() && file.listFiles() != null) {
-            for (final File innerFile : file.listFiles()) {
-                setFilePermissionRecursive(innerFile);
-            }
-        }
-
     }
 
     @Override
