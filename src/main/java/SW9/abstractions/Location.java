@@ -57,6 +57,11 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
         bindReachabilityAnalysis();
     }
 
+    public Location(final String id) {
+        setId(id);
+        bindReachabilityAnalysis();
+    }
+
     public Location(final JsonObject jsonObject) {
         hiddenID.incrementAndGet();
         deserialize(jsonObject);
