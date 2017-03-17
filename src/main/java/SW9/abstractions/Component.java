@@ -67,25 +67,31 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     private final BooleanProperty firsTimeShown = new SimpleBooleanProperty(false);
 
     public Component() {
-        this("Component" + hiddenID.getAndIncrement());
+        this(false);
     }
 
-    public Component(final String name) {
+    public Component(final boolean doRandomColor) {
+        this("Component" + hiddenID.getAndIncrement(), doRandomColor);
+    }
+
+    public Component(final String name, final boolean doRandomColor) {
         setName(name);
 
-        // Color the new component in such a way that we avoid clashing with other components if possible
-        final List<EnabledColor> availableColors = new ArrayList<>();
-        EnabledColor.enabledColors.forEach(availableColors::add);
-        HUPPAAL.getProject().getComponents().forEach(component -> {
-            availableColors.removeIf(enabledColor -> enabledColor.color.equals(component.getColor()));
-        });
-        if(availableColors.size() == 0) {
+        if(doRandomColor) {
+            // Color the new component in such a way that we avoid clashing with other components if possible
+            final List<EnabledColor> availableColors = new ArrayList<>();
             EnabledColor.enabledColors.forEach(availableColors::add);
+            HUPPAAL.getProject().getComponents().forEach(component -> {
+                availableColors.removeIf(enabledColor -> enabledColor.color.equals(component.getColor()));
+            });
+            if (availableColors.size() == 0) {
+                EnabledColor.enabledColors.forEach(availableColors::add);
+            }
+            final int randomIndex = (new Random()).nextInt(availableColors.size());
+            final EnabledColor selectedColor = availableColors.get(randomIndex);
+            setColorIntensity(selectedColor.intensity);
+            setColor(selectedColor.color);
         }
-        final int randomIndex = (new Random()).nextInt(availableColors.size());
-        final EnabledColor selectedColor = availableColors.get(randomIndex);
-        setColorIntensity(selectedColor.intensity);
-        setColor(selectedColor.color);
 
         // A component must have at least one initial location
         final Location initialLocation = new Location();

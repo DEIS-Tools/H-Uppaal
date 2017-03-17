@@ -195,7 +195,7 @@ public class ProjectPaneController implements Initializable {
 
     @FXML
     private void createComponentClicked() {
-        final Component newComponent = new Component();
+        final Component newComponent = new Component(true);
 
         UndoRedoStack.push(() -> { // Perform
             HUPPAAL.getProject().getComponents().add(newComponent);
