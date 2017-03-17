@@ -3,7 +3,6 @@ package SW9.controllers;
 import SW9.Debug;
 import SW9.HUPPAAL;
 import SW9.abstractions.*;
-import SW9.backend.BackendException;
 import SW9.backend.UPPAALDriver;
 import SW9.code_analysis.CodeAnalysis;
 import SW9.presentations.*;
@@ -15,7 +14,6 @@ import SW9.utility.keyboard.KeyboardTracker;
 import SW9.utility.keyboard.NudgeDirection;
 import SW9.utility.keyboard.Nudgeable;
 import com.jfoenix.controls.*;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.beans.binding.When;
@@ -121,57 +119,62 @@ public class HUPPAALController implements Initializable {
             UPPAALDriver.buildHUPPAALDocument();
 
             HUPPAAL.getProject().getComponents().forEach(component -> {
-                component.getLocationsWithInitialAndFinal().forEach(location -> {
-                    final String locationReachableQuery = UPPAALDriver.getLocationReachableQuery(location, component);
-                    final Thread verifyThread = UPPAALDriver.verify(
-                            locationReachableQuery,
-                            (result -> {
-                                if (result) {
-                                    location.setReachability(Location.Reachability.REACHABLE);
-                                } else {
-                                    location.setReachability(Location.Reachability.UNREACHABLE);
-                                }
-                            }),
-                            (e) -> {
-                                e.printStackTrace();
-                                location.setReachability(Location.Reachability.UNKNOWN);
-                            }
-                    );
-
-                    verifyThread.setName(locationReachableQuery + " (" + verifyThread.getName() + ")");
-                    Debug.addThread(verifyThread);
-
-                    reachabilityService.submit(() -> {
-                        final TimerTask timeoutTask = new TimerTask() {
-                            @Override
-                            public void run() {
-                                if (verifyThread.isAlive()) {
+                // Check if we should consider this component
+                if (!component.isIncludeInPeriodicCheck()) {
+                    component.getLocationsWithInitialAndFinal().forEach(location -> location.setReachability(Location.Reachability.EXCLUDED));
+                } else {
+                    component.getLocationsWithInitialAndFinal().forEach(location -> {
+                        final String locationReachableQuery = UPPAALDriver.getLocationReachableQuery(location, component);
+                        final Thread verifyThread = UPPAALDriver.verify(
+                                locationReachableQuery,
+                                (result -> {
+                                    if (result) {
+                                        location.setReachability(Location.Reachability.REACHABLE);
+                                    } else {
+                                        location.setReachability(Location.Reachability.UNREACHABLE);
+                                    }
+                                }),
+                                (e) -> {
+                                    e.printStackTrace();
                                     location.setReachability(Location.Reachability.UNKNOWN);
-                                    verifyThread.interrupt();
                                 }
+                        );
+
+                        verifyThread.setName(locationReachableQuery + " (" + verifyThread.getName() + ")");
+                        Debug.addThread(verifyThread);
+
+                        reachabilityService.submit(() -> {
+                            final TimerTask timeoutTask = new TimerTask() {
+                                @Override
+                                public void run() {
+                                    if (verifyThread.isAlive()) {
+                                        location.setReachability(Location.Reachability.UNKNOWN);
+                                        verifyThread.interrupt();
+                                    }
+                                }
+                            };
+
+                            try {
+                                // Start the verification thread
+                                verifyThread.start();
+
+                                // Schedule the timeoutTask to stop the verify thread after a time threshold
+                                new Timer().schedule(timeoutTask, 2000);
+
+                                // Wait for the verification thread to complete
+                                // This thread will join once it is interrupted by the timeoutThread or when the query is done executing
+                                verifyThread.join();
+                                timeoutTask.cancel(); // Cancel the scheduling of the timeoutTask
+
+                                Debug.removeThread(verifyThread);
+                            } catch (final InterruptedException e) { // Thread is interrupted. We do this ourselves.
+                                // Stop the verification thread and cancel the timeout task.
+                                verifyThread.interrupt();
+                                timeoutTask.cancel();
                             }
-                        };
-
-                        try {
-                            // Start the verification thread
-                            verifyThread.start();
-
-                            // Schedule the timeoutTask to stop the verify thread after a time threshold
-                            new Timer().schedule(timeoutTask, 2000);
-
-                            // Wait for the verification thread to complete
-                            // This thread will join once it is interrupted by the timeoutThread or when the query is done executing
-                            verifyThread.join();
-                            timeoutTask.cancel(); // Cancel the scheduling of the timeoutTask
-
-                            Debug.removeThread(verifyThread);
-                        } catch (final InterruptedException e) { // Thread is interrupted. We do this ourselves.
-                            // Stop the verification thread and cancel the timeout task.
-                            verifyThread.interrupt();
-                            timeoutTask.cancel();
-                        }
+                        });
                     });
-                });
+                }
             });
 
         } catch (Exception e) {

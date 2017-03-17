@@ -326,7 +326,7 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
     }
 
     public enum Reachability {
-        REACHABLE, UNREACHABLE, UNKNOWN
+        REACHABLE, UNREACHABLE, UNKNOWN, EXCLUDED
     }
 
     private void bindReachabilityAnalysis() {

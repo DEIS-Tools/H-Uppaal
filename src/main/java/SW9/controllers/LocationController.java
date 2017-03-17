@@ -202,6 +202,30 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
             getLocation().setColorIntensity(intensity);
             getLocation().setColor(color);
         });
+
+        if(getLocation().getType().equals(Location.Type.NORMAL)) {
+            dropDownMenu.addSpacerElement();
+
+            dropDownMenu.addClickableListElement("Delete", event -> {
+                final Component component = getComponent();
+                final Location location = getLocation();
+
+                final List<Edge> relatedEdges = component.getRelatedEdges(location);
+
+                UndoRedoStack.push(() -> { // Perform
+                    // Remove the location
+                    component.getLocations().remove(location);
+                    relatedEdges.forEach(component::removeEdge);
+                }, () -> { // Undo
+                    // Re-all the location
+                    component.getLocations().add(location);
+                    relatedEdges.forEach(component::addEdge);
+
+                }, String.format("Deleted %s", location), "delete");
+
+                dropDownMenu.close();
+            });
+        }
     }
 
     public void initializeInvalidNameError() {

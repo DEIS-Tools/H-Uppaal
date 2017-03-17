@@ -76,6 +76,7 @@ public class ProjectPaneController implements Initializable {
         final JFXRippler moreInformation = (JFXRippler) filePresentation.lookup("#moreInformation");
         final int listWidth = 230;
         final DropDownMenu moreInformationDropDown = new DropDownMenu(root, moreInformation, listWidth, true);
+        final Component component = filePresentation.getComponent();
 
         moreInformationDropDown.addListElement("Configuration");
 
@@ -83,7 +84,6 @@ public class ProjectPaneController implements Initializable {
          * IS MAIN
          */
         moreInformationDropDown.addTogglableListElement("Main", filePresentation.getComponent().isMainProperty(), event -> {
-            final Component component = filePresentation.getComponent();
             final boolean wasMain = component.isIsMain();
 
             UndoRedoStack.push(() -> { // Perform
@@ -96,15 +96,13 @@ public class ProjectPaneController implements Initializable {
         /*
          * INCLUDE IN PERIODIC CHECK
          */
-        final SimpleBooleanProperty includeInPeriodicCheck = new SimpleBooleanProperty(true); // todo: This should be placed in the model
-        moreInformationDropDown.addTogglableListElement("Include in periodic check", includeInPeriodicCheck, event -> {
-            final Component component = filePresentation.getComponent();
-            final boolean didIncludeInPeriodicCheck = includeInPeriodicCheck.get();
+        moreInformationDropDown.addTogglableListElement("Include in periodic check", component.includeInPeriodicCheckProperty(), event -> {
+            final boolean didIncludeInPeriodicCheck = component.includeInPeriodicCheckProperty().get();
 
             UndoRedoStack.push(() -> { // Perform
-                includeInPeriodicCheck.set(!didIncludeInPeriodicCheck);
+                component.includeInPeriodicCheckProperty().set(!didIncludeInPeriodicCheck);
             }, () -> { // Undo
-                includeInPeriodicCheck.set(didIncludeInPeriodicCheck);
+                component.includeInPeriodicCheckProperty().set(didIncludeInPeriodicCheck);
             }, "Component " + component.getName() + " is included in periodic check: " + !didIncludeInPeriodicCheck, "search");
         });
 
@@ -145,8 +143,6 @@ public class ProjectPaneController implements Initializable {
          * THE DELETE BUTTON
          */
         moreInformationDropDown.addClickableListElement("Delete", event -> {
-            final Component component = filePresentation.getComponent();
-
             UndoRedoStack.push(() -> { // Perform
                 HUPPAAL.getProject().getComponents().remove(component);
             }, () -> { // Undo
