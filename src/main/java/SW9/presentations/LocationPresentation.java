@@ -412,7 +412,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         final StackPane finalIndicator = controller.finalIndicator;
 
         initializeLocationShapes(initialIndicator, INITIAL_RADIUS);
-
         initialIndicator.visibleProperty().bind(location.typeProperty().isEqualTo(Location.Type.INITIAL));
         finalIndicator.visibleProperty().bind(location.typeProperty().isEqualTo(Location.Type.FINAl));
     }
