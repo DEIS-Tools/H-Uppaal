@@ -25,6 +25,17 @@ import java.util.function.Consumer;
 
 public class UPPAALDriver {
 
+    // Static initializer for cleaning up in the servers folder
+    static {
+        final File serversFolder = findServerFile("server").getParentFile();
+
+        for (final File file : serversFolder.listFiles()) {
+            if (file.getName().matches("server_\\w*(.exe)*")) {
+                file.delete();
+            }
+        }
+    }
+
     private static HUPPAALDocument huppaalDocument;
 
     public static Thread verify(final String query,
