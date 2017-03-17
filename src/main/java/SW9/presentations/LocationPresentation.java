@@ -127,7 +127,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
             ds.setRadius(5);
             ds.setBlurType(BlurType.GAUSSIAN);
 
-            if(reachability.equals(Location.Reachability.REACHABLE)) {
+            if(reachability.equals(Location.Reachability.REACHABLE) || reachability.equals(Location.Reachability.EXCLUDED)) {
                 ds.setColor(javafx.scene.paint.Color.TRANSPARENT);
             } else if(reachability.equals(Location.Reachability.UNREACHABLE)) {
                 ds.setColor(Color.RED.getColor(Color.Intensity.I700, 0.75));

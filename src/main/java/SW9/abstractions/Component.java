@@ -553,5 +553,6 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         locations.addListener((ListChangeListener<? super Location>) c -> HUPPAALController.runReachabilityAnalysis());
         edges.addListener((ListChangeListener<? super Edge>) c -> HUPPAALController.runReachabilityAnalysis());
         declarationsProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
+        includeInPeriodicCheckProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
     }
 }
