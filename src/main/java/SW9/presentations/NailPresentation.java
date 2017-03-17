@@ -159,6 +159,9 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
             if(!controller.getNail().getPropertyType().equals(Edge.PropertyType.NONE)) {
                 controller.nailCircle.setFill(color.getColor(colorIntensity));
                 controller.nailCircle.setStroke(color.getColor(colorIntensity.next(2)));
+            } else {
+                controller.nailCircle.setFill(Color.GREY_BLUE.getColor(Color.Intensity.I800));
+                controller.nailCircle.setStroke(Color.GREY_BLUE.getColor(Color.Intensity.I900));
             }
         };
 
@@ -205,10 +208,8 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
 
     @Override
     public void deselect() {
-        final Component component = controller.getComponent();
-
         // Set the color
-        controller.nailCircle.setFill(component.getColor().getColor(component.getColorIntensity()));
-        controller.nailCircle.setStroke(component.getColor().getColor(component.getColorIntensity().next(2)));
+        controller.nailCircle.setFill(Color.GREY_BLUE.getColor(Color.Intensity.I800));
+        controller.nailCircle.setStroke(Color.GREY_BLUE.getColor(Color.Intensity.I900));
     }
 }
