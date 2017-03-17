@@ -50,18 +50,28 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
     private final ObjectProperty<Location> location = new SimpleObjectProperty<>();
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>();
     public Group root;
-    public Path initialIndicator;
+
+    public Circle locationCircle;
+    public Rectangle locationSquare;
+
+    public Circle locationCircleInitialIndicator;
+    public Rectangle locationSquareInitialIndicator;
     public StackPane finalIndicator;
+
+    public Path urgencyIndicator;
+
     public Group shakeContent;
     public Circle circle;
     public Circle circleShakeIndicator;
     public Group scaleContent;
+
     public TagPresentation nicknameTag;
     public TagPresentation invariantTag;
-    public Path locationShape;
     public Label idLabel;
     public Line nameTagLine;
     public Line invariantTagLine;
+
+
     private DropDownMenu dropDownMenu;
     private boolean dropDownMenuInitialized = false;
 

@@ -35,7 +35,10 @@
         <Circle fx:id="circleShakeIndicator" radius="10" mouseTransparent="true" fill="white" opacity="0"/>
 
         <!-- The transformable locationAware shape -->
-        <Path fx:id="locationShape" strokeType="INSIDE"/>
+        <Circle fx:id="locationCircle" strokeType="INSIDE"/>
+        <Rectangle fx:id="locationSquare" strokeType="INSIDE"/>
+        <Path fx:id="urgencyIndicator"/>
+
 
         <Group fx:id="shakeContent">
             <StackPane fx:id="finalIndicator" mouseTransparent="true" translateX="-8" translateY="-8">
@@ -44,7 +47,8 @@
             </StackPane>
 
             <!-- The initial indicator -->
-            <Path fx:id="initialIndicator" strokeType="INSIDE"  style="-fx-stroke: -white; -fx-fill: transparent;" mouseTransparent="true"/>
+            <Circle fx:id="locationCircleInitialIndicator" strokeType="INSIDE"  style="-fx-stroke: -white; -fx-fill: transparent;" mouseTransparent="true"/>
+            <Rectangle fx:id="locationSquareInitialIndicator" strokeType="INSIDE"  style="-fx-stroke: -white; -fx-fill: transparent;" mouseTransparent="true"/>
 
 
             <Label fx:id="idLabel" styleClass="sub-caption" mouseTransparent="true"/>
