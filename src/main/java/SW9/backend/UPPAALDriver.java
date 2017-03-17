@@ -195,6 +195,8 @@ public class UPPAALDriver {
                 }
 
                 FileUtils.copyFile(originalServerFile, newServerFile);
+                newServerFile.setExecutable(true);
+
                 createdServers.add(newServerFile);
 
                 // Create a new engine, set the server path, and return it
