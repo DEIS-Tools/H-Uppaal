@@ -58,8 +58,6 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
     public Rectangle locationSquareInitialIndicator;
     public StackPane finalIndicator;
 
-    public Path urgencyIndicator;
-
     public Group shakeContent;
     public Circle circle;
     public Circle circleShakeIndicator;

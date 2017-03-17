@@ -394,8 +394,6 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
         finalIndicator.visibleProperty().bind(location.typeProperty().isEqualTo(Location.Type.FINAl));
 
-        final Path urgencyIndicator = controller.urgencyIndicator;
-        final MoveTo i
     }
 
     public void setLocation(final Location location) {

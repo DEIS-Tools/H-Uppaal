@@ -37,8 +37,6 @@
         <!-- The transformable locationAware shape -->
         <Circle fx:id="locationCircle" strokeType="INSIDE"/>
         <Rectangle fx:id="locationSquare" strokeType="INSIDE"/>
-        <Path fx:id="urgencyIndicator"/>
-
 
         <Group fx:id="shakeContent">
             <StackPane fx:id="finalIndicator" mouseTransparent="true" translateX="-8" translateY="-8">
