@@ -307,7 +307,7 @@ public class HUPPAALController implements Initializable {
                             queryStatusContainer.setOpacity(0);
                         } else {
                             queryStatusContainer.setOpacity(1);
-                            queryLabel.setText(Debug.backgroundThreads.get(0).getName());
+                            queryLabel.setText(Debug.backgroundThreads.size() + " background queries running");
                         }
                     });
                 }

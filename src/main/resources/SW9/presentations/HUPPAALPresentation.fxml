@@ -8,7 +8,6 @@
 <?import javafx.scene.text.Text?>
 <?import org.kordamp.ikonli.javafx.*?>
 <?import SW9.presentations.*?>
-<?import javafx.scene.Group?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane"
@@ -222,13 +221,13 @@
 
         <HBox fx:id="queryStatusContainer">
             <StackPane>
-                <Label fx:id="queryLabel" styleClass="sub-caption" text="Hest"/>
+                <JFXSpinner radius="5"/>
             </StackPane>
 
             <Region minWidth="5"/>
 
             <StackPane>
-                <JFXSpinner radius="5"/>
+                <Label fx:id="queryLabel" styleClass="sub-caption"/>
             </StackPane>
         </HBox>
 
