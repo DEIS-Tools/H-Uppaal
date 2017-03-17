@@ -39,6 +39,7 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     private static final String WIDTH = "width";
     private static final String HEIGHT = "height";
     private static final String COLOR = "color";
+    private static final String INCLUDE_IN_PERIODIC_CHECK = "include_in_periodic_check";
     private static final String COLOR_INTENSITY = "color_intensity";
 
     // Verification properties
@@ -52,6 +53,9 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     private final ObservableList<SubComponent> subComponents = FXCollections.observableArrayList();
     private final BooleanProperty isMain = new SimpleBooleanProperty(false);
     private final StringProperty description = new SimpleStringProperty("");
+
+    // Background check
+    private final BooleanProperty includeInPeriodicCheck = new SimpleBooleanProperty(true);
 
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
@@ -409,6 +413,18 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         this.firsTimeShown.set(firsTimeShown);
     }
 
+    public boolean isIncludeInPeriodicCheck() {
+        return includeInPeriodicCheck.get();
+    }
+
+    public BooleanProperty includeInPeriodicCheckProperty() {
+        return includeInPeriodicCheck;
+    }
+
+    public void setIncludeInPeriodicCheck(final boolean includeInPeriodicCheck) {
+        this.includeInPeriodicCheck.set(includeInPeriodicCheck);
+    }
+
     @Override
     public JsonObject serialize() {
         final JsonObject result = new JsonObject();
@@ -444,6 +460,8 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         result.addProperty(WIDTH, getWidth());
         result.addProperty(HEIGHT, getHeight());
         result.addProperty(COLOR, EnabledColor.getIdentifier(getColor()));
+
+        result.addProperty(INCLUDE_IN_PERIODIC_CHECK, isIncludeInPeriodicCheck());
 
         return result;
     }
@@ -493,6 +511,8 @@ public class Component implements Serializable, DropDownMenu.HasColor {
             setColorIntensity(enabledColor.intensity);
             setColor(enabledColor.color);
         }
+
+        setIncludeInPeriodicCheck(json.getAsJsonPrimitive(INCLUDE_IN_PERIODIC_CHECK).getAsBoolean());
     }
 
     public void color(final Color color, final Color.Intensity intensity) {
