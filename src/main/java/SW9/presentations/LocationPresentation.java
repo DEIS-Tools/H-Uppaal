@@ -35,6 +35,7 @@ import static javafx.util.Duration.millis;
 public class LocationPresentation extends Group implements MouseTrackable, SelectHelper.Selectable {
 
     public static final double RADIUS = 15;
+    public static final double INITIAL_RADIUS = RADIUS / 4 * 3;
     private static int id = 0;
     private final LocationController controller;
     private final MouseTracker mouseTracker = new MouseTracker(this);
@@ -335,22 +336,55 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     }
 
     private void initializeLocationShapes() {
+        final Path normalAndUrgentShape = controller.locationShape;
+
+        initializeLocationShapes(normalAndUrgentShape, RADIUS);
 
         final Location location = controller.getLocation();
 
-        final Circle locationCircle = controller.locationCircle;
-        final Rectangle locationSquare = controller.locationSquare;
 
-        // Bind the size of the circle and squares
-        locationCircle.radiusProperty().bind(location.radiusProperty());
-        locationSquare.widthProperty().bind(location.radiusProperty().multiply(2));
-        locationSquare.heightProperty().bind(location.radiusProperty().multiply(2));
-        locationSquare.layoutXProperty().bind(location.radiusProperty().multiply(-1));
-        locationSquare.layoutYProperty().bind(location.radiusProperty().multiply(-1));
+        BiConsumer<Location.Urgency, Location.Urgency> updateUrgencies = (oldUrgency, newUrgency) -> {
+            final Transition toUrgent = new Transition() {
+                {
+                    setCycleDuration(Duration.millis(200));
+                }
 
-        // Bind the visibility of the circle and squares dependent on the urgency
-        locationCircle.visibleProperty().bind(location.urgencyProperty().isEqualTo(Location.Urgency.NORMAL));
-        locationSquare.visibleProperty().bind(location.urgencyProperty().isNotEqualTo(Location.Urgency.NORMAL));
+                @Override
+                protected void interpolate(final double frac) {
+                    animation.set(frac);
+                }
+            };
+
+            final Transition toNormal = new Transition() {
+                {
+                    setCycleDuration(Duration.millis(200));
+                }
+
+                @Override
+                protected void interpolate(final double frac) {
+                    animation.set(1-frac);
+                }
+            };
+
+            if(oldUrgency.equals(Location.Urgency.NORMAL) && !newUrgency.equals(Location.Urgency.NORMAL)) {
+                toUrgent.play();
+
+            } else if(newUrgency.equals(Location.Urgency.NORMAL)) {
+                toNormal.play();
+            }
+
+            if(newUrgency.equals(Location.Urgency.COMMITTED)) {
+                normalAndUrgentShape.setStrokeWidth(3);
+            } else {
+                normalAndUrgentShape.setStrokeWidth(1);
+            }
+        };
+
+        location.urgencyProperty().addListener((obsUrgency, oldUrgency, newUrgency) -> {
+            updateUrgencies.accept(oldUrgency, newUrgency);
+        });
+
+        updateUrgencies.accept(Location.Urgency.NORMAL, location.getUrgency());
 
         // Update the colors
         final ObjectProperty<Color> color = location.colorProperty();
@@ -358,11 +392,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
         // Delegate to style the label based on the color of the location
         final BiConsumer<Color, Color.Intensity> updateColor = (newColor, newIntensity) -> {
-            locationCircle.setFill(newColor.getColor(newIntensity));
-            locationCircle.setStroke(newColor.getColor(newIntensity.next(2)));
-
-            locationSquare.setFill(newColor.getColor(newIntensity));
-            locationSquare.setStroke(newColor.getColor(newIntensity.next(2)));
+            normalAndUrgentShape.setFill(newColor.getColor(newIntensity));
+            normalAndUrgentShape.setStroke(newColor.getColor(newIntensity.next(2)));
         };
 
         updateColorDelegates.add(updateColor);
@@ -377,23 +408,12 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private void initializeTypeGraphics() {
         final Location location = controller.getLocation();
 
-        final Circle locationCircleInitialIndicator = controller.locationCircleInitialIndicator;
-        final Rectangle locationSquareInitialIndicator = controller.locationSquareInitialIndicator;
-
-        // Bind the size of the circle and squares
-        locationCircleInitialIndicator.radiusProperty().bind(location.radiusProperty().divide(4).multiply(3));
-        locationSquareInitialIndicator.widthProperty().bind(location.radiusProperty().multiply(2).divide(4).multiply(3));
-        locationSquareInitialIndicator.heightProperty().bind(location.radiusProperty().multiply(2).divide(4).multiply(3));
-        locationSquareInitialIndicator.layoutXProperty().bind(location.radiusProperty().divide(4).multiply(3).multiply(-1));
-        locationSquareInitialIndicator.layoutYProperty().bind(location.radiusProperty().divide(4).multiply(3).multiply(-1));
-
-        locationCircleInitialIndicator.visibleProperty().bind(location.typeProperty().isEqualTo(Location.Type.INITIAL).and(location.urgencyProperty().isEqualTo(Location.Urgency.NORMAL)));
-        locationSquareInitialIndicator.visibleProperty().bind(location.typeProperty().isEqualTo(Location.Type.INITIAL).and(location.urgencyProperty().isNotEqualTo(Location.Urgency.NORMAL)));
-
+        final Path initialIndicator = controller.initialIndicator;
         final StackPane finalIndicator = controller.finalIndicator;
 
+        initializeLocationShapes(initialIndicator, INITIAL_RADIUS);
+        initialIndicator.visibleProperty().bind(location.typeProperty().isEqualTo(Location.Type.INITIAL));
         finalIndicator.visibleProperty().bind(location.typeProperty().isEqualTo(Location.Type.FINAl));
-
     }
 
     public void setLocation(final Location location) {
