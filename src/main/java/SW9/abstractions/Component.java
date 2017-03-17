@@ -1,5 +1,6 @@
 package SW9.abstractions;
 
+import SW9.HUPPAAL;
 import SW9.controllers.HUPPAALController;
 import SW9.presentations.DropDownMenu;
 import SW9.utility.UndoRedoStack;
@@ -14,10 +15,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Component implements Serializable, DropDownMenu.HasColor {
@@ -74,6 +72,20 @@ public class Component implements Serializable, DropDownMenu.HasColor {
 
     public Component(final String name) {
         setName(name);
+
+        // Color the new component in such a way that we avoid clashing with other components if possible
+        final List<EnabledColor> availableColors = new ArrayList<>();
+        EnabledColor.enabledColors.forEach(availableColors::add);
+        HUPPAAL.getProject().getComponents().forEach(component -> {
+            availableColors.removeIf(enabledColor -> enabledColor.color.equals(component.getColor()));
+        });
+        if(availableColors.size() == 0) {
+            EnabledColor.enabledColors.forEach(availableColors::add);
+        }
+        final int randomIndex = (new Random()).nextInt(availableColors.size());
+        final EnabledColor selectedColor = availableColors.get(randomIndex);
+        setColorIntensity(selectedColor.intensity);
+        setColor(selectedColor.color);
 
         // A component must have at least one initial location
         final Location initialLocation = new Location();

@@ -54,7 +54,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private Timeline shakeDeleteAnimation = new Timeline();
 
     public LocationPresentation(@NamedArg("initial") final String initial) {
-        this(initialHelpDialogLocation(initial), new Component(), false);
+        this(initialHelpDialogLocation(initial), null, false);
     }
 
     public LocationPresentation(final Location location, final Component component) {
@@ -101,8 +101,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     }
 
     private static Location initialHelpDialogLocation(final String initial) {
-        final Location location = new Location();
-        location.setId("L" + id++);
+        final Location location = new Location("L" + id++);
 
         if (initial.equals("INITIAL")) {
             location.setType(Location.Type.INITIAL);
