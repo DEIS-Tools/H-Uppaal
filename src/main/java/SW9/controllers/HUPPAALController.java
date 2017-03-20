@@ -45,9 +45,12 @@ import java.util.function.Consumer;
 
 public class HUPPAALController implements Initializable {
 
-    public static boolean reachabilityServiceEnabled = false;
     // Reachability analysis
+    public static boolean reachabilityServiceEnabled = false;
+    private static long reachabilityTime = Long.MAX_VALUE;
     private static ExecutorService reachabilityService;
+
+    // View stuff
     public StackPane root;
     public QueryPanePresentation queryPane;
     public ProjectPanePresentation filePane;
@@ -108,84 +111,7 @@ public class HUPPAALController implements Initializable {
     public static void runReachabilityAnalysis() {
         if (!reachabilityServiceEnabled) return;
 
-        if (reachabilityService != null) {
-            reachabilityService.shutdownNow();
-        }
-
-        reachabilityService = Executors.newFixedThreadPool(10);
-
-        while (Debug.backgroundThreads.size() > 0) {
-            final Thread thread = Debug.backgroundThreads.get(0);
-            thread.interrupt();
-            Debug.removeThread(thread);
-        }
-
-        try {
-            // Make sure that the model is generated
-            UPPAALDriver.buildHUPPAALDocument();
-
-            HUPPAAL.getProject().getComponents().forEach(component -> {
-                // Check if we should consider this component
-                if (!component.isIncludeInPeriodicCheck()) {
-                    component.getLocationsWithInitialAndFinal().forEach(location -> location.setReachability(Location.Reachability.EXCLUDED));
-                } else {
-                    component.getLocationsWithInitialAndFinal().forEach(location -> {
-                        final String locationReachableQuery = UPPAALDriver.getLocationReachableQuery(location, component);
-                        final Thread verifyThread = UPPAALDriver.verify(
-                                locationReachableQuery,
-                                (result -> {
-                                    if (result) {
-                                        location.setReachability(Location.Reachability.REACHABLE);
-                                    } else {
-                                        location.setReachability(Location.Reachability.UNREACHABLE);
-                                    }
-                                }),
-                                (e) -> {
-                                    e.printStackTrace();
-                                    location.setReachability(Location.Reachability.UNKNOWN);
-                                }
-                        );
-
-                        verifyThread.setName(locationReachableQuery + " (" + verifyThread.getName() + ")");
-                        Debug.addThread(verifyThread);
-
-                        reachabilityService.submit(() -> {
-                            final TimerTask timeoutTask = new TimerTask() {
-                                @Override
-                                public void run() {
-                                    if (verifyThread.isAlive()) {
-                                        location.setReachability(Location.Reachability.UNKNOWN);
-                                        verifyThread.interrupt();
-                                    }
-                                }
-                            };
-
-                            try {
-                                // Start the verification thread
-                                verifyThread.start();
-
-                                // Schedule the timeoutTask to stop the verify thread after a time threshold
-                                new Timer().schedule(timeoutTask, 2000);
-
-                                // Wait for the verification thread to complete
-                                // This thread will join once it is interrupted by the timeoutThread or when the query is done executing
-                                verifyThread.join();
-                                timeoutTask.cancel(); // Cancel the scheduling of the timeoutTask
-
-                                Debug.removeThread(verifyThread);
-                            } catch (final InterruptedException e) { // Thread is interrupted. We do this ourselves.
-                                // Stop the verification thread and cancel the timeout task.
-                                verifyThread.interrupt();
-                                timeoutTask.cancel();
-                            }
-                        });
-                    });
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        reachabilityTime = System.currentTimeMillis() + 500;
     }
 
     @Override
@@ -282,6 +208,108 @@ public class HUPPAALController implements Initializable {
         initializeMenuBar();
         initializeNoMainComponentError();
 
+        initializeReachabilityAnalysisThread();
+
+    }
+
+    private void initializeReachabilityAnalysisThread() {
+        new Thread(() -> {
+            while (true) {
+
+                // Wait for the reachability (the last time we changed the model) becomes smaller than the current time
+                while (reachabilityTime > System.currentTimeMillis()) {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // We are now performing the analysis. Do not do another analysis before another change is introduced
+                reachabilityTime = Long.MAX_VALUE;
+
+                // Cancel any ongoing analysis
+                if (reachabilityService != null) {
+                    reachabilityService.shutdownNow();
+                }
+
+                // Start new analysis
+                reachabilityService = Executors.newFixedThreadPool(10);
+
+                while (Debug.backgroundThreads.size() > 0) {
+                    final Thread thread = Debug.backgroundThreads.get(0);
+                    thread.interrupt();
+                    Debug.removeThread(thread);
+                }
+
+                try {
+                    // Make sure that the model is generated
+                    UPPAALDriver.buildHUPPAALDocument();
+
+                    HUPPAAL.getProject().getComponents().forEach(component -> {
+                        // Check if we should consider this component
+                        if (!component.isIncludeInPeriodicCheck()) {
+                            component.getLocationsWithInitialAndFinal().forEach(location -> location.setReachability(Location.Reachability.EXCLUDED));
+                        } else {
+                            component.getLocationsWithInitialAndFinal().forEach(location -> {
+                                final String locationReachableQuery = UPPAALDriver.getLocationReachableQuery(location, component);
+                                final Thread verifyThread = UPPAALDriver.verify(
+                                        locationReachableQuery,
+                                        (result -> {
+                                            if (result) {
+                                                location.setReachability(Location.Reachability.REACHABLE);
+                                            } else {
+                                                location.setReachability(Location.Reachability.UNREACHABLE);
+                                            }
+                                        }),
+                                        (e) -> {
+                                            e.printStackTrace();
+                                            location.setReachability(Location.Reachability.UNKNOWN);
+                                        }
+                                );
+
+                                verifyThread.setName(locationReachableQuery + " (" + verifyThread.getName() + ")");
+                                Debug.addThread(verifyThread);
+
+                                reachabilityService.submit(() -> {
+                                    final TimerTask timeoutTask = new TimerTask() {
+                                        @Override
+                                        public void run() {
+                                            if (verifyThread.isAlive()) {
+                                                location.setReachability(Location.Reachability.UNKNOWN);
+                                                verifyThread.interrupt();
+                                            }
+                                        }
+                                    };
+
+                                    try {
+                                        // Start the verification thread
+                                        verifyThread.start();
+
+                                        // Schedule the timeoutTask to stop the verify thread after a time threshold
+                                        new Timer().schedule(timeoutTask, 2000);
+
+                                        // Wait for the verification thread to complete
+                                        // This thread will join once it is interrupted by the timeoutThread or when the query is done executing
+                                        verifyThread.join();
+                                        timeoutTask.cancel(); // Cancel the scheduling of the timeoutTask
+
+                                        Debug.removeThread(verifyThread);
+                                    } catch (final InterruptedException e) { // Thread is interrupted. We do this ourselves.
+                                        // Stop the verification thread and cancel the timeout task.
+                                        verifyThread.interrupt();
+                                        timeoutTask.cancel();
+                                    }
+                                });
+                            });
+                        }
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private void initializeStatusBar() {

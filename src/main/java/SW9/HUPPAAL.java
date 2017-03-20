@@ -14,6 +14,7 @@ import SW9.utility.keyboard.KeyboardTracker;
 import com.google.common.io.Files;
 import com.google.gson.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -270,6 +271,9 @@ public class HUPPAAL extends Application {
             } catch (final IOException e) {
                 e.printStackTrace();
             }
+
+            Platform.exit();
+            System.exit(0);
         });
     }
 
