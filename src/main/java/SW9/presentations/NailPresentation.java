@@ -15,6 +15,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.effect.ColorInput;
 import javafx.scene.shape.Line;
 
 import java.io.IOException;
@@ -208,8 +209,17 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
 
     @Override
     public void deselect() {
+        Color color = Color.GREY_BLUE;
+        Color.Intensity intensity = Color.Intensity.I800;
+
         // Set the color
-        controller.nailCircle.setFill(Color.GREY_BLUE.getColor(Color.Intensity.I800));
-        controller.nailCircle.setStroke(Color.GREY_BLUE.getColor(Color.Intensity.I900));
+        if(!controller.getNail().getPropertyType().equals(Edge.PropertyType.NONE)) {
+            color = controller.getComponent().getColor();
+            intensity = controller.getComponent().getColorIntensity();
+        }
+
+        controller.nailCircle.setFill(color.getColor(intensity));
+        controller.nailCircle.setStroke(color.getColor(intensity.next(2)));
+
     }
 }
