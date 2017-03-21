@@ -137,9 +137,10 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
         dropDownMenu.addClickableAndDisableableListElement("Add Nickname",
                 getLocation().nicknameProperty().isNotEmpty().or(nicknameTag.textFieldFocusProperty()),
                 event -> {
-                nicknameTag.setOpacity(1);
-                nicknameTag.requestTextFieldFocus();
-                dropDownMenu.close();
+                    nicknameTag.setOpacity(1);
+                    nicknameTag.requestTextFieldFocus();
+                    nicknameTag.requestTextFieldFocus(); // Requesting it twice is needed for some reason
+                    dropDownMenu.close();
                 }
         );
 
@@ -148,6 +149,7 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
                 event -> {
                     invariantTag.setOpacity(1);
                     invariantTag.requestTextFieldFocus();
+                    invariantTag.requestTextFieldFocus(); // Requesting it twice is needed for some reason
                     dropDownMenu.close();
                 }
         );
