@@ -147,13 +147,13 @@ public class HUPPAALDocument {
     }
 
     private void generateTemplate(final Component mainComponent) throws BackendException {
-        final Template template = generateTemplate(mainComponent, null);
+        final Template template = generateTemplate(mainComponent, null, false);
         template.setProperty(NAME_PROPERTY_TAG, mainComponent.getName());
     }
 
-    private void generateTemplate(final SubComponent subComponent) throws BackendException {
+    private void generateTemplate(final SubComponent subComponent, final boolean isStarted) throws BackendException {
         subComponentList.add(subComponent);
-        final Template template = generateTemplate(subComponent.getComponent(), subComponent);
+        final Template template = generateTemplate(subComponent.getComponent(), subComponent, isStarted);
         subComponentList.remove(subComponent);
 
         final String subComponentTemplateName = generateName(subComponent);
@@ -161,7 +161,7 @@ public class HUPPAALDocument {
         subComponentTemplates.add(subComponentTemplateName);
     }
 
-    private Template generateTemplate(final Component component, final SubComponent subComponent) throws BackendException {
+    private Template generateTemplate(final Component component, final SubComponent subComponent, final boolean isStarted) throws BackendException {
 
         // Create empty template and insert it into the uppaal document
         final Template template = uppaalDocument.createTemplate();
@@ -273,11 +273,18 @@ public class HUPPAALDocument {
 
         // Generate templates for all sub components
         for (final SubComponent subComponent1 : component.getSubComponents()) {
-            generateTemplate(subComponent1);
+            boolean isSubcomponent1Started = false;
+            for (final Edge edge : component.getRelatedEdges(subComponent1)) {
+                if (edge.getSourceJork() != null || edge.getSourceLocation() != null) {
+                    isSubcomponent1Started = true;
+                    break;
+                }
+            }
+            generateTemplate(subComponent1, isSubcomponent1Started);
         }
 
         // Add pseudo locations for being a sub component
-        if (subComponent != null) {
+        if (subComponent != null && isStarted) {
             final int offset = 300;
 
             final Location initialLocation = component.getInitialLocation();
