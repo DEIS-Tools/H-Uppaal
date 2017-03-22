@@ -219,7 +219,7 @@
 
         <Region HBox.hgrow="ALWAYS"/>
 
-        <HBox fx:id="queryStatusContainer">
+        <HBox fx:id="queryStatusContainer" opacity="0">
             <StackPane>
                 <JFXSpinner radius="5"/>
             </StackPane>
