@@ -119,6 +119,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private void initializeReachabilityStyle() {
 
         controller.reachabilityStatus.radiusProperty().bind(controller.circle.radiusProperty());
+        controller.reachabilityStatus.setFill(javafx.scene.paint.Color.TRANSPARENT);
 
         final Function<Location.Reachability, javafx.scene.paint.Color> getColor = (reachability -> {
             if (reachability == null || reachability.equals(Location.Reachability.REACHABLE))
