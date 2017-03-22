@@ -14,9 +14,8 @@
          onMouseExited="#locationExited">
 
     <Group>
-
-    <!-- This circle makes the dropdown menu crisp -->
-    <Circle radius="20" mouseTransparent="true" opacity="0"/>
+        <!-- This circle makes the dropdown menu crisp -->
+        <Circle radius="20" mouseTransparent="true" opacity="0"/>
 
         <Line fx:id="nameTagLine" strokeDashOffset="2" strokeDashArray="3,3" stroke="#666" mouseTransparent="true"/>
         <TagPresentation fx:id="nicknameTag" translateX="30" translateY="-10"/>
@@ -29,6 +28,8 @@
     <Group fx:id="scaleContent"
            onMouseEntered="#mouseEntered"
            onMouseExited="#mouseExited">
+
+        <Circle fx:id="reachabilityStatus" strokeType="OUTSIDE"/>
 
         <!-- Circular locationAware -->
         <Circle fx:id="circle" strokeType="INSIDE" opacity="0"/>

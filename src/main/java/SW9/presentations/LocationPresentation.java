@@ -17,7 +17,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
-import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.*;
@@ -29,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static javafx.util.Duration.millis;
 
@@ -118,23 +118,59 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
 
     private void initializeReachabilityStyle() {
 
+        controller.reachabilityStatus.radiusProperty().bind(controller.circle.radiusProperty());
+
+        final Function<Location.Reachability, javafx.scene.paint.Color> getColor = (reachability -> {
+            if (reachability == null || reachability.equals(Location.Reachability.REACHABLE))
+                return javafx.scene.paint.Color.TRANSPARENT;
+            if (reachability.equals(Location.Reachability.EXCLUDED))
+                return javafx.scene.paint.Color.TRANSPARENT;
+            if (reachability.equals(Location.Reachability.UNREACHABLE))
+                return Color.RED.getColor(Color.Intensity.I700, 0.75);
+            if (reachability.equals(Location.Reachability.UNKNOWN))
+                return Color.YELLOW.getColor(Color.Intensity.I900, 0.75);
+
+            return null;
+        });
+
+        final Function<Location.Reachability, Integer> getRadius = (reachability -> {
+            if (reachability == null || reachability.equals(Location.Reachability.REACHABLE)) return 0;
+            if (reachability.equals(Location.Reachability.EXCLUDED)) return 0;
+            if (reachability.equals(Location.Reachability.UNREACHABLE)) return 6;
+            if (reachability.equals(Location.Reachability.UNKNOWN)) return 3;
+            return 0;
+        });
+
         final Consumer<Location.Reachability> updateReachability = (reachability) -> {
             if(reachability == null) return;
 
-            final DropShadow ds = new DropShadow();
-            ds.setSpread(0.8);
-            ds.setRadius(5);
-            ds.setBlurType(BlurType.GAUSSIAN);
+            final Interpolator interpolator = Interpolator.SPLINE(0.645, 0.045, 0.355, 1);
 
-            if(reachability.equals(Location.Reachability.REACHABLE) || reachability.equals(Location.Reachability.EXCLUDED)) {
-                ds.setColor(javafx.scene.paint.Color.TRANSPARENT);
-            } else if(reachability.equals(Location.Reachability.UNREACHABLE)) {
-                ds.setColor(Color.RED.getColor(Color.Intensity.I700, 0.75));
-            } else if(reachability.equals(Location.Reachability.UNKNOWN)) {
-                ds.setColor(Color.YELLOW.getColor(Color.Intensity.I900, 0.75));
-            }
+            // Shrink previous indicator
+            final Timeline shrinkAnimation = new Timeline();
+            final KeyValue kv1 = new KeyValue(controller.reachabilityStatus.strokeWidthProperty(), controller.reachabilityStatus.getStrokeWidth(), interpolator);
+            final KeyValue kv2 = new KeyValue(controller.reachabilityStatus.strokeWidthProperty(), 0, interpolator);
+            final KeyFrame kf1 = new KeyFrame(millis(0), kv1);
+            final KeyFrame kf2 = new KeyFrame(millis(200), kv2);
+            shrinkAnimation.getKeyFrames().addAll(kf1, kf2);
 
-            controller.scaleContent.setEffect(ds);
+            // Shrink current indicator
+            final Timeline enlargeAnimation = new Timeline();
+            final KeyValue kv3 = new KeyValue(controller.reachabilityStatus.strokeWidthProperty(), 0, interpolator);
+            final KeyValue kv4 = new KeyValue(controller.reachabilityStatus.strokeWidthProperty(), getRadius.apply(reachability), interpolator);
+            final KeyFrame kf3 = new KeyFrame(millis(0), kv3);
+            final KeyFrame kf4 = new KeyFrame(millis(200), kv4);
+            enlargeAnimation.getKeyFrames().addAll(kf3, kf4);
+
+            shrinkAnimation.setOnFinished(event -> {
+                // Update the color once the shrink animation is done
+                controller.reachabilityStatus.setStroke(getColor.apply(reachability));
+
+                // Play the enlarge animation
+                enlargeAnimation.play();
+            });
+
+            shrinkAnimation.play();
         };
 
         controller.getLocation().reachabilityProperty().addListener((obs, oldReachability, newReachability) -> {
