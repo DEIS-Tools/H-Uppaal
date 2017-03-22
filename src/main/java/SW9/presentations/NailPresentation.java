@@ -140,6 +140,7 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
                 }
 
                 propertyTag.requestTextFieldFocus();
+                propertyTag.requestTextFieldFocus(); // Requesting it twice is needed for some reason
             }
         };
 
