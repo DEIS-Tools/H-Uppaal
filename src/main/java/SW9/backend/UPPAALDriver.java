@@ -1,29 +1,30 @@
 package SW9.backend;
 
-import SW9.Debug;
 import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.abstractions.Location;
 import SW9.abstractions.SubComponent;
 import SW9.code_analysis.CodeAnalysis;
 import com.google.common.base.Strings;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import com.uppaal.engine.Engine;
 import com.uppaal.engine.EngineException;
 import com.uppaal.engine.Problem;
 import com.uppaal.model.core2.Document;
 import com.uppaal.model.system.UppaalSystem;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 
 public class UPPAALDriver {
+
+    public static final int MAX_ENGINES = 10;
 
     // Static initializer for cleaning up in the servers folder
     static {
@@ -42,8 +43,17 @@ public class UPPAALDriver {
                                 final Consumer<Boolean> success,
                                 final Consumer<BackendException> failure) {
 
+        return verify(query, success, failure, -1);
+
+    }
+
+    public static Thread verify(final String query,
+                                final Consumer<Boolean> success,
+                                final Consumer<BackendException> failure,
+                                final long timeout) {
+
         return verify(query, success, failure, TraceType.NONE, trace -> {
-        });
+        }, timeout);
 
     }
 
@@ -51,45 +61,18 @@ public class UPPAALDriver {
                                 final Consumer<Boolean> success,
                                 final Consumer<BackendException> failure,
                                 final TraceType traceType,
-                                final Consumer<Trace> traceCallBack) {
-        // The task that should be executed on the background thread
-        // calls success if no exception happens with the result
-        // otherwise calls failure with the exception
-        final Task<Void> task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                final Thread currentThread = Thread.currentThread();
+                                final Consumer<Trace> traceCallBack,
+                                final long timeout) {
+        // Will catch feedback from the UPPAAL backend
+        final QueryListener queryListener = new QueryListener(huppaalDocument, traceCallBack);
 
-                {
-                    try {
-                        success.accept(UPPAALDriver.verify(query, traceType, traceCallBack));
-                    } catch (final BackendException backendException) {
-                        failure.accept(backendException);
-                    } finally {
-                        Debug.removeThread(currentThread);
-                    }
-                }
-
-                return null;
-            }
-        };
-
-        // Return the thread (caller must start it)
-        return new Thread(task);
+        return runQuery(queryListener, query, success, failure, traceType, traceCallBack, timeout);
     }
 
     public static void generateDebugUPPAALModel() throws Exception, BackendException {
         // Generate and store the debug document
         buildHUPPAALDocument();
         storeUppaalFile(huppaalDocument.toUPPAALDocument(), HUPPAAL.debugDirectory + File.separator + "debug.xml");
-    }
-
-    private static boolean verify(final String query, final TraceType traceType, final Consumer<Trace> traceCallback) throws BackendException, InvalidArgumentException {
-        // Will catch feedback from the UPPAAL backend
-        final QueryListener queryListener = new QueryListener(huppaalDocument, traceCallback);
-
-        // Run the query
-        return runQuery(queryListener, query, traceType);
     }
 
     public static void buildHUPPAALDocument() throws BackendException, Exception {
@@ -102,78 +85,106 @@ public class UPPAALDriver {
         huppaalDocument = new HUPPAALDocument(mainComponent);
     }
 
-    private static boolean runQuery(final QueryListener queryListener, final String query, final TraceType traceType) throws BackendException {
-        // "Create" the engine and set the correct server path
-        final Engine engine = getOSDependentEngine();
+    public static Thread runQuery(final QueryListener queryListener,
+                                  final String query,
+                                  final Consumer<Boolean> success,
+                                  final Consumer<BackendException> failure,
+                                  final TraceType traceType,
+                                  final Consumer<Trace> traceCallBack,
+                                  final long timeout) {
+        return new Thread() {
+            Engine engine;
 
-        try {
-            engine.connect();
-
-            // Create a list to store the problems of the query
-            final ArrayList<Problem> problems = new ArrayList<>();
-
-            // Get the system, and fill the problems list if any
-            final UppaalSystem system = engine.getSystem(queryListener.getHUPPAALDocument().toUPPAALDocument(), problems);
-
-            // Run on UI thread
-            Platform.runLater(() -> {
-                // Clear the UI for backend-errors
-                CodeAnalysis.clearBackendErrors();
-
-                // Check if there is any problems
-                if (!problems.isEmpty()) {
-                    problems.forEach(problem -> {
-                        System.out.println("problem: " + problem);
-
-                        // Generate the message
-                        CodeAnalysis.Message message = null;
-                        if (problem.getPath().contains("declaration")) {
-                            final String[] lines = problem.getLocation().split("\\n");
-                            final String errorLine = lines[problem.getFirstLine() - 1];
-
-                            message = new CodeAnalysis.Message(
-                                    problem.getMessage() + " on line " + problem.getFirstLine() + " (" + errorLine + ")",
-                                    CodeAnalysis.MessageType.ERROR
-                            );
+            @Override
+            public void run() {
+                try {
+                    // "Create" the engine and set the correct server path
+                    while (engine == null) {
+                        if (isInterrupted()) return;
+                        engine = getOSDependentEngine();
+                        if (engine == null) {
+                            // Waiting for engine
+                            Thread.yield();
                         } else {
-                            message = new CodeAnalysis.Message(
-                                    problem.getMessage() + " (" + problem.getLocation() + ")",
-                                    CodeAnalysis.MessageType.ERROR
-                            );
+                            break;
                         }
+                    }
 
+                    engine.connect();
 
-                        CodeAnalysis.addBackendError(message);
+                    // Create a list to store the problems of the query
+                    final ArrayList<Problem> problems = new ArrayList<>();
+
+                    // Get the system, and fill the problems list if any
+                    final UppaalSystem system = engine.getSystem(queryListener.getHUPPAALDocument().toUPPAALDocument(), problems);
+
+                    // Run on UI thread
+                    Platform.runLater(() -> {
+                        // Clear the UI for backend-errors
+                        CodeAnalysis.clearBackendErrors();
+
+                        // Check if there is any problems
+                        if (!problems.isEmpty()) {
+                            problems.forEach(problem -> {
+                                System.out.println("problem: " + problem);
+
+                                // Generate the message
+                                CodeAnalysis.Message message = null;
+                                if (problem.getPath().contains("declaration")) {
+                                    final String[] lines = problem.getLocation().split("\\n");
+                                    final String errorLine = lines[problem.getFirstLine() - 1];
+
+                                    message = new CodeAnalysis.Message(
+                                            problem.getMessage() + " on line " + problem.getFirstLine() + " (" + errorLine + ")",
+                                            CodeAnalysis.MessageType.ERROR
+                                    );
+                                } else {
+                                    message = new CodeAnalysis.Message(
+                                            problem.getMessage() + " (" + problem.getLocation() + ")",
+                                            CodeAnalysis.MessageType.ERROR
+                                    );
+                                }
+
+                                CodeAnalysis.addBackendError(message);
+                            });
+                        }
                     });
+
+                    // Update some internal state for the engine by getting the initial state
+                    engine.getInitialState(system);
+
+                    if(timeout >= 0) {
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                engine.cancel();
+                            }
+                        }, timeout);
+                    }
+
+                    final char result = engine.query(system, traceType.toString(), query, queryListener).result;
+
+                    // Process the query result
+                    if (result == 'T') {
+                        success.accept(true);
+                    } else if (result == 'F') {
+                        success.accept(false);
+                    } else if (result == 'M') {
+                        failure.accept(new BackendException.QueryErrorException("UPPAAL Engine was uncertain on the result"));
+                    } else {
+                        failure.accept(new BackendException.QueryErrorException("UPPAAL Engine returned with an error"));
+                    }
+
+                } catch (EngineException | IOException e) {
+                    // Something went wrong
+                    failure.accept(new BackendException.BadUPPAALQueryException("Unable to run query", e));
+                } finally {
+                    if (engine != null) {
+                        releaseOSDependentEngine(engine);
+                    }
                 }
-            });
-
-            // Update some internal state for the engine by getting the initial state
-            engine.getInitialState(system);
-
-            // Return the query
-            final char result = engine.query(system, traceType.toString(), query, queryListener).result;
-            engine.disconnect();
-
-            if (result == 'T') {
-                return true;
-            } else if (result == 'F') {
-                return false;
-
-            } else if (result == 'M') {
-                throw new BackendException.QueryErrorException("UPPAAL Engine was uncertain on the result");
-
-            } else {
-                throw new BackendException.QueryErrorException("UPPAAL Engine returned with an error");
             }
-
-        } catch (EngineException | IOException e) {
-            // Something went wrong
-            throw new BackendException.BadUPPAALQueryException("Unable to run query", e);
-        } finally {
-            engine.disconnect();
-            releaseOSDependentEngine(engine);
-        }
+        };
     }
 
     private static final ArrayList<File> createdServers = new ArrayList<>();
@@ -227,19 +238,17 @@ public class UPPAALDriver {
     }
 
     private static Engine getOSDependentEngine() {
-        // Wait for servers to be available
-        while (true) {
-            synchronized (createdServers) {
-                if(!(createdServers.size() >= 10 && availableEngines.size() == 0)) {
-                    final Engine engine = getAvailableEngineOrCreateNew();
-                    if (engine != null) {
-                        return engine;
-                    }
+        synchronized (createdServers) {
+            if (!(createdServers.size() >= MAX_ENGINES && availableEngines.size() == 0)) {
+                final Engine engine = getAvailableEngineOrCreateNew();
+                if (engine != null) {
+                    return engine;
                 }
             }
-
-            Thread.yield();
         }
+
+        // No engines are available currently, check back again later
+        return null;
     }
 
     private static void releaseOSDependentEngine(final Engine engine) {

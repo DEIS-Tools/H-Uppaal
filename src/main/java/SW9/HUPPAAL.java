@@ -54,7 +54,7 @@ public class HUPPAAL extends Application {
             final CodeSource codeSource = HUPPAAL.class.getProtectionDomain().getCodeSource();
             final File jarFile = new File(codeSource.getLocation().toURI().getPath());
             final String rootDirectory = jarFile.getParentFile().getPath() + File.separator;
-            projectDirectory = rootDirectory + "projects/project";
+            projectDirectory = rootDirectory + "projects" + File.separator + "project";
             serverDirectory = rootDirectory + "servers";
             debugDirectory = rootDirectory + "uppaal-debug";
             forceCreateFolder(projectDirectory);
@@ -223,7 +223,6 @@ public class HUPPAAL extends Application {
         stage.show();
 
         HUPPAALController.reachabilityServiceEnabled = true;
-        HUPPAALController.runReachabilityAnalysis();
 
         // Register a key-bind for showing debug-information
         KeyboardTracker.registerKeybind("DEBUG", new Keybind(new KeyCodeCombination(KeyCode.F12), () -> {

@@ -3,6 +3,7 @@ package SW9.controllers;
 import SW9.Debug;
 import SW9.HUPPAAL;
 import SW9.abstractions.*;
+import SW9.backend.BackendException;
 import SW9.backend.UPPAALDriver;
 import SW9.code_analysis.CodeAnalysis;
 import SW9.presentations.*;
@@ -246,6 +247,8 @@ public class HUPPAALController implements Initializable {
                     // Make sure that the model is generated
                     UPPAALDriver.buildHUPPAALDocument();
 
+                    List<Thread> threads = new ArrayList<>();
+
                     HUPPAAL.getProject().getComponents().forEach(component -> {
                         // Check if we should consider this component
                         if (!component.isIncludeInPeriodicCheck()) {
@@ -261,52 +264,29 @@ public class HUPPAALController implements Initializable {
                                             } else {
                                                 location.setReachability(Location.Reachability.UNREACHABLE);
                                             }
+                                            Debug.removeThread(Thread.currentThread());
                                         }),
                                         (e) -> {
-                                            e.printStackTrace();
                                             location.setReachability(Location.Reachability.UNKNOWN);
-                                        }
+                                            Debug.removeThread(Thread.currentThread());
+                                        },
+                                        2000
                                 );
 
                                 verifyThread.setName(locationReachableQuery + " (" + verifyThread.getName() + ")");
                                 Debug.addThread(verifyThread);
-
-                                reachabilityService.submit(() -> {
-                                    final TimerTask timeoutTask = new TimerTask() {
-                                        @Override
-                                        public void run() {
-                                            if (verifyThread.isAlive()) {
-                                                location.setReachability(Location.Reachability.UNKNOWN);
-                                                verifyThread.interrupt();
-                                            }
-                                        }
-                                    };
-
-                                    try {
-                                        // Start the verification thread
-                                        verifyThread.start();
-
-                                        // Schedule the timeoutTask to stop the verify thread after a time threshold
-                                        new Timer().schedule(timeoutTask, 2000);
-
-                                        // Wait for the verification thread to complete
-                                        // This thread will join once it is interrupted by the timeoutThread or when the query is done executing
-                                        verifyThread.join();
-                                        timeoutTask.cancel(); // Cancel the scheduling of the timeoutTask
-
-                                        Debug.removeThread(verifyThread);
-                                    } catch (final InterruptedException e) { // Thread is interrupted. We do this ourselves.
-                                        // Stop the verification thread and cancel the timeout task.
-                                        verifyThread.interrupt();
-                                        timeoutTask.cancel();
-                                    }
-                                });
+                                threads.add(verifyThread);
                             });
                         }
                     });
 
-                } catch (Exception e) {
+                    threads.forEach((verifyThread) -> reachabilityService.submit(verifyThread::start));
+
+                } catch (final BackendException e) {
+                    // Something went wrong with creating the document
                     e.printStackTrace();
+                } catch (final Exception ignored) {
+                    // The main component is null. Ignore.
                 }
             }
         }).start();
