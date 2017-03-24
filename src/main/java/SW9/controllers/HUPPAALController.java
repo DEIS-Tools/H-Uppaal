@@ -124,7 +124,9 @@ public class HUPPAALController implements Initializable {
 
         // Keybind for showing dialog // todo: remove this when done with testing
         KeyboardTracker.registerKeybind("DIALOG", new Keybind(new KeyCodeCombination(KeyCode.I), () -> {
-            System.out.println(CodeAnalysis.getErrors(CanvasController.getActiveComponent()));
+            Debug.backgroundThreads.forEach(thread -> {
+                System.out.println(thread.getName() + " - " + thread.isAlive());
+            });
         }));
 
         // Keybind for nudging the selected elements
@@ -221,6 +223,7 @@ public class HUPPAALController implements Initializable {
                 while (reachabilityTime > System.currentTimeMillis()) {
                     try {
                         Thread.sleep(2000);
+                        Debug.backgroundThreads.removeIf(thread -> !thread.isAlive());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
