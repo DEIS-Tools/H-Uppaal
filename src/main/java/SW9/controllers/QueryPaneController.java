@@ -3,13 +3,11 @@ package SW9.controllers;
 import SW9.HUPPAAL;
 import SW9.abstractions.Query;
 import SW9.abstractions.QueryState;
-import SW9.backend.BackendException;
 import SW9.backend.UPPAALDriver;
 import SW9.presentations.QueryPresentation;
 import SW9.utility.helpers.DropShadowHelper;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXRippler;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -92,7 +90,7 @@ public class QueryPaneController implements Initializable {
 
             try {
                 UPPAALDriver.buildHUPPAALDocument();
-                UPPAALDriver.verify(query.getQuery(),
+                UPPAALDriver.runQuery(query.getQuery(),
                         aBoolean -> {
                             if (aBoolean) {
                                 query.setQueryState(QueryState.SUCCESSFUL);

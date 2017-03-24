@@ -1,11 +1,9 @@
 package SW9.abstractions;
 
 import SW9.HUPPAAL;
-import SW9.backend.BackendException;
 import SW9.backend.UPPAALDriver;
 import SW9.utility.serialize.Serializable;
 import com.google.gson.JsonObject;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -87,7 +85,7 @@ public class Query implements Serializable {
 
                 try {
                     UPPAALDriver.buildHUPPAALDocument();
-                    UPPAALDriver.verify(getQuery(),
+                    UPPAALDriver.runQuery(getQuery(),
                             aBoolean -> {
                                 if (aBoolean) {
                                     setQueryState(QueryState.SUCCESSFUL);

@@ -256,7 +256,7 @@ public class HUPPAALController implements Initializable {
                         } else {
                             component.getLocationsWithInitialAndFinal().forEach(location -> {
                                 final String locationReachableQuery = UPPAALDriver.getLocationReachableQuery(location, component);
-                                final Thread verifyThread = UPPAALDriver.verify(
+                                final Thread verifyThread = UPPAALDriver.runQuery(
                                         locationReachableQuery,
                                         (result -> {
                                             if (result) {

@@ -5,64 +5,50 @@ import com.uppaal.engine.QueryVerificationResult;
 import com.uppaal.model.system.symbolic.SymbolicTransition;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 public class QueryListener implements QueryFeedback {
 
-    private final HUPPAALDocument huppaalDocument;
-    private final Consumer<Trace> traceCallback;
-
-    public QueryListener(final HUPPAALDocument huppaalDocumentLDocument, final Consumer<Trace> traceCallback) {
-        this.huppaalDocument = huppaalDocumentLDocument;
-        this.traceCallback = traceCallback;
-    }
-
     @Override
-    public void setProgressAvail(boolean b) {
+    public void setProgressAvail(final boolean b) {
 
     }
 
     @Override
-    public void setProgress(int i, long l, long l1, long l2, long l3, long l4, long l5, long l6, long l7, long l8) {
+    public void setProgress(final int i, final long l, final long l1, final long l2, final long l3, final long l4, final long l5, final long l6, final long l7, final long l8) {
 
     }
 
     @Override
-    public void setSystemInfo(long l, long l1, long l2) {
+    public void setSystemInfo(final long l, final long l1, final long l2) {
 
     }
 
     @Override
-    public void setLength(int i) {
+    public void setLength(final int i) {
 
     }
 
     @Override
-    public void setCurrent(int i) {
+    public void setCurrent(final int i) {
 
     }
 
     @Override
-    public void setTrace(char c, String s, ArrayList<SymbolicTransition> arrayList, int i, QueryVerificationResult queryVerificationResult) {
-        traceCallback.accept(new Trace(arrayList, getHUPPAALDocument()));
+    public void setTrace(final char c, final String s, final ArrayList<SymbolicTransition> arrayList, final int i, final QueryVerificationResult queryVerificationResult) {
     }
 
     @Override
-    public void setFeedback(String s) {
-
-    }
-
-    @Override
-    public void appendText(String s) {
+    public void setFeedback(final String s) {
 
     }
 
     @Override
-    public void setResultText(String s) {
+    public void appendText(final String s) {
 
     }
 
-    public HUPPAALDocument getHUPPAALDocument() {
-        return huppaalDocument;
+    @Override
+    public void setResultText(final String s) {
+
     }
 }

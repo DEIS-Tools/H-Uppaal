@@ -39,36 +39,6 @@ public class UPPAALDriver {
 
     private static HUPPAALDocument huppaalDocument;
 
-    public static Thread verify(final String query,
-                                final Consumer<Boolean> success,
-                                final Consumer<BackendException> failure) {
-
-        return verify(query, success, failure, -1);
-
-    }
-
-    public static Thread verify(final String query,
-                                final Consumer<Boolean> success,
-                                final Consumer<BackendException> failure,
-                                final long timeout) {
-
-        return verify(query, success, failure, TraceType.NONE, trace -> {
-        }, timeout);
-
-    }
-
-    public static Thread verify(final String query,
-                                final Consumer<Boolean> success,
-                                final Consumer<BackendException> failure,
-                                final TraceType traceType,
-                                final Consumer<Trace> traceCallBack,
-                                final long timeout) {
-        // Will catch feedback from the UPPAAL backend
-        final QueryListener queryListener = new QueryListener(huppaalDocument, traceCallBack);
-
-        return runQuery(queryListener, query, success, failure, traceType, traceCallBack, timeout);
-    }
-
     public static void generateDebugUPPAALModel() throws Exception, BackendException {
         // Generate and store the debug document
         buildHUPPAALDocument();
@@ -85,13 +55,16 @@ public class UPPAALDriver {
         huppaalDocument = new HUPPAALDocument(mainComponent);
     }
 
-    public static Thread runQuery(final QueryListener queryListener,
-                                  final String query,
+    public static Thread runQuery(final String query,
                                   final Consumer<Boolean> success,
-                                  final Consumer<BackendException> failure,
-                                  final TraceType traceType,
-                                  final Consumer<Trace> traceCallBack,
-                                  final long timeout) {
+                                  final Consumer<BackendException> failure) {
+        return runQuery(query, success, failure, -1);
+    }
+
+    public static Thread runQuery(final String query,
+                                   final Consumer<Boolean> success,
+                                   final Consumer<BackendException> failure,
+                                   final long timeout) {
         return new Thread() {
             Engine engine;
 
@@ -116,7 +89,7 @@ public class UPPAALDriver {
                     final ArrayList<Problem> problems = new ArrayList<>();
 
                     // Get the system, and fill the problems list if any
-                    final UppaalSystem system = engine.getSystem(queryListener.getHUPPAALDocument().toUPPAALDocument(), problems);
+                    final UppaalSystem system = engine.getSystem(huppaalDocument.toUPPAALDocument(), problems);
 
                     // Run on UI thread
                     Platform.runLater(() -> {
@@ -162,7 +135,7 @@ public class UPPAALDriver {
                         }, timeout);
                     }
 
-                    final char result = engine.query(system, traceType.toString(), query, queryListener).result;
+                    final char result = engine.query(system, "", query, new QueryListener()).result;
 
                     // Process the query result
                     if (result == 'T') {
