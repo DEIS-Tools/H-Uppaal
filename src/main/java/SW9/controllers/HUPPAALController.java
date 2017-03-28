@@ -34,11 +34,16 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
 import javafx.util.Pair;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,7 +61,6 @@ public class HUPPAALController implements Initializable {
     public QueryPanePresentation queryPane;
     public ProjectPanePresentation filePane;
     public StackPane toolbar;
-    public MenuBar menuBar;
     public Label queryPaneFillerElement;
     public Label filePaneFillerElement;
     public CanvasPresentation canvas;
@@ -97,11 +101,16 @@ public class HUPPAALController implements Initializable {
     public Tab backendErrorsTab;
     public ScrollPane backendErrorsScrollPane;
     public VBox backendErrorsList;
+
+    // The program top menu
+    public MenuBar menuBar;
     public MenuItem menuBarViewFilePanel;
     public MenuItem menuBarViewQueryPanel;
     public MenuItem menuBarFileSave;
-    public JFXSnackbar snackbar;
+    public MenuItem menuBarFileOpenProject;
     public MenuItem menuBarHelpHelp;
+
+    public JFXSnackbar snackbar;
     public HBox statusBar;
     public Label statusLabel;
     public Label queryLabel;
@@ -346,6 +355,30 @@ public class HUPPAALController implements Initializable {
         menuBarFileSave.setOnAction(event -> {
             HUPPAAL.save();
         });
+
+        menuBarFileOpenProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN));
+        menuBarFileOpenProject.setOnAction(event -> {
+            final DirectoryChooser projectPicker = new DirectoryChooser();
+            projectPicker.setTitle("Open project");
+            final CodeSource codeSource = HUPPAAL.class.getProtectionDomain().getCodeSource();
+            final File jarFile;
+            try {
+                jarFile = new File(codeSource.getLocation().toURI().getPath());
+                projectPicker.setInitialDirectory(jarFile);
+                final File file = projectPicker.showDialog(root.getScene().getWindow());
+                if(file != null) {
+                    try {
+                        HUPPAAL.projectDirectory = file.getAbsolutePath();
+                        HUPPAAL.initializeProjectFolder();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        });
+
 
         menuBarViewFilePanel.getGraphic().setOpacity(1);
         menuBarViewFilePanel.setAccelerator(new KeyCodeCombination(KeyCode.F));

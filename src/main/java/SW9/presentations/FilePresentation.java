@@ -143,7 +143,10 @@ public class FilePresentation extends AnchorPane {
         });
 
         CanvasController.activeComponentProperty().addListener((obs, oldActiveComponent, newActiveComponent) -> {
-            if(newActiveComponent.equals(component.get())) {
+            if (newActiveComponent == null) return;
+
+
+            if (newActiveComponent.equals(component.get())) {
                 setBackground.accept(color, colorIntensity.next(2));
             } else {
                 setBackground.accept(color, colorIntensity);

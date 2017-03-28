@@ -4,6 +4,7 @@ import SW9.abstractions.Component;
 import SW9.abstractions.Project;
 import SW9.abstractions.Query;
 import SW9.backend.UPPAALDriver;
+import SW9.code_analysis.CodeAnalysis;
 import SW9.controllers.CanvasController;
 import SW9.controllers.HUPPAALController;
 import SW9.presentations.BackgroundThreadPresentation;
@@ -189,35 +190,7 @@ public class HUPPAAL extends Application {
                 new Image(getClass().getResource("ic_launcher/mipmap-xxxhdpi/ic_launcher.png").toExternalForm())
         );
 
-        // Make sure that the project directory exists
-        final File directory = new File(projectDirectory);
-        FileUtils.forceMkdir(directory);
-
-        // Deserialize the project
-        deserializeProject(directory);
-
-        // Generate all component presentations by making them the active component in the view one by one
-        Component initialShownComponent = null;
-        for (final Component component : HUPPAAL.getProject().getComponents()) {
-            // The first component should be shown if there is no main
-            if (initialShownComponent == null) {
-                initialShownComponent = component;
-            }
-
-            // If the component is the main show that one
-            if (component.isIsMain()) {
-                initialShownComponent = component;
-            }
-
-            CanvasController.setActiveComponent(component);
-        }
-
-        // If we found a component (preferably main) set that as active
-        if (initialShownComponent != null) {
-            CanvasController.setActiveComponent(initialShownComponent);
-        }
-
-        serializationDone = true;
+        initializeProjectFolder();
 
         // We're now ready! Let the curtains fall!
         stage.show();
@@ -276,7 +249,50 @@ public class HUPPAAL extends Application {
         });
     }
 
-    private void deserializeProject(final File projectFolder) throws IOException {
+    public static void initializeProjectFolder() throws IOException {
+        // Make sure that the project directory exists
+        final File directory = new File(projectDirectory);
+        FileUtils.forceMkdir(directory);
+
+        // These are not the side effects you are looking for
+        HUPPAAL.getProject().getComponents().removeIf(component -> {
+            CodeAnalysis.clearWarnings(component);
+            CodeAnalysis.clearErrors(component);
+            return true;
+        });
+
+        HUPPAAL.getProject().getQueries().removeIf(query -> true);
+        HUPPAAL.getProject().setMainComponent(null);
+        CodeAnalysis.clearBackendErrors();
+
+        // Deserialize the project
+        deserializeProject(directory);
+
+        // Generate all component presentations by making them the active component in the view one by one
+        Component initialShownComponent = null;
+        for (final Component component : HUPPAAL.getProject().getComponents()) {
+            // The first component should be shown if there is no main
+            if (initialShownComponent == null) {
+                initialShownComponent = component;
+            }
+
+            // If the component is the main show that one
+            if (component.isIsMain()) {
+                initialShownComponent = component;
+            }
+
+            CanvasController.setActiveComponent(component);
+        }
+
+        // If we found a component (preferably main) set that as active
+        if (initialShownComponent != null) {
+            CanvasController.setActiveComponent(initialShownComponent);
+        }
+
+        serializationDone = true;
+    }
+
+    private static void deserializeProject(final File projectFolder) throws IOException {
 
         // If there are no files do not try to deserialize
         final File[] projectFiles = projectFolder.listFiles();
@@ -346,7 +362,7 @@ public class HUPPAAL extends Application {
         });
     }
 
-    private void updateDepthMap(final JsonObject jsonObject, final int depth, final Map<String, JsonObject> nameToJson, final Map<JsonObject, Integer> jsonToDpeth) {
+    private static void updateDepthMap(final JsonObject jsonObject, final int depth, final Map<String, JsonObject> nameToJson, final Map<JsonObject, Integer> jsonToDpeth) {
         if (jsonToDpeth.get(jsonObject) < depth) {
             jsonToDpeth.put(jsonObject, depth);
         }
