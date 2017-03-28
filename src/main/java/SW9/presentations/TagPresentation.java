@@ -211,18 +211,21 @@ public class TagPresentation extends StackPane {
 
                 // Reset the was dragged boolean
                 wasDragged = false;
-            } else {
+            } else if(event.getClickCount() == 2){
                 textField.setMouseTransparent(false);
-                shape.setCursor(Cursor.TEXT);
-
-                final PauseTransition wait = new PauseTransition(Duration.seconds(3));
-                wait.setOnFinished((e) -> {
-                    textField.setMouseTransparent(true);
-                    shape.setCursor(Cursor.OPEN_HAND);
-                });
-                wait.play();
+                textField.requestFocus();
+                textField.requestFocus(); // This needs to be done twice because of reasons
             }
 
+        });
+
+        textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue) {
+                shape.setCursor(Cursor.TEXT);
+            } else {
+                textField.setMouseTransparent(true);
+                shape.setCursor(Cursor.OPEN_HAND);
+            }
         });
 
         // When enter or escape is pressed release focus
