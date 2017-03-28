@@ -155,6 +155,7 @@ public class ComponentController implements Initializable {
             initializeLocationHandling(newComponent);
             initializeSubComponentHandling(newComponent);
             initializeJorkHandling(newComponent);
+            initializeDeclarations();
 
             // When we update the color of the component, also update the color of the initial and final locations if the colors are the same
             newComponent.colorProperty().addListener((obs1, oldColor, newColor) -> {
@@ -756,9 +757,17 @@ public class ComponentController implements Initializable {
         newSubComponent.getSubComponents().forEach(handleAddedSubComponent);
     }
 
-    public void toggleDeclaration(final MouseEvent mouseEvent) {
-        declaration.setVisible(true);
+    private void initializeDeclarations() {
+        final Circle circle = new Circle(0);
+        if(getComponent().isDeclarationOpen()) {
+            circle.setRadius(1000);
+        }
+        final ObjectProperty<Node> clip = new SimpleObjectProperty<>(circle);
+        declaration.clipProperty().bind(clip);
+        clip.set(circle);
+    }
 
+    public void toggleDeclaration(final MouseEvent mouseEvent) {
         final Circle circle = new Circle(0);
         circle.setCenterX(component.get().getWidth() - (toggleDeclarationButton.getWidth() - mouseEvent.getX()));
         circle.setCenterY(-1 * mouseEvent.getY());

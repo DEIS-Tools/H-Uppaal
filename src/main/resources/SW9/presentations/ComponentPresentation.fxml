@@ -56,7 +56,6 @@
 
         <center>
             <StyleClassedTextArea fx:id="declaration"
-                                  visible="false"
                                   StackPane.alignment="TOP_CENTER"
                                   styleClass="body2-mono"
                                   style="-fx-faint-focus-color: transparent; -fx-focus-color: transparent;"/>
