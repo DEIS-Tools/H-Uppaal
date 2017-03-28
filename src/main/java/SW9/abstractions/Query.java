@@ -1,13 +1,18 @@
 package SW9.abstractions;
 
 import SW9.HUPPAAL;
+import SW9.backend.BackendException;
 import SW9.backend.UPPAALDriver;
 import SW9.utility.serialize.Serializable;
 import com.google.gson.JsonObject;
+import com.uppaal.engine.Engine;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+
+import java.io.IOException;
+import java.util.function.Consumer;
 
 public class Query implements Serializable {
     private static final String QUERY = "query";
@@ -70,9 +75,17 @@ public class Query implements Serializable {
     }
 
     private void initializeRunQuery() {
+        final Engine[] engine = {null};
+        final Boolean[] forcedCancel = {false};
+
         runQuery = () -> {
             if (getQueryState().equals(QueryState.RUNNING)) {
-                // todo: Stop the query
+                synchronized (UPPAALDriver.engineLock) {
+                    if(engine[0] != null) {
+                        forcedCancel[0] = true;
+                        engine[0].cancel();
+                    }
+                }
                 setQueryState(QueryState.UNKNOWN);
             } else {
                 setQueryState(QueryState.RUNNING);
@@ -94,7 +107,12 @@ public class Query implements Serializable {
                                 }
                             },
                             e -> {
-                                setQueryState(QueryState.SYNTAX_ERROR);
+                                if (!forcedCancel[0]) {
+                                    setQueryState(QueryState.SYNTAX_ERROR);
+                                }
+                            },
+                            eng -> {
+                                engine[0] = eng;
                             }
                     ).start();
                 } catch (final Exception e) {

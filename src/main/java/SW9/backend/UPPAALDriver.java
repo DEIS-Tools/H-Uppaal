@@ -20,11 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 
 public class UPPAALDriver {
 
     public static final int MAX_ENGINES = 10;
+    public static final Object engineLock = false; // Used to lock concurrent engine reference access
 
     // Static initializer for cleaning up in the servers folder
     static {
@@ -60,11 +62,32 @@ public class UPPAALDriver {
                                   final Consumer<BackendException> failure) {
         return runQuery(query, success, failure, -1);
     }
+    public static Thread runQuery(final String query,
+                                  final Consumer<Boolean> success,
+                                  final Consumer<BackendException> failure,
+                                  final long timeout) {
+
+        final Consumer<Engine> engineConsumer = engine -> {
+            if(timeout >= 0) {
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        synchronized (engineLock) {
+                            if(engine == null) return;
+                            engine.cancel();
+                        }
+                    }
+                }, timeout);
+            }
+        };
+
+        return runQuery(query, success, failure, engineConsumer);
+    }
 
     public static Thread runQuery(final String query,
                                    final Consumer<Boolean> success,
                                    final Consumer<BackendException> failure,
-                                   final long timeout) {
+                                   final Consumer<Engine> engineConsumer) {
         return new Thread() {
             Engine engine;
 
@@ -84,6 +107,7 @@ public class UPPAALDriver {
                     }
 
                     engine.connect();
+                    engineConsumer.accept(engine);
 
                     // Create a list to store the problems of the query
                     final ArrayList<Problem> problems = new ArrayList<>();
@@ -126,15 +150,6 @@ public class UPPAALDriver {
                     // Update some internal state for the engine by getting the initial state
                     engine.getInitialState(system);
 
-                    if(timeout >= 0) {
-                        new Timer().schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                engine.cancel();
-                            }
-                        }, timeout);
-                    }
-
                     final char result = engine.query(system, "", query, new QueryListener()).result;
 
                     // Process the query result
@@ -152,9 +167,11 @@ public class UPPAALDriver {
                     // Something went wrong
                     failure.accept(new BackendException.BadUPPAALQueryException("Unable to run query", e));
                 } finally {
-                    if (engine != null) {
+                    synchronized (engineLock) {
                         releaseOSDependentEngine(engine);
+                        engine = null;
                     }
+
                 }
             }
         };
