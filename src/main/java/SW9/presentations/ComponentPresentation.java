@@ -241,7 +241,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         disappearAnimation.play();
     }
 
-    private static StyleSpans<Collection<String>> computeHighlighting(final String text) {
+    public static StyleSpans<Collection<String>> computeHighlighting(final String text) {
         final Matcher matcher = UPPAAL.matcher(text);
         int lastKwEnd = 0;
         final StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();

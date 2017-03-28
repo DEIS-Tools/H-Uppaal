@@ -12,8 +12,6 @@ import SW9.utility.helpers.Circular;
 import SW9.utility.helpers.LocationAware;
 import SW9.utility.helpers.SelectHelper;
 import SW9.utility.mouse.MouseTracker;
-import com.google.common.base.Strings;
-import com.hp.hpl.jena.reasoner.rulesys.builtins.Regex;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXTextField;
@@ -34,7 +32,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.StyleClassedTextArea;
@@ -125,13 +126,8 @@ public class ComponentController implements Initializable {
             declaration.replaceText(0, declaration.getLength(), newComponent.getDeclarations());
             declaration.textProperty().addListener((observable, oldDeclaration, newDeclaration) -> newComponent.setDeclarations(newDeclaration));
 
-            final boolean[] first = {true};
-            newComponent.declarationsProperty().addListener((observable, oldValue, newValue) -> {
-                if (!first[0]) return;
-                first[0] = false;
-                declaration.replaceText(0, declaration.getLength(), newValue);
-            });
 
+            // Find the clocks in the decls
             newComponent.declarationsProperty().addListener((observable, oldValue, newValue) -> {
 
                 final List<String> clocks = new ArrayList<String>();
@@ -148,7 +144,7 @@ public class ComponentController implements Initializable {
                     }
                 }
 
-                System.out.println(clocks);
+                //TODO this logs the clocks System.out.println(clocks);
             });
 
             initializeEdgeHandling(newComponent);
@@ -758,6 +754,9 @@ public class ComponentController implements Initializable {
     }
 
     private void initializeDeclarations() {
+        // Initially style the declarations
+        declaration.setStyleSpans(0, ComponentPresentation.computeHighlighting(getComponent().getDeclarations()));
+
         final Circle circle = new Circle(0);
         if(getComponent().isDeclarationOpen()) {
             circle.setRadius(1000);
