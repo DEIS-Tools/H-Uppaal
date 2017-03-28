@@ -1,9 +1,11 @@
 package SW9.controllers;
 
+import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.presentations.CanvasPresentation;
 import SW9.presentations.ComponentPresentation;
 import SW9.utility.helpers.SelectHelper;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
@@ -34,6 +36,7 @@ public class CanvasController implements Initializable {
 
     public static void setActiveComponent(final Component component) {
         CanvasController.activeComponent.set(component);
+        Platform.runLater(CanvasController::leaveTextAreas);
     }
 
     public static ObjectProperty<Component> activeComponentProperty() {
