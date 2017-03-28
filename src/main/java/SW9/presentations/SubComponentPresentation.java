@@ -69,14 +69,21 @@ public class SubComponentPresentation extends StackPane implements SelectHelper.
             subComponent.xProperty().bind(layoutXProperty());
             subComponent.yProperty().bind(layoutYProperty());
 
-            initializeDefaultLocationsContainer();
-            initializeToolbar();
-            initializeFrame();
-            initializeInitialLocation();
-            initializeFinalLocation();
-            initializeBackground();
-            initializeName();
-            initializeDescription();
+            final Runnable initialize = () -> {
+                initializeDefaultLocationsContainer();
+                initializeToolbar();
+                initializeFrame();
+                initializeInitialLocation();
+                initializeFinalLocation();
+                initializeBackground();
+                initializeName();
+                initializeDescription();
+            };
+            initialize.run();
+
+            controller.getSubComponent().componentProperty().addListener((observable, oldValue, newValue) -> {
+                initialize.run();
+            });
 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);

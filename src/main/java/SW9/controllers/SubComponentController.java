@@ -1,5 +1,6 @@
 package SW9.controllers;
 
+import SW9.HUPPAAL;
 import SW9.abstractions.Component;
 import SW9.abstractions.Edge;
 import SW9.abstractions.Jork;
@@ -45,6 +46,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
+
+import static SW9.presentations.CanvasPresentation.GRID_SIZE;
 
 public class SubComponentController implements Initializable, SelectHelper.ItemSelectable, Nudgeable {
 
@@ -102,6 +105,30 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
                     dropDownMenu.close();
                 }
         );
+
+        dropDownMenu.addSpacerElement();
+
+        final DropDownMenu subMenu = new DropDownMenu(((Pane) root.getParent().getParent().getParent()), root, 150, false);
+        HUPPAAL.getProject().getComponents().forEach(c -> {
+            if (!c.equals(getParentComponent())) {
+                subMenu.addClickableListElement(c.getName(), event -> {
+                    dropDownMenu.close();
+
+                    final Component oldComponent = getSubComponent().getComponent();
+
+                    // Add a new sub-component
+                    UndoRedoStack.push(() -> { // Perform
+                        getSubComponent().setComponent(c);
+                        HUPPAALController.runReachabilityAnalysis();
+                    }, () -> { // Undo
+                        getSubComponent().setComponent(oldComponent);
+                        HUPPAALController.runReachabilityAnalysis();
+                    }, "Updated component for  subcomponent '" + getSubComponent().toString() + "' to component '" + c.getName() + "'", "edit");
+                });
+            }
+        });
+
+        dropDownMenu.addSubMenu("Add Subcomponent", subMenu, 3 * 35);
 
         dropDownMenu.addSpacerElement();
 
