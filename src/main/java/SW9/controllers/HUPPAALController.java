@@ -259,8 +259,14 @@ public class HUPPAALController implements Initializable {
                     // Make sure that the model is generated
                     UPPAALDriver.buildHUPPAALDocument();
 
+                    HUPPAAL.getProject().getQueries().forEach(query -> {
+                        if (query.isPeriodic()) query.run();
+                    });
+
+                    // List of threads to start
                     List<Thread> threads = new ArrayList<>();
 
+                    // Submit all background reachability queries
                     HUPPAAL.getProject().getComponents().forEach(component -> {
                         // Check if we should consider this component
                         if (!component.isIncludeInPeriodicCheck()) {

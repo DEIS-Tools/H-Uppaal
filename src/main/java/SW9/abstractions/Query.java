@@ -6,10 +6,7 @@ import SW9.backend.UPPAALDriver;
 import SW9.utility.serialize.Serializable;
 import com.google.gson.JsonObject;
 import com.uppaal.engine.Engine;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -17,10 +14,12 @@ import java.util.function.Consumer;
 public class Query implements Serializable {
     private static final String QUERY = "query";
     private static final String COMMENT = "comment";
+    private static final String IS_PERIODIC = "is_periodic";
 
     private final ObjectProperty<QueryState> queryState = new SimpleObjectProperty<>(QueryState.UNKNOWN);
     private final StringProperty query = new SimpleStringProperty("");
     private final StringProperty comment = new SimpleStringProperty("");
+    private final SimpleBooleanProperty isPeriodic = new SimpleBooleanProperty(false);
 
     private Runnable runQuery;
 
@@ -72,6 +71,18 @@ public class Query implements Serializable {
 
     public StringProperty commentProperty() {
         return comment;
+    }
+
+    public boolean isPeriodic() {
+        return isPeriodic.get();
+    }
+
+    public SimpleBooleanProperty isPeriodicProperty() {
+        return isPeriodic;
+    }
+
+    public void setIsPeriodic(final boolean isPeriodic) {
+        this.isPeriodic.set(isPeriodic);
     }
 
     private void initializeRunQuery() {
@@ -128,6 +139,7 @@ public class Query implements Serializable {
 
         result.addProperty(QUERY, getQuery());
         result.addProperty(COMMENT, getComment());
+        result.addProperty(IS_PERIODIC, isPeriodic());
 
         return result;
     }
@@ -136,6 +148,10 @@ public class Query implements Serializable {
     public void deserialize(final JsonObject json) {
         setQuery(json.getAsJsonPrimitive(QUERY).getAsString());
         setComment(json.getAsJsonPrimitive(COMMENT).getAsString());
+
+        if (json.has(IS_PERIODIC)) {
+            setIsPeriodic(json.getAsJsonPrimitive(IS_PERIODIC).getAsBoolean());
+        }
     }
 
     public void run() {
