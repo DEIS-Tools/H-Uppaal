@@ -238,11 +238,7 @@ public class HUPPAAL extends Application {
         }));
 
         stage.setOnCloseRequest(event -> {
-            try {
-                UPPAALDriver.cleanServers();
-            } catch (final IOException e) {
-                e.printStackTrace();
-            }
+            UPPAALDriver.stopEngines();
 
             Platform.exit();
             System.exit(0);

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.locks.Lock;
 import java.util.function.Consumer;
 
 public class UPPAALDriver {
@@ -177,7 +176,7 @@ public class UPPAALDriver {
         };
     }
 
-    private static final ArrayList<File> createdServers = new ArrayList<>();
+    private static final ArrayList<Engine> createdEngines = new ArrayList<>();
     private static final ArrayList<Engine> availableEngines = new ArrayList<>();
 
     private static File findServerFile(final String serverName) {
@@ -197,39 +196,30 @@ public class UPPAALDriver {
 
     private static Engine getAvailableEngineOrCreateNew() {
         if (availableEngines.size() == 0) {
-            final String newServerName = "server_" + (new Object()).hashCode();
-            final File newServerFile = findServerFile(newServerName);
+            final String serverName = "server";
+            final File serverFile = findServerFile(serverName);
+            serverFile.setExecutable(true); // Allows us to use the server file
 
-            try {
-                final File originalServerFile = findServerFile("server");
-                if (!originalServerFile.exists()) {
-                    System.out.println("Could not find backend-file: " + originalServerFile.getAbsolutePath() + ". Please make sure to copy UPPAAL binaries to this location.");
-                }
-
-                FileUtils.copyFile(originalServerFile, newServerFile);
-                newServerFile.setExecutable(true);
-
-                createdServers.add(newServerFile);
-
-                // Create a new engine, set the server path, and return it
-                final Engine engine = new Engine();
-                engine.setServerPath(newServerFile.getPath());
-                return engine;
-            } catch (IOException e) {
-                e.printStackTrace();
+            // Check if the user copied the file correctly
+            if (!serverFile.exists()) {
+                System.out.println("Could not find backend-file: " + serverFile.getAbsolutePath() + ". Please make sure to copy UPPAAL binaries to this location.");
             }
+
+            // Create a new engine, set the server path, and return it
+            final Engine engine = new Engine();
+            engine.setServerPath(serverFile.getPath());
+            createdEngines.add(engine);
+            return engine;
         } else {
             final Engine engine = availableEngines.get(0);
             availableEngines.remove(0);
             return engine;
         }
-
-        return null;
     }
 
     private static Engine getOSDependentEngine() {
-        synchronized (createdServers) {
-            if (!(createdServers.size() >= MAX_ENGINES && availableEngines.size() == 0)) {
+        synchronized (createdEngines) {
+            if (!(createdEngines.size() >= MAX_ENGINES && availableEngines.size() == 0)) {
                 final Engine engine = getAvailableEngineOrCreateNew();
                 if (engine != null) {
                     return engine;
@@ -242,16 +232,17 @@ public class UPPAALDriver {
     }
 
     private static void releaseOSDependentEngine(final Engine engine) {
-        synchronized (createdServers) {
+        synchronized (createdEngines) {
             availableEngines.add(engine);
         }
     }
 
-    public static void cleanServers() throws IOException {
-        synchronized (createdServers) {
-            while (createdServers.size() != 0) {
-                FileUtils.forceDelete(createdServers.get(0));
-                createdServers.remove(0);
+    public static void stopEngines() {
+        synchronized (createdEngines) {
+            while (createdEngines.size() != 0) {
+                final Engine engine = createdEngines.get(0);
+                engine.cancel(); // Cancel any running tasks on this engine
+                createdEngines.remove(0);
             }
         }
     }
