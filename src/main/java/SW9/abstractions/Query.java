@@ -1,7 +1,6 @@
 package SW9.abstractions;
 
 import SW9.HUPPAAL;
-import SW9.backend.BackendException;
 import SW9.backend.QueryListener;
 import SW9.backend.UPPAALDriver;
 import SW9.utility.serialize.Serializable;
@@ -9,7 +8,6 @@ import com.google.gson.JsonObject;
 import com.uppaal.engine.Engine;
 import javafx.beans.property.*;
 
-import java.io.IOException;
 import java.util.function.Consumer;
 
 public class Query implements Serializable {
@@ -22,7 +20,7 @@ public class Query implements Serializable {
     private final StringProperty comment = new SimpleStringProperty("");
     private final SimpleBooleanProperty isPeriodic = new SimpleBooleanProperty(false);
 
-    private Runnable runQuery;
+    private Consumer<Boolean> runQuery;
 
     public Query(final String query, final String comment, final QueryState queryState) {
         this.query.set(query);
@@ -86,51 +84,43 @@ public class Query implements Serializable {
         this.isPeriodic.set(isPeriodic);
     }
 
+    private Engine engine = null;
+    private Boolean forcedCancel = false;
+
     private void initializeRunQuery() {
-        final Engine[] engine = {null};
-        final Boolean[] forcedCancel = {false};
+        runQuery = (buildHUPPAALDocument) -> {
+            setQueryState(QueryState.RUNNING);
 
-        runQuery = () -> {
-            if (getQueryState().equals(QueryState.RUNNING)) {
-                synchronized (UPPAALDriver.engineLock) {
-                    if(engine[0] != null) {
-                        forcedCancel[0] = true;
-                        engine[0].cancel();
-                    }
-                }
-                setQueryState(QueryState.UNKNOWN);
-            } else {
-                setQueryState(QueryState.RUNNING);
+            final Component mainComponent = HUPPAAL.getProject().getMainComponent();
 
-                final Component mainComponent = HUPPAAL.getProject().getMainComponent();
+            if (mainComponent == null) {
+                return; // We cannot generate a UPPAAL file without a main component
+            }
 
-                if (mainComponent == null) {
-                    return; // We cannot generate a UPPAAL file without a main component
-                }
-
-                try {
+            try {
+                if (buildHUPPAALDocument) {
                     UPPAALDriver.buildHUPPAALDocument();
-                    UPPAALDriver.runQuery(getQuery(),
-                            aBoolean -> {
-                                if (aBoolean) {
-                                    setQueryState(QueryState.SUCCESSFUL);
-                                } else {
-                                    setQueryState(QueryState.ERROR);
-                                }
-                            },
-                            e -> {
-                                if (!forcedCancel[0]) {
-                                    setQueryState(QueryState.SYNTAX_ERROR);
-                                }
-                            },
-                            eng -> {
-                                engine[0] = eng;
-                            },
-                            new QueryListener(this)
-                    ).start();
-                } catch (final Exception e) {
-                    e.printStackTrace();
                 }
+                UPPAALDriver.runQuery(getQuery(),
+                        aBoolean -> {
+                            if (aBoolean) {
+                                setQueryState(QueryState.SUCCESSFUL);
+                            } else {
+                                setQueryState(QueryState.ERROR);
+                            }
+                        },
+                        e -> {
+                            if (!forcedCancel) {
+                                setQueryState(QueryState.SYNTAX_ERROR);
+                            }
+                        },
+                        eng -> {
+                            engine = eng;
+                        },
+                        new QueryListener(this)
+                ).start();
+            } catch (final Exception e) {
+                e.printStackTrace();
             }
         };
     }
@@ -157,6 +147,22 @@ public class Query implements Serializable {
     }
 
     public void run() {
-        runQuery.run();
+        run(true);
+    }
+
+    public void run(final boolean buildHUPPAALDocument) {
+        runQuery.accept(buildHUPPAALDocument);
+    }
+
+    public void cancel() {
+        if (getQueryState().equals(QueryState.RUNNING)) {
+            synchronized (UPPAALDriver.engineLock) {
+                if (engine != null) {
+                    forcedCancel = true;
+                    engine.cancel();
+                }
+            }
+            setQueryState(QueryState.UNKNOWN);
+        }
     }
 }

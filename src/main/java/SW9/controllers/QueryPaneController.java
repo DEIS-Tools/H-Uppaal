@@ -83,29 +83,15 @@ public class QueryPaneController implements Initializable {
 
     @FXML
     private void runAllQueriesButtonClicked() {
-        HUPPAAL.getProject().getQueries().forEach(query -> {
-            // Reset the status of the query
-            query.setQueryState(QueryState.UNKNOWN);
-            query.setQueryState(QueryState.RUNNING);
-
-            try {
-                UPPAALDriver.buildHUPPAALDocument();
-                UPPAALDriver.runQuery(query.getQuery(),
-                        aBoolean -> {
-                            if (aBoolean) {
-                                query.setQueryState(QueryState.SUCCESSFUL);
-                            } else {
-                                query.setQueryState(QueryState.ERROR);
-                            }
-                        },
-                        e -> {
-                            query.setQueryState(QueryState.SYNTAX_ERROR);
-                        }
-                ).start();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        try {
+            UPPAALDriver.buildHUPPAALDocument();
+            HUPPAAL.getProject().getQueries().forEach(query -> {
+                query.cancel();
+                query.run(false);
+            });
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

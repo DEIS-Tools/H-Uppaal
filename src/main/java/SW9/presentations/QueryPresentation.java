@@ -146,7 +146,11 @@ public class QueryPresentation extends AnchorPane {
         actionButton.setMaskType(JFXRippler.RipplerMask.CIRCLE);
 
         actionButton.getChildren().get(0).setOnMousePressed(event -> {
-            query.run();
+            if (query.getQueryState().equals(QueryState.RUNNING)) {
+                query.cancel();
+            } else {
+                query.run();
+            }
         });
     }
 
