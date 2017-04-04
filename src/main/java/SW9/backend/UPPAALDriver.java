@@ -84,9 +84,17 @@ public class UPPAALDriver {
     }
 
     public static Thread runQuery(final String query,
+                                  final Consumer<Boolean> success,
+                                  final Consumer<BackendException> failure,
+                                  final Consumer<Engine> engineConsumer) {
+        return runQuery(query, success, failure, engineConsumer, new QueryListener());
+    }
+
+    public static Thread runQuery(final String query,
                                    final Consumer<Boolean> success,
                                    final Consumer<BackendException> failure,
-                                   final Consumer<Engine> engineConsumer) {
+                                   final Consumer<Engine> engineConsumer,
+                                   final QueryListener queryListener) {
         return new Thread() {
             Engine engine;
 
@@ -149,7 +157,7 @@ public class UPPAALDriver {
                     // Update some internal state for the engine by getting the initial state
                     engine.getInitialState(system);
 
-                    final char result = engine.query(system, "", query, new QueryListener()).result;
+                    final char result = engine.query(system, "", query, queryListener).result;
 
                     // Process the query result
                     if (result == 'T') {

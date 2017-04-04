@@ -2,6 +2,7 @@ package SW9.abstractions;
 
 import SW9.HUPPAAL;
 import SW9.backend.BackendException;
+import SW9.backend.QueryListener;
 import SW9.backend.UPPAALDriver;
 import SW9.utility.serialize.Serializable;
 import com.google.gson.JsonObject;
@@ -124,7 +125,8 @@ public class Query implements Serializable {
                             },
                             eng -> {
                                 engine[0] = eng;
-                            }
+                            },
+                            new QueryListener(this)
                     ).start();
                 } catch (final Exception e) {
                     e.printStackTrace();
