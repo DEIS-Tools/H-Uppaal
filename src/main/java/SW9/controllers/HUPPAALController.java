@@ -34,6 +34,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -115,6 +116,16 @@ public class HUPPAALController implements Initializable {
     public Label statusLabel;
     public Label queryLabel;
     public HBox queryStatusContainer;
+
+    public StackPane queryDialogContainer;
+    public JFXDialog queryDialog;
+    public Text queryTextResult;
+    public Text queryTextQuery;
+
+    private static JFXDialog _queryDialog;
+    private static Text _queryTextResult;
+    private static Text _queryTextQuery;
+
     private double tabPanePreviousY = 0;
     private boolean shouldISkipOpeningTheMessagesContainer = true;
 
@@ -131,12 +142,12 @@ public class HUPPAALController implements Initializable {
         dialogContainer.opacityProperty().bind(dialog.getChildren().get(0).scaleXProperty());
         dialog.setOnDialogClosed(event -> dialogContainer.setVisible(false));
 
-        // Keybind for showing dialog // todo: remove this when done with testing
-        KeyboardTracker.registerKeybind("DIALOG", new Keybind(new KeyCodeCombination(KeyCode.I), () -> {
-            Debug.backgroundThreads.forEach(thread -> {
-                System.out.println(thread.getName() + " - " + thread.isAlive());
-            });
-        }));
+        _queryDialog = queryDialog;
+        _queryTextResult = queryTextResult;
+        _queryTextQuery = queryTextQuery;
+        queryDialog.setDialogContainer(queryDialogContainer);
+        queryDialogContainer.opacityProperty().bind(queryDialog.getChildren().get(0).scaleXProperty());
+        queryDialog.setOnDialogClosed(event -> queryDialogContainer.setVisible(false));
 
         // Keybind for nudging the selected elements
         KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_UP, new Keybind(new KeyCodeCombination(KeyCode.UP), (event) -> {
@@ -730,6 +741,19 @@ public class HUPPAALController implements Initializable {
     @FXML
     private void closeDialog() {
         dialog.close();
+        queryDialog.close();
+    }
+
+    public static void openQueryDialog(final Query query, final String text) {
+        if (text != null) {
+            _queryTextResult.setText(text);
+        }
+
+        if (query != null) {
+            _queryTextQuery.setText(query.getQuery());
+        }
+
+        _queryDialog.show();
     }
 
 }

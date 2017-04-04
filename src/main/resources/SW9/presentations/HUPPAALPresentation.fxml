@@ -238,6 +238,46 @@
 
     </HBox>
 
+    <!-- Query Result Dialog -->
+    <StackPane fx:id="queryDialogContainer" style="-fx-background-color: #0000007F;">
+        <JFXDialog fx:id="queryDialog">
+
+            <VBox>
+
+                <!-- Will scale the dialog -->
+                <Region minWidth="400"/>
+
+                <!-- Content -->
+                <VBox>
+
+                    <VBox style="-fx-padding: 24px;">
+                        <Text text="Query Result" styleClass="title"/>
+
+                        <Region minHeight="20"/>
+
+                        <Text text="Query" styleClass="body2"/>
+                        <Text fx:id="queryTextQuery" text="No query" styleClass="body1"/>
+
+                        <Region minHeight="20"/>
+
+                        <Text text="Result" styleClass="body2"/>
+                        <Text fx:id="queryTextResult" text="No result" styleClass="body1"/>
+
+                    </VBox>
+
+                    <HBox style="-fx-padding: 8px;">
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <JFXButton text="CLOSE" onMouseClicked="#closeDialog"/>
+                    </HBox>
+
+                </VBox>
+
+            </VBox>
+
+        </JFXDialog>
+    </StackPane>
+
+
     <!-- Dialog -->
     <StackPane fx:id="dialogContainer" style="-fx-background-color: #0000007F;" visible="false">
         <JFXDialog fx:id="dialog">
