@@ -128,7 +128,7 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
             }
         });
 
-        dropDownMenu.addSubMenu("Add Subcomponent", subMenu, 3 * 35);
+        dropDownMenu.addSubMenu("Update Subcomponent", subMenu, 2 * 35 + 15 + 1);
 
         dropDownMenu.addSpacerElement();
 
