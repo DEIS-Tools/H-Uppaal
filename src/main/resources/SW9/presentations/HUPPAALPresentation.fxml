@@ -239,7 +239,7 @@
     </HBox>
 
     <!-- Query Result Dialog -->
-    <StackPane fx:id="queryDialogContainer" style="-fx-background-color: #0000007F;">
+    <StackPane fx:id="queryDialogContainer" style="-fx-background-color: #0000007F;" mouseTransparent="true">
         <JFXDialog fx:id="queryDialog">
 
             <VBox>

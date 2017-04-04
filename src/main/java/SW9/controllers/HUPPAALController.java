@@ -147,7 +147,14 @@ public class HUPPAALController implements Initializable {
         _queryTextQuery = queryTextQuery;
         queryDialog.setDialogContainer(queryDialogContainer);
         queryDialogContainer.opacityProperty().bind(queryDialog.getChildren().get(0).scaleXProperty());
-        queryDialog.setOnDialogClosed(event -> queryDialogContainer.setVisible(false));
+        queryDialog.setOnDialogClosed(event -> {
+            queryDialogContainer.setVisible(false);
+            queryDialogContainer.setMouseTransparent(true);
+        });
+        queryDialog.setOnDialogOpened(event -> {
+            queryDialogContainer.setVisible(true);
+            queryDialogContainer.setMouseTransparent(false);
+        });
 
         // Keybind for nudging the selected elements
         KeyboardTracker.registerKeybind(KeyboardTracker.NUDGE_UP, new Keybind(new KeyCodeCombination(KeyCode.UP), (event) -> {
