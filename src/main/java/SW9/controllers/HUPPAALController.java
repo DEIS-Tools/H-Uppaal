@@ -549,7 +549,7 @@ public class HUPPAALController implements Initializable {
     }
 
     @FXML
-    private void collapseMessagesClicked() {
+    public void collapseMessagesClicked() {
         final Transition collapse = new Transition() {
             double height = tabPaneContainer.getMaxHeight();
 

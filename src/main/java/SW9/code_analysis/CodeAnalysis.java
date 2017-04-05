@@ -13,6 +13,8 @@ import java.util.Map;
 
 public class CodeAnalysis {
 
+    private static boolean ENABLED = true;
+
     private static final ObservableList<Message> backendErrors = FXCollections.observableArrayList();
     private static final ObservableList<Message> warnings = FXCollections.observableArrayList();
     private static final ObservableList<Message> errors = FXCollections.observableArrayList();
@@ -30,6 +32,8 @@ public class CodeAnalysis {
     }
 
     private static void addToWarnings(final Component component, final Message message) {
+        if(!ENABLED) return;
+
         final ObservableList<Message> list = getWarnings(component);
 
         list.add(message);
@@ -37,6 +41,8 @@ public class CodeAnalysis {
     }
 
     private static void removeFromWarnings(final Component component, final Message message) {
+        if(!ENABLED) return;
+
         final ObservableList<Message> list = getWarnings(component);
 
         list.remove(message);
@@ -54,6 +60,8 @@ public class CodeAnalysis {
     }
 
     private static void addToErrors(final Component component, final Message message) {
+        if(!ENABLED) return;
+
         final ObservableList<Message> list = getErrors(component);
 
         if (list.contains(message)) return;
@@ -63,6 +71,8 @@ public class CodeAnalysis {
     }
 
     private static void removeFromErrors(final Component component, final Message message) {
+        if(!ENABLED) return;
+
         final ObservableList<Message> list = getErrors(component);
 
         list.remove(message);
@@ -70,6 +80,8 @@ public class CodeAnalysis {
     }
 
     public static void addMessage(final Component component, final Message message) {
+        if(!ENABLED) return;
+
         if (message.getMessageType().equals(MessageType.WARNING)) {
             addToWarnings(component, message);
         } else if (message.getMessageType().equals(MessageType.ERROR)) {
@@ -78,6 +90,8 @@ public class CodeAnalysis {
     }
 
     public static void removeMessage(final Component component, final Message message) {
+        if(!ENABLED) return;
+
         if (message.getMessageType().equals(MessageType.WARNING)) {
             removeFromWarnings(component, message);
         } else if (message.getMessageType().equals(MessageType.ERROR)) {
@@ -159,5 +173,12 @@ public class CodeAnalysis {
         }
     }
 
+    public static void enable() {
+        ENABLED = true;
+    }
+
+    public static void disable() {
+        ENABLED = false;
+    }
 
 }

@@ -17,6 +17,7 @@ import com.google.gson.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.collections.ListChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -250,19 +251,26 @@ public class HUPPAAL extends Application {
         final File directory = new File(projectDirectory);
         FileUtils.forceMkdir(directory);
 
-        // These are not the side effects you are looking for
-        HUPPAAL.getProject().getComponents().removeIf(component -> {
-            CodeAnalysis.clearWarnings(component);
-            CodeAnalysis.clearErrors(component);
-            return true;
+        CodeAnalysis.getErrors().addListener(new ListChangeListener<CodeAnalysis.Message>() {
+            @Override
+            public void onChanged(Change<? extends CodeAnalysis.Message> c) {
+                CodeAnalysis.getErrors().forEach(message -> {
+                    System.out.println(message.getMessage());
+                });
+            }
         });
 
+        CodeAnalysis.getBackendErrors().removeIf(message -> true);
+        CodeAnalysis.getErrors().removeIf(message -> true);
+        CodeAnalysis.getWarnings().removeIf(message -> true);
+        CodeAnalysis.disable();
         HUPPAAL.getProject().getQueries().removeIf(query -> true);
+        HUPPAAL.getProject().getComponents().removeIf(component -> true);
         HUPPAAL.getProject().setMainComponent(null);
-        CodeAnalysis.clearBackendErrors();
 
         // Deserialize the project
         deserializeProject(directory);
+        CodeAnalysis.enable();
 
         // Generate all component presentations by making them the active component in the view one by one
         Component initialShownComponent = null;
@@ -332,7 +340,9 @@ public class HUPPAAL extends Application {
 
         }
 
-        updateDepthMap(mainJsonComponent, 0, componentJsonMap, componentMaxDepthMap);
+        if (mainJsonComponent != null) {
+            updateDepthMap(mainJsonComponent, 0, componentJsonMap, componentMaxDepthMap);
+        }
 
         final List<Map.Entry<JsonObject, Integer>> list = new LinkedList<>(componentMaxDepthMap.entrySet());
         // Defined Custom Comparator here
