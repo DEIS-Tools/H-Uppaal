@@ -27,17 +27,6 @@ public class UPPAALDriver {
     public static final int MAX_ENGINES = 10;
     public static final Object engineLock = false; // Used to lock concurrent engine reference access
 
-    // Static initializer for cleaning up in the servers folder
-    static {
-        final File serversFolder = findServerFile("server").getParentFile();
-
-        for (final File file : serversFolder.listFiles()) {
-            if (file.getName().matches("server_\\w*(.exe)*")) {
-                file.delete();
-            }
-        }
-    }
-
     private static HUPPAALDocument huppaalDocument;
 
     public static void generateDebugUPPAALModel() throws Exception, BackendException {
