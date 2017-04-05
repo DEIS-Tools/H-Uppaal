@@ -3,9 +3,11 @@ package SW9.abstractions;
 import SW9.HUPPAAL;
 import SW9.backend.QueryListener;
 import SW9.backend.UPPAALDriver;
+import SW9.controllers.HUPPAALController;
 import SW9.utility.serialize.Serializable;
 import com.google.gson.JsonObject;
 import com.uppaal.engine.Engine;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 
 import java.util.function.Consumer;
@@ -112,6 +114,10 @@ public class Query implements Serializable {
                         e -> {
                             if (!forcedCancel) {
                                 setQueryState(QueryState.SYNTAX_ERROR);
+                                final Throwable cause = e.getCause();
+                                if (cause != null) {
+                                    Platform.runLater(() -> HUPPAALController.openQueryDialog(this, cause.toString()));
+                                }
                             }
                         },
                         eng -> {

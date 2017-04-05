@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 import com.uppaal.engine.Engine;
 import com.uppaal.engine.EngineException;
 import com.uppaal.engine.Problem;
+import com.uppaal.engine.QueryVerificationResult;
 import com.uppaal.model.core2.Document;
 import com.uppaal.model.system.UppaalSystem;
 import javafx.application.Platform;
@@ -157,7 +158,8 @@ public class UPPAALDriver {
                     // Update some internal state for the engine by getting the initial state
                     engine.getInitialState(system);
 
-                    final char result = engine.query(system, "", query, queryListener).result;
+                    final QueryVerificationResult qvr = engine.query(system, "", query, queryListener);
+                    final char result = qvr.result;
 
                     // Process the query result
                     if (result == 'T') {
@@ -167,7 +169,7 @@ public class UPPAALDriver {
                     } else if (result == 'M') {
                         failure.accept(new BackendException.QueryErrorException("UPPAAL Engine was uncertain on the result"));
                     } else {
-                        failure.accept(new BackendException.QueryErrorException("UPPAAL Engine returned with an error"));
+                        failure.accept(new BackendException.BadUPPAALQueryException("Unable to run query", qvr.exception));
                     }
 
                 } catch (EngineException | IOException e) {
