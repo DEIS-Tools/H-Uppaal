@@ -17,6 +17,7 @@ import com.google.gson.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -48,7 +49,7 @@ public class HUPPAAL extends Application {
     public static boolean serializationDone = false;
     private static Project project;
     private static HUPPAALPresentation presentation;
-    public static String projectDirectory;
+    public static SimpleStringProperty projectDirectory = new SimpleStringProperty();
     private Stage debugStage;
 
     {
@@ -56,10 +57,10 @@ public class HUPPAAL extends Application {
             final CodeSource codeSource = HUPPAAL.class.getProtectionDomain().getCodeSource();
             final File jarFile = new File(codeSource.getLocation().toURI().getPath());
             final String rootDirectory = jarFile.getParentFile().getPath() + File.separator;
-            projectDirectory = rootDirectory + "projects" + File.separator + "project";
+            projectDirectory.set(rootDirectory + "projects" + File.separator + "project");
             serverDirectory = rootDirectory + "servers";
             debugDirectory = rootDirectory + "uppaal-debug";
-            forceCreateFolder(projectDirectory);
+            forceCreateFolder(projectDirectory.getValue());
             forceCreateFolder(serverDirectory);
             forceCreateFolder(debugDirectory);
         } catch (final URISyntaxException e) {
@@ -82,7 +83,7 @@ public class HUPPAAL extends Application {
     public static void save() {
         // Clear the project folder
         try {
-            final File directory = new File(projectDirectory);
+            final File directory = new File(projectDirectory.getValue());
 
             FileUtils.forceMkdir(directory);
             FileUtils.cleanDirectory(directory);
@@ -248,7 +249,7 @@ public class HUPPAAL extends Application {
 
     public static void initializeProjectFolder() throws IOException {
         // Make sure that the project directory exists
-        final File directory = new File(projectDirectory);
+        final File directory = new File(projectDirectory.get());
         FileUtils.forceMkdir(directory);
 
         CodeAnalysis.getErrors().addListener(new ListChangeListener<CodeAnalysis.Message>() {

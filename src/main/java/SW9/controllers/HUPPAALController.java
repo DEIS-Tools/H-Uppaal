@@ -336,7 +336,7 @@ public class HUPPAALController implements Initializable {
         )));
 
         statusLabel.setTextFill(Color.GREY_BLUE.getColor(Color.Intensity.I50));
-        statusLabel.setText(HUPPAAL.projectDirectory);
+        statusLabel.textProperty().bind(HUPPAAL.projectDirectory);
         statusLabel.setOpacity(0.5);
 
         queryLabel.setTextFill(Color.GREY_BLUE.getColor(Color.Intensity.I50));
@@ -392,7 +392,7 @@ public class HUPPAALController implements Initializable {
                 final File file = projectPicker.showDialog(root.getScene().getWindow());
                 if(file != null) {
                     try {
-                        HUPPAAL.projectDirectory = file.getAbsolutePath();
+                        HUPPAAL.projectDirectory.set(file.getAbsolutePath());
                         HUPPAAL.initializeProjectFolder();
                     } catch (IOException e) {
                         e.printStackTrace();
