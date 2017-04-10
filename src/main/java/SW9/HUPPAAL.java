@@ -93,13 +93,14 @@ public class HUPPAAL extends Application {
 
         HUPPAAL.getProject().getComponents().forEach(component -> {
             try {
-                final Writer writer = new FileWriter(String.format(projectDirectory + File.separator + "%s.json", component.getName()));
+                final Writer writer = new FileWriter(String.format(projectDirectory.getValue() + File.separator + "%s.json", component.getName()));
                 final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
                 gson.toJson(component.serialize(), writer);
 
                 writer.close();
             } catch (final IOException e) {
+                showToast("Could not save project: " + e.getMessage());
                 e.printStackTrace();
             }
         });
@@ -111,7 +112,7 @@ public class HUPPAAL extends Application {
 
         final Writer writer;
         try {
-            writer = new FileWriter(projectDirectory + File.separator + "Queries.json");
+            writer = new FileWriter(projectDirectory.getValue() + File.separator + "Queries.json");
             final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
             gson.toJson(queries, writer);
@@ -119,6 +120,7 @@ public class HUPPAAL extends Application {
 
             showToast("Project saved!");
         } catch (final IOException e) {
+            showToast("Could not save project: " + e.getMessage());
             e.printStackTrace();
         }
     }
