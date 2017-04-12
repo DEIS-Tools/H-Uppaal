@@ -100,7 +100,7 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
 
             } else if (event.isSecondaryButtonDown()) {
                 showContextMenu();
-            } else if ((event.isAltDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
+            } else if ((event.isShiftDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
                 final Edge newEdge = new Edge(getJork());
 
                 KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {

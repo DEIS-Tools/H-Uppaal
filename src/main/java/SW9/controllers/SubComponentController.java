@@ -282,7 +282,7 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
             if ((event.isPrimaryButtonDown() || event.isMiddleButtonDown()) && unfinishedEdge != null) {
                 unfinishedEdge.setTargetSubComponent(getSubComponent());
 
-            } else if ((event.isAltDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
+            } else if ((event.isShiftDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
 
                 final Edge newEdge = new Edge(getSubComponent());
 

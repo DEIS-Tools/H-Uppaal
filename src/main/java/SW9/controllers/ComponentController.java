@@ -819,7 +819,7 @@ public class ComponentController implements Initializable {
         final Edge unfinishedEdge = getComponent().getUnfinishedEdge();
 
 
-        if ((event.isAltDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
+        if ((event.isShiftDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
 
             final Location location = new Location();
 
