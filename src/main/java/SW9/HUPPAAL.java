@@ -17,6 +17,8 @@ import com.google.gson.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ListChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -47,7 +49,7 @@ public class HUPPAAL extends Application {
     public static boolean serializationDone = false;
     private static Project project;
     private static HUPPAALPresentation presentation;
-    public static String projectDirectory;
+    public static SimpleStringProperty projectDirectory = new SimpleStringProperty();
     private Stage debugStage;
 
     {
@@ -55,10 +57,10 @@ public class HUPPAAL extends Application {
             final CodeSource codeSource = HUPPAAL.class.getProtectionDomain().getCodeSource();
             final File jarFile = new File(codeSource.getLocation().toURI().getPath());
             final String rootDirectory = jarFile.getParentFile().getPath() + File.separator;
-            projectDirectory = rootDirectory + "projects" + File.separator + "project";
+            projectDirectory.set(rootDirectory + "projects" + File.separator + "project");
             serverDirectory = rootDirectory + "servers";
             debugDirectory = rootDirectory + "uppaal-debug";
-            forceCreateFolder(projectDirectory);
+            forceCreateFolder(projectDirectory.getValue());
             forceCreateFolder(serverDirectory);
             forceCreateFolder(debugDirectory);
         } catch (final URISyntaxException e) {
@@ -81,7 +83,7 @@ public class HUPPAAL extends Application {
     public static void save() {
         // Clear the project folder
         try {
-            final File directory = new File(projectDirectory);
+            final File directory = new File(projectDirectory.getValue());
 
             FileUtils.forceMkdir(directory);
             FileUtils.cleanDirectory(directory);
@@ -91,13 +93,14 @@ public class HUPPAAL extends Application {
 
         HUPPAAL.getProject().getComponents().forEach(component -> {
             try {
-                final Writer writer = new FileWriter(String.format(projectDirectory + File.separator + "%s.json", component.getName()));
+                final Writer writer = new FileWriter(String.format(projectDirectory.getValue() + File.separator + "%s.json", component.getName()));
                 final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
                 gson.toJson(component.serialize(), writer);
 
                 writer.close();
             } catch (final IOException e) {
+                showToast("Could not save project: " + e.getMessage());
                 e.printStackTrace();
             }
         });
@@ -109,7 +112,7 @@ public class HUPPAAL extends Application {
 
         final Writer writer;
         try {
-            writer = new FileWriter(projectDirectory + File.separator + "Queries.json");
+            writer = new FileWriter(projectDirectory.getValue() + File.separator + "Queries.json");
             final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
             gson.toJson(queries, writer);
@@ -117,6 +120,7 @@ public class HUPPAAL extends Application {
 
             showToast("Project saved!");
         } catch (final IOException e) {
+            showToast("Could not save project: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -247,22 +251,29 @@ public class HUPPAAL extends Application {
 
     public static void initializeProjectFolder() throws IOException {
         // Make sure that the project directory exists
-        final File directory = new File(projectDirectory);
+        final File directory = new File(projectDirectory.get());
         FileUtils.forceMkdir(directory);
 
-        // These are not the side effects you are looking for
-        HUPPAAL.getProject().getComponents().removeIf(component -> {
-            CodeAnalysis.clearWarnings(component);
-            CodeAnalysis.clearErrors(component);
-            return true;
+        CodeAnalysis.getErrors().addListener(new ListChangeListener<CodeAnalysis.Message>() {
+            @Override
+            public void onChanged(Change<? extends CodeAnalysis.Message> c) {
+                CodeAnalysis.getErrors().forEach(message -> {
+                    System.out.println(message.getMessage());
+                });
+            }
         });
 
+        CodeAnalysis.getBackendErrors().removeIf(message -> true);
+        CodeAnalysis.getErrors().removeIf(message -> true);
+        CodeAnalysis.getWarnings().removeIf(message -> true);
+        CodeAnalysis.disable();
         HUPPAAL.getProject().getQueries().removeIf(query -> true);
+        HUPPAAL.getProject().getComponents().removeIf(component -> true);
         HUPPAAL.getProject().setMainComponent(null);
-        CodeAnalysis.clearBackendErrors();
 
         // Deserialize the project
         deserializeProject(directory);
+        CodeAnalysis.enable();
 
         // Generate all component presentations by making them the active component in the view one by one
         Component initialShownComponent = null;
@@ -332,7 +343,9 @@ public class HUPPAAL extends Application {
 
         }
 
-        updateDepthMap(mainJsonComponent, 0, componentJsonMap, componentMaxDepthMap);
+        if (mainJsonComponent != null) {
+            updateDepthMap(mainJsonComponent, 0, componentJsonMap, componentMaxDepthMap);
+        }
 
         final List<Map.Entry<JsonObject, Integer>> list = new LinkedList<>(componentMaxDepthMap.entrySet());
         // Defined Custom Comparator here

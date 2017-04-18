@@ -336,7 +336,7 @@ public class HUPPAALController implements Initializable {
         )));
 
         statusLabel.setTextFill(Color.GREY_BLUE.getColor(Color.Intensity.I50));
-        statusLabel.setText(HUPPAAL.projectDirectory);
+        statusLabel.textProperty().bind(HUPPAAL.projectDirectory);
         statusLabel.setOpacity(0.5);
 
         queryLabel.setTextFill(Color.GREY_BLUE.getColor(Color.Intensity.I50));
@@ -382,24 +382,27 @@ public class HUPPAALController implements Initializable {
 
         menuBarFileOpenProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN));
         menuBarFileOpenProject.setOnAction(event -> {
+            // Dialog title
             final DirectoryChooser projectPicker = new DirectoryChooser();
             projectPicker.setTitle("Open project");
-            final CodeSource codeSource = HUPPAAL.class.getProtectionDomain().getCodeSource();
-            final File jarFile;
-            try {
-                jarFile = new File(codeSource.getLocation().toURI().getPath());
-                projectPicker.setInitialDirectory(jarFile);
-                final File file = projectPicker.showDialog(root.getScene().getWindow());
-                if(file != null) {
-                    try {
-                        HUPPAAL.projectDirectory = file.getAbsolutePath();
-                        HUPPAAL.initializeProjectFolder();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+
+            // The initial location for the file choosing dialog
+            final File jarDir = new File(System.getProperty("java.class.path")).getAbsoluteFile().getParentFile();
+
+            // If the file does not exist, we must be running it from a development environment, use an default location
+            if(jarDir.exists()) {
+                projectPicker.setInitialDirectory(jarDir);
+            }
+
+            // Prompt the user to find a file (will halt the UI thread)
+            final File file = projectPicker.showDialog(root.getScene().getWindow());
+            if(file != null) {
+                try {
+                    HUPPAAL.projectDirectory.set(file.getAbsolutePath());
+                    HUPPAAL.initializeProjectFolder();
+                } catch (final IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
             }
         });
 
@@ -549,7 +552,7 @@ public class HUPPAALController implements Initializable {
     }
 
     @FXML
-    private void collapseMessagesClicked() {
+    public void collapseMessagesClicked() {
         final Transition collapse = new Transition() {
             double height = tabPaneContainer.getMaxHeight();
 
