@@ -341,7 +341,7 @@
 
                         <HBox>
                             <Label styleClass="body2">
-                                Alt-click and middle-click:
+                                Shift-click and middle-click:
                             </Label>
                             <Region minWidth="8"/>
                             <Label styleClass="body1">
