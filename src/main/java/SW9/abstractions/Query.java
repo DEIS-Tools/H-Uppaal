@@ -112,11 +112,18 @@ public class Query implements Serializable {
                             }
                         },
                         e -> {
-                            if (!forcedCancel) {
+                            if (forcedCancel) {
+                                setQueryState(QueryState.UNKNOWN);
+                            } else {
                                 setQueryState(QueryState.SYNTAX_ERROR);
                                 final Throwable cause = e.getCause();
                                 if (cause != null) {
-                                    Platform.runLater(() -> HUPPAALController.openQueryDialog(this, cause.toString()));
+                                    // We had trouble generating the model if we get a NullPointerException
+                                    if(cause instanceof NullPointerException) {
+                                        setQueryState(QueryState.UNKNOWN);
+                                    } else {
+                                        Platform.runLater(() -> HUPPAALController.openQueryDialog(this, cause.toString()));
+                                    }
                                 }
                             }
                         },

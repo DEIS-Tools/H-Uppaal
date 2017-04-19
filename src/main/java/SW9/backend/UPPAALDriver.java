@@ -161,7 +161,7 @@ public class UPPAALDriver {
                         failure.accept(new BackendException.BadUPPAALQueryException("Unable to run query", qvr.exception));
                     }
 
-                } catch (EngineException | IOException e) {
+                } catch (EngineException | IOException | NullPointerException e) {
                     // Something went wrong
                     failure.accept(new BackendException.BadUPPAALQueryException("Unable to run query", e));
                 } finally {
