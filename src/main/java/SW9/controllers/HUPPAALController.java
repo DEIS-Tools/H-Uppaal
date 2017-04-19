@@ -551,6 +551,32 @@ public class HUPPAALController implements Initializable {
         tabPanePreviousY = mouseY;
     }
 
+    public void expandMessagesIfNotExpanded() {
+        if (tabPaneContainer.getMaxHeight() <= 35) {
+            expandMessagesContainer.play();
+        }
+    }
+
+    public void collapseMessagesIfNotCollapsed() {
+        final Transition collapse = new Transition() {
+            double height = tabPaneContainer.getMaxHeight();
+
+            {
+                setInterpolator(Interpolator.SPLINE(0.645, 0.045, 0.355, 1));
+                setCycleDuration(Duration.millis(200));
+            }
+
+            @Override
+            protected void interpolate(final double frac) {
+                tabPaneContainer.setMaxHeight(((height - 35) * (1 - frac)) + 35);
+            }
+        };
+
+        if (tabPaneContainer.getMaxHeight() > 35) {
+            collapse.play();
+        }
+    }
+
     @FXML
     public void collapseMessagesClicked() {
         final Transition collapse = new Transition() {

@@ -141,9 +141,19 @@ public class HUPPAALPresentation extends StackPane {
         controller.warningsScrollPane.setStyle("-fx-background-color: transparent;");
 
         final Runnable collapseIfNoErrorsOrWarnings = () -> {
-            if (CodeAnalysis.getBackendErrors().size() + CodeAnalysis.getErrors().size() + CodeAnalysis.getWarnings().size() == 0) {
-                controller.collapseMessagesClicked();
-            }
+            new Thread(() -> {
+                // Wait for a second to check if new warnings or errors occur
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                // Check if any warnings or errors occurred
+                if (CodeAnalysis.getBackendErrors().size() + CodeAnalysis.getErrors().size() + CodeAnalysis.getWarnings().size() == 0) {
+                    controller.collapseMessagesIfNotCollapsed();
+                }
+            }).start();
         };
 
         // Update the tab-text and expand/collapse the view
@@ -155,6 +165,7 @@ public class HUPPAALPresentation extends StackPane {
                     controller.backendErrorsTab.setText("Backend Errors");
                 } else {
                     controller.backendErrorsTab.setText("Backend Errors (" + errors + ")");
+                    controller.expandMessagesIfNotExpanded();
                     controller.tabPane.getSelectionModel().select(controller.backendErrorsTab);
                 }
 
@@ -171,7 +182,7 @@ public class HUPPAALPresentation extends StackPane {
                     controller.errorsTab.setText("Errors");
                 } else {
                     controller.errorsTab.setText("Errors (" + errors + ")");
-                    controller.expandMessagesContainer.play();
+                    controller.expandMessagesIfNotExpanded();
                     controller.tabPane.getSelectionModel().select(controller.errorsTab);
                 }
 
@@ -189,6 +200,8 @@ public class HUPPAALPresentation extends StackPane {
                     controller.warningsTab.setText("Warnings");
                 } else {
                     controller.warningsTab.setText("Warnings (" + warnings + ")");
+                    controller.expandMessagesIfNotExpanded();
+                    controller.tabPane.getSelectionModel().select(controller.warningsTab);
                 }
 
                 collapseIfNoErrorsOrWarnings.run();
