@@ -471,7 +471,9 @@ public class HUPPAALController implements Initializable {
             }
 
             // If we still need to balance some component (they might not be used) then do it now
-            missingComponents.forEach(resetLocationsInComponent);
+            while(!missingComponents.isEmpty()) {
+                resetLocationsInComponent.accept(missingComponents.get(0));
+            }
         });
     }
 
