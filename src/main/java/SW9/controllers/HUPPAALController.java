@@ -42,9 +42,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -426,54 +424,67 @@ public class HUPPAALController implements Initializable {
 
         menuBarEditBalance.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
         menuBarEditBalance.setOnAction(event -> {
-            // Set the counter used to generate the identifiers
-            Location.resetHiddenID();
+            // Map to store the previous identifiers (to undo/redo)
+            final Map<Location, String> previousIdentifiers = new HashMap<>();
 
-            // A list of components we have not ordered yet
-            final List<Component> missingComponents = new ArrayList<>();
-            HUPPAAL.getProject().getComponents().forEach(missingComponents::add);
+            UndoRedoStack.push(() -> { // Perform
+                // Set the counter used to generate the identifiers
+                Location.resetHiddenID();
 
-            // List to iterate through the components
-            final List<SubComponent> subComponentsToCheck = new ArrayList<>();
+                // A list of components we have not ordered yet
+                final List<Component> missingComponents = new ArrayList<>();
+                HUPPAAL.getProject().getComponents().forEach(missingComponents::add);
 
-            // Consumer to reset the location identifiers in a given component
-            final Consumer<Component> resetLocationsInComponent = (component) -> {
-                // Check if we already balanced this component
-                if(!missingComponents.contains(component)) return;
+                // List to iterate through the components
+                final List<SubComponent> subComponentsToCheck = new ArrayList<>();
 
-                // Set the identifier for the initial location
-                component.getInitialLocation().resetId();
+                // Consumer to reset the location identifier
+                final Consumer<Location> resetLocation = (location -> {
+                    previousIdentifiers.put(location, location.getId());
+                    location.resetId();
+                });
 
-                // Set the identifiers for the rest of the locations
-                component.getLocations().forEach(Location::resetId);
+                // Consumer to reset the location identifiers in a given component
+                final Consumer<Component> resetLocationsInComponent = (component) -> {
+                    // Check if we already balanced this component
+                    if(!missingComponents.contains(component)) return;
 
-                // Set the identifier for the final location
-                component.getFinalLocation().resetId();
+                    // Set the identifier for the initial location
+                    resetLocation.accept(component.getInitialLocation());
 
-                // We are now finished with this component, remove it from the list and add subcomponents to the checking list
-                missingComponents.remove(component);
-                component.getSubComponents().forEach(subComponentsToCheck::add);
-            };
+                    // Set the identifiers for the rest of the locations
+                    component.getLocations().forEach(resetLocation);
 
-            // Balance the identifiers in the main component
-            resetLocationsInComponent.accept(HUPPAAL.getProject().getMainComponent());
+                    // Set the identifier for the final location
+                    resetLocation.accept(component.getFinalLocation());
 
-            // While we are missing subcomponents, balance them!
-            while(!subComponentsToCheck.isEmpty()) {
-                // Pick the 0th element which we will now check
-                final SubComponent subComponent = subComponentsToCheck.get(0);
+                    // We are now finished with this component, remove it from the list and add subcomponents to the checking list
+                    missingComponents.remove(component);
+                    component.getSubComponents().forEach(subComponentsToCheck::add);
+                };
 
-                // Reset the location identifiers in the given subcomponent's component
-                resetLocationsInComponent.accept(subComponent.getComponent());
+                // Balance the identifiers in the main component
+                resetLocationsInComponent.accept(HUPPAAL.getProject().getMainComponent());
 
-                // Remove the subcomponent from the list
-                subComponentsToCheck.remove(0);
-            }
+                // While we are missing subcomponents, balance them!
+                while(!subComponentsToCheck.isEmpty()) {
+                    // Pick the 0th element which we will now check
+                    final SubComponent subComponent = subComponentsToCheck.get(0);
 
-            // If we still need to balance some component (they might not be used) then do it now
-            while(!missingComponents.isEmpty()) {
-                resetLocationsInComponent.accept(missingComponents.get(0));
-            }
+                    // Reset the location identifiers in the given subcomponent's component
+                    resetLocationsInComponent.accept(subComponent.getComponent());
+
+                    // Remove the subcomponent from the list
+                    subComponentsToCheck.remove(0);
+                }
+
+                // If we still need to balance some component (they might not be used) then do it now
+                while(!missingComponents.isEmpty()) {
+                    resetLocationsInComponent.accept(missingComponents.get(0));
+                }
+            }, () -> { // Undo
+                previousIdentifiers.forEach(Location::setId);
+            }, "Balanced location identifiers", "shuffle");
         });
     }
 
