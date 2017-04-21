@@ -110,6 +110,7 @@ public class HUPPAALController implements Initializable {
     public MenuItem menuBarFileSave;
     public MenuItem menuBarFileOpenProject;
     public MenuItem menuBarHelpHelp;
+    public MenuItem menuBarEditBalance;
 
     public JFXSnackbar snackbar;
     public HBox statusBar;
@@ -422,6 +423,56 @@ public class HUPPAALController implements Initializable {
         });
 
         menuBarHelpHelp.setOnAction(event -> HUPPAAL.showHelp());
+
+        menuBarEditBalance.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
+        menuBarEditBalance.setOnAction(event -> {
+            // Set the counter used to generate the identifiers
+            Location.resetHiddenID();
+
+            // A list of components we have not ordered yet
+            final List<Component> missingComponents = new ArrayList<>();
+            HUPPAAL.getProject().getComponents().forEach(missingComponents::add);
+
+            // List to iterate through the components
+            final List<SubComponent> subComponentsToCheck = new ArrayList<>();
+
+            // Consumer to reset the location identifiers in a given component
+            final Consumer<Component> resetLocationsInComponent = (component) -> {
+                // Check if we already balanced this component
+                if(!missingComponents.contains(component)) return;
+
+                // Set the identifier for the initial location
+                component.getInitialLocation().resetId();
+
+                // Set the identifiers for the rest of the locations
+                component.getLocations().forEach(Location::resetId);
+
+                // Set the identifier for the final location
+                component.getFinalLocation().resetId();
+
+                // We are now finished with this component, remove it from the list and add subcomponents to the checking list
+                missingComponents.remove(component);
+                component.getSubComponents().forEach(subComponentsToCheck::add);
+            };
+
+            // Balance the identifiers in the main component
+            resetLocationsInComponent.accept(HUPPAAL.getProject().getMainComponent());
+
+            // While we are missing subcomponents, balance them!
+            while(!subComponentsToCheck.isEmpty()) {
+                // Pick the 0th element which we will now check
+                final SubComponent subComponent = subComponentsToCheck.get(0);
+
+                // Reset the location identifiers in the given subcomponent's component
+                resetLocationsInComponent.accept(subComponent.getComponent());
+
+                // Remove the subcomponent from the list
+                subComponentsToCheck.remove(0);
+            }
+
+            // If we still need to balance some component (they might not be used) then do it now
+            missingComponents.forEach(resetLocationsInComponent);
+        });
     }
 
     private void initializeMessages() {

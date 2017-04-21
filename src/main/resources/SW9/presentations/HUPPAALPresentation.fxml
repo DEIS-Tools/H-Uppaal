@@ -134,6 +134,14 @@
                     </MenuItem>
                 </Menu>
 
+                <Menu text="Edit">
+                    <MenuItem fx:id="menuBarEditBalance" text="Balance Identifiers">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-shuffle" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                </Menu>
+
                 <Menu text="View">
                     <MenuItem fx:id="menuBarViewFilePanel" text="File Panel">
                         <graphic>

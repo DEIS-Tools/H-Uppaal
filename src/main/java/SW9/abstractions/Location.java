@@ -53,7 +53,7 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
     private final ObjectProperty<Reachability> reachability = new SimpleObjectProperty<>();
 
     public Location() {
-        setId("L" + hiddenID.getAndIncrement());
+        resetId();
         bindReachabilityAnalysis();
     }
 
@@ -66,6 +66,10 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
         hiddenID.incrementAndGet();
         deserialize(jsonObject);
         bindReachabilityAnalysis();
+    }
+
+    public static void resetHiddenID() {
+        hiddenID.set(0);
     }
 
     public String getNickname() {
@@ -86,6 +90,10 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
 
     public void setId(String id) {
         this.id.set(id);
+    }
+
+    public void resetId() {
+        setId("L" + hiddenID.getAndIncrement());
     }
 
     public StringProperty idProperty() {
