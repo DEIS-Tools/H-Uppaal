@@ -8,7 +8,7 @@ By Niklas Kirk Mouritzsen and Rasmus Holm Jensen
 ## Installation
 Before installing H-UPPAAL, make sure that you have Java 8 and JavaFX installed.
 
-1. Download and extract `huppaal.zip` from [one of our releases](https://github.com/feupeu/SW9-Kick-ass-modelchecker/releases).
+1. Download and extract `huppaal.zip` from [one of our releases](./releases/).
 2. *Optional*: Copy server binaries to the `/server/` folder (see [Using the UPPAAL backend](#using-the-uppaal-backend)). 
 3. Run `huppaal.jar` by either double-clicking the file or running `java -jar huppaal.jar`.
 
