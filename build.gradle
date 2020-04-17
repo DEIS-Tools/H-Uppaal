@@ -35,7 +35,6 @@ sourceSets {
 dependencies {
     implementation  fileTree(dir: 'src/libs', include: ['*.jar'])
 
-    implementation  'com.jfoenix:jfoenix:0.0.0-SNAPSHOT'
     implementation  'com.jfoenix:jfoenix:1.0.0'
     implementation  group: 'de.codecentric.centerdevice', name: 'javafxsvg', version: '1.0.0'
     implementation  group: 'com.github.jiconfont', name: 'jiconfont-javafx', version: '1.0.0'
