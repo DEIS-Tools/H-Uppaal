@@ -91,7 +91,7 @@ public class DropDownMenu {
 
     public void show(final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
         //XXX: removed due to api changed
-        popup.show(vAlign, hAlign, initOffsetX, initOffsetY);
+        //popup.show(vAlign, hAlign, initOffsetX, initOffsetY);
     }
 
     public void addListElement(final String s) {
