@@ -304,7 +304,8 @@ public class HUPPAALPresentation extends StackPane {
                         selectableEnabledColorPair.getKey().color(selectableEnabledColorPair.getValue().color, selectableEnabledColorPair.getValue().intensity);
                     });
                 }, String.format("Changed the color of %d elements to %s", previousColor.size(), color.color.name()), "color-lens");
-
+                //XXX: removed due to api changed
+                //popup.close();
                 SelectHelper.clearSelectedElements();
             });
 
@@ -314,6 +315,13 @@ public class HUPPAALPresentation extends StackPane {
         list.setMaxWidth(listWidth);
         list.setStyle("-fx-background-color: white; -fx-padding: 8;");
 
+        //XXX: removed due to api changed
+        /*
+        popup.setContent(list);
+        popup.setPopupContainer(controller.root);
+        popup.setSource(controller.toolbar);
+        */
+        
         controller.colorSelected.setOnMouseClicked((e) -> {
             if (SelectHelper.getSelectedElements().size() == 0) return;
 
@@ -328,7 +336,8 @@ public class HUPPAALPresentation extends StackPane {
                 fromLeft -= controller.filePane.getWidth();
                 System.out.println(controller.filePane.getWidth());
             }
-
+            //XXX removed due to api change
+            //popup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, fromLeft, boundsInScreenButton.getMinY() - boundsInScreenRoot.getMinY());
         });
     }
 
