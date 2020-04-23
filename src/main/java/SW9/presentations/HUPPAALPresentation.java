@@ -301,7 +301,6 @@ public class HUPPAALPresentation extends StackPane {
                     });
                 }, String.format("Changed the color of %d elements to %s", previousColor.size(), color.color.name()), "color-lens");
 
-                popup.close();
                 SelectHelper.clearSelectedElements();
             });
 
@@ -310,10 +309,6 @@ public class HUPPAALPresentation extends StackPane {
         list.setMinWidth(listWidth);
         list.setMaxWidth(listWidth);
         list.setStyle("-fx-background-color: white; -fx-padding: 8;");
-
-        popup.setContent(list);
-        popup.setPopupContainer(controller.root);
-        popup.setSource(controller.toolbar);
 
         controller.colorSelected.setOnMouseClicked((e) -> {
             if (SelectHelper.getSelectedElements().size() == 0) return;
@@ -330,7 +325,6 @@ public class HUPPAALPresentation extends StackPane {
                 System.out.println(controller.filePane.getWidth());
             }
 
-            popup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, fromLeft, boundsInScreenButton.getMinY() - boundsInScreenRoot.getMinY());
         });
     }
 
@@ -565,7 +559,7 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     public void showSnackbarMessage(final String message) {
-        controller.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(message, "", 3000, event -> {
+        controller.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(message, "", 3000, false, event -> {
 
         }));
     }
