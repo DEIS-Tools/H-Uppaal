@@ -8,8 +8,8 @@ plugins {
 mainClassName = 'SW9.HUPPAAL'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = gradle.ext.javaVersion
+    targetCompatibility = gradle.ext.javaVersion
 }
 
 repositories {
@@ -63,11 +63,11 @@ test {
 }
 compileKotlin {
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = gradle.ext.javaVersion
     }
 }
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = gradle.ext.javaVersion
     }
 }
