@@ -1,2 +1,2 @@
 rootProject.name = 'H-UPPAAL'
-gradle.ext.javaVersion = JavaVersion.VERSION_1_8
+gradle.ext.javaVersion = JavaVersion.VERSION_11

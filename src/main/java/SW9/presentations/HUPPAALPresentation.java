@@ -99,12 +99,16 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private void initializeSnackbar() {
+        //XXX: Removed due to Children: duplicate children added: parent
+        /*
         controller.snackbar.registerSnackbarContainer(controller.root);
+
         controller.snackbar.setPrefWidth(568);
         controller.snackbar.autosize();
 
         final StackPane parentFix = (StackPane) controller.root.lookup(".jfx-snackbar-toast").getParent();
         parentFix.setPadding(new Insets(14, 24, 14, 24));
+        */
     }
 
     private void initializeMessageContainer() {
@@ -559,9 +563,10 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     public void showSnackbarMessage(final String message) {
-        controller.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(message, "", 3000, false, event -> {
+        //XXX: removed due to api changed
+        /*controller.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(message, "", 3000, false, event -> {
 
-        }));
+        }));*/
     }
 
     public void showHelp() {
