@@ -251,53 +251,57 @@ public class HUPPAAL extends Application {
     }
 
     public static void initializeProjectFolder() throws IOException {
-        // Make sure that the project directory exists
-        final File directory = new File(projectDirectory.get());
-        FileUtils.forceMkdir(directory);
+        try {
+            // Make sure that the project directory exists
+            final File directory = new File(projectDirectory.get());
+            FileUtils.forceMkdir(directory);
 
-        CodeAnalysis.getErrors().addListener(new ListChangeListener<CodeAnalysis.Message>() {
-            @Override
-            public void onChanged(Change<? extends CodeAnalysis.Message> c) {
-                CodeAnalysis.getErrors().forEach(message -> {
-                    System.out.println(message.getMessage());
-                });
+            CodeAnalysis.getErrors().addListener(new ListChangeListener<CodeAnalysis.Message>() {
+                @Override
+                public void onChanged(Change<? extends CodeAnalysis.Message> c) {
+                    CodeAnalysis.getErrors().forEach(message -> {
+                        System.out.println(message.getMessage());
+                    });
+                }
+            });
+
+            CodeAnalysis.getBackendErrors().removeIf(message -> true);
+            CodeAnalysis.getErrors().removeIf(message -> true);
+            CodeAnalysis.getWarnings().removeIf(message -> true);
+            CodeAnalysis.disable();
+            HUPPAAL.getProject().getQueries().removeIf(query -> true);
+            HUPPAAL.getProject().getComponents().removeIf(component -> true);
+            HUPPAAL.getProject().setMainComponent(null);
+
+            // Deserialize the project
+            deserializeProject(directory);
+            CodeAnalysis.enable();
+
+            // Generate all component presentations by making them the active component in the view one by one
+            Component initialShownComponent = null;
+            for (final Component component : HUPPAAL.getProject().getComponents()) {
+                // The first component should be shown if there is no main
+                if (initialShownComponent == null) {
+                    initialShownComponent = component;
+                }
+
+                // If the component is the main show that one
+                if (component.isIsMain()) {
+                    initialShownComponent = component;
+                }
+
+                CanvasController.setActiveComponent(component);
             }
-        });
 
-        CodeAnalysis.getBackendErrors().removeIf(message -> true);
-        CodeAnalysis.getErrors().removeIf(message -> true);
-        CodeAnalysis.getWarnings().removeIf(message -> true);
-        CodeAnalysis.disable();
-        HUPPAAL.getProject().getQueries().removeIf(query -> true);
-        HUPPAAL.getProject().getComponents().removeIf(component -> true);
-        HUPPAAL.getProject().setMainComponent(null);
-
-        // Deserialize the project
-        deserializeProject(directory);
-        CodeAnalysis.enable();
-
-        // Generate all component presentations by making them the active component in the view one by one
-        Component initialShownComponent = null;
-        for (final Component component : HUPPAAL.getProject().getComponents()) {
-            // The first component should be shown if there is no main
-            if (initialShownComponent == null) {
-                initialShownComponent = component;
+            // If we found a component (preferably main) set that as active
+            if (initialShownComponent != null) {
+                CanvasController.setActiveComponent(initialShownComponent);
             }
 
-            // If the component is the main show that one
-            if (component.isIsMain()) {
-                initialShownComponent = component;
-            }
-
-            CanvasController.setActiveComponent(component);
+            serializationDone = true;
+        }catch (Exception e) {
+            e.printStackTrace();
         }
-
-        // If we found a component (preferably main) set that as active
-        if (initialShownComponent != null) {
-            CanvasController.setActiveComponent(initialShownComponent);
-        }
-
-        serializationDone = true;
     }
 
     private static void deserializeProject(final File projectFolder) throws IOException {

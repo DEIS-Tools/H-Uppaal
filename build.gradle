@@ -3,13 +3,17 @@ plugins {
     id 'java'
     id 'application'
     id 'org.jetbrains.kotlin.jvm' version '1.3.71'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
 mainClassName = 'SW9.HUPPAAL'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = gradle.ext.javaVersion
+    targetCompatibility = gradle.ext.javaVersion
+}
+javafx {
+    version = "11"
 }
 
 repositories {
@@ -35,7 +39,7 @@ sourceSets {
 dependencies {
     implementation  fileTree(dir: 'src/libs', include: ['*.jar'])
 
-    implementation  'com.jfoenix:jfoenix:1.1.0'
+    implementation  'com.jfoenix:jfoenix:9.0.9'
     implementation  group: 'de.codecentric.centerdevice', name: 'javafxsvg', version: '1.0.0'
     implementation  group: 'com.github.jiconfont', name: 'jiconfont-javafx', version: '1.0.0'
     implementation  group: 'com.github.jiconfont', name: 'jiconfont-google_material_design_icons', version: '2.2.0.1'
@@ -63,11 +67,11 @@ test {
 }
 compileKotlin {
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = gradle.ext.javaVersion
     }
 }
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = gradle.ext.javaVersion
     }
 }
