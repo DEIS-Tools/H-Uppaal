@@ -19,6 +19,13 @@ If you are using Linux, you may install JavaFX with the following command:
 $ sudo apt-get install openjfx
 ```
 
+For an out of the box solution, use Oracle's [JDK 8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) (this comes prepackaged with JavaFX)
+
+If you experience a blank white screen in H-UPPAAL, disable hardware acceleration in the VM-options ([source](https://www.reddit.com/r/javahelp/comments/84w6i6/problem_displaying_anything_with_javafx_only/))
+```
+-Dprism.order=sw
+```
+
 ## Using the UPPAAL backend
 When running the program, please make sure that you have the following folder structure (relative to the `huppaal.jar`-file). Feel free to only include binary-files for you operating system that you are using, e.g. `bin-Win32`. These binaries are found in the UPPAAL distibution and can simply be copied over to the `huppaal.jar` location.
 
