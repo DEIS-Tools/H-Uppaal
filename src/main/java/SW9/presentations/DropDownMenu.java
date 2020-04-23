@@ -76,14 +76,22 @@ public class DropDownMenu {
         list.setOnMouseExited(event -> isHoveringMenu.set(false));
         list.setOnMouseEntered(event -> isHoveringMenu.set(true));
 
+        //XXX: removed due to api changed
+        /*
+        popup.setContent(content);
+        popup.setPopupContainer(container);
+        popup.setSource(source);
+        */
     }
 
     public void close() {
-
+        //XXX: removed due to api changed
+        //popup.close();
     }
 
     public void show(final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
-
+        //XXX: removed due to api changed
+        popup.show(vAlign, hAlign, initOffsetX, initOffsetY);
     }
 
     public void addListElement(final String s) {
