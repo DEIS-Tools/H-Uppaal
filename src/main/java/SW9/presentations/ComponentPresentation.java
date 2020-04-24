@@ -28,9 +28,6 @@ import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.shape.*;
-import org.fxmisc.richtext.StyleSpans;
-import org.fxmisc.richtext.StyleSpansBuilder;
-import org.reactfx.util.TriConsumer;
 
 import java.io.IOException;
 import java.net.URL;
@@ -124,7 +121,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             });
 
             controller.declaration.textProperty().addListener((obs, oldText, newText) -> {
-                controller.declaration.setStyleSpans(0, computeHighlighting(newText));
+                //XXX: removed due to api change
+                //controller.declaration.setStyleSpans(0, computeHighlighting(newText));
             });
 
         } catch (final IOException ioe) {
@@ -241,6 +239,8 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         disappearAnimation.play();
     }
 
+    //XXX: removed due to api change
+    /*
     public static StyleSpans<Collection<String>> computeHighlighting(final String text) {
         final Matcher matcher = UPPAAL.matcher(text);
         int lastKwEnd = 0;
@@ -262,7 +262,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
 
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
-    }
+    }*/
 
     private void initializeDragAnchors() {
         final Component component = controller.getComponent();
