@@ -61,7 +61,7 @@ dependencies {
             'org.junit.vintage:junit-vintage-engine:5.4.2'
     )
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk11"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 test {
     useJUnitPlatform()
