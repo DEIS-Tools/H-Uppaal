@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.*?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.*?>
+<?import dk.cs.aau.huppaal.presentations.TagPresentation?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         type="Group"
+         fx:controller="dk.cs.aau.huppaal.controllers.LocationController"
+         fx:id="root"
+         onMouseEntered="#locationEntered"
+         onMouseExited="#locationExited">
+
+    <Group>
+        <!-- This circle makes the dropdown menu crisp -->
+        <Circle radius="20" mouseTransparent="true" opacity="0"/>
+
+        <Line fx:id="nameTagLine" strokeDashOffset="2" strokeDashArray="3,3" stroke="#666" mouseTransparent="true"/>
+        <TagPresentation fx:id="nicknameTag" translateX="30" translateY="-10"/>
+
+        <Line fx:id="invariantTagLine" strokeDashOffset="2" strokeDashArray="3,3" stroke="#666"
+              mouseTransparent="true"/>
+        <TagPresentation fx:id="invariantTag" translateX="30" translateY="10"/>
+    </Group>
+
+    <Group fx:id="scaleContent"
+           onMouseEntered="#mouseEntered"
+           onMouseExited="#mouseExited">
+
+        <Circle fx:id="reachabilityStatus" strokeType="OUTSIDE"/>
+
+        <!-- Circular locationAware -->
+        <Circle fx:id="circle" strokeType="INSIDE" opacity="0"/>
+        <Circle fx:id="circleShakeIndicator" radius="10" mouseTransparent="true" fill="white" opacity="0"/>
+
+        <!-- The transformable locationAware shape -->
+        <Path fx:id="notCommittedShape" strokeType="INSIDE"/>
+        <Rectangle fx:id="committedShape" strokeType="INSIDE"/>
+
+        <Group fx:id="shakeContent">
+            <StackPane fx:id="finalIndicator" mouseTransparent="true" translateX="-8" translateY="-8">
+                <Line style="-fx-stroke: white;" startX="8" startY="-8" endX="-8" endY="8"/>
+                <Line style="-fx-stroke: white;" startX="-8" startY="-8" endX="8" endY="8"/>
+            </StackPane>
+
+            <!-- The initial indicator -->
+            <Path fx:id="notCommittedInitialIndicator" strokeType="INSIDE" style="-fx-stroke: -white; -fx-fill: transparent;" mouseTransparent="true"/>
+            <Rectangle fx:id="committedInitialIndicator" strokeType="INSIDE" style="-fx-stroke: -white; -fx-fill: transparent;" mouseTransparent="true"/>
+
+            <Label fx:id="idLabel" styleClass="sub-caption" mouseTransparent="true"/>
+        </Group>
+
+    </Group>
+
+</fx:root>

@@ -1,1 +1,1 @@
-public class HUPPAAL extends SW9.HUPPAAL { }
+public class HUPPAAL extends dk.cs.aau.huppaal.HUPPAAL { }
