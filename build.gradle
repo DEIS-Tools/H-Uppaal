@@ -38,7 +38,7 @@ sourceSets {
 
 
 dependencies {
-    implementation  fileTree(dir: 'src/libs', include: ['*.jar'])
+    implementation  fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation  'com.jfoenix:jfoenix:9.0.9'
     implementation  group: 'de.codecentric.centerdevice', name: 'javafxsvg', version: '1.0.0'
