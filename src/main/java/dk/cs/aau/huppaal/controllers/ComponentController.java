@@ -755,7 +755,8 @@ public class ComponentController implements Initializable {
 
     private void initializeDeclarations() {
         // Initially style the declarations
-        declaration.setStyleSpans(0, ComponentPresentation.computeHighlighting(getComponent().getDeclarations()));
+        //XXX: removed due to api change
+        //declaration.setStyleSpans(0, ComponentPresentation.computeHighlighting(getComponent().getDeclarations()));
 
         final Circle circle = new Circle(0);
         if(getComponent().isDeclarationOpen()) {
