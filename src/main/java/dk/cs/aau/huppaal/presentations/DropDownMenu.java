@@ -41,9 +41,11 @@ public class DropDownMenu {
     private final SimpleBooleanProperty showSubMenu = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty canIShowSubMenu = new SimpleBooleanProperty(false);
     private StackPane subMenuContent;
+    private Node source;
 
     public DropDownMenu(final Pane container, final Node source, final int width, final boolean closeOnMouseExit) {
         this.width = width;
+        this.source = source;
 
         popup = new JFXPopup();
 
@@ -76,22 +78,20 @@ public class DropDownMenu {
         list.setOnMouseExited(event -> isHoveringMenu.set(false));
         list.setOnMouseEntered(event -> isHoveringMenu.set(true));
 
-        //XXX: removed due to api changed
-        /*
-        popup.setContent(content);
-        popup.setPopupContainer(container);
-        popup.setSource(source);
-        */
+        //XXX: removed due to api changed Todo
+        popup.setPopupContent(content);
+        //popup.getScene().setRoot(content);
+        //popup.setSource(source);
     }
 
     public void close() {
-        //XXX: removed due to api changed
-        //popup.close();
+        //XXX: removed due to api changed Todo
+        popup.hide();
     }
 
     public void show(final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
-        //XXX: removed due to api changed
-        //popup.show(vAlign, hAlign, initOffsetX, initOffsetY);
+        //XXX: removed due to api changed Todo
+        popup.show(this.source, vAlign, hAlign, initOffsetX, initOffsetY);
     }
 
     public void addListElement(final String s) {
