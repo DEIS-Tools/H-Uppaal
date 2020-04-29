@@ -61,9 +61,9 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
     private static final String uppaalKeywords = "clock|chan|urgent|broadcast";
     private static final String cKeywords = "auto|bool|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while";
     private static final Pattern UPPAAL = Pattern.compile(""
-            + "(" + uppaalKeywords + ")"
-            + "|(" + cKeywords + ")"
-            + "|(//.*|(\"(?:\\\\[^\"]|\\\\\"|.)*?\")|(?s)/\\*.*?\\*/)");
+            + "(?<uppaalKeywords>" + uppaalKeywords + ")"
+            + "|(?<cKeuwords>" + cKeywords + ")"
+            + "|(?<comment>//.*|(\"(?:\\\\[^\"]|\\\\\"|.)*?\")|(?s)/\\*.*?\\*/)");
 
     private final ComponentController controller;
     private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
@@ -131,22 +131,6 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }
-    }
-
-    private StyleSpans<Collection<String>> computeHighlighting(String text) {
-        Matcher matcher = UPPAAL.matcher(text);
-        int lastKwEnd = 0;
-        StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
-        while(matcher.find()) {
-            String styleClass = matcher.group("uppaalKeywords") != null ? "uppaalKeywords" : null; /* never happens */ assert styleClass != null;
-            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
-            spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
-            lastKwEnd = matcher.end();
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, styleClass, ButtonType.CLOSE);
-            alert.showAndWait();
-        }
-        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-        return spansBuilder.create();
     }
 
     private void initializeLocationTypeIndicatorArrows() {
@@ -258,8 +242,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         disappearAnimation.play();
     }
 
-    //XXX: removed due to api change
-    /*
+    //XXX: removed due to api change todo
     public static StyleSpans<Collection<String>> computeHighlighting(final String text) {
         final Matcher matcher = UPPAAL.matcher(text);
         int lastKwEnd = 0;
@@ -281,7 +264,7 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
 
         spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
         return spansBuilder.create();
-    }*/
+    }
 
     private void initializeDragAnchors() {
         final Component component = controller.getComponent();
