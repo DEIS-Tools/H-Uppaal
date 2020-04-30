@@ -102,15 +102,14 @@ public class HUPPAALPresentation extends StackPane {
 
     private void initializeSnackbar() {
         //XXX: Removed due to Children: duplicate children added: parent Todo
-        /*
-        controller.snackbar.registerSnackbarContainer(controller.root);
-
+        /*controller.snackbar.registerSnackbarContainer(controller.root);
         controller.snackbar.setPrefWidth(568);
         controller.snackbar.autosize();
-
         final StackPane parentFix = (StackPane) controller.root.lookup(".jfx-snackbar-toast").getParent();
-        parentFix.setPadding(new Insets(14, 24, 14, 24));
-        */
+        parentFix.setPadding(new Insets(14, 24, 14, 24));*/
+        controller.snackbar = new JFXSnackbar(controller.root);
+        controller.snackbar.setPrefWidth(568);
+        controller.snackbar.autosize();
     }
 
     private void initializeMessageContainer() {
