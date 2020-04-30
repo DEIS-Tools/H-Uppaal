@@ -1,5 +1,6 @@
 package dk.cs.aau.huppaal.presentations;
 
+import com.jfoenix.controls.JFXSnackbar;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Query;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
@@ -22,10 +23,12 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
@@ -304,7 +307,8 @@ public class HUPPAALPresentation extends StackPane {
                     });
                 }, String.format("Changed the color of %d elements to %s", previousColor.size(), color.color.name()), "color-lens");
                 //XXX: removed due to api changed Todo
-                //popup.close();
+                popup.hide();
+
                 SelectHelper.clearSelectedElements();
             });
 
@@ -320,6 +324,7 @@ public class HUPPAALPresentation extends StackPane {
         popup.setPopupContainer(controller.root);
         popup.setSource(controller.toolbar);
         */
+        popup.setPopupContent(list);
         
         controller.colorSelected.setOnMouseClicked((e) -> {
             if (SelectHelper.getSelectedElements().size() == 0) return;
@@ -337,6 +342,7 @@ public class HUPPAALPresentation extends StackPane {
             }
             //XXX removed due to api change Todo
             //popup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, fromLeft, boundsInScreenButton.getMinY() - boundsInScreenRoot.getMinY());
+            popup.show(this, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, fromLeft, boundsInScreenButton.getMinY() - boundsInScreenRoot.getMinY());
         });
     }
 
@@ -575,6 +581,8 @@ public class HUPPAALPresentation extends StackPane {
         /*controller.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(message, "", 3000, false, event -> {
 
         }));*/
+        Text content = new Text(message);
+        controller.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(content, new Duration(3000)));
     }
 
     public void showHelp() {
