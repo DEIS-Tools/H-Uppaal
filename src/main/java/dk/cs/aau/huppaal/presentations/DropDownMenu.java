@@ -63,7 +63,7 @@ public class DropDownMenu {
                 if (!isHoveringMenu.get() && !isHoveringSubMenu.get()) {
                     final Timer timer = new Timer(20, arg0 -> {
                         if (!isHoveringMenu.get() && !isHoveringSubMenu.get()) {
-                            close();
+                            this.close();
                         }
                     });
                     timer.setRepeats(false); // Only execute once
@@ -141,9 +141,9 @@ public class DropDownMenu {
 
         // When the rippler is pressed, run the provided consumer.
         rippler.setOnMousePressed(event -> {
-            // If we do not do this, the method below will be called twice
-            if (!(event.getTarget() instanceof StackPane)) return;
-
+            //Removed due to API changes:
+            /* / If we do not do this, the method below will be called twice
+            if (!(event.getTarget() instanceof StackPane)) return;*/
             mouseEventConsumer.accept(event);
         });
 

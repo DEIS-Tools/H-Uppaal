@@ -306,6 +306,7 @@ public class HUPPAALPresentation extends StackPane {
                     });
                 }, String.format("Changed the color of %d elements to %s", previousColor.size(), color.color.name()), "color-lens");
                 //XXX: removed due to api changed Todo
+                //popup.close();
                 popup.hide();
 
                 SelectHelper.clearSelectedElements();
