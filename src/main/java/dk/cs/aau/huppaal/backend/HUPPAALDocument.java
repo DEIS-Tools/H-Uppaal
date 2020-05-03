@@ -71,22 +71,22 @@ public class HUPPAALDocument {
         generateTemplate(mainComponent);
 
         // Generate the system declaration
-        String systemDclString = "system ";
+        StringBuilder systemDclString = new StringBuilder("system ");
 
         // Add the main component process to the system declaration
-        systemDclString += mainComponent.getName();
+        systemDclString.append(mainComponent.getName());
 
         // Append all of the sub component template strings (found in generateTemplate())
         for (final String subComponentTemplate : subComponentTemplates) {
-            systemDclString += ", ";
-            systemDclString += subComponentTemplate;
+            systemDclString.append(", ");
+            systemDclString.append(subComponentTemplate);
         }
 
         // Finish the system declaration
-        systemDclString += ";";
+        systemDclString.append(";");
 
         // Set the system declaration
-        uppaalDocument.setProperty("system", systemDclString);
+        uppaalDocument.setProperty("system", systemDclString.toString());
 
         // Add global broadcast channel used to join currently parallel running sub components
         addToGlobalDeclarations("broadcast chan " + SUBS_DONE_BROADCAST + ";");
