@@ -79,9 +79,9 @@ public class DropDownMenu {
         list.setOnMouseEntered(event -> isHoveringMenu.set(true));
 
         //XXX: removed due to api changed Todo
-        //popup.setContent(content);
-        //popup.getScene().setRoot(content);
-        //popup.setSource(source);
+        /*popup.setContent(content);
+        popup.setPopupContainer(container);
+        popup.setSource(source);*/
         popup.setPopupContent(content);
     }
 
@@ -142,7 +142,7 @@ public class DropDownMenu {
         // When the rippler is pressed, run the provided consumer.
         rippler.setOnMousePressed(event -> {
             //Removed due to API changes:
-            /* / If we do not do this, the method below will be called twice
+            /* //If we do not do this, the method below will be called twice
             if (!(event.getTarget() instanceof StackPane)) return;*/
             mouseEventConsumer.accept(event);
         });
