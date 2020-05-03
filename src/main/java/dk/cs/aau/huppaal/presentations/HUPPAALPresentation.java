@@ -1,6 +1,7 @@
 package dk.cs.aau.huppaal.presentations;
 
 import com.jfoenix.controls.JFXSnackbar;
+import com.jfoenix.controls.JFXSnackbarLayout;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Query;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
@@ -581,7 +582,7 @@ public class HUPPAALPresentation extends StackPane {
         /*controller.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(message, "", 3000, false, event -> {
 
         }));*/
-        Text content = new Text(message);
+        JFXSnackbarLayout content = new JFXSnackbarLayout(message);
         controller.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(content, new Duration(3000)));
     }
 
