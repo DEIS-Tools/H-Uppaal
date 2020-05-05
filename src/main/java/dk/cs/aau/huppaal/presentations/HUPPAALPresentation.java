@@ -335,7 +335,7 @@ public class HUPPAALPresentation extends StackPane {
 
             double fromLeft = 0;
             fromLeft = boundsInScreenButton.getMinX() - boundsInScreenRoot.getMinX();
-            fromLeft -= listWidth;
+            fromLeft -= listWidth/2;
             fromLeft += boundsInScreenButton.getWidth();
             if (!filePaneOpen.get()) {
                 fromLeft -= controller.filePane.getWidth();
@@ -343,7 +343,7 @@ public class HUPPAALPresentation extends StackPane {
             }
             //XXX removed due to api change Todo
             //popup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, fromLeft, boundsInScreenButton.getMinY() - boundsInScreenRoot.getMinY());
-            popup.show(this, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, fromLeft, boundsInScreenButton.getMinY() - boundsInScreenRoot.getMinY());
+            popup.show(this, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, fromLeft, boundsInScreenButton.getMinY() - boundsInScreenRoot.getMinY() + 30);
         });
     }
 

@@ -459,35 +459,38 @@ public class ComponentController implements Initializable {
                 }, "Added join '" + newJork.toString() + "' to component '" + component.getName() + "'", "add-circle");
             });
 
-            final DropDownMenu subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
-            HUPPAAL.getProject().getComponents().forEach(c -> {
-                if (!c.equals(component)) {
-                    subMenu.addClickableListElement(c.getName(), event -> {
-                        contextMenu.close();
+            //If-statement added to avoid empty submenu being added and appearing as a white box
+            if(HUPPAAL.getProject().getComponents().size() > 1){
+                final DropDownMenu subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
+                HUPPAAL.getProject().getComponents().forEach(c -> {
+                    if (!c.equals(component)) {
+                        subMenu.addClickableListElement(c.getName(), event -> {
+                            contextMenu.close();
 
-                        final SubComponent newSubComponent = new SubComponent(c);
+                            final SubComponent newSubComponent = new SubComponent(c);
 
-                        double x = DropDownMenu.x - GRID_SIZE * 2;
-                        x -= x % GRID_SIZE;
-                        newSubComponent.setX(x);
+                            double x = DropDownMenu.x - GRID_SIZE * 2;
+                            x -= x % GRID_SIZE;
+                            newSubComponent.setX(x);
 
-                        double y = DropDownMenu.y - GRID_SIZE * 2;
-                        y -= y % GRID_SIZE;
-                        newSubComponent.setY(y);
+                            double y = DropDownMenu.y - GRID_SIZE * 2;
+                            y -= y % GRID_SIZE;
+                            newSubComponent.setY(y);
 
-                        // Add a new sub-component
-                        UndoRedoStack.push(() -> { // Perform
-                            component.addSubComponent(newSubComponent);
-                        }, () -> { // Undo
-                            component.removeSubComponent(newSubComponent);
-                        }, "Added sub-component '" + newSubComponent.toString() + "' to component '" + component.getName() + "'", "add-circle");
-                    });
-                }
-            });
+                            // Add a new sub-component
+                            UndoRedoStack.push(() -> { // Perform
+                                component.addSubComponent(newSubComponent);
+                            }, () -> { // Undo
+                                component.removeSubComponent(newSubComponent);
+                            }, "Added sub-component '" + newSubComponent.toString() + "' to component '" + component.getName() + "'", "add-circle");
+                        });
+                    }
+                });
 
-            contextMenu.addSubMenu("Add Subcomponent", subMenu, 3 * 35);
+                contextMenu.addSubMenu("Add Subcomponent", subMenu, 3 * 35);
 
-            contextMenu.addSpacerElement();
+                contextMenu.addSpacerElement();
+            }
 
             contextMenu.addClickableListElement("Contains deadlock?", event -> {
                 contextMenu.close();
