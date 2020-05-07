@@ -124,7 +124,6 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
             });
 
             controller.declaration.textProperty().addListener((obs, oldText, newText) -> {
-                //Added after API changes
                 controller.declaration.setStyleSpans(0, computeHighlighting(newText));
             });
 
@@ -242,7 +241,6 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
         disappearAnimation.play();
     }
 
-    //Added after API changes
     public static StyleSpans<Collection<String>> computeHighlighting(final String text) {
         final Matcher matcher = UPPAAL.matcher(text);
         int lastKwEnd = 0;
