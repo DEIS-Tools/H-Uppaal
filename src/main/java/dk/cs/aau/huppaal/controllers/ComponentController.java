@@ -488,8 +488,6 @@ public class ComponentController implements Initializable {
                 });
 
                 contextMenu.addSubMenu("Add Subcomponent", subMenu, 3 * 35);
-
-                contextMenu.addSpacerElement();
             } else {
                 contextMenu.addClickableAndDisableableListElement("Add Subcomponent", new SimpleBooleanProperty(true), event -> {});
             }

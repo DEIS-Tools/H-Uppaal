@@ -57,6 +57,8 @@ public class DropDownMenu {
         content = new StackPane(list);
         content.setMinWidth(width);
         content.setMaxWidth(width);
+        content.setMinHeight(1);
+        content.setMaxHeight(1);
 
         if (closeOnMouseExit) {
             final Runnable checkIfWeShouldClose = () -> {
