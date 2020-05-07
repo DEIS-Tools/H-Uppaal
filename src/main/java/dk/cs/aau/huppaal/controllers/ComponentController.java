@@ -490,7 +490,11 @@ public class ComponentController implements Initializable {
                 contextMenu.addSubMenu("Add Subcomponent", subMenu, 3 * 35);
 
                 contextMenu.addSpacerElement();
+            } else {
+                contextMenu.addClickableAndDisableableListElement("Add Subcomponent", new SimpleBooleanProperty(true), event -> {});
             }
+
+            contextMenu.addSpacerElement();
 
             contextMenu.addClickableListElement("Contains deadlock?", event -> {
                 contextMenu.close();
@@ -758,7 +762,6 @@ public class ComponentController implements Initializable {
 
     private void initializeDeclarations() {
         // Initially style the declarations
-        //XXX: removed due to api change
         declaration.setStyleSpans(0, ComponentPresentation.computeHighlighting(getComponent().getDeclarations()));
 
         final Circle circle = new Circle(0);

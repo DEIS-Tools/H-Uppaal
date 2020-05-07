@@ -102,12 +102,6 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private void initializeSnackbar() {
-        //XXX: Removed due to Children: duplicate children added: parent Todo
-        /*controller.snackbar.registerSnackbarContainer(controller.root);
-        controller.snackbar.setPrefWidth(568);
-        controller.snackbar.autosize();
-        final StackPane parentFix = (StackPane) controller.root.lookup(".jfx-snackbar-toast").getParent();
-        parentFix.setPadding(new Insets(14, 24, 14, 24));*/
         controller.snackbar = new JFXSnackbar(controller.root);
         controller.snackbar.setPrefWidth(568);
         controller.snackbar.autosize();
@@ -306,8 +300,7 @@ public class HUPPAALPresentation extends StackPane {
                         selectableEnabledColorPair.getKey().color(selectableEnabledColorPair.getValue().color, selectableEnabledColorPair.getValue().intensity);
                     });
                 }, String.format("Changed the color of %d elements to %s", previousColor.size(), color.color.name()), "color-lens");
-                //XXX: removed due to api changed Todo
-                //popup.close();
+
                 popup.hide();
 
                 SelectHelper.clearSelectedElements();
@@ -319,12 +312,6 @@ public class HUPPAALPresentation extends StackPane {
         list.setMaxWidth(listWidth);
         list.setStyle("-fx-background-color: white; -fx-padding: 8;");
 
-        //XXX: removed due to api changed Todo
-        /*
-        popup.setContent(list);
-        popup.setPopupContainer(controller.root);
-        popup.setSource(controller.toolbar);
-        */
         popup.setPopupContent(list);
         
         controller.colorSelected.setOnMouseClicked((e) -> {
@@ -341,8 +328,6 @@ public class HUPPAALPresentation extends StackPane {
                 fromLeft -= controller.filePane.getWidth();
                 System.out.println(controller.filePane.getWidth());
             }
-            //XXX removed due to api change Todo
-            //popup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, fromLeft, boundsInScreenButton.getMinY() - boundsInScreenRoot.getMinY());
             popup.show(this, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, fromLeft, boundsInScreenButton.getMinY() - boundsInScreenRoot.getMinY() + 30);
         });
     }
@@ -578,10 +563,6 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     public void showSnackbarMessage(final String message) {
-        //XXX: removed due to api changed Todo
-        /*controller.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(message, "", 3000, false, event -> {
-
-        }));*/
         JFXSnackbarLayout content = new JFXSnackbarLayout(message);
         controller.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(content, new Duration(3000)));
     }

@@ -78,22 +78,14 @@ public class DropDownMenu {
         list.setOnMouseExited(event -> isHoveringMenu.set(false));
         list.setOnMouseEntered(event -> isHoveringMenu.set(true));
 
-        //XXX: removed due to api changed Todo
-        /*popup.setContent(content);
-        popup.setPopupContainer(container);
-        popup.setSource(source);*/
         popup.setPopupContent(content);
     }
 
     public void close() {
-        //XXX: removed due to api changed Todo
-        //popup.close()
         popup.hide();
     }
 
     public void show(final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
-        //XXX: removed due to api changed Todo
-        //popup.show(vAlign, hAlign, initOffsetX, initOffsetY);
         popup.show(this.source, vAlign, hAlign, initOffsetX, initOffsetY);
     }
 
@@ -140,12 +132,7 @@ public class DropDownMenu {
         });
 
         // When the rippler is pressed, run the provided consumer.
-        rippler.setOnMousePressed(event -> {
-            //Removed due to API changes:
-            /* //If we do not do this, the method below will be called twice
-            if (!(event.getTarget() instanceof StackPane)) return;*/
-            mouseEventConsumer.accept(event);
-        });
+        rippler.setOnMousePressed(mouseEventConsumer::accept);
 
         list.getChildren().add(rippler);
     }
