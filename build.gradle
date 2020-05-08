@@ -6,7 +6,7 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
-mainClassName = 'SW9.HUPPAAL'
+mainClassName = 'HUPPAAL'
 
 java {
     sourceCompatibility = gradle.ext.javaVersion
@@ -14,6 +14,7 @@ java {
 }
 javafx {
     version = "11"
+    modules = ['javafx.controls', 'javafx.fxml']
 }
 
 repositories {
@@ -37,7 +38,7 @@ sourceSets {
 
 
 dependencies {
-    implementation  fileTree(dir: 'src/libs', include: ['*.jar'])
+    implementation  fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation  'com.jfoenix:jfoenix:9.0.9'
     implementation  group: 'de.codecentric.centerdevice', name: 'javafxsvg', version: '1.0.0'
@@ -49,7 +50,7 @@ dependencies {
     implementation  'com.google.code.gson:gson:2.8.0'
     implementation  group: 'com.google.guava', name: 'guava', version: 'r05'
     implementation  'org.hildan.fxgson:fx-gson:2.0.0'
-    implementation  group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6.10'
+    implementation  group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.10.5'
 
     //Junit
     testImplementation(

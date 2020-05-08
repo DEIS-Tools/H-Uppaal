@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Text?>
+<?import org.kordamp.ikonli.javafx.*?>
+<?import dk.cs.aau.huppaal.presentations.*?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         type="StackPane"
+         fx:id="root"
+         fx:controller="dk.cs.aau.huppaal.controllers.HUPPAALController">
+
+    <!-- Actual content of the view -->
+    <BorderPane>
+
+        <center>
+            <StackPane>
+                <CanvasPresentation fx:id="canvas"/>
+
+                <StackPane fx:id="toolbar"
+                           StackPane.alignment="TOP_CENTER"
+                           minHeight="56" maxHeight="56">
+
+                    <HBox style="-fx-padding: 0 16 0 16;">
+
+                        <!-- LOGO -->
+                        <StackPane>
+                            <StackPane minWidth="40" minHeight="40">
+                                <ImageView fx:id="logo"/>
+                            </StackPane>
+                        </StackPane>
+
+                        <Region minWidth="16"/>
+                        <StackPane>
+                            <Rectangle width="1" height="32" fill="black" opacity="0.2"/>
+                        </StackPane>
+                        <Region minWidth="16"/>
+
+                        <!-- UNDO -->
+                        <JFXRippler fx:id="undo">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#undoClicked">
+                                <FontIcon iconLiteral="gmi-undo" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region minWidth="8"/>
+
+                        <!-- REDO -->
+                        <JFXRippler fx:id="redo">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#redoClicked">
+                                <FontIcon iconLiteral="gmi-redo" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region HBox.hgrow="ALWAYS" />
+
+                        <!-- DELETE SELECTED -->
+                        <JFXRippler fx:id="deleteSelected">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#deleteSelectedClicked">
+                                <FontIcon iconLiteral="gmi-delete" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region minWidth="8"/>
+
+                        <!-- COLOR SELECTED -->
+                        <JFXRippler fx:id="colorSelected">
+                            <StackPane minWidth="40" minHeight="40">
+                                <FontIcon iconLiteral="gmi-color-lens" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region minWidth="16"/>
+                        <StackPane>
+                            <Rectangle width="1" height="32" fill="black" opacity="0.2"/>
+                        </StackPane>
+                        <Region minWidth="16"/>
+
+                        <!-- GENERATE UPPAAL MODEL FOR PROJECT -->
+                        <JFXRippler fx:id="generateUppaalModel">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#generateUppaalModelClicked">
+                                <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+                    </HBox>
+
+                </StackPane>
+
+                <QueryPanePresentation
+                        fx:id="queryPane"
+                        StackPane.alignment="TOP_RIGHT"
+                        maxWidth="400"/>
+
+                <ProjectPanePresentation
+                        fx:id="filePane"
+                        StackPane.alignment="TOP_LEFT"
+                        maxWidth="300"/>
+            </StackPane>
+        </center>
+
+        <!-- Query pane -->
+        <right>
+            <Label fx:id="queryPaneFillerElement"/>
+        </right>
+
+        <!-- File pane -->
+        <left>
+            <Label fx:id="filePaneFillerElement"/>
+        </left>
+
+        <!-- Message container -->
+        <bottom>
+            <Rectangle fx:id="bottomFillerElement"/>
+        </bottom>
+
+        <top>
+            <!-- Menu bar for "file" etc (only visible on windows) -->
+            <MenuBar fx:id="menuBar">
+
+                <Menu text="File">
+                    <MenuItem fx:id="menuBarFileSave" text="Save Project">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-save" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                    <MenuItem fx:id="menuBarFileOpenProject" text="Open Project">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-folder-open" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                </Menu>
+
+                <Menu text="Edit">
+                    <MenuItem fx:id="menuBarEditBalance" text="Balance Identifiers">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-shuffle" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                </Menu>
+
+                <Menu text="View">
+                    <MenuItem fx:id="menuBarViewFilePanel" text="File Panel">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-check" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                    <MenuItem fx:id="menuBarViewQueryPanel" text="Query Panel">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-check" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                </Menu>
+
+                <Menu text="Help">
+                    <MenuItem fx:id="menuBarHelpHelp" text="Help">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-help" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                </Menu>
+
+            </MenuBar>
+        </top>
+
+    </BorderPane>
+
+    <!-- Message container -->
+    <StackPane fx:id="tabPaneContainer" maxHeight="35"
+               StackPane.alignment="BOTTOM_CENTER"
+               style="-fx-padding: 0 0 20 0">
+        <JFXTabPane fx:id="tabPane" style="-fx-background-color: -grey-200;">
+
+            <Tab fx:id="backendErrorsTab" text="Backend Errors">
+                <ScrollPane fx:id="backendErrorsScrollPane"
+                            fitToHeight="true" fitToWidth="true"
+                            styleClass="edge-to-edge">
+                    <VBox fx:id="backendErrorsList" style="-fx-padding: 10"/>
+                </ScrollPane>
+            </Tab>
+
+            <Tab fx:id="errorsTab" text="Errors">
+                <ScrollPane fx:id="errorsScrollPane"
+                            fitToHeight="true" fitToWidth="true"
+                            styleClass="edge-to-edge">
+                    <VBox fx:id="errorsList" style="-fx-padding: 10"/>
+                </ScrollPane>
+            </Tab>
+
+            <Tab fx:id="warningsTab" text="Warnings">
+                <ScrollPane fx:id="warningsScrollPane"
+                            fitToHeight="true" fitToWidth="true"
+                            styleClass="edge-to-edge">
+                    <VBox fx:id="warningsList" style="-fx-padding: 10"/>
+                </ScrollPane>
+            </Tab>
+
+        </JFXTabPane>
+
+        <HBox maxHeight="35" StackPane.alignment="TOP_CENTER" pickOnBounds="false">
+            <Region HBox.hgrow="ALWAYS" mouseTransparent="true"/>
+
+            <JFXRippler fx:id="collapseMessages">
+                <StackPane minWidth="50" minHeight="35"
+                           onMouseClicked="#collapseMessagesClicked"
+                           StackPane.alignment="TOP_RIGHT">
+
+                    <FontIcon fx:id="collapseMessagesIcon" iconLiteral="gmi-expand-less" iconSize="24" fill="white"/>
+
+                </StackPane>
+            </JFXRippler>
+        </HBox>
+
+        <Rectangle fx:id="tabPaneResizeElement"
+                   onMousePressed="#tabPaneResizeElementPressed"
+                   onMouseDragged="#tabPaneResizeElementDragged"
+                   width="500" height="3"
+                   fill="transparent" StackPane.alignment="TOP_CENTER"/>
+    </StackPane>
+
+    <!-- Status container -->
+    <HBox minHeight="20" maxHeight="20" StackPane.alignment="BOTTOM_CENTER"
+          fx:id="statusBar"
+          style="-fx-padding: 0 10 0 10">
+
+        <StackPane>
+            <Label fx:id="statusLabel" styleClass="sub-caption"/>
+        </StackPane>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <HBox fx:id="queryStatusContainer" opacity="0">
+            <StackPane>
+                <JFXSpinner radius="5"/>
+            </StackPane>
+
+            <Region minWidth="5"/>
+
+            <StackPane>
+                <Label fx:id="queryLabel" styleClass="sub-caption"/>
+            </StackPane>
+        </HBox>
+
+    </HBox>
+
+    <!-- Query Result Dialog -->
+    <StackPane fx:id="queryDialogContainer" style="-fx-background-color: #0000007F;" mouseTransparent="true">
+        <JFXDialog fx:id="queryDialog">
+
+            <VBox>
+
+                <!-- Will scale the dialog -->
+                <Region minWidth="400"/>
+
+                <!-- Content -->
+                <VBox>
+
+                    <VBox style="-fx-padding: 24px;">
+                        <Text text="Query Result" styleClass="title"/>
+
+                        <Region minHeight="20"/>
+
+                        <Text text="Query" styleClass="body2"/>
+                        <Text fx:id="queryTextQuery" text="No query" styleClass="body1"/>
+
+                        <Region minHeight="20"/>
+
+                        <Text text="Result" styleClass="body2"/>
+                        <Text fx:id="queryTextResult" text="No result" styleClass="body1"/>
+
+                    </VBox>
+
+                    <HBox style="-fx-padding: 8px;">
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <JFXButton text="CLOSE" onMouseClicked="#closeDialog"/>
+                    </HBox>
+
+                </VBox>
+
+            </VBox>
+
+        </JFXDialog>
+    </StackPane>
+
+
+    <!-- Dialog -->
+    <StackPane fx:id="dialogContainer" style="-fx-background-color: #0000007F;" visible="false">
+        <JFXDialog fx:id="dialog">
+
+            <VBox>
+
+                <!-- Will scale the dialod -->
+                <Region minWidth="400"/>
+
+                <StackPane fx:id="modalBar" style="-fx-background-color: -blue-grey-800;">
+
+                </StackPane>
+
+                <!-- Content -->
+                <VBox>
+
+                    <VBox style="-fx-padding: 24px;">
+                        <Text text="Help" styleClass="title"/>
+
+                        <Region minHeight="20"/>
+
+                        <HBox>
+                            <LocationPresentation>
+                                <initial>INITIAL</initial>
+                            </LocationPresentation>
+                            <Label styleClass="body1" style="-fx-padding: 9 0 0 5">
+                                This is an initial location (top left in a component)
+                            </Label>
+                        </HBox>
+
+                        <HBox>
+                            <LocationPresentation>
+                                <initial>FINAL</initial>
+                            </LocationPresentation>
+                            <Label styleClass="body1" style="-fx-padding: 9 0 0 5">
+                                This is a final location (bottom right in a component)
+                            </Label>
+                        </HBox>
+
+                        <HBox>
+                            <LocationPresentation>
+                                <initial>URGENT</initial>
+                            </LocationPresentation>
+                            <Label styleClass="body1" style="-fx-padding: 9 0 0 5">
+                                This is an urgent location
+                            </Label>
+                        </HBox>
+
+                        <HBox>
+                            <LocationPresentation>
+                                <initial>COMMITTED</initial>
+                            </LocationPresentation>
+                            <Label styleClass="body1" style="-fx-padding: 9 0 0 5">
+                                This is a committed location
+                            </Label>
+                        </HBox>
+
+                        <Region minHeight="16"/>
+                        <HBox minHeight="1" style="-fx-background-color: #eee;"/>
+                        <Region minHeight="16"/>
+
+                        <HBox>
+                            <Label styleClass="body2">
+                                Shift-click and middle-click:
+                            </Label>
+                            <Region minWidth="8"/>
+                            <Label styleClass="body1">
+                                Adds locations and draws edges
+                            </Label>
+                        </HBox>
+
+                        <Region minHeight="8"/>
+
+                        <HBox>
+                            <Label styleClass="body2">
+                                Right-click:
+                            </Label>
+                            <Region minWidth="8"/>
+                            <Label styleClass="body1">
+                                Opens context menus
+                            </Label>
+                        </HBox>
+
+                        <Region minHeight="16"/>
+                        <HBox minHeight="1" style="-fx-background-color: #eee;"/>
+                        <Region minHeight="16"/>
+
+                        <HBox>
+                            <VBox>
+                                <JorkPresentation>
+                                    <type>FORK</type>
+                                </JorkPresentation>
+                                <Label alignment="BASELINE_CENTER" style="-fx-padding: 6 20 0 20;" styleClass="caption">
+                                    Fork
+                                </Label>
+                            </VBox>
+                            <VBox>
+                                <JorkPresentation>
+                                    <type>JOIN</type>
+                                </JorkPresentation>
+                                <Label alignment="BASELINE_CENTER" style="-fx-padding: 6 20 0 20;" styleClass="caption">
+                                    Join
+                                </Label>
+                            </VBox>
+                            <Label styleClass="body1" style="-fx-padding: 2 0 0 5">
+                                Models parallelization of subcomponents
+                            </Label>
+                        </HBox>
+
+                    </VBox>
+
+                    <HBox style="-fx-padding: 8px;">
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <JFXButton text="CLOSE" onMouseClicked="#closeDialog"/>
+                    </HBox>
+
+                </VBox>
+
+            </VBox>
+
+        </JFXDialog>
+    </StackPane>
+
+    <JFXSnackbar fx:id="snackbar"/>
+
+</fx:root>
