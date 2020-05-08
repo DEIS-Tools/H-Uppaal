@@ -12,6 +12,8 @@ import javafx.beans.property.*;
 
 import java.util.function.Consumer;
 
+import static dk.cs.aau.huppaal.HUPPAAL.showToast;
+
 public class Query implements Serializable {
     private static final String QUERY = "query";
     private static final String COMMENT = "comment";
@@ -135,7 +137,7 @@ public class Query implements Serializable {
             } catch (final Exception e) {
                 e.printStackTrace();
                 setQueryState(QueryState.ERROR);
-                //Todo: handle Fork has an edge to something that s not a subcomponent
+                showToast("Query failed: " + e.getMessage());
             }
         };
     }
