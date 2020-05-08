@@ -459,9 +459,11 @@ public class ComponentController implements Initializable {
                 }, "Added join '" + newJork.toString() + "' to component '" + component.getName() + "'", "add-circle");
             });
 
+            final DropDownMenu subMenu;
+
             //If-statement added to avoid empty submenu being added and appearing as a white box
             if(HUPPAAL.getProject().getComponents().size() > 1){
-                final DropDownMenu subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
+                subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
                 HUPPAAL.getProject().getComponents().forEach(c -> {
                     if (!c.equals(component)) {
                         subMenu.addClickableListElement(c.getName(), event -> {
@@ -487,10 +489,12 @@ public class ComponentController implements Initializable {
                     }
                 });
 
-                contextMenu.addSubMenu("Add Subcomponent", subMenu, 3 * 35);
             } else {
-                contextMenu.addClickableAndDisableableListElement("Add Subcomponent", new SimpleBooleanProperty(true), event -> {});
+                subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
+
+                subMenu.addClickableAndDisableableListElement("No Subcomponents", new SimpleBooleanProperty(true), event -> {});
             }
+            contextMenu.addSubMenu("Add Subcomponent", subMenu, 3 * 35);
 
             contextMenu.addSpacerElement();
 
