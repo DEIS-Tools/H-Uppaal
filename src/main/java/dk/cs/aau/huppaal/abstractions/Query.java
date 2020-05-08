@@ -136,7 +136,7 @@ public class Query implements Serializable {
                 ).start();
             } catch (final Exception e) {
                 setQueryState(QueryState.ERROR);
-                showToast("Query failed: " + e.getMessage());
+                showToast("Query failed: " + e.getMessage()); //Todo: addition
                 e.printStackTrace();
             }
         };

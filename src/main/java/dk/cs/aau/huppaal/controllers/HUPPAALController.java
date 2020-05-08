@@ -669,7 +669,7 @@ public class HUPPAALController implements Initializable {
         final Component mainComponent = HUPPAAL.getProject().getMainComponent();
 
         if (mainComponent == null) {
-            System.out.println("No main component");
+            HUPPAAL.showToast("Cannot generate UPPAAL file without a main component");//Todo: addition
             return; // We cannot generate a UPPAAL file without a main component
         }
 

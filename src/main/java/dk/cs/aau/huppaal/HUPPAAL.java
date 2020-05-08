@@ -87,7 +87,7 @@ public class HUPPAAL extends Application {
             FileUtils.forceMkdir(directory);
             FileUtils.cleanDirectory(directory);
         } catch (final IOException e) {
-            showToast("Save failed: " + e.getMessage());
+            showToast("Save failed: " + e.getMessage()); //Todo: addition
             e.printStackTrace();
         }
 
