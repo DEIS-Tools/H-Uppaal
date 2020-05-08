@@ -135,9 +135,9 @@ public class Query implements Serializable {
                         new QueryListener(this)
                 ).start();
             } catch (final Exception e) {
-                e.printStackTrace();
                 setQueryState(QueryState.ERROR);
                 showToast("Query failed: " + e.getMessage());
+                e.printStackTrace();
             }
         };
     }
