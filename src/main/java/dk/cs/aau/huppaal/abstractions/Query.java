@@ -12,8 +12,6 @@ import javafx.beans.property.*;
 
 import java.util.function.Consumer;
 
-import static dk.cs.aau.huppaal.HUPPAAL.showToast;
-
 public class Query implements Serializable {
     private static final String QUERY = "query";
     private static final String COMMENT = "comment";
@@ -136,7 +134,7 @@ public class Query implements Serializable {
                 ).start();
             } catch (final Exception e) {
                 setQueryState(QueryState.ERROR);
-                showToast("Query failed: " + e.getMessage()); //Todo: addition
+                HUPPAAL.showToast("Query failed: " + e.getMessage()); //Todo: addition
                 e.printStackTrace();
             }
         };
