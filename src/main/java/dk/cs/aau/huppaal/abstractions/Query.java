@@ -134,6 +134,8 @@ public class Query implements Serializable {
                 ).start();
             } catch (final Exception e) {
                 e.printStackTrace();
+                setQueryState(QueryState.ERROR);
+                //Todo: handle Fork has an edge to something that s not a subcomponent
             }
         };
     }
