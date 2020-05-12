@@ -1,5 +1,7 @@
 package dk.cs.aau.huppaal.presentations;
 
+import com.jfoenix.controls.JFXSnackbar;
+import com.jfoenix.controls.JFXSnackbarLayout;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Query;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
@@ -22,10 +24,12 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
@@ -98,16 +102,9 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private void initializeSnackbar() {
-        //XXX: Removed due to Children: duplicate children added: parent
-        /*
-        controller.snackbar.registerSnackbarContainer(controller.root);
-
+        controller.snackbar = new JFXSnackbar(controller.root);
         controller.snackbar.setPrefWidth(568);
         controller.snackbar.autosize();
-
-        final StackPane parentFix = (StackPane) controller.root.lookup(".jfx-snackbar-toast").getParent();
-        parentFix.setPadding(new Insets(14, 24, 14, 24));
-        */
     }
 
     private void initializeMessageContainer() {
@@ -303,8 +300,9 @@ public class HUPPAALPresentation extends StackPane {
                         selectableEnabledColorPair.getKey().color(selectableEnabledColorPair.getValue().color, selectableEnabledColorPair.getValue().intensity);
                     });
                 }, String.format("Changed the color of %d elements to %s", previousColor.size(), color.color.name()), "color-lens");
-                //XXX: removed due to api changed
-                //popup.close();
+
+                popup.hide();
+
                 SelectHelper.clearSelectedElements();
             });
 
@@ -314,12 +312,7 @@ public class HUPPAALPresentation extends StackPane {
         list.setMaxWidth(listWidth);
         list.setStyle("-fx-background-color: white; -fx-padding: 8;");
 
-        //XXX: removed due to api changed
-        /*
-        popup.setContent(list);
-        popup.setPopupContainer(controller.root);
-        popup.setSource(controller.toolbar);
-        */
+        popup.setPopupContent(list);
         
         controller.colorSelected.setOnMouseClicked((e) -> {
             if (SelectHelper.getSelectedElements().size() == 0) return;
@@ -329,14 +322,13 @@ public class HUPPAALPresentation extends StackPane {
 
             double fromLeft = 0;
             fromLeft = boundsInScreenButton.getMinX() - boundsInScreenRoot.getMinX();
-            fromLeft -= listWidth;
+            fromLeft -= listWidth/2;
             fromLeft += boundsInScreenButton.getWidth();
             if (!filePaneOpen.get()) {
                 fromLeft -= controller.filePane.getWidth();
                 System.out.println(controller.filePane.getWidth());
             }
-            //XXX removed due to api change
-            //popup.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, fromLeft, boundsInScreenButton.getMinY() - boundsInScreenRoot.getMinY());
+            popup.show(this, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, fromLeft, boundsInScreenButton.getMinY() - boundsInScreenRoot.getMinY() + 30);
         });
     }
 
@@ -571,10 +563,8 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     public void showSnackbarMessage(final String message) {
-        //XXX: removed due to api changed
-        /*controller.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(message, "", 3000, false, event -> {
-
-        }));*/
+        JFXSnackbarLayout content = new JFXSnackbarLayout(message);
+        controller.snackbar.enqueue(new JFXSnackbar.SnackbarEvent(content, new Duration(3000)));
     }
 
     public void showHelp() {

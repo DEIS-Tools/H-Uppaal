@@ -41,9 +41,11 @@ public class DropDownMenu {
     private final SimpleBooleanProperty showSubMenu = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty canIShowSubMenu = new SimpleBooleanProperty(false);
     private StackPane subMenuContent;
+    private final Node source;
 
     public DropDownMenu(final Pane container, final Node source, final int width, final boolean closeOnMouseExit) {
         this.width = width;
+        this.source = source;
 
         popup = new JFXPopup();
 
@@ -55,13 +57,15 @@ public class DropDownMenu {
         content = new StackPane(list);
         content.setMinWidth(width);
         content.setMaxWidth(width);
+        content.setMinHeight(1);
+        content.setMaxHeight(1);
 
         if (closeOnMouseExit) {
             final Runnable checkIfWeShouldClose = () -> {
                 if (!isHoveringMenu.get() && !isHoveringSubMenu.get()) {
                     final Timer timer = new Timer(20, arg0 -> {
                         if (!isHoveringMenu.get() && !isHoveringSubMenu.get()) {
-                            close();
+                            this.close();
                         }
                     });
                     timer.setRepeats(false); // Only execute once
@@ -76,22 +80,15 @@ public class DropDownMenu {
         list.setOnMouseExited(event -> isHoveringMenu.set(false));
         list.setOnMouseEntered(event -> isHoveringMenu.set(true));
 
-        //XXX: removed due to api changed
-        /*
-        popup.setContent(content);
-        popup.setPopupContainer(container);
-        popup.setSource(source);
-        */
+        popup.setPopupContent(content);
     }
 
     public void close() {
-        //XXX: removed due to api changed
-        //popup.close();
+        popup.hide();
     }
 
     public void show(final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
-        //XXX: removed due to api changed
-        //popup.show(vAlign, hAlign, initOffsetX, initOffsetY);
+        popup.show(this.source, vAlign, hAlign, initOffsetX, initOffsetY);
     }
 
     public void addListElement(final String s) {
@@ -137,12 +134,7 @@ public class DropDownMenu {
         });
 
         // When the rippler is pressed, run the provided consumer.
-        rippler.setOnMousePressed(event -> {
-            // If we do not do this, the method below will be called twice
-            if (!(event.getTarget() instanceof StackPane)) return;
-
-            mouseEventConsumer.accept(event);
-        });
+        rippler.setOnMousePressed(mouseEventConsumer::accept);
 
         list.getChildren().add(rippler);
     }

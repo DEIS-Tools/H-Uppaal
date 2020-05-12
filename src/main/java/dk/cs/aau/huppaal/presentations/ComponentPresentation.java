@@ -23,11 +23,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.shape.*;
-import org.fxmisc.richtext.StyleSpans;
-import org.fxmisc.richtext.StyleSpansBuilder;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 import java.io.IOException;
 import java.net.URL;
@@ -59,9 +61,10 @@ public class ComponentPresentation extends StackPane implements MouseTrackable, 
     private static final String uppaalKeywords = "clock|chan|urgent|broadcast";
     private static final String cKeywords = "auto|bool|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while";
     private static final Pattern UPPAAL = Pattern.compile(""
-            + "(" + uppaalKeywords + ")"
-            + "|(" + cKeywords + ")"
-            + "|(//.*|(\"(?:\\\\[^\"]|\\\\\"|.)*?\")|(?s)/\\*.*?\\*/)");
+            + "(?<uppaalKeywords>" + uppaalKeywords + ")"
+            + "|(?<cKeuwords>" + cKeywords + ")"
+            + "|(?<comment>//.*|(\"(?:\\\\[^\"]|\\\\\"|.)*?\")|(?s)/\\*.*?\\*/)");
+
     private final ComponentController controller;
     private final List<BiConsumer<Color, Color.Intensity>> updateColorDelegates = new ArrayList<>();
     private LocationPresentation initialLocationPresentation = null;

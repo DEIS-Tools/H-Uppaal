@@ -459,32 +459,41 @@ public class ComponentController implements Initializable {
                 }, "Added join '" + newJork.toString() + "' to component '" + component.getName() + "'", "add-circle");
             });
 
-            final DropDownMenu subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
-            HUPPAAL.getProject().getComponents().forEach(c -> {
-                if (!c.equals(component)) {
-                    subMenu.addClickableListElement(c.getName(), event -> {
-                        contextMenu.close();
+            final DropDownMenu subMenu;
 
-                        final SubComponent newSubComponent = new SubComponent(c);
+            //If-statement added to avoid empty submenu being added and appearing as a white box
+            if(HUPPAAL.getProject().getComponents().size() > 1){
+                subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
+                HUPPAAL.getProject().getComponents().forEach(c -> {
+                    if (!c.equals(component)) {
+                        subMenu.addClickableListElement(c.getName(), event -> {
+                            contextMenu.close();
 
-                        double x = DropDownMenu.x - GRID_SIZE * 2;
-                        x -= x % GRID_SIZE;
-                        newSubComponent.setX(x);
+                            final SubComponent newSubComponent = new SubComponent(c);
 
-                        double y = DropDownMenu.y - GRID_SIZE * 2;
-                        y -= y % GRID_SIZE;
-                        newSubComponent.setY(y);
+                            double x = DropDownMenu.x - GRID_SIZE * 2;
+                            x -= x % GRID_SIZE;
+                            newSubComponent.setX(x);
 
-                        // Add a new sub-component
-                        UndoRedoStack.push(() -> { // Perform
-                            component.addSubComponent(newSubComponent);
-                        }, () -> { // Undo
-                            component.removeSubComponent(newSubComponent);
-                        }, "Added sub-component '" + newSubComponent.toString() + "' to component '" + component.getName() + "'", "add-circle");
-                    });
-                }
-            });
+                            double y = DropDownMenu.y - GRID_SIZE * 2;
+                            y -= y % GRID_SIZE;
+                            newSubComponent.setY(y);
 
+                            // Add a new sub-component
+                            UndoRedoStack.push(() -> { // Perform
+                                component.addSubComponent(newSubComponent);
+                            }, () -> { // Undo
+                                component.removeSubComponent(newSubComponent);
+                            }, "Added sub-component '" + newSubComponent.toString() + "' to component '" + component.getName() + "'", "add-circle");
+                        });
+                    }
+                });
+
+            } else {
+                subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
+
+                subMenu.addClickableAndDisableableListElement("No Subcomponents", new SimpleBooleanProperty(true), event -> {});
+            }
             contextMenu.addSubMenu("Add Subcomponent", subMenu, 3 * 35);
 
             contextMenu.addSpacerElement();

@@ -50,7 +50,7 @@ dependencies {
     implementation  'com.google.code.gson:gson:2.8.0'
     implementation  group: 'com.google.guava', name: 'guava', version: 'r05'
     implementation  'org.hildan.fxgson:fx-gson:2.0.0'
-    implementation  group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.6.10'
+    implementation  group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.10.5'
 
     //Junit
     testImplementation(
