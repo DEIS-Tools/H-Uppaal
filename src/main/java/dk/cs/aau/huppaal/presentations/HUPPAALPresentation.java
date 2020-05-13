@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXSnackbarLayout;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Query;
+import dk.cs.aau.huppaal.backend.UPPAALDriver;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
@@ -26,6 +27,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
@@ -333,11 +335,16 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private void initializeGenerateUppaalModelButton() {
-        final Color color = Color.GREY_BLUE;
-        final Color.Intensity colorIntensity = Color.Intensity.I800;
+        if(UPPAALDriver.getServerFile().exists()){
+            final Color color = Color.GREY_BLUE;
+            final Color.Intensity colorIntensity = Color.Intensity.I800;
 
-        controller.generateUppaalModel.setMaskType(JFXRippler.RipplerMask.CIRCLE);
-        controller.generateUppaalModel.setRipplerFill(color.getTextColor(colorIntensity));
+            controller.generateUppaalModel.setMaskType(JFXRippler.RipplerMask.CIRCLE);
+            controller.generateUppaalModel.setRipplerFill(color.getTextColor(colorIntensity));
+        } else {
+            controller.generateUppaalModel.setEnabled(false);
+            controller.generateUppaalModel.setOpacity(0.3);
+        }
     }
 
     private void initializeSelectDependentToolbarButton(final JFXRippler button) {

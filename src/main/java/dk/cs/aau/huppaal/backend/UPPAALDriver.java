@@ -200,7 +200,8 @@ public class UPPAALDriver {
 
             // Check if the user copied the file correctly
             if (!serverFile.exists()) {
-                System.out.println("Could not find backend-file: " + serverFile.getAbsolutePath() + ". Please make sure to copy UPPAAL binaries to this location.");
+                HUPPAAL.showToast("Unable to save UPPAAL file due to missing server file: " + serverFile.getName() + ".\n" +
+                        " Please make sure to have UPPAAL downloaded and the binaries copied to " + serverFile.getAbsolutePath());
             }
 
             // Create a new engine, set the server path, and return it
@@ -316,6 +317,10 @@ public class UPPAALDriver {
         }
 
         return subComponentInstanceNames;
+    }
+
+    public static File getServerFile(){
+        return findServerFile("server");
     }
 
     public enum TraceType {

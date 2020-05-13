@@ -133,7 +133,7 @@ public class Query implements Serializable {
                         new QueryListener(this)
                 ).start();
             } catch (final Exception e) {
-                setQueryState(QueryState.ERROR);
+                setQueryState(QueryState.ERROR);//Todo: addition
                 HUPPAAL.showToast("Query failed: " + e.getMessage()); //Todo: addition
                 e.printStackTrace();
             }
