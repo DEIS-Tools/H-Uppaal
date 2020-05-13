@@ -100,6 +100,7 @@ public class HUPPAALController implements Initializable {
     public Tab backendErrorsTab;
     public ScrollPane backendErrorsScrollPane;
     public VBox backendErrorsList;
+    private JFXTooltip generateUPPAALToolTip;
 
     // The program top menu
     public MenuBar menuBar;
@@ -239,6 +240,19 @@ public class HUPPAALController implements Initializable {
 
         initializeReachabilityAnalysisThread();
 
+        StringBuilder sb = new StringBuilder("The file: '" + UPPAALDriver.getServerFile().getName() + "' does not exist at location: '" + UPPAALDriver.getServerFile().getAbsolutePath() + "'");
+
+        int i = 0;
+        while (i + 50 < sb.length() && (i = sb.lastIndexOf("", i + 50)) != -1) {
+            sb.insert( i + 1, "\n");
+        }
+
+        System.out.println(sb.toString());
+        this.generateUPPAALToolTip = new JFXTooltip(sb.toString());
+        generateUPPAALToolTip.setWrapText(true);
+        JFXTooltip.setVisibleDuration(new Duration(10000));
+        JFXTooltip.setLeftDelay(null); //Sets the standard delay time (200 milliseconds)
+        JFXTooltip.install(generateUppaalModel, generateUPPAALToolTip);
     }
 
     private void initializeReachabilityAnalysisThread() {
