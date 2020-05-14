@@ -199,10 +199,10 @@ public class UPPAALDriver {
             serverFile.setExecutable(true); // Allows us to use the server file
 
             // Check if the user copied the file correctly
-            if (!serverFile.exists()) {
+            /*if (!serverFile.exists()) {
                 HUPPAAL.showToast("Unable to save UPPAAL file due to missing server file: " + serverFile.getName() + ".\n" +
-                        " Please make sure to have UPPAAL downloaded and the binaries copied to " + serverFile.getAbsolutePath());
-            }
+                        "Please make sure to have UPPAAL downloaded and the binaries copied to " + serverFile.getAbsolutePath());
+            }*/
 
             // Create a new engine, set the server path, and return it
             final Engine engine = new Engine();

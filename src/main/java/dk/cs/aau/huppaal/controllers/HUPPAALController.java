@@ -240,11 +240,16 @@ public class HUPPAALController implements Initializable {
 
         initializeReachabilityAnalysisThread();
 
-        StringBuilder sb = new StringBuilder("The file: '" + UPPAALDriver.getServerFile().getName() + "' does not exist at location: '" + UPPAALDriver.getServerFile().getAbsolutePath() + "'");
+        File serverFile = UPPAALDriver.getServerFile();
+        StringBuilder sb = new StringBuilder("The file: '" + serverFile.getName() + "' does not exist at location: '" + serverFile.getAbsolutePath() + "'");
 
         int i = 0;
-        while (i + 50 < sb.length() && (i = sb.lastIndexOf("", i + 50)) != -1) {
-            sb.insert( i + 1, "\n");
+        while (i + 49 < sb.length() && (i = sb.lastIndexOf("", i + 49)) != -1) {
+            if(sb.charAt(i+1) == ' '){
+                sb.replace(i, i+1, "\n");
+            } else {
+                sb.insert( i + 1, "\n");
+            }
         }
 
         System.out.println(sb.toString());
@@ -695,6 +700,8 @@ public class HUPPAALController implements Initializable {
                 HUPPAAL.showToast("Could not store UPPAAL debug model due to an error");
                 e.printStackTrace();
             }
+        } else {
+            HUPPAAL.showToast("Make sure to have UPPAAL downloaded and the binaries copied to: " + UPPAALDriver.getServerFile().getParent());
         }
     }
 
