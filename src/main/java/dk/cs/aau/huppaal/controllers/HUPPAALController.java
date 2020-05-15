@@ -246,7 +246,7 @@ public class HUPPAALController implements Initializable {
         int i = 0;
         while (i + 49 < sb.length() && (i = sb.lastIndexOf("", i + 49)) != -1) {
             if(sb.charAt(i+1) == ' '){
-                sb.replace(i, i+1, "\n");
+                sb.replace(i, i + 1, "\n");
             } else {
                 sb.insert( i + 1, "\n");
             }
