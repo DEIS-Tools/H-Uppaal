@@ -90,6 +90,7 @@ public class Query implements Serializable {
     private Boolean forcedCancel = false;
 
     private void initializeRunQuery() {
+        //Todo: hande UPPAAL not downloaded if(UPPAALDriver.getServerFile().exists())
         runQuery = (buildHUPPAALDocument) -> {
             setQueryState(QueryState.RUNNING);
 
