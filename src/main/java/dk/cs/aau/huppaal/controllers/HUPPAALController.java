@@ -700,8 +700,6 @@ public class HUPPAALController implements Initializable {
                 HUPPAAL.showToast("Could not store UPPAAL debug model due to an error");
                 e.printStackTrace();
             }
-        } else {
-            HUPPAAL.showToast("Make sure to have UPPAAL downloaded and the binaries copied to: " + UPPAALDriver.getServerFile().getParent());
         }
     }
 
