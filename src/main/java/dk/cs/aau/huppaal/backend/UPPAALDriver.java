@@ -22,20 +22,20 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
-public class UPPAALDriver implements IUPPAALDriver {
+public class UPPAALDriver {
 
-    public final int MAX_ENGINES = 10;
-    public final Object engineLock = false; // Used to lock concurrent engine reference access
+    public static final int MAX_ENGINES = 10;
+    public static final Object engineLock = false; // Used to lock concurrent engine reference access
 
     private static HUPPAALDocument huppaalDocument;
 
-    public void generateDebugUPPAALModel() throws Exception, BackendException {
+    public static void generateDebugUPPAALModel() throws Exception, BackendException {
         // Generate and store the debug document
         buildHUPPAALDocument();
         storeUppaalFile(huppaalDocument.toUPPAALDocument(), HUPPAAL.debugDirectory + File.separator + "debug.xml");
     }
 
-    public void buildHUPPAALDocument() throws BackendException, Exception {
+    public static void buildHUPPAALDocument() throws BackendException, Exception {
         final Component mainComponent = HUPPAAL.getProject().getMainComponent();
         if (mainComponent == null) {
             throw new Exception("Main component is null");
@@ -45,12 +45,12 @@ public class UPPAALDriver implements IUPPAALDriver {
         huppaalDocument = new HUPPAALDocument(mainComponent);
     }
 
-    public Thread runQuery(final String query,
+    public static Thread runQuery(final String query,
                                   final Consumer<Boolean> success,
                                   final Consumer<BackendException> failure) {
         return runQuery(query, success, failure, -1);
     }
-    public Thread runQuery(final String query,
+    public static Thread runQuery(final String query,
                                   final Consumer<Boolean> success,
                                   final Consumer<BackendException> failure,
                                   final long timeout) {
@@ -72,14 +72,14 @@ public class UPPAALDriver implements IUPPAALDriver {
         return runQuery(query, success, failure, engineConsumer);
     }
 
-    public Thread runQuery(final String query,
+    public static Thread runQuery(final String query,
                                   final Consumer<Boolean> success,
                                   final Consumer<BackendException> failure,
                                   final Consumer<Engine> engineConsumer) {
         return runQuery(query, success, failure, engineConsumer, new QueryListener());
     }
 
-    public Thread runQuery(final String query,
+    public static Thread runQuery(final String query,
                                    final Consumer<Boolean> success,
                                    final Consumer<BackendException> failure,
                                    final Consumer<Engine> engineConsumer,
@@ -177,7 +177,7 @@ public class UPPAALDriver implements IUPPAALDriver {
     private static final ArrayList<Engine> createdEngines = new ArrayList<>();
     private static final ArrayList<Engine> availableEngines = new ArrayList<>();
 
-    private File findServerFile(final String serverName) {
+    private static File findServerFile(final String serverName) {
         final String os = System.getProperty("os.name");
         final File file;
 
@@ -192,7 +192,7 @@ public class UPPAALDriver implements IUPPAALDriver {
         return file;
     }
 
-    private Engine getAvailableEngineOrCreateNew() {
+    private static Engine getAvailableEngineOrCreateNew() {
         if (availableEngines.size() == 0) {
             final String serverName = "server";
             final File serverFile = findServerFile(serverName);
@@ -215,7 +215,7 @@ public class UPPAALDriver implements IUPPAALDriver {
         }
     }
 
-    private Engine getOSDependentEngine() {
+    private static Engine getOSDependentEngine() {
         synchronized (createdEngines) {
             if (!(createdEngines.size() >= MAX_ENGINES && availableEngines.size() == 0)) {
                 final Engine engine = getAvailableEngineOrCreateNew();
@@ -229,13 +229,13 @@ public class UPPAALDriver implements IUPPAALDriver {
         return null;
     }
 
-    private void releaseOSDependentEngine(final Engine engine) {
+    private static void releaseOSDependentEngine(final Engine engine) {
         synchronized (createdEngines) {
             availableEngines.add(engine);
         }
     }
 
-    public void stopEngines() {
+    public static void stopEngines() {
         synchronized (createdEngines) {
             while (createdEngines.size() != 0) {
                 final Engine engine = createdEngines.get(0);
@@ -245,7 +245,7 @@ public class UPPAALDriver implements IUPPAALDriver {
         }
     }
 
-    private void storeUppaalFile(final Document uppaalDocument, final String fileName) {
+    private static void storeUppaalFile(final Document uppaalDocument, final String fileName) {
         final File file = new File(fileName);
         try {
             uppaalDocument.save(file);
@@ -255,7 +255,7 @@ public class UPPAALDriver implements IUPPAALDriver {
         }
     }
 
-    public String getLocationReachableQuery(final Location location, final Component component) {
+    public static String getLocationReachableQuery(final Location location, final Component component) {
 
         // Get the various flattened names of a location to produce a reachability query
         final List<String> templateNames = getTemplateNames(component);
@@ -268,7 +268,7 @@ public class UPPAALDriver implements IUPPAALDriver {
         return "E<> " + String.join(" || ", locationNames);
     }
 
-    public String getExistDeadlockQuery(final Component component) {
+    public static String getExistDeadlockQuery(final Component component) {
         // Get the various flattened names of a location to produce a reachability query
         final List<String> template = getTemplateNames(component);
         final List<String> locationNames = new ArrayList<>();
@@ -286,7 +286,7 @@ public class UPPAALDriver implements IUPPAALDriver {
         return "E<> (" + String.join(" || ", locationNames) + ") && deadlock";
     }
 
-    private List<String> getTemplateNames(final Component component) {
+    private static List<String> getTemplateNames(final Component component) {
         final List<String> subComponentInstanceNames = new ArrayList<>();
 
         if (component.isIsMain()) {
@@ -300,7 +300,7 @@ public class UPPAALDriver implements IUPPAALDriver {
         return subComponentInstanceNames;
     }
 
-    private List<String> getTemplateNames(String str, final SubComponent subject, final Component needle) {
+    private static List<String> getTemplateNames(String str, final SubComponent subject, final Component needle) {
         final List<String> subComponentInstanceNames = new ArrayList<>();
 
         // Run all their sub components
@@ -318,7 +318,7 @@ public class UPPAALDriver implements IUPPAALDriver {
         return subComponentInstanceNames;
     }
 
-    public File getServerFile(){
+    public static File getServerFile(){
         return findServerFile("server");
     }
 

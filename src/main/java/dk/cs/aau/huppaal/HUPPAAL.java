@@ -3,8 +3,6 @@ package dk.cs.aau.huppaal;
 import dk.cs.aau.huppaal.abstractions.Component;
 import dk.cs.aau.huppaal.abstractions.Project;
 import dk.cs.aau.huppaal.abstractions.Query;
-import dk.cs.aau.huppaal.backend.IUPPAALDriver;
-import dk.cs.aau.huppaal.backend.MissingUPPAALDriver;
 import dk.cs.aau.huppaal.backend.UPPAALDriver;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.controllers.CanvasController;
@@ -52,7 +50,6 @@ public class HUPPAAL extends Application {
     private static HUPPAALPresentation presentation;
     public static SimpleStringProperty projectDirectory = new SimpleStringProperty();
     private Stage debugStage;
-    public static IUPPAALDriver uppaalDriver = new UPPAALDriver();
 
     {
         try {
@@ -75,10 +72,6 @@ public class HUPPAAL extends Application {
     }
 
     public static void main(final String[] args) {
-        if(uppaalDriver.getServerFile() == null){
-            uppaalDriver = new MissingUPPAALDriver();
-            showToast("hey");
-        }
         launch(HUPPAAL.class, args);
     }
 
@@ -250,7 +243,7 @@ public class HUPPAAL extends Application {
         }));
 
         stage.setOnCloseRequest(event -> {
-            this.uppaalDriver.stopEngines();
+            UPPAALDriver.stopEngines();
 
             Platform.exit();
             System.exit(0);

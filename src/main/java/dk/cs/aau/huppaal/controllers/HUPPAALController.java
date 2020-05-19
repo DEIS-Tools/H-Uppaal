@@ -100,6 +100,7 @@ public class HUPPAALController implements Initializable {
     public Tab backendErrorsTab;
     public ScrollPane backendErrorsScrollPane;
     public VBox backendErrorsList;
+    private JFXTooltip generateUPPAALToolTip;
 
     // The program top menu
     public MenuBar menuBar;
@@ -239,7 +240,7 @@ public class HUPPAALController implements Initializable {
 
         initializeReachabilityAnalysisThread();
 
-        File serverFile = HUPPAAL.uppaalDriver.getServerFile();
+        File serverFile = UPPAALDriver.getServerFile();
         StringBuilder sb = new StringBuilder("The file: '" + serverFile.getName() + "' does not exist at location: '" + serverFile.getAbsolutePath() + "'");
 
         int i = 0;
@@ -252,7 +253,7 @@ public class HUPPAALController implements Initializable {
         }
 
         System.out.println(sb.toString());
-        JFXTooltip generateUPPAALToolTip = new JFXTooltip(sb.toString());
+        this.generateUPPAALToolTip = new JFXTooltip(sb.toString());
         generateUPPAALToolTip.setWrapText(true);
         JFXTooltip.setVisibleDuration(new Duration(10000));
         JFXTooltip.setLeftDelay(null); //Sets the standard delay time (200 milliseconds)
@@ -292,7 +293,7 @@ public class HUPPAALController implements Initializable {
 
                 try {
                     // Make sure that the model is generated
-                    HUPPAAL.uppaalDriver.buildHUPPAALDocument();
+                    UPPAALDriver.buildHUPPAALDocument();
 
                     HUPPAAL.getProject().getQueries().forEach(query -> {
                         if (query.isPeriodic()) query.run();
@@ -308,8 +309,8 @@ public class HUPPAALController implements Initializable {
                             component.getLocationsWithInitialAndFinal().forEach(location -> location.setReachability(Location.Reachability.EXCLUDED));
                         } else {
                             component.getLocationsWithInitialAndFinal().forEach(location -> {
-                                final String locationReachableQuery = HUPPAAL.uppaalDriver.getLocationReachableQuery(location, component);
-                                final Thread verifyThread = HUPPAAL.uppaalDriver.runQuery(
+                                final String locationReachableQuery = UPPAALDriver.getLocationReachableQuery(location, component);
+                                final Thread verifyThread = UPPAALDriver.runQuery(
                                         locationReachableQuery,
                                         (result -> {
                                             if (result) {
@@ -684,7 +685,7 @@ public class HUPPAALController implements Initializable {
 
     @FXML
     private void generateUppaalModelClicked() {
-        if(HUPPAAL.uppaalDriver.getServerFile().exists()){
+        if(UPPAALDriver.getServerFile().exists()){
             final Component mainComponent = HUPPAAL.getProject().getMainComponent();
 
             if (mainComponent == null) {
@@ -693,7 +694,7 @@ public class HUPPAALController implements Initializable {
             }
 
             try {
-                HUPPAAL.uppaalDriver.generateDebugUPPAALModel();
+                UPPAALDriver.generateDebugUPPAALModel();
                 HUPPAAL.showToast("UPPAAL debug file stored");
             } catch (final Exception e) {
                 HUPPAAL.showToast("Could not store UPPAAL debug model due to an error");
