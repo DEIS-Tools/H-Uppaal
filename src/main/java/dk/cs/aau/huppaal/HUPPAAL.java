@@ -3,6 +3,7 @@ package dk.cs.aau.huppaal;
 import dk.cs.aau.huppaal.abstractions.Component;
 import dk.cs.aau.huppaal.abstractions.Project;
 import dk.cs.aau.huppaal.abstractions.Query;
+import dk.cs.aau.huppaal.backend.IUPPAALDriver;
 import dk.cs.aau.huppaal.backend.UPPAALDriver;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.controllers.CanvasController;
@@ -50,6 +51,7 @@ public class HUPPAAL extends Application {
     private static HUPPAALPresentation presentation;
     public static SimpleStringProperty projectDirectory = new SimpleStringProperty();
     private Stage debugStage;
+    public static IUPPAALDriver Driver;
 
     {
         try {
