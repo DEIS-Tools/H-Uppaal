@@ -84,7 +84,7 @@ public class QueryPaneController implements Initializable {
     @FXML
     private void runAllQueriesButtonClicked() {
         try {
-            UPPAALDriver.buildHUPPAALDocument();
+            HUPPAAL.uppaalDriver.buildHUPPAALDocument();
             HUPPAAL.getProject().getQueries().forEach(query -> {
                 query.cancel();
                 query.run(false);

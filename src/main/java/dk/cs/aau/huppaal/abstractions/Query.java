@@ -90,7 +90,7 @@ public class Query implements Serializable {
     private Boolean forcedCancel = false;
 
     private void initializeRunQuery() {
-        if (UPPAALDriver.getServerFile().exists()) {
+        if (HUPPAAL.uppaalDriver.getServerFile().exists()) {
             runQuery = (buildHUPPAALDocument) -> {
                 setQueryState(QueryState.RUNNING);
 
@@ -102,9 +102,9 @@ public class Query implements Serializable {
 
                 try {
                     if (buildHUPPAALDocument) {
-                        UPPAALDriver.buildHUPPAALDocument();
+                        HUPPAAL.uppaalDriver.buildHUPPAALDocument();
                     }
-                    UPPAALDriver.runQuery(getQuery(),
+                    HUPPAAL.uppaalDriver.runQuery(getQuery(),
                             aBoolean -> {
                                 if (aBoolean) {
                                     setQueryState(QueryState.SUCCESSFUL);
@@ -173,7 +173,7 @@ public class Query implements Serializable {
 
     public void cancel() {
         if (getQueryState().equals(QueryState.RUNNING)) {
-            synchronized (UPPAALDriver.engineLock) {
+            synchronized (HUPPAAL.uppaalDriver.engineLock) {
                 if (engine != null) {
                     forcedCancel = true;
                     engine.cancel();
