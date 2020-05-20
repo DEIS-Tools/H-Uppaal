@@ -240,24 +240,29 @@ public class HUPPAALController implements Initializable {
 
         initializeReachabilityAnalysisThread();
 
+        //Adds a tooltip to 'generateUppaalModel' JFXRippler if UPPAAL is not found
         File serverFile = UPPAALDriver.getServerFile();
-        StringBuilder sb = new StringBuilder("The file: '" + serverFile.getName() + "' does not exist at location: '" + serverFile.getAbsolutePath() + "'");
+        if(!serverFile.exists()){
+            StringBuilder sb = new StringBuilder("The file: '" + serverFile.getName() + "' does not exist at location: '" + serverFile.getAbsolutePath() + "'");
 
-        int i = 0;
-        while (i + 49 < sb.length() && (i = sb.lastIndexOf("", i + 49)) != -1) {
-            if(sb.charAt(i+1) == ' '){
-                sb.replace(i, i + 1, "\n");
-            } else {
-                sb.insert( i + 1, "\n");
+            int i = 0;
+
+            //Adds a newline at every 50'th character
+            while (i + 50 < sb.length() && (i = sb.lastIndexOf("", i + 49)) != -1) {
+
+                //Replace potential whitespace at the start of the newline
+                if(sb.charAt(i+1) == ' '){
+                    sb.replace(i + 1, i + 2, "\n");
+                } else {
+                    sb.insert( i + 1, "\n");
+                }
             }
-        }
 
-        System.out.println(sb.toString());
-        this.generateUPPAALToolTip = new JFXTooltip(sb.toString());
-        generateUPPAALToolTip.setWrapText(true);
-        JFXTooltip.setVisibleDuration(new Duration(10000));
-        JFXTooltip.setLeftDelay(null); //Sets the standard delay time (200 milliseconds)
-        JFXTooltip.install(generateUppaalModel, generateUPPAALToolTip);
+            this.generateUPPAALToolTip = new JFXTooltip(sb.toString());
+            JFXTooltip.setVisibleDuration(new Duration(10000));
+            JFXTooltip.setLeftDelay(null); //Sets the standard delay time (200 milliseconds)
+            JFXTooltip.install(generateUppaalModel, generateUPPAALToolTip);
+        }
     }
 
     private void initializeReachabilityAnalysisThread() {
