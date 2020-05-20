@@ -245,7 +245,7 @@ public class HUPPAAL extends Application {
         }));
 
         stage.setOnCloseRequest(event -> {
-            UPPAALDriver.stopEngines();
+            HUPPAALController.uppaalDriver.stopEngines();
 
             Platform.exit();
             System.exit(0);

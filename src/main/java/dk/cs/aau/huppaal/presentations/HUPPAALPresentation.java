@@ -332,7 +332,7 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private void initializeGenerateUppaalModelButton() {
-        if(UPPAALDriver.getServerFile().exists()){
+        if(HUPPAALController.uppaalDriver.getServerFile().exists()){
             final Color color = Color.GREY_BLUE;
             final Color.Intensity colorIntensity = Color.Intensity.I800;
 

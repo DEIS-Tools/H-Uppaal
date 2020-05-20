@@ -23,42 +23,42 @@ import java.util.TimerTask;
 import java.util.function.Consumer;
 
 public interface IUPPAALDriver {
-    public final int MAX_ENGINES = 10;
-    public final Object engineLock = false; // Used to lock concurrent engine reference access
+    int MAX_ENGINES = 10;
+    Object engineLock = false; // Used to lock concurrent engine reference access
 
-    public void generateDebugUPPAALModel() throws Exception, BackendException;
+    void generateDebugUPPAALModel() throws Exception, BackendException;
 
-    public void buildHUPPAALDocument() throws BackendException, Exception;
+    void buildHUPPAALDocument() throws Exception, BackendException;
 
-    public Thread runQuery(final String query,
+    Thread runQuery(final String query,
                                   final Consumer<Boolean> success,
                                   final Consumer<BackendException> failure);
 
-    public Thread runQuery(final String query,
-                                  final Consumer<Boolean> success,
-                                  final Consumer<BackendException> failure,
-                                  final long timeout);
+    Thread runQuery(final String query,
+                    final Consumer<Boolean> success,
+                    final Consumer<BackendException> failure,
+                    final long timeout);
 
-    public Thread runQuery(final String query,
-                                  final Consumer<Boolean> success,
-                                  final Consumer<BackendException> failure,
-                                  final Consumer<Engine> engineConsumer);
+    Thread runQuery(final String query,
+                    final Consumer<Boolean> success,
+                    final Consumer<BackendException> failure,
+                    final Consumer<Engine> engineConsumer);
 
-    public Thread runQuery(final String query,
-                                  final Consumer<Boolean> success,
-                                  final Consumer<BackendException> failure,
-                                  final Consumer<Engine> engineConsumer,
-                                  final QueryListener queryListener);
+    Thread runQuery(final String query,
+                    final Consumer<Boolean> success,
+                    final Consumer<BackendException> failure,
+                    final Consumer<Engine> engineConsumer,
+                    final QueryListener queryListener);
 
-    public void stopEngines();
+    void stopEngines();
 
-    public String getLocationReachableQuery(final Location location, final Component component);
+    String getLocationReachableQuery(final Location location, final Component component);
 
-    public String getExistDeadlockQuery(final Component component);
+    String getExistDeadlockQuery(final Component component);
 
-    public File getServerFile();
+    File getServerFile();
 
-    public enum TraceType {
+    enum TraceType {
         NONE, SOME, SHORTEST, FASTEST;
 
         @Override

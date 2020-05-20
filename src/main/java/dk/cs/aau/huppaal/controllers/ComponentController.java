@@ -502,7 +502,7 @@ public class ComponentController implements Initializable {
                 contextMenu.close();
 
                 // Generate the query
-                final String deadlockQuery = UPPAALDriver.getExistDeadlockQuery(getComponent());
+                final String deadlockQuery = HUPPAALController.uppaalDriver.getExistDeadlockQuery(getComponent());
 
                 // Add proper comment
                 final String deadlockComment = "Does " + component.getName() + " contain a deadlock?";
