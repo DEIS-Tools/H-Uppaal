@@ -5,6 +5,7 @@ import dk.cs.aau.huppaal.abstractions.Project;
 import dk.cs.aau.huppaal.abstractions.Query;
 import dk.cs.aau.huppaal.backend.IUPPAALDriver;
 import dk.cs.aau.huppaal.backend.UPPAALDriver;
+import dk.cs.aau.huppaal.backend.UPPAALDriverManager;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.controllers.CanvasController;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
@@ -245,7 +246,7 @@ public class HUPPAAL extends Application {
         }));
 
         stage.setOnCloseRequest(event -> {
-            HUPPAALController.uppaalDriver.stopEngines();
+            UPPAALDriverManager.getInstance().stopEngines();
 
             Platform.exit();
             System.exit(0);

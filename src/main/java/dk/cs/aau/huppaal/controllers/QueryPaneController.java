@@ -4,6 +4,7 @@ import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Query;
 import dk.cs.aau.huppaal.abstractions.QueryState;
 import dk.cs.aau.huppaal.backend.UPPAALDriver;
+import dk.cs.aau.huppaal.backend.UPPAALDriverManager;
 import dk.cs.aau.huppaal.presentations.QueryPresentation;
 import dk.cs.aau.huppaal.utility.helpers.DropShadowHelper;
 import com.jfoenix.controls.JFXButton;
@@ -84,7 +85,7 @@ public class QueryPaneController implements Initializable {
     @FXML
     private void runAllQueriesButtonClicked() {
         try {
-            HUPPAALController.uppaalDriver.buildHUPPAALDocument();
+            UPPAALDriverManager.getInstance().buildHUPPAALDocument();
             HUPPAAL.getProject().getQueries().forEach(query -> {
                 query.cancel();
                 query.run(false);

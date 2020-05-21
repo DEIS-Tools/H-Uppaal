@@ -1,8 +1,7 @@
 package dk.cs.aau.huppaal.abstractions;
 
 import dk.cs.aau.huppaal.HUPPAAL;
-import dk.cs.aau.huppaal.backend.QueryListener;
-import dk.cs.aau.huppaal.backend.UPPAALDriver;
+import dk.cs.aau.huppaal.backend.*;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
 import dk.cs.aau.huppaal.utility.serialize.Serializable;
 import com.google.gson.JsonObject;
@@ -90,7 +89,8 @@ public class Query implements Serializable {
     private Boolean forcedCancel = false;
 
     private void initializeRunQuery() {
-        if (HUPPAALController.uppaalDriver.getServerFile().exists()) {
+        IUPPAALDriver uppaalDriver = UPPAALDriverManager.getInstance();
+        if (uppaalDriver instanceof DummyUPPAALDriver) {
             runQuery = (buildHUPPAALDocument) -> {
                 setQueryState(QueryState.RUNNING);
 
@@ -102,9 +102,9 @@ public class Query implements Serializable {
 
                 try {
                     if (buildHUPPAALDocument) {
-                        HUPPAALController.uppaalDriver.buildHUPPAALDocument();
+                        uppaalDriver.buildHUPPAALDocument();
                     }
-                    HUPPAALController.uppaalDriver.runQuery(getQuery(),
+                    uppaalDriver.runQuery(getQuery(),
                             aBoolean -> {
                                 if (aBoolean) {
                                     setQueryState(QueryState.SUCCESSFUL);
@@ -173,7 +173,7 @@ public class Query implements Serializable {
 
     public void cancel() {
         if (getQueryState().equals(QueryState.RUNNING)) {
-            synchronized (UPPAALDriver.engineLock) {
+            synchronized (UPPAALDriverManager.getInstance().engineLock) {
                 if (engine != null) {
                     forcedCancel = true;
                     engine.cancel();

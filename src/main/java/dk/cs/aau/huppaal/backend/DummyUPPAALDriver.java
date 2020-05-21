@@ -50,19 +50,16 @@ public class DummyUPPAALDriver implements IUPPAALDriver {
 
     @Override
     public String getLocationReachableQuery(Location location, Component component) {
-        HUPPAAL.showToast("UPPAAL not found");
         return null;
     }
 
     @Override
     public String getExistDeadlockQuery(Component component) {
-        HUPPAAL.showToast("UPPAAL not found");
         return null;
     }
 
     @Override
     public File getServerFile() {
-        HUPPAAL.showToast("UPPAAL not found");
-        return null;
+        return new File("hey.ino");
     }
 }

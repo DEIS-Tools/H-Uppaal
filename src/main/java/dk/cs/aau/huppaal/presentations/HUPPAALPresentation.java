@@ -5,6 +5,7 @@ import com.jfoenix.controls.JFXSnackbarLayout;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Query;
 import dk.cs.aau.huppaal.backend.UPPAALDriver;
+import dk.cs.aau.huppaal.backend.UPPAALDriverManager;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
@@ -332,7 +333,7 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private void initializeGenerateUppaalModelButton() {
-        if(HUPPAALController.uppaalDriver.getServerFile().exists()){
+        if(UPPAALDriverManager.getInstance() instanceof UPPAALDriver){
             final Color color = Color.GREY_BLUE;
             final Color.Intensity colorIntensity = Color.Intensity.I800;
 
