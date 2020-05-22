@@ -135,7 +135,7 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
                         dropDownMenu.close();
                     }
                 );
-
+        //Todo: not handled correctly when uppaal is not found
         dropDownMenu.addClickableAndDisableableListElement("Add Nickname",
                 getLocation().nicknameProperty().isNotEmpty().or(nicknameTag.textFieldFocusProperty()),
                 event -> {
@@ -146,6 +146,7 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
                 }
         );
 
+        //Todo: not handled correctly when uppaal is not found
         dropDownMenu.addClickableAndDisableableListElement("Add Invariant",
                 getLocation().invariantProperty().isNotEmpty().or(invariantTag.textFieldFocusProperty()),
                 event -> {
