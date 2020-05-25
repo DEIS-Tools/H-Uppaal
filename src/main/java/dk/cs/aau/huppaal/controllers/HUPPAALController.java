@@ -50,7 +50,6 @@ import java.util.function.Consumer;
 public class HUPPAALController implements Initializable {
 
     // Reachability analysis
-    public static IUPPAALDriver uppaalDriver;
     public static boolean reachabilityServiceEnabled = false;
     private static long reachabilityTime = Long.MAX_VALUE;
     private static ExecutorService reachabilityService;
