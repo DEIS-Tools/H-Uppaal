@@ -11,16 +11,20 @@ public final class UPPAALDriverManager {
     private UPPAALDriverManager(){}
 
     public static synchronized IUPPAALDriver getInstance(){
+
         //If the instance is null this instantiates the correct IUPPAALDriver class
         if(instance == null){
             File serverFile = findServerFile("server");
             if(serverFile.exists()){
                 if(true) {
+                    //If the UPPAAL server file exists and server computation is on
                     instance = new UPPAALDriver(serverFile);
                 } else {
+                    //If the UPPAAL server file exists and server computation is off
                     instance = new LocalUPPAALDriver();
                 }
             } else {
+                //If the UPPAAL server file does not exist
                 CodeAnalysis.addMessage(null, new CodeAnalysis.Message("The UPPAAL server file: '" + UPPAALDriverManager.getServerFilePath("server") + "' does not exist.\nMake sure to have UPPAAL installed and the binaries copied to the location.", CodeAnalysis.MessageType.WARNING));
                 instance = new DummyUPPAALDriver(getServerFilePath("server"));
             }

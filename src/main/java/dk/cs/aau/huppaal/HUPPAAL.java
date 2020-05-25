@@ -52,7 +52,6 @@ public class HUPPAAL extends Application {
     private static HUPPAALPresentation presentation;
     public static SimpleStringProperty projectDirectory = new SimpleStringProperty();
     private Stage debugStage;
-    public static IUPPAALDriver Driver;
 
     {
         try {
