@@ -1,6 +1,7 @@
 package dk.cs.aau.huppaal.backend;
 
 import dk.cs.aau.huppaal.HUPPAAL;
+import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 
 import java.io.File;
 
@@ -20,6 +21,7 @@ public final class UPPAALDriverManager {
                     instance = new LocalUPPAALDriver();
                 }
             } else {
+                CodeAnalysis.addMessage(null, new CodeAnalysis.Message("The UPPAAL server file: '" + UPPAALDriverManager.getServerFilePath("server") + "' does not exist.\nMake sure to have UPPAAL installed and the binaries copied to the location.", CodeAnalysis.MessageType.WARNING));
                 instance = new DummyUPPAALDriver(getServerFilePath("server"));
             }
         }
