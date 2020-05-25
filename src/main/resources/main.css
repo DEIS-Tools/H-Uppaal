@@ -217,3 +217,11 @@
 .jfx-snackbar-action {
 	-fx-text-fill: WHITE;
 }
+
+.jfx-tooltip {
+	-fx-max-width: 20px;
+}
+
+.styled-text-area {
+	-fx-padding: 20 0 40 0;
+}
