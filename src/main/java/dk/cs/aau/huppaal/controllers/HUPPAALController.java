@@ -240,7 +240,7 @@ public class HUPPAALController implements Initializable {
         //Adds a tooltip to 'generateUppaalModel' JFXRippler if UPPAAL is not found
         IUPPAALDriver uppaalDriver = UPPAALDriverManager.getInstance();
         if(uppaalDriver instanceof DummyUPPAALDriver){
-            JFXTooltip generateUPPAALToolTip = new JFXTooltip("Uppaal was not found");
+            JFXTooltip generateUPPAALToolTip = new JFXTooltip("The UPPAAL server file does not exist");
             JFXTooltip.setVisibleDuration(new Duration(10000));
             JFXTooltip.setLeftDelay(null); //Sets the standard delay time (200 milliseconds)
             JFXTooltip.install(generateUppaalModel, generateUPPAALToolTip);

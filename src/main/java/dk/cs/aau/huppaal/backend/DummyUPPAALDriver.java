@@ -9,14 +9,21 @@ import java.io.File;
 import java.util.function.Consumer;
 
 public class DummyUPPAALDriver implements IUPPAALDriver {
+
+    private final String serverFilePath;
+
+    public DummyUPPAALDriver(String serverFilePath){
+        this.serverFilePath = serverFilePath;
+    }
+
     @Override
     public void generateDebugUPPAALModel() throws Exception, BackendException {
-        throw new BackendException("UPPAAL was not found");
+        throw new BackendException("The UPPAAL server file: '" + serverFilePath + "' does not exist");
     }
 
     @Override
     public void buildHUPPAALDocument() throws BackendException, Exception {
-        throw new BackendException("UPPAAL was not found");
+        throw new BackendException("The UPPAAL server file: '" + serverFilePath + "' does not exist");
     }
 
     @Override
@@ -50,11 +57,6 @@ public class DummyUPPAALDriver implements IUPPAALDriver {
 
     @Override
     public String getExistDeadlockQuery(Component component) {
-        return null;
-    }
-
-    @Override
-    public File getServerFile() {
         return null;
     }
 }

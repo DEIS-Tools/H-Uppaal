@@ -41,8 +41,6 @@ public interface IUPPAALDriver {
 
     String getExistDeadlockQuery(final Component component);
 
-    File getServerFile();
-
     enum TraceType {
         NONE, SOME, SHORTEST, FASTEST;
 

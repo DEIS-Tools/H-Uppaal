@@ -10,12 +10,10 @@ import java.util.function.Consumer;
 public class LocalUPPAALDriver implements IUPPAALDriver {
     @Override
     public void generateDebugUPPAALModel() throws Exception, BackendException {
-        throw new BackendException("UPPAAL was not found");
     }
 
     @Override
     public void buildHUPPAALDocument() throws BackendException, Exception {
-        throw new BackendException("UPPAAL was not found");
     }
 
     @Override
@@ -49,11 +47,6 @@ public class LocalUPPAALDriver implements IUPPAALDriver {
 
     @Override
     public String getExistDeadlockQuery(Component component) {
-        return null;
-    }
-
-    @Override
-    public File getServerFile() {
         return null;
     }
 }

@@ -26,6 +26,12 @@ public class UPPAALDriver implements IUPPAALDriver {
 
     private HUPPAALDocument huppaalDocument;
 
+    private final File serverFile;
+
+    public UPPAALDriver(File serverFile){
+        this.serverFile = serverFile;
+    }
+
     public void generateDebugUPPAALModel() throws Exception, BackendException {
         // Generate and store the debug document
         buildHUPPAALDocument();
@@ -174,25 +180,9 @@ public class UPPAALDriver implements IUPPAALDriver {
     private final ArrayList<Engine> createdEngines = new ArrayList<>();
     private final ArrayList<Engine> availableEngines = new ArrayList<>();
 
-    private File findServerFile(final String serverName) {
-        final String os = System.getProperty("os.name");
-        final File file;
-
-        if (os.contains("Mac")) {
-            file = new File(HUPPAAL.serverDirectory + File.separator + "bin-MacOS" + File.separator + serverName);
-        } else if (os.contains("Linux")) {
-            file = new File(HUPPAAL.serverDirectory + File.separator + "bin-Linux" + File.separator + serverName);
-        } else {
-            file = new File(HUPPAAL.serverDirectory + File.separator + "bin-Win32" + File.separator + serverName + ".exe");
-        }
-
-        return file;
-    }
-
     private Engine getAvailableEngineOrCreateNew() {
         if (availableEngines.size() == 0) {
             final String serverName = "server";
-            final File serverFile = findServerFile(serverName);
             serverFile.setExecutable(true); // Allows us to use the server file
 
             // Check if the user copied the file correctly
@@ -313,10 +303,6 @@ public class UPPAALDriver implements IUPPAALDriver {
         }
 
         return subComponentInstanceNames;
-    }
-
-    public File getServerFile(){
-        return findServerFile("server");
     }
 
     public enum TraceType {
