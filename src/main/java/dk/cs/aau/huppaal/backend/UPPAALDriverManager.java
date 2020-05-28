@@ -6,8 +6,7 @@ import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import java.io.File;
 
 public final class UPPAALDriverManager {
-
-    public static boolean isServerCheckingEnabled = true;
+    
     private static IUPPAALDriver instance = null;
 
     private UPPAALDriverManager(){}
@@ -18,15 +17,8 @@ public final class UPPAALDriverManager {
         if(instance == null){
             File serverFile = findServerFile("server");
             if(serverFile.exists()){
-                if(isServerCheckingEnabled) {
-                    //If the UPPAAL server file exists and server computation is on
-                    instance = new UPPAALDriver(serverFile);
-                } else {
-                    //If the UPPAAL server file exists and server computation is off
-                    instance = new LocalUPPAALDriver();
-                }
+                instance = new UPPAALDriver(serverFile);
             } else {
-                //If the UPPAAL server file does not exist
                 CodeAnalysis.addMessage(null, new CodeAnalysis.Message("The UPPAAL server file: '" + UPPAALDriverManager.getServerFilePath("server") + "' does not exist.\nMake sure to have UPPAAL installed and the binaries copied to the location.", CodeAnalysis.MessageType.WARNING));
                 instance = new DummyUPPAALDriver(getServerFilePath("server"));
             }
