@@ -2,12 +2,12 @@ package dk.cs.aau.huppaal.backend;
 
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
-
 import java.io.File;
 
 public final class UPPAALDriverManager {
-    
+
     private static IUPPAALDriver instance = null;
+    private static String uppaalFilePath = "";
 
     private UPPAALDriverManager(){}
 
@@ -15,31 +15,26 @@ public final class UPPAALDriverManager {
 
         //If the instance is null this instantiates the correct IUPPAALDriver class
         if(instance == null){
-            File serverFile = findServerFile("server");
+            File serverFile = new File(uppaalFilePath);
             if(serverFile.exists()){
                 instance = new UPPAALDriver(serverFile);
+                HUPPAAL.showToast("Bam");
             } else {
-                CodeAnalysis.addMessage(null, new CodeAnalysis.Message("The UPPAAL server file: '" + UPPAALDriverManager.getServerFilePath("server") + "' does not exist.\nMake sure to have UPPAAL installed and the binaries copied to the location.", CodeAnalysis.MessageType.WARNING));
-                instance = new DummyUPPAALDriver(getServerFilePath("server"));
+                CodeAnalysis.addMessage(null, new CodeAnalysis.Message("Please set the UPPAAL server location through the 'Preferences' tab.\n" +
+                        "Make sure to have UPPAAL installed. This can be done at uppaal.org", CodeAnalysis.MessageType.WARNING));
+                instance = new DummyUPPAALDriver(uppaalFilePath);
             }
         }
 
         return instance;
     }
 
-    private static File findServerFile(final String serverName) {
-        return new File(getServerFilePath(serverName));
+    public static String getUppaalFilePath() {
+        return uppaalFilePath;
     }
 
-    public static String getServerFilePath(final String serverName){
-        final String os = System.getProperty("os.name");
-
-        if (os.contains("Mac")) {
-            return HUPPAAL.serverDirectory + File.separator + "bin-MacOS" + File.separator + serverName;
-        } else if (os.contains("Linux")) {
-            return HUPPAAL.serverDirectory + File.separator + "bin-Linux" + File.separator + serverName;
-        } else {
-            return HUPPAAL.serverDirectory + File.separator + "bin-Win32" + File.separator + serverName + ".exe";
-        }
+    public static void setUppaalFilePath(String uppaalFilePath) {
+        instance = null;
+        UPPAALDriverManager.uppaalFilePath = uppaalFilePath;
     }
 }
