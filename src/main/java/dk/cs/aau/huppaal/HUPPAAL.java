@@ -42,9 +42,11 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.security.CodeSource;
 import java.util.*;
+import java.util.prefs.Preferences;
 
 public class HUPPAAL extends Application {
 
+    public static Preferences preferences;
     public static String serverDirectory;
     public static String debugDirectory;
     public static boolean serializationDone = false;
@@ -55,6 +57,7 @@ public class HUPPAAL extends Application {
 
     {
         try {
+            preferences = Preferences.systemRoot();
             final CodeSource codeSource = HUPPAAL.class.getProtectionDomain().getCodeSource();
             final File jarFile = new File(codeSource.getLocation().toURI().getPath());
             final String rootDirectory = jarFile.getParentFile().getPath() + File.separator;
