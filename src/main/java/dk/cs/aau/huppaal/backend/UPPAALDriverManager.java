@@ -20,13 +20,8 @@ public final class UPPAALDriverManager {
             if(serverFile.exists()){
                 instance = new UPPAALDriver(serverFile);
             } else {
-                if(CodeAnalysis.getWarnings().contains(new CodeAnalysis.Message("Please set the UPPAAL server location through the 'Preferences' tab.\n" +
-                        "Make sure to have UPPAAL installed. This can be done at uppaal.org", CodeAnalysis.MessageType.WARNING))){
-                    HUPPAAL.showToast("What");
-                } else{
-                    CodeAnalysis.addMessage(null, new CodeAnalysis.Message("Please set the UPPAAL server location through the 'Preferences' tab.\n" +
+                CodeAnalysis.addMessage(null, new CodeAnalysis.Message("Please set the UPPAAL server location through the 'Preferences' tab.\n" +
                             "Make sure to have UPPAAL installed. This can be done at uppaal.org", CodeAnalysis.MessageType.WARNING));
-                }
                 instance = new DummyUPPAALDriver();
             }
         }

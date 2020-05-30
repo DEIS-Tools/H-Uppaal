@@ -313,7 +313,7 @@ public class HUPPAALPresentation extends StackPane {
         list.setStyle("-fx-background-color: white; -fx-padding: 8;");
 
         popup.setPopupContent(list);
-        
+
         controller.colorSelected.setOnMouseClicked((e) -> {
             if (SelectHelper.getSelectedElements().size() == 0) return;
 
@@ -333,12 +333,14 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private void initializeGenerateUppaalModelButton() {
-        if(UPPAALDriverManager.getInstance() instanceof UPPAALDriver){
             final Color color = Color.GREY_BLUE;
             final Color.Intensity colorIntensity = Color.Intensity.I800;
 
             controller.generateUppaalModel.setMaskType(JFXRippler.RipplerMask.CIRCLE);
             controller.generateUppaalModel.setRipplerFill(color.getTextColor(colorIntensity));
+        if(UPPAALDriverManager.getInstance() instanceof UPPAALDriver){
+            controller.generateUppaalModel.setEnabled(true);
+            controller.generateUppaalModel.setOpacity(1);
         } else {
             controller.generateUppaalModel.setEnabled(false);
             controller.generateUppaalModel.setOpacity(0.3);
