@@ -695,21 +695,19 @@ public class HUPPAALController implements Initializable {
 
     @FXML
     private void generateUppaalModelClicked() {
-        if(UPPAALDriverManager.getInstance() instanceof DummyUPPAALDriver){
-            final Component mainComponent = HUPPAAL.getProject().getMainComponent();
+        final Component mainComponent = HUPPAAL.getProject().getMainComponent();
 
-            if (mainComponent == null) {
-                HUPPAAL.showToast("Cannot generate UPPAAL file without a main component");
-                return; // We cannot generate a UPPAAL file without a main component
-            }
+        if (mainComponent == null) {
+            HUPPAAL.showToast("Cannot generate UPPAAL file without a main component");
+            return; // We cannot generate a UPPAAL file without a main component
+        }
 
-            try {
-                UPPAALDriverManager.getInstance().generateDebugUPPAALModel();
-                HUPPAAL.showToast("UPPAAL debug file stored");
-            } catch (final Exception e) {
-                HUPPAAL.showToast("UPPAAL debug file not stored: " + e.getMessage());
-                e.printStackTrace();
-            }
+        try {
+            UPPAALDriverManager.getInstance().generateDebugUPPAALModel();
+            HUPPAAL.showToast("UPPAAL debug file stored");
+        } catch (final Exception e) {
+            HUPPAAL.showToast("UPPAAL debug file not stored: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
