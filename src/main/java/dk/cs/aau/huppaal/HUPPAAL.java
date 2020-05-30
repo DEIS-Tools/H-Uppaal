@@ -3,8 +3,6 @@ package dk.cs.aau.huppaal;
 import dk.cs.aau.huppaal.abstractions.Component;
 import dk.cs.aau.huppaal.abstractions.Project;
 import dk.cs.aau.huppaal.abstractions.Query;
-import dk.cs.aau.huppaal.backend.IUPPAALDriver;
-import dk.cs.aau.huppaal.backend.UPPAALDriver;
 import dk.cs.aau.huppaal.backend.UPPAALDriverManager;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.controllers.CanvasController;
@@ -307,6 +305,10 @@ public class HUPPAAL extends Application {
         }catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void uppaalDriverUpdated(){
+        presentation.uppaalDriverUpdated();
     }
 
     private static void deserializeProject(final File projectFolder) throws IOException {

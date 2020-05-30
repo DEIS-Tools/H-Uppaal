@@ -9,21 +9,14 @@ import java.io.File;
 import java.util.function.Consumer;
 
 public class DummyUPPAALDriver implements IUPPAALDriver {
-
-    private final String serverFilePath;
-
-    public DummyUPPAALDriver(String serverFilePath){
-        this.serverFilePath = serverFilePath;
-    }
-
     @Override
     public void generateDebugUPPAALModel() throws Exception, BackendException {
-        throw new BackendException("The UPPAAL server file: '" + serverFilePath + "' does not exist");
+        throw new BackendException("The specified UPPAAL server file does not exist. Check the 'warnings' tab for more information");
     }
 
     @Override
     public void buildHUPPAALDocument() throws BackendException, Exception {
-        throw new BackendException("The UPPAAL server file: '" + serverFilePath + "' does not exist");
+        throw new BackendException("The specified UPPAAL server file does not exist. Check the 'warnings' tab for more information");
     }
 
     @Override

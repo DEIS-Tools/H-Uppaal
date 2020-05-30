@@ -2,6 +2,7 @@ package dk.cs.aau.huppaal.backend;
 
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
+
 import java.io.File;
 
 public final class UPPAALDriverManager {
@@ -18,11 +19,15 @@ public final class UPPAALDriverManager {
             File serverFile = new File(uppaalFilePath);
             if(serverFile.exists()){
                 instance = new UPPAALDriver(serverFile);
-                HUPPAAL.showToast("Bam");
             } else {
-                CodeAnalysis.addMessage(null, new CodeAnalysis.Message("Please set the UPPAAL server location through the 'Preferences' tab.\n" +
-                        "Make sure to have UPPAAL installed. This can be done at uppaal.org", CodeAnalysis.MessageType.WARNING));
-                instance = new DummyUPPAALDriver(uppaalFilePath);
+                if(CodeAnalysis.getWarnings().contains(new CodeAnalysis.Message("Please set the UPPAAL server location through the 'Preferences' tab.\n" +
+                        "Make sure to have UPPAAL installed. This can be done at uppaal.org", CodeAnalysis.MessageType.WARNING))){
+                    HUPPAAL.showToast("What");
+                } else{
+                    CodeAnalysis.addMessage(null, new CodeAnalysis.Message("Please set the UPPAAL server location through the 'Preferences' tab.\n" +
+                            "Make sure to have UPPAAL installed. This can be done at uppaal.org", CodeAnalysis.MessageType.WARNING));
+                }
+                instance = new DummyUPPAALDriver();
             }
         }
 
@@ -35,6 +40,7 @@ public final class UPPAALDriverManager {
 
     public static void setUppaalFilePath(String uppaalFilePath) {
         instance = null;
+        HUPPAAL.uppaalDriverUpdated();
         HUPPAAL.preferences.put("uppaalLocation", uppaalFilePath);
         UPPAALDriverManager.uppaalFilePath = uppaalFilePath;
     }

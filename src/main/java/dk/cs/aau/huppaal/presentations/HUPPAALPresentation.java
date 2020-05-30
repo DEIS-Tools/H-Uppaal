@@ -576,4 +576,8 @@ public class HUPPAALPresentation extends StackPane {
         controller.dialogContainer.setVisible(true);
         controller.dialog.show(controller.dialogContainer);
     }
+
+    public void uppaalDriverUpdated(){
+        initializeGenerateUppaalModelButton();
+    }
 }
