@@ -41,8 +41,7 @@ public final class UPPAALDriverManager {
     public static void setUppaalFilePath(String filePath) {
         instance = null;
         uppaalFilePath = filePath;
+        HUPPAAL.preferences.put("uppaalLocation", filePath);
         HUPPAAL.uppaalDriverUpdated();
-        HUPPAAL.preferences.put("uppaalLocation", uppaalFilePath);
-        UPPAALDriverManager.uppaalFilePath = filePath;
     }
 }

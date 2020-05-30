@@ -55,7 +55,7 @@ public class HUPPAAL extends Application {
 
     {
         try {
-            preferences = Preferences.systemRoot();
+            preferences = Preferences.userRoot().node("HUPPAAL");
             final CodeSource codeSource = HUPPAAL.class.getProtectionDomain().getCodeSource();
             final File jarFile = new File(codeSource.getLocation().toURI().getPath());
             final String rootDirectory = jarFile.getParentFile().getPath() + File.separator;

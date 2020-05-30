@@ -394,7 +394,7 @@ public class HUPPAALController implements Initializable {
             filePicker.getExtensionFilters().add(new FileChooser.ExtensionFilter("UPPAAL server", "*.exe"));
 
             // The initial location for the file choosing dialog
-            final File uppaalFile = new File(UPPAALDriverManager.getUppaalFilePath());
+            final File uppaalFile = new File(UPPAALDriverManager.getUppaalFilePath()).getAbsoluteFile().getParentFile();
 
             // If the file does not exist, use a default location
             if(uppaalFile.exists()) {
