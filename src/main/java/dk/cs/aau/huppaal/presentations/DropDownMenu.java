@@ -1,5 +1,6 @@
 package dk.cs.aau.huppaal.presentations;
 
+import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.colors.EnabledColor;
 import com.jfoenix.controls.JFXPopup;
@@ -17,6 +18,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.stage.Screen;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -87,8 +89,23 @@ public class DropDownMenu {
         popup.hide();
     }
 
-    public void show(final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
-        popup.show(this.source, vAlign, hAlign, initOffsetX, initOffsetY);
+    public void show(final MouseEvent event, final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
+        //Check if the dropdown will appear outside the screen and change the offset accordingly
+        double offsetX = initOffsetX;
+        double offsetY = initOffsetY;
+        double distEdgeX = Screen.getPrimary().getBounds().getWidth() - event.getScreenX();
+        double distEdgeY = Screen.getPrimary().getBounds().getHeight() - event.getScreenY();
+
+        if(distEdgeX < width){
+            offsetX -= width - distEdgeX;
+        }
+
+        //400 is used, because the animation prevents the height from being accessed before it is already shown
+        if(distEdgeY < 400){
+            offsetY -= 400 - distEdgeY;
+        }
+
+        popup.show(this.source, vAlign, hAlign, offsetX, offsetY);
     }
 
     public void addListElement(final String s) {

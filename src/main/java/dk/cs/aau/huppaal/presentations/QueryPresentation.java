@@ -111,7 +111,7 @@ public class QueryPresentation extends AnchorPane {
 
         detailsButton.getChildren().get(0).setOnMousePressed(event -> {
             // Show the popup
-            dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT, -20, 35);
+            dropDownMenu.show(event, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.RIGHT, -20, 35);
         });
     }
 

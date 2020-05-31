@@ -548,7 +548,7 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                             }, "Deleted edge " + getEdge(), "delete");
                         });
 
-                        dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, event.getX(), event.getY());
+                        dropDownMenu.show(event, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, event.getX(), event.getY());
 
                         DropDownMenu.x = CanvasPresentation.mouseTracker.getGridX();
                         DropDownMenu.y = CanvasPresentation.mouseTracker.getGridY();

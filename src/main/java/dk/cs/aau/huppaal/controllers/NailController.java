@@ -71,7 +71,7 @@ public class NailController implements Initializable, SelectHelper.ItemSelectabl
         initializeMouseControls();
     }
 
-    private void showContextMenu() {
+    private void showContextMenu(final MouseEvent event) {
 
         final DropDownMenu contextMenu = new DropDownMenu(((Pane) root.getParent().getParent().getParent().getParent()), root, 230, true);
 
@@ -113,7 +113,7 @@ public class NailController implements Initializable, SelectHelper.ItemSelectabl
             contextMenu.close();
         }));
 
-        contextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0.5,0.5);
+        contextMenu.show(event, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0.5,0.5);
     }
 
     private void initializeMouseControls() {
@@ -123,7 +123,7 @@ public class NailController implements Initializable, SelectHelper.ItemSelectabl
             if (event.isShortcutDown()) {
                 SelectHelper.addToSelection(this);
             } else if(event.isSecondaryButtonDown()) {
-                showContextMenu();
+                showContextMenu(event);
             } else {
                 SelectHelper.select(this);
             }

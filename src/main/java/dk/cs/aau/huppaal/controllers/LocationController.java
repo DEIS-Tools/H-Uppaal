@@ -373,7 +373,7 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
 
                 if (unfinishedEdge == null && event.getButton().equals(MouseButton.SECONDARY)) {
                     initializeDropDownMenu();
-                    dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 20, 20);
+                    dropDownMenu.show(event, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 20, 20);
                 } else if (unfinishedEdge != null) {
                     unfinishedEdge.setTargetLocation(getLocation());
 
