@@ -34,9 +34,14 @@ public final class UPPAALDriverManager {
     }
 
     public static void setUppaalFilePath(String filePath) {
+        //Set the instance to null to allow the correct UPPAALDriver to be instantiated
         instance = null;
+
+        //Update uppaalFilePath and save the new value to preferences
         uppaalFilePath = filePath;
         HUPPAAL.preferences.put("uppaalLocation", filePath);
+
+        //Let HUPPAAL know that the UPPAALDriver have been updated
         HUPPAAL.uppaalDriverUpdated();
     }
 }

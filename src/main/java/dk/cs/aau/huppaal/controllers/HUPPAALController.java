@@ -239,7 +239,7 @@ public class HUPPAALController implements Initializable {
 
         initializeReachabilityAnalysisThread();
 
-        //Adds a tooltip to 'generateUppaalModel' JFXRippler if UPPAAL is not found
+        //Adds a tooltip to the generateUppaalModelButton if UPPAAL was not found
         IUPPAALDriver uppaalDriver = UPPAALDriverManager.getInstance();
         if(uppaalDriver instanceof DummyUPPAALDriver){
             JFXTooltip generateUPPAALToolTip = new JFXTooltip("The UPPAAL server file does not exist");

@@ -580,6 +580,7 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     public void uppaalDriverUpdated(){
+        //Reflect update in GUI, by resetting the GenerateUPPAALModelButton
         initializeGenerateUppaalModelButton();
     }
 }

@@ -308,6 +308,7 @@ public class HUPPAAL extends Application {
     }
 
     public static void uppaalDriverUpdated(){
+        //The UPPAALDriver has been updated, notify the presentation
         presentation.uppaalDriverUpdated();
     }
 
