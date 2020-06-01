@@ -175,9 +175,24 @@ public class DropDownMenu {
         subMenuContent.setTranslateY(offset);
 
         subMenuContent.setOpacity(0);
+
         final Runnable showHideSubMenu = () -> {
             if (showSubMenu.get() || isHoveringSubMenu.get()) {
                 subMenuContent.setOpacity(1);
+
+                //Set the x-coordinate of the submenu to avoid screen overflow
+                if(Screen.getPrimary().getBounds().getWidth() - (popup.getAnchorX() + width) < width){
+                    subMenuContent.setTranslateX(- width + 35);
+                } else{
+                    subMenuContent.setTranslateX(width - 40);
+                }
+
+                //Set the y-coordinate of the submenu to avoid screen overflow
+                final double height = subMenu.content.getHeight();
+                if(Screen.getPrimary().getBounds().getHeight() - height < height){
+                    subMenuContent.setTranslateY((Screen.getPrimary().getBounds().getHeight() - height) - height);
+                }
+
             } else {
                 subMenuContent.setOpacity(0);
             }
