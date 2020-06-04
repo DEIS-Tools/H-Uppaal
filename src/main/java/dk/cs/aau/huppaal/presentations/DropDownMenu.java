@@ -187,10 +187,12 @@ public class DropDownMenu {
 
                 //Set the y-coordinate of the submenu to avoid screen overflow
                 final double height = subMenu.list.getHeight();
-                final double distToEdgeY = Screen.getPrimary().getBounds().getHeight() - list.localToScreen(list.getLayoutBounds()).getMinY();
+                final double distToEdgeY = Screen.getPrimary().getBounds().getHeight() - list.localToScreen(list.getLayoutBounds()).getMaxY();
+                HUPPAAL.showToast((distToEdgeY) + "   " + (height));
 
-                if(distToEdgeY < height + 10){
-                    subMenuContent.setTranslateY(distToEdgeY - (height + 10));
+                //height/2 makes the submenu edge the bottom of the screen, the + 20 raises it
+                if(distToEdgeY < height/2 - 20){
+                    subMenuContent.setTranslateY(distToEdgeY - height/2 - 20);
                 } else {
                     subMenuContent.setTranslateY(offset);
                 }
