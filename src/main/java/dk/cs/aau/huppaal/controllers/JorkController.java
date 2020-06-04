@@ -27,7 +27,6 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Path;
 
 import java.net.URL;
@@ -121,7 +120,7 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
 
     private void showContextMenu(final MouseEvent event) {
 
-        final DropDownMenu contextMenu = new DropDownMenu(((Pane) root.getParent().getParent().getParent().getParent()), root, 230, true);
+        final DropDownMenu contextMenu = new DropDownMenu(root, 230, true);
 
         contextMenu.addClickableListElement("Draw edge",
                 (mouseEvent) -> {

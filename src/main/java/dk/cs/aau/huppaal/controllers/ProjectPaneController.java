@@ -74,7 +74,7 @@ public class ProjectPaneController implements Initializable {
     private void initializeColorSelector(final FilePresentation filePresentation) {
         final JFXRippler moreInformation = (JFXRippler) filePresentation.lookup("#moreInformation");
         final int listWidth = 230;
-        final DropDownMenu moreInformationDropDown = new DropDownMenu(root, moreInformation, listWidth, true);
+        final DropDownMenu moreInformationDropDown = new DropDownMenu(moreInformation, listWidth, true);
         final Component component = filePresentation.getComponent();
 
         moreInformationDropDown.addListElement("Configuration");

@@ -1,6 +1,5 @@
 package dk.cs.aau.huppaal.presentations;
 
-import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.colors.EnabledColor;
 import com.jfoenix.controls.JFXPopup;
@@ -45,7 +44,7 @@ public class DropDownMenu {
     private StackPane subMenuContent;
     private final Node source;
 
-    public DropDownMenu(final Pane container, final Node source, final int width, final boolean closeOnMouseExit) {
+    public DropDownMenu(final Node source, final int width, final boolean closeOnMouseExit) {
         this.width = width;
         this.source = source;
 
@@ -90,19 +89,21 @@ public class DropDownMenu {
     }
 
     public void show(final MouseEvent event, final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
+        //Needed to update the location of the popup before it is displayed
+        this.flashDropdown();
+
         //Check if the dropdown will appear outside the screen and change the offset accordingly
         double offsetX = initOffsetX;
         double offsetY = initOffsetY;
-        double distEdgeX = Screen.getPrimary().getBounds().getWidth() - event.getScreenX();
-        double distEdgeY = Screen.getPrimary().getBounds().getHeight() - event.getScreenY();
+        double distEdgeX = Screen.getPrimary().getBounds().getWidth() - (event.getScreenX() + offsetX);
+        double distEdgeY = Screen.getPrimary().getBounds().getHeight() - (event.getScreenY() + offsetY);
 
-        if(distEdgeX < width){
-            offsetX -= width - distEdgeX;
+        if(distEdgeX < width + 20){
+            offsetX -= (width + 20) - distEdgeX;
         }
 
-        //400 is used, because the animation prevents the height from being accessed before it is already shown
-        if(distEdgeY < 400){
-            offsetY -= 400 - distEdgeY;
+        if(distEdgeY < list.getHeight() + 20){
+            offsetY -= (list.getHeight() + 20) - distEdgeY;
         }
 
         popup.show(this.source, vAlign, hAlign, offsetX, offsetY);
@@ -188,7 +189,6 @@ public class DropDownMenu {
                 //Set the y-coordinate of the submenu to avoid screen overflow
                 final double height = subMenu.list.getHeight();
                 final double distToEdgeY = Screen.getPrimary().getBounds().getHeight() - list.localToScreen(list.getLayoutBounds()).getMaxY();
-                HUPPAAL.showToast((distToEdgeY) + "   " + (height));
 
                 //height/2 makes the submenu edge the bottom of the screen, the + 20 raises it
                 if(distToEdgeY < height/2 - 20){
@@ -455,5 +455,10 @@ public class DropDownMenu {
         ObjectProperty<Color> colorProperty();
 
         ObjectProperty<Color.Intensity> colorIntensityProperty();
+    }
+
+    private void flashDropdown() {
+        popup.show(this.source, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
+        this.close();
     }
 }

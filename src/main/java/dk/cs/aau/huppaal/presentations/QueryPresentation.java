@@ -82,7 +82,7 @@ public class QueryPresentation extends AnchorPane {
         detailsButton.setRipplerFill(Color.GREY.getColor(Color.Intensity.I500));
         detailsButton.setMaskType(JFXRippler.RipplerMask.CIRCLE);
 
-        final DropDownMenu dropDownMenu = new DropDownMenu((Pane) getParent(), detailsButton, 230, true);
+        final DropDownMenu dropDownMenu = new DropDownMenu(detailsButton, 230, true);
 
         dropDownMenu.addTogglableListElement("Run periodically", query.isPeriodicProperty(), event -> {
             // Toggle the property
