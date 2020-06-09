@@ -89,9 +89,6 @@ public class DropDownMenu {
     }
 
     public void show(final MouseEvent event, final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
-        //Needed to update the location of the popup before it is displayed
-        this.flashDropdown();
-
         //Check if the dropdown will appear outside the screen and change the offset accordingly
         double offsetX = initOffsetX;
         double offsetY = initOffsetY;
@@ -105,6 +102,9 @@ public class DropDownMenu {
         if(distEdgeY < list.getHeight() + 20){
             offsetY -= (list.getHeight() + 20) - distEdgeY;
         }
+
+        //Needed to update the location of the popup before it is displayed
+        this.flashDropdown();
 
         popup.show(this.source, vAlign, hAlign, offsetX, offsetY);
     }
