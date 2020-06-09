@@ -13,6 +13,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
@@ -41,7 +42,7 @@ public class DropDownMenu {
     private final SimpleBooleanProperty isHoveringMenu = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty showSubMenu = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty canIShowSubMenu = new SimpleBooleanProperty(false);
-    private StackPane subMenuContent;
+    private ScrollPane subMenuContent;
     private final Node source;
 
     public DropDownMenu(final Node source, final int width, final boolean closeOnMouseExit) {
@@ -164,16 +165,22 @@ public class DropDownMenu {
         label.getStyleClass().add("body2");
         label.setMinWidth(width);
 
-        subMenuContent = subMenu.content;
+        subMenuContent = new ScrollPane(subMenu.content.getChildren().get(0));
+        subMenuContent.setMinHeight(400);
+        subMenuContent.setMinWidth(width);
+        subMenuContent.setFitToWidth(true);
+        subMenuContent.setFitToHeight(true);
+        subMenuContent.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        subMenuContent.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         if (!this.content.getChildren().contains(subMenuContent)) {
-            subMenuContent.setStyle("-fx-padding: 0 0 0 5;");
+            subMenuContent.setStyle("-fx-padding: 0 0 0 0;");
             subMenuContent.setMinWidth(subMenuContent.getMinWidth() + 1);
             subMenuContent.setMaxWidth(subMenuContent.getMinWidth() + 1);
-            subMenuContent.setTranslateX(width - 40);
+            subMenuContent.setTranslateX(width + 5);
             this.content.getChildren().add(subMenuContent);
         }
 
-        subMenuContent.setTranslateY(offset);
+        subMenuContent.setTranslateY(offset + subMenuContent.getHeight()/2);
 
         subMenuContent.setOpacity(0);
 
@@ -181,20 +188,20 @@ public class DropDownMenu {
             if (showSubMenu.get() || isHoveringSubMenu.get()) {
                 //Set the x-coordinate of the submenu to avoid screen overflow
                 if(Screen.getPrimary().getBounds().getWidth() - (popup.getAnchorX() + width) < width){
-                    subMenuContent.setTranslateX(- width + 35);
+                    subMenuContent.setTranslateX(- width);
                 } else{
-                    subMenuContent.setTranslateX(width - 40);
+                    subMenuContent.setTranslateX(width);
                 }
 
                 //Set the y-coordinate of the submenu to avoid screen overflow
-                final double height = subMenu.list.getHeight();
-                final double distToEdgeY = Screen.getPrimary().getBounds().getHeight() - list.localToScreen(list.getLayoutBounds()).getMaxY();
+                final double height = subMenuContent.getMaxHeight();
+                final double distToEdgeY = Screen.getPrimary().getBounds().getHeight() - subMenuContent.localToScreen(subMenuContent.getLayoutBounds()).getMaxY();
 
-                //height/2 makes the submenu edge the bottom of the screen, the + 20 raises it
-                if(distToEdgeY < height/2 - 20){
-                    subMenuContent.setTranslateY(distToEdgeY - height/2 - 20);
+                //height/2 makes the submenu edge the bottom of the screen, the + 5 raises it
+                if(distToEdgeY < (height/2 + 5)){
+                    subMenuContent.setTranslateY(distToEdgeY - (height/2 + 5));
                 } else {
-                    subMenuContent.setTranslateY(offset);
+                    subMenuContent.setTranslateY(offset + subMenuContent.getHeight()/2);
                 }
 
                 subMenuContent.setOpacity(1);
