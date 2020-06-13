@@ -90,12 +90,16 @@ public class DropDownMenu {
     }
 
     public void show(final MouseEvent event, final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
+        //Needed to update the location of the popup before it is displayed
+        this.flashDropdown();
+
         //Check if the dropdown will appear outside the screen and change the offset accordingly
         double offsetX = initOffsetX;
         double offsetY = initOffsetY;
         double distEdgeX = Screen.getPrimary().getBounds().getWidth() - (event.getScreenX() + offsetX);
         double distEdgeY = Screen.getPrimary().getBounds().getHeight() - (event.getScreenY() + offsetY);
 
+        //The additional 20 is added for margin
         if(distEdgeX < width + 20){
             offsetX -= (width + 20) - distEdgeX;
         }
@@ -104,8 +108,12 @@ public class DropDownMenu {
             offsetY -= (list.getHeight() + 20) - distEdgeY;
         }
 
-        //Needed to update the location of the popup before it is displayed
-        this.flashDropdown();
+        //Set the x-coordinate of the submenu to avoid screen overflow
+        if(Screen.getPrimary().getBounds().getWidth() - (popup.getAnchorX() + width) < width){
+            subMenuContent.setTranslateX(- width);
+        } else{
+            subMenuContent.setTranslateX(width);
+        }
 
         popup.show(this.source, vAlign, hAlign, offsetX, offsetY);
     }
@@ -166,44 +174,24 @@ public class DropDownMenu {
         label.setMinWidth(width);
 
         subMenuContent = new ScrollPane(subMenu.content.getChildren().get(0));
-        subMenuContent.setMinHeight(400);
+        subMenuContent.setMinHeight(340 - offset);
         subMenuContent.setMinWidth(width);
         subMenuContent.setFitToWidth(true);
         subMenuContent.setFitToHeight(true);
         subMenuContent.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         subMenuContent.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        subMenuContent.setTranslateY(offset + subMenuContent.getMinHeight()/2);
         if (!this.content.getChildren().contains(subMenuContent)) {
             subMenuContent.setStyle("-fx-padding: 0 0 0 0;");
             subMenuContent.setMinWidth(subMenuContent.getMinWidth() + 1);
             subMenuContent.setMaxWidth(subMenuContent.getMinWidth() + 1);
-            subMenuContent.setTranslateX(width + 5);
             this.content.getChildren().add(subMenuContent);
         }
-
-        subMenuContent.setTranslateY(offset + subMenuContent.getHeight()/2);
 
         subMenuContent.setOpacity(0);
 
         final Runnable showHideSubMenu = () -> {
             if (showSubMenu.get() || isHoveringSubMenu.get()) {
-                //Set the x-coordinate of the submenu to avoid screen overflow
-                if(Screen.getPrimary().getBounds().getWidth() - (popup.getAnchorX() + width) < width){
-                    subMenuContent.setTranslateX(- width);
-                } else{
-                    subMenuContent.setTranslateX(width);
-                }
-
-                //Set the y-coordinate of the submenu to avoid screen overflow
-                final double height = subMenuContent.getMaxHeight();
-                final double distToEdgeY = Screen.getPrimary().getBounds().getHeight() - subMenuContent.localToScreen(subMenuContent.getLayoutBounds()).getMaxY();
-
-                //height/2 makes the submenu edge the bottom of the screen, the + 5 raises it
-                if(distToEdgeY < (height/2 + 5)){
-                    subMenuContent.setTranslateY(distToEdgeY - (height/2 + 5));
-                } else {
-                    subMenuContent.setTranslateY(offset + subMenuContent.getHeight()/2);
-                }
-
                 subMenuContent.setOpacity(1);
             } else {
                 subMenuContent.setOpacity(0);
