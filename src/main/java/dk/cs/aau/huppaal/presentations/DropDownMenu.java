@@ -97,8 +97,8 @@ public class DropDownMenu {
         //Check if the dropdown will appear outside the screen and change the offset accordingly
         double offsetX = initOffsetX;
         double offsetY = initOffsetY;
-        double distEdgeX = Screen.getPrimary().getBounds().getWidth() - (popup.getX() + offsetX + 20);
-        double distEdgeY = Screen.getPrimary().getBounds().getHeight() - (popup.getY() + offsetY + 20);
+        double distEdgeX = Screen.getPrimary().getBounds().getWidth() - (popup.getAnchorX() + offsetX);
+        double distEdgeY = Screen.getPrimary().getBounds().getHeight() - (popup.getAnchorY() + offsetY);
 
         //The additional 20 is added for margin
         if(distEdgeX < width + 20){
