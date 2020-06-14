@@ -18,7 +18,10 @@ public final class UPPAALDriverManager {
         if(instance == null){
             File serverFile = new File(uppaalFilePath);
             if(serverFile.exists()){
+                CodeAnalysis.removeMessage(null, new CodeAnalysis.Message("Please set the UPPAAL server location through the 'Preferences' tab.\n" +
+                        "Make sure to have UPPAAL installed. This can be done at uppaal.org", CodeAnalysis.MessageType.WARNING));
                 instance = new UPPAALDriver(serverFile);
+                //Todo: the list of warnings is updated, but the Interface does not represent this change
             } else {
                 CodeAnalysis.addMessage(null, new CodeAnalysis.Message("Please set the UPPAAL server location through the 'Preferences' tab.\n" +
                             "Make sure to have UPPAAL installed. This can be done at uppaal.org", CodeAnalysis.MessageType.WARNING));
