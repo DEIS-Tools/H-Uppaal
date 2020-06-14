@@ -1,5 +1,6 @@
 package dk.cs.aau.huppaal.controllers;
 
+import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.*;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.code_analysis.Nearable;
@@ -512,9 +513,7 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                 links.forEach((link) -> link.setOnMousePressed(event -> {
 
                     if (event.isSecondaryButtonDown() && getComponent().getUnfinishedEdge() == null) {
-                        event.consume();
-
-                        final DropDownMenu dropDownMenu = new DropDownMenu(dropDownMenuHelperCircle, 230, true);
+                        final DropDownMenu dropDownMenu = new DropDownMenu(edgeRoot, 230, true);
 
                         addEdgePropertyRow(dropDownMenu, "Add Select", Edge.PropertyType.SELECTION, link);
                         addEdgePropertyRow(dropDownMenu, "Add Guard", Edge.PropertyType.GUARD, link);
@@ -547,7 +546,7 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                             }, "Deleted edge " + getEdge(), "delete");
                         });
 
-                        dropDownMenu.show(event, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
+                        dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, event.getX(), event.getY());
 
                         DropDownMenu.x = CanvasPresentation.mouseTracker.getGridX();
                         DropDownMenu.y = CanvasPresentation.mouseTracker.getGridY();

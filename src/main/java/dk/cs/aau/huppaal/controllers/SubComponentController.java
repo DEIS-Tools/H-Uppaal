@@ -296,7 +296,7 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
                 }, "Created edge starting from subcomponent " + getSubComponent().getIdentifier(), "add-circle");
             } else if (event.isSecondaryButtonDown() && unfinishedEdge == null) {
                 initializeDropDownMenu();
-                dropDownMenu.show(event, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, event.getX() - 5, event.getY() - 5);
+                dropDownMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, event.getX() - 5, event.getY() - 5);
             } else if(event.isPrimaryButtonDown()) {
                 // If the sub component is pressed twice open its corresponding component in the canvas
                 if(event.getClickCount() > 1) {

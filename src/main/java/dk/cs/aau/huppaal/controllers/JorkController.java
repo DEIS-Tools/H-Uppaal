@@ -98,7 +98,7 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
                 unfinishedEdge.setTargetJork(getJork());
 
             } else if (event.isSecondaryButtonDown()) {
-                showContextMenu(event);
+                showContextMenu();
             } else if ((event.isShiftDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
                 final Edge newEdge = new Edge(getJork());
 
@@ -118,7 +118,7 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
         ItemDragHelper.makeDraggable(root, this::getDragBounds);
     }
 
-    private void showContextMenu(final MouseEvent event) {
+    private void showContextMenu() {
 
         final DropDownMenu contextMenu = new DropDownMenu(root, 230, true);
 
@@ -143,7 +143,7 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
 
         contextMenu.addSpacerElement();
 
-        contextMenu.addClickableListElement("Delete", (mouseEvent -> {
+        contextMenu.addClickableListElement("Delete", (event -> {
             final Component component = CanvasController.getActiveComponent();
             final Jork jork = getJork();
 
@@ -163,7 +163,7 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
             contextMenu.close();
         }));
 
-        contextMenu.show(event, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
+        contextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
     }
 
     public Jork getJork() {

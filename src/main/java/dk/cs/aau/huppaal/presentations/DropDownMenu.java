@@ -1,5 +1,6 @@
 package dk.cs.aau.huppaal.presentations;
 
+import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.colors.EnabledColor;
 import com.jfoenix.controls.JFXPopup;
@@ -89,15 +90,15 @@ public class DropDownMenu {
         popup.hide();
     }
 
-    public void show(final MouseEvent event, final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
+    public void show(final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
         //Needed to update the location of the popup before it is displayed
         this.flashDropdown();
 
         //Check if the dropdown will appear outside the screen and change the offset accordingly
         double offsetX = initOffsetX;
         double offsetY = initOffsetY;
-        double distEdgeX = Screen.getPrimary().getBounds().getWidth() - (event.getScreenX() + offsetX);
-        double distEdgeY = Screen.getPrimary().getBounds().getHeight() - (event.getScreenY() + offsetY);
+        double distEdgeX = Screen.getPrimary().getBounds().getWidth() - (popup.getX() + offsetX + 20);
+        double distEdgeY = Screen.getPrimary().getBounds().getHeight() - (popup.getY() + offsetY + 20);
 
         //The additional 20 is added for margin
         if(distEdgeX < width + 20){
@@ -108,11 +109,13 @@ public class DropDownMenu {
             offsetY -= (list.getHeight() + 20) - distEdgeY;
         }
 
-        //Set the x-coordinate of the submenu to avoid screen overflow
-        if(Screen.getPrimary().getBounds().getWidth() - (popup.getAnchorX() + width) < width){
-            subMenuContent.setTranslateX(- width);
-        } else{
-            subMenuContent.setTranslateX(width);
+        //Set the x-coordinate of the potential submenu to avoid screen overflow
+        if(subMenuContent != null){
+            if(Screen.getPrimary().getBounds().getWidth() - (popup.getAnchorX() + width) < width){
+                subMenuContent.setTranslateX(- width);
+            } else{
+                subMenuContent.setTranslateX(width);
+            }
         }
 
         popup.show(this.source, vAlign, hAlign, offsetX, offsetY);

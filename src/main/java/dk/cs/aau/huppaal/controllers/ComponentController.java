@@ -868,10 +868,10 @@ public class ComponentController implements Initializable {
             DropDownMenu.y = event.getY();
 
             if (unfinishedEdge == null) {
-                contextMenu.show(event, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
+                contextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
             } else {
                 initializeFinishEdgeContextMenu(unfinishedEdge);
-                finishEdgeContextMenu.show(event, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
+                finishEdgeContextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
             }
         } else if(event.isPrimaryButtonDown()) {
             // We are drawing an edge
