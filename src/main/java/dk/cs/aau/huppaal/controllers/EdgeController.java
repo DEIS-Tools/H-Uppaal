@@ -1,5 +1,6 @@
 package dk.cs.aau.huppaal.controllers;
 
+import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.*;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.code_analysis.Nearable;
@@ -671,6 +672,10 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
 
     @FXML
     public void edgePressed(final MouseEvent event) {
+        double centerX = edge.get().getTargetLocation().getX() - edge.get().getSourceLocation().getX();
+        double centerY = edge.get().getTargetLocation().getY() - edge.get().getSourceLocation().getY();
+        double placementOnLine = event.getX() + edge.get().getSourceLocation().getX() - centerX + (event.getY() + edge.get().getSourceLocation().getY() - centerY);
+
         if (!event.isShiftDown()) {
             event.consume();
 
@@ -679,6 +684,8 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
             } else {
                 SelectHelper.select(this);
             }
+
+            HUPPAAL.showToast((placementOnLine > 0 ? "Dragging target" : "Dragging source"));
         }
     }
 
