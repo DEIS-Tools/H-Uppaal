@@ -182,7 +182,6 @@ public class DropDownMenu {
         subMenuContent.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         subMenuContent.setTranslateY(offset + subMenuContent.getMinHeight()/2);
         if (!this.content.getChildren().contains(subMenuContent)) {
-            subMenuContent.setStyle("-fx-padding: 0 0 0 0;");
             subMenuContent.setMinWidth(subMenuContent.getMinWidth() + 1);
             subMenuContent.setMaxWidth(subMenuContent.getMinWidth() + 1);
             this.content.getChildren().add(subMenuContent);
