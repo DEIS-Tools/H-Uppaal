@@ -233,8 +233,6 @@ public class HUPPAALController implements Initializable {
             }
         });
 
-        //root.getScene().getWindow().outputScaleXProperty().addListener(e -> {  });
-
         initializeTabPane();
         initializeStatusBar();
         initializeMessages();
