@@ -1,5 +1,6 @@
 package dk.cs.aau.huppaal.controllers;
 
+import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.*;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.code_analysis.Nearable;
@@ -31,7 +32,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
@@ -513,9 +513,7 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                 links.forEach((link) -> link.setOnMousePressed(event -> {
 
                     if (event.isSecondaryButtonDown() && getComponent().getUnfinishedEdge() == null) {
-                        event.consume();
-
-                        final DropDownMenu dropDownMenu = new DropDownMenu(((Pane) edgeRoot.getParent().getParent().getParent().getParent()), dropDownMenuHelperCircle, 230, true);
+                        final DropDownMenu dropDownMenu = new DropDownMenu(edgeRoot, 230, true);
 
                         addEdgePropertyRow(dropDownMenu, "Add Select", Edge.PropertyType.SELECTION, link);
                         addEdgePropertyRow(dropDownMenu, "Add Guard", Edge.PropertyType.GUARD, link);

@@ -392,7 +392,7 @@ public class ComponentController implements Initializable {
                 return;
             }
 
-            contextMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 230, true);
+            contextMenu = new DropDownMenu(dropDownMenuHelperCircle, 230, true);
 
             contextMenu.addClickableListElement("Add Location", event -> {
                 contextMenu.close();
@@ -464,7 +464,7 @@ public class ComponentController implements Initializable {
 
             //If-statement added to avoid empty submenu being added and appearing as a white box
             if(HUPPAAL.getProject().getComponents().size() > 1){
-                subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
+                subMenu = new DropDownMenu(dropDownMenuHelperCircle, 150, false);
                 HUPPAAL.getProject().getComponents().forEach(c -> {
                     if (!c.equals(component)) {
                         subMenu.addClickableListElement(c.getName(), event -> {
@@ -491,7 +491,7 @@ public class ComponentController implements Initializable {
                 });
 
             } else {
-                subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
+                subMenu = new DropDownMenu(dropDownMenuHelperCircle, 150, false);
 
                 subMenu.addClickableAndDisableableListElement("No Subcomponents", new SimpleBooleanProperty(true), event -> {});
             }
@@ -557,7 +557,7 @@ public class ComponentController implements Initializable {
                 locationAware.yProperty().set(y);
             };
 
-            finishEdgeContextMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 230, true);
+            finishEdgeContextMenu = new DropDownMenu(dropDownMenuHelperCircle, 230, true);
 
             finishEdgeContextMenu.addListElement("Finish edge in a:");
 
@@ -621,7 +621,7 @@ public class ComponentController implements Initializable {
                 }, "Finished edge '" + unfinishedEdge + "' by adding '" + jork + "' to component '" + component.getName() + "'", "add-circle");
             });
 
-            final DropDownMenu subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
+            final DropDownMenu subMenu = new DropDownMenu(dropDownMenuHelperCircle, 150, false);
             HUPPAAL.getProject().getComponents().forEach(c -> {
                 if (!c.equals(component)) {
                     subMenu.addClickableListElement(c.getName(), event -> {

@@ -31,7 +31,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -115,7 +114,7 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
         if (dropDownMenuInitialized) return;
         dropDownMenuInitialized = true;
 
-        dropDownMenu = new DropDownMenu(((Pane) root.getParent().getParent().getParent()), root, 230, true);
+        dropDownMenu = new DropDownMenu(root, 230, true);
 
         dropDownMenu.addClickableListElement("Draw edge",
                 (event) -> {
