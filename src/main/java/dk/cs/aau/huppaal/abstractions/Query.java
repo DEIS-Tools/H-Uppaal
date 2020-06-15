@@ -1,8 +1,7 @@
 package dk.cs.aau.huppaal.abstractions;
 
 import dk.cs.aau.huppaal.HUPPAAL;
-import dk.cs.aau.huppaal.backend.QueryListener;
-import dk.cs.aau.huppaal.backend.UPPAALDriver;
+import dk.cs.aau.huppaal.backend.*;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
 import dk.cs.aau.huppaal.utility.serialize.Serializable;
 import com.google.gson.JsonObject;
@@ -90,6 +89,7 @@ public class Query implements Serializable {
     private Boolean forcedCancel = false;
 
     private void initializeRunQuery() {
+        IUPPAALDriver uppaalDriver = UPPAALDriverManager.getInstance();
         runQuery = (buildHUPPAALDocument) -> {
             setQueryState(QueryState.RUNNING);
 
@@ -101,9 +101,9 @@ public class Query implements Serializable {
 
             try {
                 if (buildHUPPAALDocument) {
-                    UPPAALDriver.buildHUPPAALDocument();
+                    uppaalDriver.buildHUPPAALDocument();
                 }
-                UPPAALDriver.runQuery(getQuery(),
+                uppaalDriver.runQuery(getQuery(),
                         aBoolean -> {
                             if (aBoolean) {
                                 setQueryState(QueryState.SUCCESSFUL);
@@ -119,7 +119,7 @@ public class Query implements Serializable {
                                 final Throwable cause = e.getCause();
                                 if (cause != null) {
                                     // We had trouble generating the model if we get a NullPointerException
-                                    if(cause instanceof NullPointerException) {
+                                    if (cause instanceof NullPointerException) {
                                         setQueryState(QueryState.UNKNOWN);
                                     } else {
                                         Platform.runLater(() -> HUPPAALController.openQueryDialog(this, cause.toString()));
@@ -133,6 +133,8 @@ public class Query implements Serializable {
                         new QueryListener(this)
                 ).start();
             } catch (final Exception e) {
+                setQueryState(QueryState.ERROR);
+                HUPPAAL.showToast("Query failed: " + e.getMessage());
                 e.printStackTrace();
             }
         };
@@ -169,7 +171,7 @@ public class Query implements Serializable {
 
     public void cancel() {
         if (getQueryState().equals(QueryState.RUNNING)) {
-            synchronized (UPPAALDriver.engineLock) {
+            synchronized (UPPAALDriverManager.getInstance().engineLock) {
                 if (engine != null) {
                     forcedCancel = true;
                     engine.cancel();

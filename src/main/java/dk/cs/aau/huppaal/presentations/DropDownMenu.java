@@ -425,9 +425,6 @@ public class DropDownMenu {
                 return;
             }
 
-            // If we do not do this, the method below will be called twice
-            if (!(event.getTarget() instanceof StackPane)) return;
-
             mouseEventConsumer.accept(event);
         });
 

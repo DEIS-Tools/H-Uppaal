@@ -3,9 +3,9 @@ package dk.cs.aau.huppaal.controllers;
 import dk.cs.aau.huppaal.Debug;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.*;
-import dk.cs.aau.huppaal.backend.BackendException;
-import dk.cs.aau.huppaal.backend.UPPAALDriver;
+import dk.cs.aau.huppaal.backend.*;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
+import dk.cs.aau.huppaal.issues.Warning;
 import dk.cs.aau.huppaal.presentations.*;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.colors.Color;
@@ -37,6 +37,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.WindowEvent;
+import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import javafx.util.Pair;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -107,6 +108,7 @@ public class HUPPAALController implements Initializable {
     public MenuBar menuBar;
     public MenuItem menuBarViewFilePanel;
     public MenuItem menuBarViewQueryPanel;
+    public MenuItem menuBarPreferencesUppaalLocation;
     public MenuItem menuBarFileSave;
     public MenuItem menuBarFileOpenProject;
     public MenuItem menuBarHelpHelp;
@@ -215,8 +217,6 @@ public class HUPPAALController implements Initializable {
 
         final BooleanProperty hasChanged = new SimpleBooleanProperty(false);
 
-
-
         HUPPAAL.getProject().getComponents().addListener(new ListChangeListener<Component>() {
             @Override
             public void onChanged(final Change<? extends Component> c) {
@@ -241,6 +241,14 @@ public class HUPPAALController implements Initializable {
 
         initializeReachabilityAnalysisThread();
 
+        //Adds a tooltip to the generateUppaalModelButton if UPPAAL was not found
+        IUPPAALDriver uppaalDriver = UPPAALDriverManager.getInstance();
+        if(uppaalDriver instanceof DummyUPPAALDriver){
+            JFXTooltip generateUPPAALToolTip = new JFXTooltip("The UPPAAL server file does not exist");
+            JFXTooltip.setVisibleDuration(new Duration(10000));
+            JFXTooltip.setLeftDelay(null); //Sets the standard delay time (200 milliseconds)
+            JFXTooltip.install(generateUppaalModel, generateUPPAALToolTip);
+        }
     }
 
     private void initializeReachabilityAnalysisThread() {
@@ -276,7 +284,7 @@ public class HUPPAALController implements Initializable {
 
                 try {
                     // Make sure that the model is generated
-                    UPPAALDriver.buildHUPPAALDocument();
+                    UPPAALDriverManager.getInstance().buildHUPPAALDocument();
 
                     HUPPAAL.getProject().getQueries().forEach(query -> {
                         if (query.isPeriodic()) query.run();
@@ -292,8 +300,8 @@ public class HUPPAALController implements Initializable {
                             component.getLocationsWithInitialAndFinal().forEach(location -> location.setReachability(Location.Reachability.EXCLUDED));
                         } else {
                             component.getLocationsWithInitialAndFinal().forEach(location -> {
-                                final String locationReachableQuery = UPPAALDriver.getLocationReachableQuery(location, component);
-                                final Thread verifyThread = UPPAALDriver.runQuery(
+                                final String locationReachableQuery = UPPAALDriverManager.getInstance().getLocationReachableQuery(location, component);
+                                final Thread verifyThread = UPPAALDriverManager.getInstance().runQuery(
                                         locationReachableQuery,
                                         (result -> {
                                             if (result) {
@@ -381,6 +389,26 @@ public class HUPPAALController implements Initializable {
             HUPPAAL.save();
         });
 
+        menuBarPreferencesUppaalLocation.setOnAction(event -> {
+            // Dialog title
+            final FileChooser filePicker = new FileChooser();
+            filePicker.setTitle("Choose UPPAAL server file");
+
+            // The initial location for the file choosing dialog
+            final File uppaalFile = new File(UPPAALDriverManager.getUppaalFilePath()).getAbsoluteFile().getParentFile();
+
+            // If the file does not exist, use a default location
+            if(uppaalFile.exists()) {
+                filePicker.setInitialDirectory(uppaalFile);
+            }
+
+            // Prompt the user to select the file (will halt the UI thread)
+            final File file = filePicker.showOpenDialog(root.getScene().getWindow());
+            if(file != null) {
+                UPPAALDriverManager.setUppaalFilePath(file.getAbsolutePath());
+            }
+        });
+
         menuBarFileOpenProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN));
         menuBarFileOpenProject.setOnAction(event -> {
             // Dialog title
@@ -390,7 +418,7 @@ public class HUPPAALController implements Initializable {
             // The initial location for the file choosing dialog
             final File jarDir = new File(System.getProperty("java.class.path")).getAbsoluteFile().getParentFile();
 
-            // If the file does not exist, we must be running it from a development environment, use an default location
+            // If the file does not exist, we must be running it from a development environment, use a default location
             if(jarDir.exists()) {
                 projectPicker.setInitialDirectory(jarDir);
             }
@@ -671,15 +699,15 @@ public class HUPPAALController implements Initializable {
         final Component mainComponent = HUPPAAL.getProject().getMainComponent();
 
         if (mainComponent == null) {
-            System.out.println("No main component");
+            HUPPAAL.showToast("Cannot generate UPPAAL file without a main component");
             return; // We cannot generate a UPPAAL file without a main component
         }
 
         try {
-            UPPAALDriver.generateDebugUPPAALModel();
+            UPPAALDriverManager.getInstance().generateDebugUPPAALModel();
             HUPPAAL.showToast("UPPAAL debug file stored");
         } catch (final Exception e) {
-            HUPPAAL.showToast("Could not store UPPAAL debug model due to an error");
+            HUPPAAL.showToast("UPPAAL debug file not stored: " + e.getMessage());
             e.printStackTrace();
         }
     }
