@@ -5,6 +5,7 @@ import com.jfoenix.controls.JFXSnackbarLayout;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Query;
 import dk.cs.aau.huppaal.backend.UPPAALDriver;
+import dk.cs.aau.huppaal.backend.UPPAALDriverManager;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
@@ -312,7 +313,7 @@ public class HUPPAALPresentation extends StackPane {
         list.setStyle("-fx-background-color: white; -fx-padding: 8;");
 
         popup.setPopupContent(list);
-        
+
         controller.colorSelected.setOnMouseClicked((e) -> {
             if (SelectHelper.getSelectedElements().size() == 0) return;
 
@@ -332,12 +333,14 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private void initializeGenerateUppaalModelButton() {
-        if(UPPAALDriver.getServerFile().exists()){
             final Color color = Color.GREY_BLUE;
             final Color.Intensity colorIntensity = Color.Intensity.I800;
 
             controller.generateUppaalModel.setMaskType(JFXRippler.RipplerMask.CIRCLE);
             controller.generateUppaalModel.setRipplerFill(color.getTextColor(colorIntensity));
+        if(UPPAALDriverManager.getInstance() instanceof UPPAALDriver){
+            controller.generateUppaalModel.setEnabled(true);
+            controller.generateUppaalModel.setOpacity(1);
         } else {
             controller.generateUppaalModel.setEnabled(false);
             controller.generateUppaalModel.setOpacity(0.3);
@@ -574,5 +577,10 @@ public class HUPPAALPresentation extends StackPane {
     public void showHelp() {
         controller.dialogContainer.setVisible(true);
         controller.dialog.show(controller.dialogContainer);
+    }
+
+    public void uppaalDriverUpdated(){
+        //Reflect update in GUI, by resetting the GenerateUPPAALModelButton
+        initializeGenerateUppaalModelButton();
     }
 }

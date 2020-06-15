@@ -1,8 +1,7 @@
 package dk.cs.aau.huppaal.abstractions;
 
 import dk.cs.aau.huppaal.HUPPAAL;
-import dk.cs.aau.huppaal.backend.QueryListener;
-import dk.cs.aau.huppaal.backend.UPPAALDriver;
+import dk.cs.aau.huppaal.backend.*;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
 import dk.cs.aau.huppaal.utility.serialize.Serializable;
 import com.google.gson.JsonObject;
@@ -90,56 +89,55 @@ public class Query implements Serializable {
     private Boolean forcedCancel = false;
 
     private void initializeRunQuery() {
-        if (UPPAALDriver.getServerFile().exists()) {
-            runQuery = (buildHUPPAALDocument) -> {
-                setQueryState(QueryState.RUNNING);
+        IUPPAALDriver uppaalDriver = UPPAALDriverManager.getInstance();
+        runQuery = (buildHUPPAALDocument) -> {
+            setQueryState(QueryState.RUNNING);
 
-                final Component mainComponent = HUPPAAL.getProject().getMainComponent();
+            final Component mainComponent = HUPPAAL.getProject().getMainComponent();
 
-                if (mainComponent == null) {
-                    return; // We cannot generate a UPPAAL file without a main component
+            if (mainComponent == null) {
+                return; // We cannot generate a UPPAAL file without a main component
+            }
+
+            try {
+                if (buildHUPPAALDocument) {
+                    uppaalDriver.buildHUPPAALDocument();
                 }
-
-                try {
-                    if (buildHUPPAALDocument) {
-                        UPPAALDriver.buildHUPPAALDocument();
-                    }
-                    UPPAALDriver.runQuery(getQuery(),
-                            aBoolean -> {
-                                if (aBoolean) {
-                                    setQueryState(QueryState.SUCCESSFUL);
-                                } else {
-                                    setQueryState(QueryState.ERROR);
-                                }
-                            },
-                            e -> {
-                                if (forcedCancel) {
-                                    setQueryState(QueryState.UNKNOWN);
-                                } else {
-                                    setQueryState(QueryState.SYNTAX_ERROR);
-                                    final Throwable cause = e.getCause();
-                                    if (cause != null) {
-                                        // We had trouble generating the model if we get a NullPointerException
-                                        if (cause instanceof NullPointerException) {
-                                            setQueryState(QueryState.UNKNOWN);
-                                        } else {
-                                            Platform.runLater(() -> HUPPAALController.openQueryDialog(this, cause.toString()));
-                                        }
+                uppaalDriver.runQuery(getQuery(),
+                        aBoolean -> {
+                            if (aBoolean) {
+                                setQueryState(QueryState.SUCCESSFUL);
+                            } else {
+                                setQueryState(QueryState.ERROR);
+                            }
+                        },
+                        e -> {
+                            if (forcedCancel) {
+                                setQueryState(QueryState.UNKNOWN);
+                            } else {
+                                setQueryState(QueryState.SYNTAX_ERROR);
+                                final Throwable cause = e.getCause();
+                                if (cause != null) {
+                                    // We had trouble generating the model if we get a NullPointerException
+                                    if (cause instanceof NullPointerException) {
+                                        setQueryState(QueryState.UNKNOWN);
+                                    } else {
+                                        Platform.runLater(() -> HUPPAALController.openQueryDialog(this, cause.toString()));
                                     }
                                 }
-                            },
-                            eng -> {
-                                engine = eng;
-                            },
-                            new QueryListener(this)
-                    ).start();
-                } catch (final Exception e) {
-                    setQueryState(QueryState.ERROR);
-                    HUPPAAL.showToast("Query failed: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            };
-        }
+                            }
+                        },
+                        eng -> {
+                            engine = eng;
+                        },
+                        new QueryListener(this)
+                ).start();
+            } catch (final Exception e) {
+                setQueryState(QueryState.ERROR);
+                HUPPAAL.showToast("Query failed: " + e.getMessage());
+                e.printStackTrace();
+            }
+        };
     }
 
     @Override
@@ -173,7 +171,7 @@ public class Query implements Serializable {
 
     public void cancel() {
         if (getQueryState().equals(QueryState.RUNNING)) {
-            synchronized (UPPAALDriver.engineLock) {
+            synchronized (UPPAALDriverManager.getInstance().engineLock) {
                 if (engine != null) {
                     forcedCancel = true;
                     engine.cancel();
