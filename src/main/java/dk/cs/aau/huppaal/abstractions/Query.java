@@ -90,52 +90,56 @@ public class Query implements Serializable {
     private Boolean forcedCancel = false;
 
     private void initializeRunQuery() {
-        runQuery = (buildHUPPAALDocument) -> {
-            setQueryState(QueryState.RUNNING);
+        if (UPPAALDriver.getServerFile().exists()) {
+            runQuery = (buildHUPPAALDocument) -> {
+                setQueryState(QueryState.RUNNING);
 
-            final Component mainComponent = HUPPAAL.getProject().getMainComponent();
+                final Component mainComponent = HUPPAAL.getProject().getMainComponent();
 
-            if (mainComponent == null) {
-                return; // We cannot generate a UPPAAL file without a main component
-            }
-
-            try {
-                if (buildHUPPAALDocument) {
-                    UPPAALDriver.buildHUPPAALDocument();
+                if (mainComponent == null) {
+                    return; // We cannot generate a UPPAAL file without a main component
                 }
-                UPPAALDriver.runQuery(getQuery(),
-                        aBoolean -> {
-                            if (aBoolean) {
-                                setQueryState(QueryState.SUCCESSFUL);
-                            } else {
-                                setQueryState(QueryState.ERROR);
-                            }
-                        },
-                        e -> {
-                            if (forcedCancel) {
-                                setQueryState(QueryState.UNKNOWN);
-                            } else {
-                                setQueryState(QueryState.SYNTAX_ERROR);
-                                final Throwable cause = e.getCause();
-                                if (cause != null) {
-                                    // We had trouble generating the model if we get a NullPointerException
-                                    if(cause instanceof NullPointerException) {
-                                        setQueryState(QueryState.UNKNOWN);
-                                    } else {
-                                        Platform.runLater(() -> HUPPAALController.openQueryDialog(this, cause.toString()));
+
+                try {
+                    if (buildHUPPAALDocument) {
+                        UPPAALDriver.buildHUPPAALDocument();
+                    }
+                    UPPAALDriver.runQuery(getQuery(),
+                            aBoolean -> {
+                                if (aBoolean) {
+                                    setQueryState(QueryState.SUCCESSFUL);
+                                } else {
+                                    setQueryState(QueryState.ERROR);
+                                }
+                            },
+                            e -> {
+                                if (forcedCancel) {
+                                    setQueryState(QueryState.UNKNOWN);
+                                } else {
+                                    setQueryState(QueryState.SYNTAX_ERROR);
+                                    final Throwable cause = e.getCause();
+                                    if (cause != null) {
+                                        // We had trouble generating the model if we get a NullPointerException
+                                        if (cause instanceof NullPointerException) {
+                                            setQueryState(QueryState.UNKNOWN);
+                                        } else {
+                                            Platform.runLater(() -> HUPPAALController.openQueryDialog(this, cause.toString()));
+                                        }
                                     }
                                 }
-                            }
-                        },
-                        eng -> {
-                            engine = eng;
-                        },
-                        new QueryListener(this)
-                ).start();
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
-        };
+                            },
+                            eng -> {
+                                engine = eng;
+                            },
+                            new QueryListener(this)
+                    ).start();
+                } catch (final Exception e) {
+                    setQueryState(QueryState.ERROR);
+                    HUPPAAL.showToast("Query failed: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            };
+        }
     }
 
     @Override

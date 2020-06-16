@@ -102,6 +102,7 @@ public class HUPPAALController implements Initializable {
     public Tab backendErrorsTab;
     public ScrollPane backendErrorsScrollPane;
     public VBox backendErrorsList;
+    private JFXTooltip generateUPPAALToolTip;
 
     // The program top menu
     public MenuBar menuBar;
@@ -243,6 +244,29 @@ public class HUPPAALController implements Initializable {
 
         initializeReachabilityAnalysisThread();
 
+        //Adds a tooltip to 'generateUppaalModel' JFXRippler if UPPAAL is not found
+        File serverFile = UPPAALDriver.getServerFile();
+        if(!serverFile.exists()){
+            StringBuilder sb = new StringBuilder("The file: '" + serverFile.getName() + "' does not exist at location: '" + serverFile.getAbsolutePath() + "'");
+
+            int i = 0;
+
+            //Adds a newline at every 50'th character
+            while (i + 50 < sb.length() && (i = sb.lastIndexOf("", i + 49)) != -1) {
+
+                //Replace potential whitespace at the start of the newline
+                if(sb.charAt(i+1) == ' '){
+                    sb.replace(i + 1, i + 2, "\n");
+                } else {
+                    sb.insert( i + 1, "\n");
+                }
+            }
+
+            this.generateUPPAALToolTip = new JFXTooltip(sb.toString());
+            JFXTooltip.setVisibleDuration(new Duration(10000));
+            JFXTooltip.setLeftDelay(null); //Sets the standard delay time (200 milliseconds)
+            JFXTooltip.install(generateUppaalModel, generateUPPAALToolTip);
+        }
     }
 
     private void initializeReachabilityAnalysisThread() {
@@ -670,19 +694,21 @@ public class HUPPAALController implements Initializable {
 
     @FXML
     private void generateUppaalModelClicked() {
-        final Component mainComponent = HUPPAAL.getProject().getMainComponent();
+        if(UPPAALDriver.getServerFile().exists()){
+            final Component mainComponent = HUPPAAL.getProject().getMainComponent();
 
-        if (mainComponent == null) {
-            System.out.println("No main component");
-            return; // We cannot generate a UPPAAL file without a main component
-        }
+            if (mainComponent == null) {
+                HUPPAAL.showToast("Cannot generate UPPAAL file without a main component");
+                return; // We cannot generate a UPPAAL file without a main component
+            }
 
-        try {
-            UPPAALDriver.generateDebugUPPAALModel();
-            HUPPAAL.showToast("UPPAAL debug file stored");
-        } catch (final Exception e) {
-            HUPPAAL.showToast("Could not store UPPAAL debug model due to an error");
-            e.printStackTrace();
+            try {
+                UPPAALDriver.generateDebugUPPAALModel();
+                HUPPAAL.showToast("UPPAAL debug file stored");
+            } catch (final Exception e) {
+                HUPPAAL.showToast("Could not store UPPAAL debug model due to an error");
+                e.printStackTrace();
+            }
         }
     }
 
