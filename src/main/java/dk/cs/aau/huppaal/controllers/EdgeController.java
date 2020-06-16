@@ -15,6 +15,7 @@ import dk.cs.aau.huppaal.utility.helpers.BindingHelper;
 import dk.cs.aau.huppaal.utility.helpers.Circular;
 import dk.cs.aau.huppaal.utility.helpers.ItemDragHelper;
 import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
+import dk.cs.aau.huppaal.utility.keyboard.Keybind;
 import dk.cs.aau.huppaal.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXPopup;
 import javafx.animation.KeyFrame;
@@ -31,6 +32,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
@@ -672,10 +676,6 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
 
     @FXML
     public void edgePressed(final MouseEvent event) {
-        double centerX = edge.get().getTargetLocation().getX() - edge.get().getSourceLocation().getX();
-        double centerY = edge.get().getTargetLocation().getY() - edge.get().getSourceLocation().getY();
-        double placementOnLine = event.getX() + edge.get().getSourceLocation().getX() - centerX + (event.getY() + edge.get().getSourceLocation().getY() - centerY);
-
         if (!event.isShiftDown()) {
             event.consume();
 
@@ -684,9 +684,41 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
             } else {
                 SelectHelper.select(this);
             }
-
-            HUPPAAL.showToast((placementOnLine > 0 ? "Dragging target" : "Dragging source"));
         }
+    }
+
+    public void edgeDragged(final MouseEvent event){
+        double centerX = edge.get().getTargetLocation().getX() - edge.get().getSourceLocation().getX();
+        double centerY = edge.get().getTargetLocation().getY() - edge.get().getSourceLocation().getY();
+        double placementOnLine = event.getX() + edge.get().getSourceLocation().getX() - centerX + (event.getY() + edge.get().getSourceLocation().getY() - centerY);
+        HUPPAAL.showToast((placementOnLine > 0 ? "Dragging target" : "Dragging source"));
+
+        deselect();
+        color(Color.PINK, Color.Intensity.A100);
+        final Edge newEdge = new Edge(edge.get().getSourceLocation());
+
+        KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+            getComponent().removeEdge(newEdge);
+            UndoRedoStack.forgetLast();
+        }));
+
+        UndoRedoStack.push(() -> { // Perform
+            newEdge.setColor(getColor());
+            newEdge.setColorIntensity(getColorIntensity());
+            newEdge.selectProperty().set(edge.get().getSelect());
+            newEdge.guardProperty().set(edge.get().getGuard());
+            newEdge.updateProperty().set(edge.get().getUpdate());
+            newEdge.syncProperty().set(edge.get().getSync());
+            for (Nail n : edge.get().getNails()) {
+                newEdge.addNail(n);
+            }
+            getComponent().addEdge(newEdge);
+            getComponent().removeEdge(edge.get());
+
+        }, () -> { // Undo
+            getComponent().addEdge(edge.get());
+            getComponent().removeEdge(newEdge);
+        }, "Created edge starting from location " + edge.get().getSourceLocation().getNickname(), "add-circle");
     }
 
     @Override
