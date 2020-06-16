@@ -3,7 +3,7 @@ package dk.cs.aau.huppaal;
 import dk.cs.aau.huppaal.abstractions.Component;
 import dk.cs.aau.huppaal.abstractions.Project;
 import dk.cs.aau.huppaal.abstractions.Query;
-import dk.cs.aau.huppaal.backend.UPPAALDriver;
+import dk.cs.aau.huppaal.backend.UPPAALDriverManager;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.controllers.CanvasController;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
@@ -40,9 +40,11 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.security.CodeSource;
 import java.util.*;
+import java.util.prefs.Preferences;
 
 public class HUPPAAL extends Application {
 
+    public static Preferences preferences;
     public static String serverDirectory;
     public static String debugDirectory;
     public static boolean serializationDone = false;
@@ -53,6 +55,7 @@ public class HUPPAAL extends Application {
 
     {
         try {
+            preferences = Preferences.userRoot().node("HUPPAAL");
             final CodeSource codeSource = HUPPAAL.class.getProtectionDomain().getCodeSource();
             final File jarFile = new File(codeSource.getLocation().toURI().getPath());
             final String rootDirectory = jarFile.getParentFile().getPath() + File.separator;
@@ -243,7 +246,7 @@ public class HUPPAAL extends Application {
         }));
 
         stage.setOnCloseRequest(event -> {
-            UPPAALDriver.stopEngines();
+            UPPAALDriverManager.getInstance().stopEngines();
 
             Platform.exit();
             System.exit(0);
@@ -302,6 +305,11 @@ public class HUPPAAL extends Application {
         }catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void uppaalDriverUpdated(){
+        //The UPPAALDriver has been updated, notify the presentation
+        presentation.uppaalDriverUpdated();
     }
 
     private static void deserializeProject(final File projectFolder) throws IOException {

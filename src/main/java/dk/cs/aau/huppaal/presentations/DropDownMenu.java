@@ -1,5 +1,6 @@
 package dk.cs.aau.huppaal.presentations;
 
+import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.colors.EnabledColor;
 import com.jfoenix.controls.JFXPopup;
@@ -13,10 +14,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.stage.Screen;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -40,10 +43,10 @@ public class DropDownMenu {
     private final SimpleBooleanProperty isHoveringMenu = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty showSubMenu = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty canIShowSubMenu = new SimpleBooleanProperty(false);
-    private StackPane subMenuContent;
+    private ScrollPane subMenuContent;
     private final Node source;
 
-    public DropDownMenu(final Pane container, final Node source, final int width, final boolean closeOnMouseExit) {
+    public DropDownMenu(final Node source, final int width, final boolean closeOnMouseExit) {
         this.width = width;
         this.source = source;
 
@@ -88,7 +91,34 @@ public class DropDownMenu {
     }
 
     public void show(final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
-        popup.show(this.source, vAlign, hAlign, initOffsetX, initOffsetY);
+        //Needed to update the location of the popup before it is displayed
+        this.flashDropdown();
+
+        //Check if the dropdown will appear outside the screen and change the offset accordingly
+        double offsetX = initOffsetX;
+        double offsetY = initOffsetY;
+        double distEdgeX = Screen.getPrimary().getBounds().getWidth() - (popup.getAnchorX() + offsetX);
+        double distEdgeY = Screen.getPrimary().getBounds().getHeight() - (popup.getAnchorY() + offsetY);
+
+        //The additional 20 is added for margin
+        if(distEdgeX < width + 20){
+            offsetX -= (width + 20) - distEdgeX;
+        }
+
+        if(distEdgeY < list.getHeight() + 20){
+            offsetY -= (list.getHeight() + 20) - distEdgeY;
+        }
+
+        //Set the x-coordinate of the potential submenu to avoid screen overflow
+        if(subMenuContent != null){
+            if(Screen.getPrimary().getBounds().getWidth() - (popup.getAnchorX() + width) < width){
+                subMenuContent.setTranslateX(- width);
+            } else{
+                subMenuContent.setTranslateX(width);
+            }
+        }
+
+        popup.show(this.source, vAlign, hAlign, offsetX, offsetY);
     }
 
     public void addListElement(final String s) {
@@ -146,18 +176,22 @@ public class DropDownMenu {
         label.getStyleClass().add("body2");
         label.setMinWidth(width);
 
-        subMenuContent = subMenu.content;
+        subMenuContent = new ScrollPane(subMenu.content.getChildren().get(0));
+        subMenuContent.setMinHeight(340 - offset);
+        subMenuContent.setMinWidth(width);
+        subMenuContent.setFitToWidth(true);
+        subMenuContent.setFitToHeight(true);
+        subMenuContent.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        subMenuContent.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        subMenuContent.setTranslateY(offset + subMenuContent.getMinHeight()/2);
         if (!this.content.getChildren().contains(subMenuContent)) {
-            subMenuContent.setStyle("-fx-padding: 0 0 0 5;");
             subMenuContent.setMinWidth(subMenuContent.getMinWidth() + 1);
             subMenuContent.setMaxWidth(subMenuContent.getMinWidth() + 1);
-            subMenuContent.setTranslateX(width - 40);
             this.content.getChildren().add(subMenuContent);
         }
 
-        subMenuContent.setTranslateY(offset);
-
         subMenuContent.setOpacity(0);
+
         final Runnable showHideSubMenu = () -> {
             if (showSubMenu.get() || isHoveringSubMenu.get()) {
                 subMenuContent.setOpacity(1);
@@ -166,14 +200,15 @@ public class DropDownMenu {
             }
         };
 
-        showSubMenu.addListener((obs, oldShow, newShow) -> showHideSubMenu.run());
-        isHoveringSubMenu.addListener((obs, oldHovering, newHovering) -> showHideSubMenu.run());
+        showSubMenu.addListener((obs) -> showHideSubMenu.run());
+        isHoveringSubMenu.addListener((obs) -> showHideSubMenu.run());
 
         subMenuContent.setOnMouseEntered(event -> {
             if (canIShowSubMenu.get()) {
                 isHoveringSubMenu.set(true);
             }
         });
+
         subMenuContent.setOnMouseExited(event -> {
             isHoveringSubMenu.set(false);
         });
@@ -414,5 +449,10 @@ public class DropDownMenu {
         ObjectProperty<Color> colorProperty();
 
         ObjectProperty<Color.Intensity> colorIntensityProperty();
+    }
+
+    private void flashDropdown() {
+        popup.show(this.source, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
+        this.close();
     }
 }

@@ -3,6 +3,7 @@ package dk.cs.aau.huppaal.controllers;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.*;
 import dk.cs.aau.huppaal.backend.UPPAALDriver;
+import dk.cs.aau.huppaal.backend.UPPAALDriverManager;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.code_analysis.Nearable;
 import dk.cs.aau.huppaal.presentations.*;
@@ -391,7 +392,7 @@ public class ComponentController implements Initializable {
                 return;
             }
 
-            contextMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 230, true);
+            contextMenu = new DropDownMenu(dropDownMenuHelperCircle, 230, true);
 
             contextMenu.addClickableListElement("Add Location", event -> {
                 contextMenu.close();
@@ -463,7 +464,7 @@ public class ComponentController implements Initializable {
 
             //If-statement added to avoid empty submenu being added and appearing as a white box
             if(HUPPAAL.getProject().getComponents().size() > 1){
-                subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
+                subMenu = new DropDownMenu(dropDownMenuHelperCircle, 150, false);
                 HUPPAAL.getProject().getComponents().forEach(c -> {
                     if (!c.equals(component)) {
                         subMenu.addClickableListElement(c.getName(), event -> {
@@ -490,7 +491,7 @@ public class ComponentController implements Initializable {
                 });
 
             } else {
-                subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
+                subMenu = new DropDownMenu(dropDownMenuHelperCircle, 150, false);
 
                 subMenu.addClickableAndDisableableListElement("No Subcomponents", new SimpleBooleanProperty(true), event -> {});
             }
@@ -502,7 +503,7 @@ public class ComponentController implements Initializable {
                 contextMenu.close();
 
                 // Generate the query
-                final String deadlockQuery = UPPAALDriver.getExistDeadlockQuery(getComponent());
+                final String deadlockQuery = UPPAALDriverManager.getInstance().getExistDeadlockQuery(getComponent());
 
                 // Add proper comment
                 final String deadlockComment = "Does " + component.getName() + " contain a deadlock?";
@@ -556,7 +557,7 @@ public class ComponentController implements Initializable {
                 locationAware.yProperty().set(y);
             };
 
-            finishEdgeContextMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 230, true);
+            finishEdgeContextMenu = new DropDownMenu(dropDownMenuHelperCircle, 230, true);
 
             finishEdgeContextMenu.addListElement("Finish edge in a:");
 
@@ -620,7 +621,7 @@ public class ComponentController implements Initializable {
                 }, "Finished edge '" + unfinishedEdge + "' by adding '" + jork + "' to component '" + component.getName() + "'", "add-circle");
             });
 
-            final DropDownMenu subMenu = new DropDownMenu(root, dropDownMenuHelperCircle, 150, false);
+            final DropDownMenu subMenu = new DropDownMenu(dropDownMenuHelperCircle, 150, false);
             HUPPAAL.getProject().getComponents().forEach(c -> {
                 if (!c.equals(component)) {
                     subMenu.addClickableListElement(c.getName(), event -> {

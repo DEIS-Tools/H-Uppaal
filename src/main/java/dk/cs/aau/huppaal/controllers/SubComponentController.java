@@ -78,7 +78,7 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
         if (dropDownMenuInitialized) return;
         dropDownMenuInitialized = true;
 
-        dropDownMenu = new DropDownMenu(((Pane) root.getParent().getParent().getParent()), root, 230, true);
+        dropDownMenu = new DropDownMenu(root, 230, true);
 
         dropDownMenu.addClickableListElement("Open in canvas", event -> {
             CanvasController.setActiveComponent(getSubComponent().getComponent());
@@ -106,7 +106,7 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
 
         dropDownMenu.addSpacerElement();
 
-        final DropDownMenu subMenu = new DropDownMenu(((Pane) root.getParent().getParent().getParent()), root, 150, false);
+        final DropDownMenu subMenu = new DropDownMenu(root, 150, false);
         HUPPAAL.getProject().getComponents().forEach(c -> {
             if (!c.equals(getParentComponent())) {
                 subMenu.addClickableListElement(c.getName(), event -> {
