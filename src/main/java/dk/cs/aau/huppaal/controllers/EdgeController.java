@@ -38,6 +38,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import org.apache.bcel.generic.Select;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -685,21 +686,27 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
     }
 
     public void edgeDragged(final MouseEvent event){
-        double centerX = edge.get().getTargetLocation().getX() - edge.get().getSourceLocation().getX();
-        double centerY = edge.get().getTargetLocation().getY() - edge.get().getSourceLocation().getY();
-        double placementOnLine = event.getX() + edge.get().getSourceLocation().getX() - centerX + (event.getY() + edge.get().getSourceLocation().getY() - centerY);
-        HUPPAAL.showToast((placementOnLine > 0 ? "Dragging target" : "Dragging source"));
+        //Check if the edge is selected to ensure that the drag is not targeting a select, guard, update, or sync node
+        if(SelectHelper.getSelectedElements().contains(this)){
+            final Edge newEdge = new Edge(edge.get().getSourceLocation());
 
-        deselect();
-        color(Color.PINK, Color.Intensity.A100);
-        final Edge newEdge = new Edge(edge.get().getSourceLocation());
+            KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+                getComponent().removeEdge(newEdge);
+                UndoRedoStack.forgetLast();
+            }));
 
-        KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
-            getComponent().removeEdge(newEdge);
-            UndoRedoStack.forgetLast();
-        }));
+            UndoRedoStack.push(() -> { // Perform
+                //Add the new edge and remove the old
+                getComponent().addEdge(newEdge);
+                getComponent().removeEdge(edge.get());
 
-        UndoRedoStack.push(() -> { // Perform
+            }, () -> { // Undo
+                //Add the old edge back and remove the new
+                getComponent().addEdge(edge.get());
+                getComponent().removeEdge(newEdge);
+            }, "Created edge starting from location " + edge.get().getSourceLocation().getNickname(), "add-circle");
+
+            //Make the state of the new edge correspond with the state of the old
             newEdge.setColor(getColor());
             newEdge.setColorIntensity(getColorIntensity());
             newEdge.selectProperty().set(edge.get().getSelect());
@@ -709,13 +716,7 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
             for (Nail n : edge.get().getNails()) {
                 newEdge.addNail(n);
             }
-            getComponent().addEdge(newEdge);
-            getComponent().removeEdge(edge.get());
-
-        }, () -> { // Undo
-            getComponent().addEdge(edge.get());
-            getComponent().removeEdge(newEdge);
-        }, "Created edge starting from location " + edge.get().getSourceLocation().getNickname(), "add-circle");
+        }
     }
 
     @Override
