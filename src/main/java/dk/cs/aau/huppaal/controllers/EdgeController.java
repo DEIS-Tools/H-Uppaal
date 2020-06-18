@@ -11,10 +11,7 @@ import dk.cs.aau.huppaal.presentations.Link;
 import dk.cs.aau.huppaal.presentations.NailPresentation;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.colors.Color;
-import dk.cs.aau.huppaal.utility.helpers.BindingHelper;
-import dk.cs.aau.huppaal.utility.helpers.Circular;
-import dk.cs.aau.huppaal.utility.helpers.ItemDragHelper;
-import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
+import dk.cs.aau.huppaal.utility.helpers.*;
 import dk.cs.aau.huppaal.utility.keyboard.Keybind;
 import dk.cs.aau.huppaal.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXPopup;
@@ -688,33 +685,85 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
     public void edgeDragged(final MouseEvent event){
         //Check if the edge is selected to ensure that the drag is not targeting a select, guard, update, or sync node
         if(SelectHelper.getSelectedElements().contains(this)){
-            final Edge newEdge = new Edge(edge.get().getSourceLocation());
+            Edge oldEdge = edge.get();
+            double sourceX, sourceY, targetX, targetY;
+            LocationAware source;
+            LocationAware target;
 
-            KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
-                getComponent().removeEdge(newEdge);
-                UndoRedoStack.forgetLast();
-            }));
+            //Get the coordinates of the source of the original edge
+            if(oldEdge.getSourceLocation() != null) {
+                 source = oldEdge.getSourceLocation();
+            } else if(oldEdge.getSourceJork() != null){
+                source = oldEdge.getSourceJork();
+            } else if (oldEdge.getSourceSubComponent() != null){
+                source = oldEdge.getSourceSubComponent();
+            } else {
+                return;
+            }
 
-            UndoRedoStack.push(() -> { // Perform
-                //Add the new edge and remove the old
-                getComponent().addEdge(newEdge);
-                getComponent().removeEdge(edge.get());
+            sourceX = source.getX();
+            sourceY = source.getY();
 
-            }, () -> { // Undo
-                //Add the old edge back and remove the new
-                getComponent().addEdge(edge.get());
-                getComponent().removeEdge(newEdge);
-            }, "Created edge starting from location " + edge.get().getSourceLocation().getNickname(), "add-circle");
+            //Get the coordinates of the target of the original edge
+            if(oldEdge.getTargetLocation() != null) {
+                target = oldEdge.getTargetLocation();
+            } else if(oldEdge.getTargetJork() != null){
+                target = oldEdge.getTargetJork();
+            } else if (oldEdge.getTargetSubComponent() != null){
+                target = oldEdge.getTargetSubComponent();
+            } else {
+                return;
+            }
 
-            //Make the state of the new edge correspond with the state of the old
-            newEdge.setColor(getColor());
-            newEdge.setColorIntensity(getColorIntensity());
-            newEdge.selectProperty().set(edge.get().getSelect());
-            newEdge.guardProperty().set(edge.get().getGuard());
-            newEdge.updateProperty().set(edge.get().getUpdate());
-            newEdge.syncProperty().set(edge.get().getSync());
-            for (Nail n : edge.get().getNails()) {
-                newEdge.addNail(n);
+            targetX = target.getX();
+            targetY = target.getY();
+
+            //Decide whether the source or the target of the edge should be updated
+            double centerX = targetX - sourceX;
+            double centerY = targetY - sourceY;
+            double placementOnLine = (event.getX() + sourceX) - centerX + (event.getY() + sourceY - centerY);
+            HUPPAAL.showToast((placementOnLine > 0 ? "Dragging target" : "Dragging source"));
+
+            if(placementOnLine > 0){
+                //The drag event occurred closest to the target, create a new edge
+                final Edge newEdge;
+
+                if(source instanceof Location) {
+                    newEdge = new Edge((Location) source);
+                } else if (source instanceof Jork) {
+                    newEdge = new Edge((Jork) source);
+                } else {
+                    newEdge = new Edge((SubComponent) source);
+                }
+
+                KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+                    getComponent().removeEdge(newEdge);
+                    UndoRedoStack.forgetLast();
+                }));
+
+                UndoRedoStack.push(() -> { // Perform
+                    //Add the new edge and remove the old
+                    getComponent().addEdge(newEdge);
+                    getComponent().removeEdge(oldEdge);
+
+                }, () -> { // Undo
+                    //Add the old edge back and remove the new
+                    getComponent().addEdge(oldEdge);
+                    getComponent().removeEdge(newEdge);
+                }, "Updated edge", "add-circle");
+
+                //Make the state of the new edge correspond with the state of the old
+                newEdge.setColor(getColor());
+                newEdge.setColorIntensity(getColorIntensity());
+                newEdge.selectProperty().set(edge.get().getSelect());
+                newEdge.guardProperty().set(edge.get().getGuard());
+                newEdge.updateProperty().set(edge.get().getUpdate());
+                newEdge.syncProperty().set(edge.get().getSync());
+                for (Nail n : edge.get().getNails()) {
+                    newEdge.addNail(n);
+                }
+            } else {
+                //The drag event occurred closest to the target
             }
         }
     }
