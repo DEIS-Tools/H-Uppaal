@@ -27,6 +27,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.fxml.LoadException;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.input.DragEvent;
@@ -762,7 +763,53 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                     newEdge.addNail(n);
                 }
             } else {
-                //The drag event occurred closest to the target
+                //The drag event occurred closest to the source
+                final Edge newEdge;
+
+                if(source instanceof Location) {
+                    newEdge = new Edge((Location) source);
+                } else if (source instanceof Jork) {
+                    newEdge = new Edge((Jork) source);
+                } else {
+                    newEdge = new Edge((SubComponent) source);
+                }
+
+                newEdge.sourceCircularProperty().set(null);
+
+                if(target instanceof Location) {
+                    newEdge.setTargetLocation((Location) target);
+                } else if (target instanceof Jork) {
+                    newEdge.setTargetJork((Jork) target);
+                } else {
+                    newEdge.setTargetSubComponent((SubComponent) target);
+                }
+
+                KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+                    getComponent().removeEdge(newEdge);
+                    UndoRedoStack.forgetLast();
+                }));
+
+                UndoRedoStack.push(() -> { // Perform
+                    //Add the new edge and remove the old
+                    getComponent().addEdge(newEdge);
+                    getComponent().removeEdge(oldEdge);
+
+                }, () -> { // Undo
+                    //Add the old edge back and remove the new
+                    getComponent().addEdge(oldEdge);
+                    getComponent().removeEdge(newEdge);
+                }, "Updated edge", "add-circle");
+
+                //Make the state of the new edge correspond with the state of the old
+                newEdge.setColor(getColor());
+                newEdge.setColorIntensity(getColorIntensity());
+                newEdge.selectProperty().set(edge.get().getSelect());
+                newEdge.guardProperty().set(edge.get().getGuard());
+                newEdge.updateProperty().set(edge.get().getUpdate());
+                newEdge.syncProperty().set(edge.get().getSync());
+                for (Nail n : edge.get().getNails()) {
+                    newEdge.addNail(n);
+                }
             }
         }
     }
