@@ -719,12 +719,11 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
             targetY = target.getY();
 
             //Decide whether the source or the target of the edge should be updated
-            double centerX = targetX - sourceX;
-            double centerY = targetY - sourceY;
-            double placementOnLine = (event.getX() + sourceX) - centerX + (event.getY() + sourceY - centerY);
-            HUPPAAL.showToast((placementOnLine > 0 ? "Dragging target" : "Dragging source"));
+            boolean closestToTarget = (Math.abs(event.getX() - targetX) < Math.abs(event.getX() - sourceX)) &&
+                    (Math.abs(event.getY() - targetY) < Math.abs(event.getY() - sourceY));
+            HUPPAAL.showToast((closestToTarget ? "Dragging target" : "Dragging source"));
 
-            if(placementOnLine > 0){
+            if(closestToTarget){
                 //The drag event occurred closest to the target, create a new edge
                 final Edge newEdge;
 
