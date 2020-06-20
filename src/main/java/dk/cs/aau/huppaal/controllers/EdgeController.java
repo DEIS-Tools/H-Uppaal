@@ -27,16 +27,13 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.fxml.LoadException;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
-import org.apache.bcel.generic.Select;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -71,6 +68,7 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
 
         edge.addListener((obsEdge, oldEdge, newEdge) -> {
             newEdge.targetCircularProperty().addListener(getNewTargetCircularListener(newEdge));
+            newEdge.sourceCircularProperty().addListener(getNewSourceCircularListener(newEdge));
             component.addListener(getComponentChangeListener(newEdge));
 
             // Invalidate the list of edges (to update UI and errors)
@@ -400,6 +398,39 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
         };
     }
 
+    private ChangeListener<Circular> getNewSourceCircularListener(final Edge newEdge) {
+        // When the target location is set, finish drawing the edge
+        return (obsSourceLocation, oldSourceCircular, newSourceCircular) -> {
+            // If the nails list is empty, directly connect the source and target locations
+            // otherwise, bind the line from the last nail to the target location
+            final Link lastLink = links.get(links.size() - 1);
+            final ObservableList<Nail> nails = getEdge().getNails();
+            if (nails.size() == 0) {
+                // Check if the source and target locations are the same, if they are, add proper amount of nails
+                if (newEdge.getTargetCircular().equals(newSourceCircular)) {
+                    final Nail nail1 = new Nail(newSourceCircular.xProperty().add(4 * GRID_SIZE), newSourceCircular.yProperty().subtract(GRID_SIZE));
+                    final Nail nail2 = new Nail(newSourceCircular.xProperty().add(4 * GRID_SIZE), newSourceCircular.yProperty().add(GRID_SIZE));
+
+                    // Add the nails to the nails collection (will draw links between them)
+                    nails.addAll(nail1, nail2);
+
+                    // Find the new last link (updated by adding nails to the collection) and bind it from the last nail to the target location
+                    final Link newLastLink = links.get(links.size() - 1);
+                    BindingHelper.bind(newLastLink, simpleArrowHead, nail2, newSourceCircular);
+                } else {
+                    BindingHelper.bind(lastLink, simpleArrowHead, newEdge.getSourceCircular(), newEdge.getTargetCircular());
+                }
+            } else {
+
+            }
+
+            KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_EDGE);
+
+            // When the target location is set the
+            edgeRoot.setMouseTransparent(false);
+        };
+    }
+
     private ChangeListener<Circular> getNewTargetCircularListener(final Edge newEdge) {
         // When the target location is set, finish drawing the edge
         return (obsTargetLocation, oldTargetCircular, newTargetCircular) -> {
@@ -722,7 +753,6 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
             //Decide whether the source or the target of the edge should be updated
             boolean closestToTarget = (Math.abs(event.getX() - targetX) < Math.abs(event.getX() - sourceX)) &&
                     (Math.abs(event.getY() - targetY) < Math.abs(event.getY() - sourceY));
-            HUPPAAL.showToast((closestToTarget ? "Dragging target" : "Dragging source"));
 
             if(closestToTarget){
                 //The drag event occurred closest to the target, create a new edge
@@ -774,7 +804,7 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                     newEdge = new Edge((SubComponent) source);
                 }
 
-                newEdge.sourceCircularProperty().set(null);
+                newEdge.sourceCircularProperty().set(new MouseCircular(newEdge));
 
                 if(target instanceof Location) {
                     newEdge.setTargetLocation((Location) target);
