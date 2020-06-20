@@ -76,6 +76,12 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                 getComponent().removeEdge(getEdge());
                 getComponent().addEdge(getEdge());
             });
+
+            // Invalidate the list of edges (to update UI and errors)
+            newEdge.sourceCircularProperty().addListener(observable -> {
+                getComponent().removeEdge(getEdge());
+                getComponent().addEdge(getEdge());
+            });
         });
 
         initializeLinksListener();
@@ -399,11 +405,11 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
     }
 
     private ChangeListener<Circular> getNewSourceCircularListener(final Edge newEdge) {
-        // When the target location is set, finish drawing the edge
+        // When the source location is set, finish drawing the edge
         return (obsSourceLocation, oldSourceCircular, newSourceCircular) -> {
             // If the nails list is empty, directly connect the source and target locations
-            // otherwise, bind the line from the last nail to the target location
-            final Link lastLink = links.get(links.size() - 1);
+            // otherwise, bind the line from the source to the first nail
+            final Link firstLink = links.get(0);
             final ObservableList<Nail> nails = getEdge().getNails();
             if (nails.size() == 0) {
                 // Check if the source and target locations are the same, if they are, add proper amount of nails
@@ -414,19 +420,19 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                     // Add the nails to the nails collection (will draw links between them)
                     nails.addAll(nail1, nail2);
 
-                    // Find the new last link (updated by adding nails to the collection) and bind it from the last nail to the target location
-                    final Link newLastLink = links.get(links.size() - 1);
-                    BindingHelper.bind(newLastLink, simpleArrowHead, nail2, newSourceCircular);
+                    // Find the new first link (updated by adding nails to the collection) and bind it from the last nail to the target location
+                    final Link newFirstLink = links.get(0);
+                    BindingHelper.bind(newFirstLink, simpleArrowHead, newSourceCircular, nail1);
                 } else {
-                    BindingHelper.bind(lastLink, simpleArrowHead, newEdge.getSourceCircular(), newEdge.getTargetCircular());
+                    BindingHelper.bind(firstLink, simpleArrowHead, newEdge.getSourceCircular(), newEdge.getTargetCircular());
                 }
             } else {
-
+                BindingHelper.bind(firstLink, null, newEdge.getSourceCircular(), nails.get(0));
             }
 
             KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_EDGE);
 
-            // When the target location is set the
+            // When the source location is set the
             edgeRoot.setMouseTransparent(false);
         };
     }

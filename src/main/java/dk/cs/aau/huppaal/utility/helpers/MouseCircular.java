@@ -1,31 +1,70 @@
 package dk.cs.aau.huppaal.utility.helpers;
 
-import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Edge;
-import dk.cs.aau.huppaal.abstractions.Location;
-import dk.cs.aau.huppaal.controllers.EdgeController;
+import dk.cs.aau.huppaal.controllers.JorkController;
 import dk.cs.aau.huppaal.controllers.LocationController;
+import dk.cs.aau.huppaal.controllers.SubComponentController;
 import dk.cs.aau.huppaal.presentations.CanvasPresentation;
 import dk.cs.aau.huppaal.utility.mouse.MouseTracker;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
 
 public class MouseCircular implements Circular {
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
     private final DoubleProperty radius = new SimpleDoubleProperty(10);
     private final SimpleDoubleProperty scale = new SimpleDoubleProperty(1d);
+    private final MouseTracker mouseTracker = CanvasPresentation.mouseTracker;
 
     public MouseCircular(Edge edge){
-        MouseTracker mouseTracker = CanvasPresentation.mouseTracker;
+        //Set the initial x and y coordinates of the circular
+        x.set(mouseTracker.getGridX());
+        y.set(mouseTracker.getGridY());
 
+        //Make sure that the circular follows the mouse after the mouse button is released
         mouseTracker.registerOnMouseMovedEventHandler(event -> {
             x.set(mouseTracker.getGridX());
             y.set(mouseTracker.getGridY());
         });
 
+        //Make sure that the circular follows the mouse if the mouse button is not released
+        mouseTracker.registerOnMouseDraggedEventHandler(event -> {
+            x.set(mouseTracker.getGridX());
+            y.set(mouseTracker.getGridY());
+        });
+
+        //Set the new source to the clicked circular
+        EventHandler<MouseEvent> eventHandler = event -> {
+            if (SelectHelper.getSelectedElements().get(0) instanceof LocationController) {
+                edge.sourceLocationProperty().set(((LocationController) SelectHelper.getSelectedElements().get(0)).getLocation());
+                edge.sourceSubComponentProperty().set(null);
+                edge.sourceJorkProperty().set(null);
+                edge.sourceCircularProperty().set(((LocationController) SelectHelper.getSelectedElements().get(0)).getLocation());
+            } else if (SelectHelper.getSelectedElements().get(0) instanceof SubComponentController){
+                edge.sourceLocationProperty().set(null);
+                edge.sourceSubComponentProperty().set(((SubComponentController) SelectHelper.getSelectedElements().get(0)).getSubComponent());
+                edge.sourceJorkProperty().set(null);
+                edge.sourceCircularProperty().set(((SubComponentController) SelectHelper.getSelectedElements().get(0)).getSubComponent());
+            } else if (SelectHelper.getSelectedElements().get(0) instanceof JorkController) {
+                edge.sourceLocationProperty().set(null);
+                edge.sourceSubComponentProperty().set(null);
+                edge.sourceJorkProperty().set(((JorkController) SelectHelper.getSelectedElements().get(0)).getJork());
+                edge.sourceCircularProperty().set((Circular) ((JorkController) SelectHelper.getSelectedElements().get(0)).getJork());
+            }
+        };
+
+        //Set register the eventHandler
+        mouseTracker.registerOnMouseClickedEventHandler(eventHandler);
+
+        //Unregister the eventHandler when a new source is found
         mouseTracker.registerOnMouseClickedEventHandler(event -> {
-            edge.sourceCircularProperty().set(((LocationController) SelectHelper.getSelectedElements().get(0)).getLocation());
+            if (SelectHelper.getSelectedElements().get(0) instanceof LocationController ||
+                    SelectHelper.getSelectedElements().get(0) instanceof JorkController ||
+                    SelectHelper.getSelectedElements().get(0) instanceof SubComponentController) {
+                mouseTracker.unregisterOnMouseClickedEventHandler(eventHandler);
+            }
         });
     }
 
