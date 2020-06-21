@@ -724,9 +724,7 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
         //Check if the edge is selected to ensure that the drag is not targeting a select, guard, update, or sync node
         if(SelectHelper.getSelectedElements().get(0) == this){
             Edge oldEdge = edge.get();
-            double sourceX, sourceY, targetX, targetY;
-            LocationAware source;
-            LocationAware target;
+            LocationAware source, target;
 
             //Get the coordinates of the source of the original edge
             if(oldEdge.getSourceLocation() != null) {
@@ -739,9 +737,6 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                 return;
             }
 
-            sourceX = source.getX();
-            sourceY = source.getY();
-
             //Get the coordinates of the target of the original edge
             if(oldEdge.getTargetLocation() != null) {
                 target = oldEdge.getTargetLocation();
@@ -753,17 +748,38 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                 return;
             }
 
-            targetX = target.getX();
-            targetY = target.getY();
-
             //Decide whether the source or the target of the edge should be updated
-            boolean closestToTarget = (Math.abs(event.getX() - targetX) < Math.abs(event.getX() - sourceX)) &&
-                    (Math.abs(event.getY() - targetY) < Math.abs(event.getY() - sourceY));
+            boolean closestToTarget = (Math.abs(event.getX() - target.getX()) < Math.abs(event.getX() - source.getX())) &&
+                    (Math.abs(event.getY() - target.getY()) < Math.abs(event.getY() - source.getY()));
+
+            //Handle drag close to nails
+            if(edge.get().getNails().size() > 0){
+                if(!closestToTarget){
+                    //Check if the drag is closer to the first nail than to source
+                    Nail firstNail = edge.get().getNails().get(0);
+                    boolean closestToFirstNail = getDistance(event.getX(), event.getY(), firstNail.getX(), firstNail.getY()) < getDistance(event.getX(), event.getY(), source.getX(), source.getY());
+
+                    //If the drag is closest to the first node, no drag should be initiated
+                    if(closestToFirstNail){
+                        return;
+                    }
+                } else {
+                    //Check if the drag is closer to the last nail than to target
+                    Nail lastNail = edge.get().getNails().get(edge.get().getNails().size() - 1);
+                    boolean closestToLastNail = getDistance(event.getX(), event.getY(), lastNail.getX(), lastNail.getY()) < getDistance(event.getX(), event.getY(), target.getX(), target.getY());
+
+                    //If the drag is closest to the last node, no drag should be initiated
+                    if(closestToLastNail){
+                        return;
+                    }
+                }
+            }
 
             if(closestToTarget){
                 //The drag event occurred closest to the target, create a new edge
                 final Edge newEdge;
 
+                //Create the new edge with the same source as the old edge
                 if(source instanceof Location) {
                     newEdge = new Edge((Location) source);
                 } else if (source instanceof Jork) {
@@ -802,6 +818,7 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                 //The drag event occurred closest to the source
                 final Edge newEdge;
 
+                //Create the new edge with the same source as the old edge
                 if(source instanceof Location) {
                     newEdge = new Edge((Location) source);
                 } else if (source instanceof Jork) {
@@ -810,8 +827,10 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
                     newEdge = new Edge((SubComponent) source);
                 }
 
+                //Set the source to a new MouseCircular, which will follow the mouse and handle setting the new source
                 newEdge.sourceCircularProperty().set(new MouseCircular(newEdge));
 
+                //Set the target to the same as the old edge
                 if(target instanceof Location) {
                     newEdge.setTargetLocation((Location) target);
                 } else if (target instanceof Jork) {
@@ -910,5 +929,9 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
     @Override
     public double getY() {
         return yProperty().get();
+    }
+
+    private double getDistance(double x1, double y1, double x2, double y2){
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 }
