@@ -38,20 +38,17 @@ public class MouseCircular implements Circular {
         //Set the new source to the clicked circular
         EventHandler<MouseEvent> eventHandler = event -> {
             if (SelectHelper.getSelectedElements().get(0) instanceof LocationController) {
-                edge.sourceLocationProperty().set(((LocationController) SelectHelper.getSelectedElements().get(0)).getLocation());
-                edge.sourceSubComponentProperty().set(null);
-                edge.sourceJorkProperty().set(null);
-                edge.sourceCircularProperty().set(((LocationController) SelectHelper.getSelectedElements().get(0)).getLocation());
+                edge.setSourceLocation(((LocationController) SelectHelper.getSelectedElements().get(0)).getLocation());
+                edge.setSourceSubComponent(null);
+                edge.setSourceJork(null);
             } else if (SelectHelper.getSelectedElements().get(0) instanceof SubComponentController){
-                edge.sourceLocationProperty().set(null);
-                edge.sourceSubComponentProperty().set(((SubComponentController) SelectHelper.getSelectedElements().get(0)).getSubComponent());
-                edge.sourceJorkProperty().set(null);
-                edge.sourceCircularProperty().set(((SubComponentController) SelectHelper.getSelectedElements().get(0)).getSubComponent());
+                edge.setSourceLocation(null);
+                edge.setSourceSubComponent(((SubComponentController) SelectHelper.getSelectedElements().get(0)).getSubComponent());
+                edge.setSourceJork(null);
             } else if (SelectHelper.getSelectedElements().get(0) instanceof JorkController) {
-                edge.sourceLocationProperty().set(null);
-                edge.sourceSubComponentProperty().set(null);
-                edge.sourceJorkProperty().set(((JorkController) SelectHelper.getSelectedElements().get(0)).getJork());
-                edge.sourceCircularProperty().set((Circular) ((JorkController) SelectHelper.getSelectedElements().get(0)).getJork());
+                edge.setSourceLocation(null);
+                edge.setSourceSubComponent(null);
+                edge.setSourceJork(((JorkController) SelectHelper.getSelectedElements().get(0)).getJork());
             }
         };
 
