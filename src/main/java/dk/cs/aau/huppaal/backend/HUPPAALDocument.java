@@ -206,7 +206,7 @@ public class HUPPAALDocument {
             }
 
             // If the edge starts in a locations and ends in a sub component
-            if (hEdge.getSourceLocation() != null && hEdge.getTargetSubComponent() != null) {
+            if (hEdge.getSourceCircular() != null && hEdge.getTargetSubComponent() != null) {
 
                 // If we have not already created pseudo locations for this sub component
                 if (!subComponentPseudoLocationMap.containsKey(generateName(hEdge.getTargetSubComponent()))) {
