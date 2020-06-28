@@ -63,7 +63,7 @@ public class UPPAALDriver implements IUPPAALDriver {
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        synchronized (dk.cs.aau.huppaal.backend.IUPPAALDriver.engineLock) {
+                        synchronized (engineLock) {
                             if(engine == null) return;
                             engine.cancel();
                         }
