@@ -206,7 +206,20 @@ public class HUPPAALDocument {
             }
 
             // If the edge starts in a locations and ends in a sub component
-            if (hEdge.getSourceCircular() != null && hEdge.getTargetSubComponent() != null) {
+            if (hEdge.getSourceLocation() != null && hEdge.getTargetSubComponent() != null) {
+
+                // If we have not already created pseudo locations for this sub component
+                if (!subComponentPseudoLocationMap.containsKey(generateName(hEdge.getTargetSubComponent()))) {
+                    addPseudoLocationsForSubComponent(template, hEdge.getTargetSubComponent());
+                }
+
+                // Add an edge from the location to the pseudo enter location
+                final com.uppaal.model.core2.Location pseudoEnter = subComponentPseudoLocationMap.get(generateName(hEdge.getTargetSubComponent())).getKey();
+                addEdge(template, hEdge, 0, pseudoEnter);
+            }
+
+            // If the edge starts in a fork and ends in a sub component
+            if (hEdge.getSourceJork() != null && hEdge.getTargetSubComponent() != null) {
 
                 // If we have not already created pseudo locations for this sub component
                 if (!subComponentPseudoLocationMap.containsKey(generateName(hEdge.getTargetSubComponent()))) {
