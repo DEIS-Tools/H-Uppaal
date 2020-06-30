@@ -11,6 +11,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.util.Pair;
 
@@ -97,6 +98,24 @@ public class CanvasController implements Initializable {
                 leaveTextAreas();
             }
         };
+
+        root.addEventFilter(ScrollEvent.ANY, new EventHandler<ScrollEvent>() {
+            @Override
+            public void handle(ScrollEvent event) {
+                double newScale = root.getScaleX();
+                double delta = 1.2;
+
+                if (event.getDeltaY() < 0)
+                    newScale /= delta;
+                else
+                    newScale *= delta;
+
+                root.setScaleX(newScale);
+                root.setScaleY(newScale);
+
+                event.consume();
+            }
+        });
 
     }
 
