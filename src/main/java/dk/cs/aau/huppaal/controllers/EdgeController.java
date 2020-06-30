@@ -11,10 +11,8 @@ import dk.cs.aau.huppaal.presentations.Link;
 import dk.cs.aau.huppaal.presentations.NailPresentation;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.colors.Color;
-import dk.cs.aau.huppaal.utility.helpers.BindingHelper;
-import dk.cs.aau.huppaal.utility.helpers.Circular;
-import dk.cs.aau.huppaal.utility.helpers.ItemDragHelper;
-import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
+import dk.cs.aau.huppaal.utility.helpers.*;
+import dk.cs.aau.huppaal.utility.keyboard.Keybind;
 import dk.cs.aau.huppaal.utility.keyboard.KeyboardTracker;
 import com.jfoenix.controls.JFXPopup;
 import javafx.animation.KeyFrame;
@@ -31,6 +29,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
@@ -68,10 +68,17 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
 
         edge.addListener((obsEdge, oldEdge, newEdge) -> {
             newEdge.targetCircularProperty().addListener(getNewTargetCircularListener(newEdge));
+            newEdge.sourceCircularProperty().addListener(getNewSourceCircularListener(newEdge));
             component.addListener(getComponentChangeListener(newEdge));
 
             // Invalidate the list of edges (to update UI and errors)
             newEdge.targetCircularProperty().addListener(observable -> {
+                getComponent().removeEdge(getEdge());
+                getComponent().addEdge(getEdge());
+            });
+
+            // Invalidate the list of edges (to update UI and errors)
+            newEdge.sourceCircularProperty().addListener(observable -> {
                 getComponent().removeEdge(getEdge());
                 getComponent().addEdge(getEdge());
             });
@@ -397,6 +404,39 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
         };
     }
 
+    private ChangeListener<Circular> getNewSourceCircularListener(final Edge newEdge) {
+        // When the source location is set, finish drawing the edge
+        return (obsSourceLocation, oldSourceCircular, newSourceCircular) -> {
+            // If the nails list is empty, directly connect the source and target locations
+            // otherwise, bind the line from the source to the first nail
+            final Link firstLink = links.get(0);
+            final ObservableList<Nail> nails = getEdge().getNails();
+            if (nails.size() == 0) {
+                // Check if the source and target locations are the same, if they are, add proper amount of nails
+                if (newEdge.getTargetCircular().equals(newSourceCircular)) {
+                    final Nail nail1 = new Nail(newSourceCircular.xProperty().add(4 * GRID_SIZE), newSourceCircular.yProperty().subtract(GRID_SIZE));
+                    final Nail nail2 = new Nail(newSourceCircular.xProperty().add(4 * GRID_SIZE), newSourceCircular.yProperty().add(GRID_SIZE));
+
+                    // Add the nails to the nails collection (will draw links between them)
+                    nails.addAll(nail1, nail2);
+
+                    // Find the new first link (updated by adding nails to the collection) and bind it from the last nail to the target location
+                    final Link newFirstLink = links.get(0);
+                    BindingHelper.bind(newFirstLink, simpleArrowHead, newSourceCircular, nail1);
+                } else {
+                    BindingHelper.bind(firstLink, simpleArrowHead, newEdge.getSourceCircular(), newEdge.getTargetCircular());
+                }
+            } else {
+                BindingHelper.bind(firstLink, null, newEdge.getSourceCircular(), nails.get(0));
+            }
+
+            KeyboardTracker.unregisterKeybind(KeyboardTracker.ABANDON_EDGE);
+
+            // When the source location is set the
+            edgeRoot.setMouseTransparent(false);
+        };
+    }
+
     private ChangeListener<Circular> getNewTargetCircularListener(final Edge newEdge) {
         // When the target location is set, finish drawing the edge
         return (obsTargetLocation, oldTargetCircular, newTargetCircular) -> {
@@ -680,6 +720,155 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
         }
     }
 
+    public void edgeDragged(final MouseEvent event){
+        //Check if the edge is selected to ensure that the drag is not targeting a select, guard, update, or sync node
+        if(SelectHelper.getSelectedElements().get(0) == this){
+            Edge oldEdge = edge.get();
+            LocationAware source, target;
+
+            //Get the coordinates of the source of the original edge
+            if(oldEdge.getSourceLocation() != null) {
+                 source = oldEdge.getSourceLocation();
+            } else if(oldEdge.getSourceJork() != null){
+                source = oldEdge.getSourceJork();
+            } else if (oldEdge.getSourceSubComponent() != null){
+                source = oldEdge.getSourceSubComponent();
+            } else {
+                return;
+            }
+
+            //Get the coordinates of the target of the original edge
+            if(oldEdge.getTargetLocation() != null) {
+                target = oldEdge.getTargetLocation();
+            } else if(oldEdge.getTargetJork() != null){
+                target = oldEdge.getTargetJork();
+            } else if (oldEdge.getTargetSubComponent() != null){
+                target = oldEdge.getTargetSubComponent();
+            } else {
+                return;
+            }
+
+            //Decide whether the source or the target of the edge should be updated
+            boolean closestToTarget = (Math.abs(event.getX() - target.getX()) < Math.abs(event.getX() - source.getX())) &&
+                    (Math.abs(event.getY() - target.getY()) < Math.abs(event.getY() - source.getY()));
+
+            //Handle drag close to nails
+            if(edge.get().getNails().size() > 0){
+                if(!closestToTarget){
+                    //Check if the drag is closer to the first nail than to source
+                    Nail firstNail = edge.get().getNails().get(0);
+                    boolean closestToFirstNail = getDistance(event.getX(), event.getY(), firstNail.getX(), firstNail.getY()) < getDistance(event.getX(), event.getY(), source.getX(), source.getY());
+
+                    //If the drag is closest to the first node, no drag should be initiated
+                    if(closestToFirstNail){
+                        return;
+                    }
+                } else {
+                    //Check if the drag is closer to the last nail than to target
+                    Nail lastNail = edge.get().getNails().get(edge.get().getNails().size() - 1);
+                    boolean closestToLastNail = getDistance(event.getX(), event.getY(), lastNail.getX(), lastNail.getY()) < getDistance(event.getX(), event.getY(), target.getX(), target.getY());
+
+                    //If the drag is closest to the last node, no drag should be initiated
+                    if(closestToLastNail){
+                        return;
+                    }
+                }
+            }
+
+            if(closestToTarget){
+                //The drag event occurred closest to the target, create a new edge
+                final Edge newEdge;
+
+                //Create the new edge with the same source as the old edge
+                if(source instanceof Location) {
+                    newEdge = new Edge((Location) source);
+                } else if (source instanceof Jork) {
+                    newEdge = new Edge((Jork) source);
+                } else {
+                    newEdge = new Edge((SubComponent) source);
+                }
+
+                KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+                    getComponent().removeEdge(newEdge);
+                    UndoRedoStack.forgetLast();
+                }));
+
+                UndoRedoStack.push(() -> { // Perform
+                    //Add the new edge and remove the old
+                    getComponent().addEdge(newEdge);
+                    getComponent().removeEdge(oldEdge);
+
+                }, () -> { // Undo
+                    //Add the old edge back and remove the new
+                    getComponent().addEdge(oldEdge);
+                    getComponent().removeEdge(newEdge);
+                }, "Updated edge", "add-circle");
+
+                //Make the state of the new edge correspond with the state of the old
+                newEdge.setColor(getColor());
+                newEdge.setColorIntensity(getColorIntensity());
+                newEdge.selectProperty().set(edge.get().getSelect());
+                newEdge.guardProperty().set(edge.get().getGuard());
+                newEdge.updateProperty().set(edge.get().getUpdate());
+                newEdge.syncProperty().set(edge.get().getSync());
+                for (Nail n : edge.get().getNails()) {
+                    newEdge.addNail(n);
+                }
+            } else {
+                //The drag event occurred closest to the source
+                final Edge newEdge;
+
+                //Create the new edge with the same source as the old edge
+                if(source instanceof Location) {
+                    newEdge = new Edge((Location) source);
+                } else if (source instanceof Jork) {
+                    newEdge = new Edge((Jork) source);
+                } else {
+                    newEdge = new Edge((SubComponent) source);
+                }
+
+                //Set the source to a new MouseCircular, which will follow the mouse and handle setting the new source
+                newEdge.sourceCircularProperty().set(new MouseCircular(newEdge));
+
+                //Set the target to the same as the old edge
+                if(target instanceof Location) {
+                    newEdge.setTargetLocation((Location) target);
+                } else if (target instanceof Jork) {
+                    newEdge.setTargetJork((Jork) target);
+                } else {
+                    newEdge.setTargetSubComponent((SubComponent) target);
+                }
+
+                KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+                    getComponent().removeEdge(newEdge);
+                    UndoRedoStack.forgetLast();
+                }));
+
+                UndoRedoStack.push(() -> { // Perform
+                    //Add the new edge and remove the old
+                    getComponent().addEdge(newEdge);
+                    getComponent().removeEdge(oldEdge);
+
+                }, () -> { // Undo
+                    //Add the old edge back and remove the new
+                    getComponent().addEdge(oldEdge);
+                    getComponent().removeEdge(newEdge);
+                }, "Updated edge", "add-circle");
+
+                //Make the state of the new edge correspond with the state of the old
+                newEdge.setColor(getColor());
+                newEdge.setColorIntensity(getColorIntensity());
+                newEdge.selectProperty().set(edge.get().getSelect());
+                newEdge.guardProperty().set(edge.get().getGuard());
+                newEdge.updateProperty().set(edge.get().getUpdate());
+                newEdge.syncProperty().set(edge.get().getSync());
+                for (Nail n : edge.get().getNails()) {
+                    newEdge.addNail(n);
+                }
+            }
+        }
+    }
+
     @Override
     public void color(final Color color, final Color.Intensity intensity) {
         final Edge edge = getEdge();
@@ -740,5 +929,9 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
     @Override
     public double getY() {
         return yProperty().get();
+    }
+
+    private double getDistance(double x1, double y1, double x2, double y2){
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 }
