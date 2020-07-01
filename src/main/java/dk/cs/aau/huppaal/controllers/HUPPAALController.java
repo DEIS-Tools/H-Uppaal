@@ -11,6 +11,7 @@ import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.colors.EnabledColor;
 import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
+import dk.cs.aau.huppaal.utility.helpers.ZoomHelper;
 import dk.cs.aau.huppaal.utility.keyboard.Keybind;
 import dk.cs.aau.huppaal.utility.keyboard.KeyboardTracker;
 import dk.cs.aau.huppaal.utility.keyboard.NudgeDirection;
@@ -76,6 +77,10 @@ public class HUPPAALController implements Initializable {
     public JFXRippler deleteSelected;
     public JFXRippler undo;
     public JFXRippler redo;
+    public JFXRippler zoomIn;
+    public JFXRippler zoomOut;
+    public JFXRippler resetZoom;
+    public JFXRippler zoomToFit;
     public ImageView logo;
     public JFXTabPane tabPane;
     public Tab errorsTab;
@@ -249,6 +254,8 @@ public class HUPPAALController implements Initializable {
             JFXTooltip.setLeftDelay(null); //Sets the standard delay time (200 milliseconds)
             JFXTooltip.install(generateUppaalModel, generateUPPAALToolTip);
         }
+
+        ZoomHelper.setCanvas(canvas.getController().root);
     }
 
     private void initializeReachabilityAnalysisThread() {
@@ -866,6 +873,26 @@ public class HUPPAALController implements Initializable {
     @FXML
     private void redoClicked() {
         UndoRedoStack.redo();
+    }
+
+    @FXML
+    private void zoomInClicked() {
+        ZoomHelper.zoomIn();
+    }
+
+    @FXML
+    private void zoomOutClicked() {
+        ZoomHelper.zoomOut();
+    }
+
+    @FXML
+    private void zoomToFitClicked() {
+        ZoomHelper.zoomToFit();
+    }
+
+    @FXML
+    private void resetZoomClicked() {
+        ZoomHelper.resetZoom();
     }
 
     @FXML

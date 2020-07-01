@@ -98,25 +98,5 @@ public class CanvasController implements Initializable {
                 leaveTextAreas();
             }
         };
-
-        root.addEventFilter(ScrollEvent.ANY, new EventHandler<ScrollEvent>() {
-            @Override
-            public void handle(ScrollEvent event) {
-                double newScale = root.getScaleX();
-                double delta = 1.2;
-
-                if (event.getDeltaY() < 0)
-                    newScale /= delta;
-                else
-                    newScale *= delta;
-
-                root.setScaleX(newScale);
-                root.setScaleY(newScale);
-
-                event.consume();
-            }
-        });
-
     }
-
 }

@@ -4,6 +4,7 @@ import dk.cs.aau.huppaal.controllers.CanvasController;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.helpers.CanvasDragHelper;
 import dk.cs.aau.huppaal.utility.helpers.MouseTrackable;
+import dk.cs.aau.huppaal.utility.helpers.ZoomHelper;
 import dk.cs.aau.huppaal.utility.keyboard.Keybind;
 import dk.cs.aau.huppaal.utility.keyboard.KeyboardTracker;
 import dk.cs.aau.huppaal.utility.mouse.MouseTracker;
@@ -46,6 +47,13 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         KeyboardTracker.registerKeybind(KeyboardTracker.UNDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN), UndoRedoStack::undo));
         KeyboardTracker.registerKeybind(KeyboardTracker.REDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), UndoRedoStack::redo));
 
+        //Add keybindings for zoom functionality
+        KeyboardTracker.registerKeybind(KeyboardTracker.ZOOM_IN, new Keybind(new KeyCodeCombination(KeyCode.PLUS, KeyCombination.SHORTCUT_DOWN), ZoomHelper::zoomIn));
+        KeyboardTracker.registerKeybind(KeyboardTracker.ZOOM_OUT, new Keybind(new KeyCodeCombination(KeyCode.MINUS, KeyCombination.SHORTCUT_DOWN), ZoomHelper::zoomOut));
+        KeyboardTracker.registerKeybind(KeyboardTracker.RESET_ZOOM, new Keybind(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN), ZoomHelper::resetZoom));
+        KeyboardTracker.registerKeybind(KeyboardTracker.ZOOM_TO_FIT, new Keybind(new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHORTCUT_DOWN), ZoomHelper::zoomToFit));
+
+
         try {
             fxmlLoader.setRoot(this);
             fxmlLoader.load(location.openStream());
@@ -77,6 +85,9 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         final Grid grid = new Grid(GRID_SIZE);
         getChildren().add(grid);
         grid.toBack();
+        controller.root.scaleXProperty().addListener((observable, oldScale, newScale) -> {
+            grid.updateGrid();
+        });
     }
 
     @Override
@@ -99,6 +110,10 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         return yProperty().get();
     }
 
+    public CanvasController getController() {
+        return controller;
+    }
+
     @Override
     public MouseTracker getMouseTracker() {
         return mouseTracker;
@@ -108,6 +123,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
 
         private final ArrayList<Line> horizontalLines = new ArrayList<>();
         private final ArrayList<Line> verticalLines = new ArrayList<>();
+        private double gridSize;
 
         public Grid(final int gridSize) {
 
@@ -187,8 +203,10 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                     horizontalLines.forEach(line -> getChildren().add(line));
                 });
             });
-
         }
 
+        public void updateGrid() {
+            //TODO: update grid on zoom
+        }
     }
 }
