@@ -14,6 +14,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -85,9 +86,6 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         final Grid grid = new Grid(GRID_SIZE);
         getChildren().add(grid);
         grid.toBack();
-        controller.root.scaleXProperty().addListener((observable, oldScale, newScale) -> {
-            grid.updateGrid();
-        });
     }
 
     @Override
@@ -123,7 +121,6 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
 
         private final ArrayList<Line> horizontalLines = new ArrayList<>();
         private final ArrayList<Line> verticalLines = new ArrayList<>();
-        private double gridSize;
 
         public Grid(final int gridSize) {
 
@@ -139,14 +136,14 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                     }
 
                     // Add new lines (to cover the screen, with 1 line in margin in both ends)
-                    int i = -1;
-                    while (i * gridSize - gridSize < newWidth.doubleValue()) {
+                    int i = -2000;
+                    while (i * gridSize - gridSize < newWidth.doubleValue() * 10) {
                         final Line line = new Line(i * gridSize, 200, i * gridSize, 300);
                         line.getStyleClass().add("grid-line");
 
                         final DoubleBinding parentXBinding = new DoubleBinding() {
                             {
-                                super.bind(getParent().translateXProperty());
+                                super.bind(translateXProperty());
                             }
 
                             @Override
@@ -157,8 +154,8 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                         };
 
                         line.layoutXProperty().bind(parentXBinding);
-                        line.startYProperty().bind(getParent().layoutYProperty().subtract(getParent().translateYProperty()).subtract(50)); // the 50 is a fix
-                        line.endYProperty().bind(getParent().layoutYProperty().subtract(getParent().translateYProperty()).add(getScene().heightProperty()));
+                        line.startYProperty().bind(getParent().layoutYProperty().subtract(getParent().translateYProperty()).subtract(1000)); // the 50 is a fix
+                        line.endYProperty().bind(getParent().layoutYProperty().subtract(getParent().translateYProperty()).add(getScene().heightProperty()).add(1000));
 
                         verticalLines.add(line);
                         i++;
@@ -176,14 +173,14 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                     }
 
                     // Add new lines (to cover the screen, with 1 line in margin in both ends)
-                    int i = -1;
-                    while (i * gridSize - gridSize < newHeight.doubleValue()) {
+                    int i = -2000;
+                    while (i * gridSize - gridSize < newHeight.doubleValue() * 10) {
                         final Line line = new Line(200, i * gridSize, 300, i * gridSize);
                         line.getStyleClass().add("grid-line");
 
                         final DoubleBinding parentYBinding = new DoubleBinding() {
                             {
-                                super.bind(getParent().translateYProperty());
+                                super.bind(translateYProperty());
                             }
 
                             @Override
@@ -194,8 +191,8 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                         };
 
                         line.layoutYProperty().bind(parentYBinding);
-                        line.startXProperty().bind(getParent().layoutXProperty().subtract(getParent().translateXProperty()));
-                        line.endXProperty().bind(getParent().layoutXProperty().subtract(getParent().translateXProperty()).add(getScene().widthProperty()));
+                        line.startXProperty().bind(getParent().layoutXProperty().subtract(getParent().translateXProperty()).subtract(1500));
+                        line.endXProperty().bind(getParent().layoutXProperty().subtract(getParent().translateXProperty()).add(getScene().widthProperty()).add(1500));
 
                         horizontalLines.add(line);
                         i++;
@@ -203,10 +200,6 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                     horizontalLines.forEach(line -> getChildren().add(line));
                 });
             });
-        }
-
-        public void updateGrid() {
-            //TODO: update grid on zoom
         }
     }
 }

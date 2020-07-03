@@ -2,8 +2,9 @@ package dk.cs.aau.huppaal.utility.helpers;
 
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.controllers.CanvasController;
-import dk.cs.aau.huppaal.presentations.CanvasPresentation;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
 
 public class ZoomHelper {
     private static Pane canvas;
@@ -18,6 +19,11 @@ public class ZoomHelper {
 
         newScale *= delta;
 
+        //Limit for zooming in
+        if(newScale > 8){
+            return;
+        }
+
         canvas.setScaleX(newScale);
         canvas.setScaleY(newScale);
     }
@@ -27,6 +33,11 @@ public class ZoomHelper {
         double delta = 1.2;
 
         newScale /= delta;
+
+        //Limit for zooming out
+        if(newScale < 0.4){
+            return;
+        }
 
         canvas.setScaleX(newScale);
         canvas.setScaleY(newScale);
@@ -38,7 +49,7 @@ public class ZoomHelper {
     }
 
     public static void zoomToFit() {
-        double newScale = (canvas.getParent().getScene().widthProperty().doubleValue() / CanvasController.getActiveComponent().getWidth());
+        double newScale = (CanvasController.getActiveComponent().getWidth() / canvas.getWidth() * (Stage.getWindows().get(0).getWidth() / Screen.getPrimary().getBounds().getWidth()));
 
         canvas.setScaleX(newScale);
         canvas.setScaleY(newScale);
