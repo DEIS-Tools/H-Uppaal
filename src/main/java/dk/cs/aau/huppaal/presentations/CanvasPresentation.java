@@ -136,7 +136,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                     }
 
                     // Add new lines (to cover the screen, with 1 line in margin in both ends)
-                    int i = -2000;
+                    int i = -1500;
                     while (i * gridSize - gridSize < newWidth.doubleValue() * 10) {
                         final Line line = new Line(i * gridSize, 200, i * gridSize, 300);
                         line.getStyleClass().add("grid-line");
@@ -154,8 +154,8 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                         };
 
                         line.layoutXProperty().bind(parentXBinding);
-                        line.startYProperty().bind(getParent().layoutYProperty().subtract(getParent().translateYProperty()).subtract(1000)); // the 50 is a fix
-                        line.endYProperty().bind(getParent().layoutYProperty().subtract(getParent().translateYProperty()).add(getScene().heightProperty()).add(1000));
+                        line.startYProperty().bind(getParent().layoutYProperty().subtract(getParent().translateYProperty()).subtract(1500));
+                        line.endYProperty().bind(getParent().layoutYProperty().subtract(getParent().translateYProperty()).add(getScene().heightProperty()).add(1500));
 
                         verticalLines.add(line);
                         i++;
@@ -173,7 +173,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                     }
 
                     // Add new lines (to cover the screen, with 1 line in margin in both ends)
-                    int i = -2000;
+                    int i = -1500;
                     while (i * gridSize - gridSize < newHeight.doubleValue() * 10) {
                         final Line line = new Line(200, i * gridSize, 300, i * gridSize);
                         line.getStyleClass().add("grid-line");
