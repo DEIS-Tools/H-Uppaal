@@ -167,8 +167,8 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                         final Line line = new Line(-Screen.getPrimary().getBounds().getHeight() * 2, i * gridSize, Screen.getPrimary().getBounds().getHeight() * 2, i * gridSize);
                         line.getStyleClass().add("grid-line");
 
-                        line.translateXProperty().bind(getParent().translateXProperty().multiply(-1 / getParent().getScaleX()));
-                        line.translateYProperty().bind(getParent().translateYProperty().multiply(-1 / getParent().getScaleY()));
+                        line.translateXProperty().bind(getParent().translateXProperty().multiply(-2 / getParent().getScaleX()));
+                        line.translateYProperty().bind(getParent().translateYProperty().multiply(-2 / getParent().getScaleY()));
 
                         horizontalLines.add(line);
                         i++;
