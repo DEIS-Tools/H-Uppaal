@@ -1,6 +1,5 @@
 package dk.cs.aau.huppaal.presentations;
 
-import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.controllers.CanvasController;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.helpers.CanvasDragHelper;
@@ -9,19 +8,14 @@ import dk.cs.aau.huppaal.utility.helpers.ZoomHelper;
 import dk.cs.aau.huppaal.utility.keyboard.Keybind;
 import dk.cs.aau.huppaal.utility.keyboard.KeyboardTracker;
 import dk.cs.aau.huppaal.utility.mouse.MouseTracker;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
+import javafx.geometry.Bounds;
 import javafx.scene.Parent;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.input.*;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
 import javafx.scene.shape.Line;
 import javafx.stage.Screen;
 
@@ -88,6 +82,14 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         final Grid grid = new Grid(GRID_SIZE);
         getChildren().add(grid);
         grid.toBack();
+        this.translateXProperty().addListener(((observable, oldValue, newValue) -> grid.handleTranslateX(oldValue.doubleValue(), newValue.doubleValue(), this.scaleXProperty().doubleValue())));
+
+        this.translateYProperty().addListener(((observable, oldValue, newValue) -> grid.handleTranslateY(oldValue.doubleValue(), newValue.doubleValue(), this.scaleYProperty().doubleValue())));
+
+        grid.setTranslateX(0);
+        grid.setTranslateY(0);
+
+        ZoomHelper.setGrid(grid);
     }
 
     @Override
@@ -139,12 +141,9 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
 
                     // Add new lines (to cover the screen, with 1 line in margin in both ends)
                     int i = -1500;
-                    while (i * gridSize - gridSize < newWidth.doubleValue() * 10) {
-                        final Line line = new Line(i * gridSize, -Screen.getPrimary().getBounds().getHeight() * 2, i * gridSize, Screen.getPrimary().getBounds().getHeight() * 2);
+                    while (i * gridSize - gridSize < newWidth.doubleValue() * 50) {
+                        Line line = new Line(i * gridSize, -Screen.getPrimary().getBounds().getHeight() * 2, i * gridSize, Screen.getPrimary().getBounds().getHeight() * 2);
                         line.getStyleClass().add("grid-line");
-
-                        line.translateXProperty().bind(getParent().translateXProperty().multiply(-2 / getParent().getScaleX()));
-                        line.translateYProperty().bind(getParent().translateYProperty().multiply(-2 / getParent().getScaleY()));
 
                         verticalLines.add(line);
                         i++;
@@ -163,12 +162,9 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
 
                     // Add new lines (to cover the screen, with 1 line in margin in both ends)
                     int i = -1500;
-                    while (i * gridSize - gridSize < newHeight.doubleValue() * 10) {
-                        final Line line = new Line(-Screen.getPrimary().getBounds().getHeight() * 2, i * gridSize, Screen.getPrimary().getBounds().getHeight() * 2, i * gridSize);
+                    while (i * gridSize - gridSize < newHeight.doubleValue() * 50) {
+                        Line line = new Line(-Screen.getPrimary().getBounds().getHeight() * 2, i * gridSize, Screen.getPrimary().getBounds().getHeight() * 2, i * gridSize);
                         line.getStyleClass().add("grid-line");
-
-                        line.translateXProperty().bind(getParent().translateXProperty().multiply(-2 / getParent().getScaleX()));
-                        line.translateYProperty().bind(getParent().translateYProperty().multiply(-2 / getParent().getScaleY()));
 
                         horizontalLines.add(line);
                         i++;
@@ -176,6 +172,14 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                     horizontalLines.forEach(line -> getChildren().add(line));
                 });
             });
+        }
+
+        public void handleTranslateX(double oldValue, double newValue, double scale) {
+            this.setTranslateX(this.getTranslateX() + (newValue - oldValue) * -1 / scale);
+        }
+
+        public void handleTranslateY(double oldValue, double newValue, double scale) {
+            this.setTranslateY(this.getTranslateY() + (newValue - oldValue) * -1 / scale);
         }
     }
 }

@@ -2,19 +2,27 @@ package dk.cs.aau.huppaal.utility.helpers;
 
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.controllers.CanvasController;
+import dk.cs.aau.huppaal.presentations.CanvasPresentation;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-public class ZoomHelper {
-    private static Pane canvas;
+import java.rmi.MarshalException;
 
-    public static void setCanvas(Pane newCanvas) {
-        canvas = newCanvas;
+public class ZoomHelper {
+    private static CanvasPresentation canvasPresentation;
+    private static CanvasPresentation.Grid grid;
+
+    public static void setCanvas(CanvasPresentation newCanvasPresentation) {
+        canvasPresentation = newCanvasPresentation;
+    }
+
+    public static void setGrid(CanvasPresentation.Grid newGrid) {
+        grid = newGrid;
     }
 
     public static void zoomIn() {
-        double newScale = canvas.getScaleX();
+        double newScale = canvasPresentation.getScaleX();
         double delta = 1.2;
 
         newScale *= delta;
@@ -24,12 +32,12 @@ public class ZoomHelper {
             return;
         }
 
-        canvas.setScaleX(newScale);
-        canvas.setScaleY(newScale);
+        canvasPresentation.setScaleX(newScale);
+        canvasPresentation.setScaleY(newScale);
     }
 
     public static void zoomOut() {
-        double newScale = canvas.getScaleX();
+        double newScale = canvasPresentation.getScaleX();
         double delta = 1.2;
 
         newScale /= delta;
@@ -39,19 +47,28 @@ public class ZoomHelper {
             return;
         }
 
-        canvas.setScaleX(newScale);
-        canvas.setScaleY(newScale);
+        canvasPresentation.setScaleX(newScale);
+        canvasPresentation.setScaleY(newScale);
     }
 
     public static void resetZoom() {
-        canvas.setScaleX(1);
-        canvas.setScaleY(1);
+        canvasPresentation.setScaleX(1);
+        canvasPresentation.setScaleY(1);
     }
 
     public static void zoomToFit() {
-        double newScale = (CanvasController.getActiveComponent().getWidth() / canvas.getWidth() * (Stage.getWindows().get(0).getWidth() / Screen.getPrimary().getBounds().getWidth()));
+        double newScale = Math.min(canvasPresentation.getWidth() / CanvasController.getActiveComponent().getWidth() - 0.1, canvasPresentation.getHeight() / CanvasController.getActiveComponent().getHeight() - 0.1); //0.1 added as margin
+        final double gridSize = CanvasPresentation.GRID_SIZE * canvasPresentation.scaleXProperty().doubleValue();
+        double x = (canvasPresentation.getWidth() / 2) / newScale;
+        double y = (canvasPresentation.getHeight() / 2) / newScale;
 
-        canvas.setScaleX(newScale);
-        canvas.setScaleY(newScale);
+        canvasPresentation.setScaleX(newScale);
+        canvasPresentation.setScaleY(newScale);
+
+        canvasPresentation.setTranslateX(x - (x % gridSize) + gridSize * 0.5);
+        canvasPresentation.setTranslateY(y - (y % gridSize) + gridSize * 0.5);
+
+        grid.setTranslateX(0);
+        grid.setTranslateY(0);
     }
 }

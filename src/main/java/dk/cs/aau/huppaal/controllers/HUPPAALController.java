@@ -255,7 +255,7 @@ public class HUPPAALController implements Initializable {
             JFXTooltip.install(generateUppaalModel, generateUPPAALToolTip);
         }
 
-        ZoomHelper.setCanvas(canvas.getController().root);
+        ZoomHelper.setCanvas(canvas);
     }
 
     private void initializeReachabilityAnalysisThread() {
