@@ -163,7 +163,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                     // Add new lines (to cover the screen, with 1 line in margin in both ends)
                     int i = -1500;
                     while (i * gridSize - gridSize < newHeight.doubleValue() * 50) {
-                        Line line = new Line(-Screen.getPrimary().getBounds().getHeight() * 2, i * gridSize, Screen.getPrimary().getBounds().getHeight() * 2, i * gridSize);
+                        Line line = new Line(-Screen.getPrimary().getBounds().getWidth() * 2, i * gridSize, Screen.getPrimary().getBounds().getWidth() * 2, i * gridSize);
                         line.getStyleClass().add("grid-line");
 
                         horizontalLines.add(line);
