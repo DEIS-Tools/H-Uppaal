@@ -69,10 +69,6 @@
     -fx-stroke: -grey-300;
 }
 
-.grid-line-red {
-    -fx-stroke: -red-600;
-}
-
 .component-label-container {
     -fx-stroke-width: 1;
 }
