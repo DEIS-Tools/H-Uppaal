@@ -58,15 +58,18 @@ public class ZoomHelper {
 
     public static void zoomToFit() {
         double newScale = Math.min(canvasPresentation.getWidth() / CanvasController.getActiveComponent().getWidth() - 0.1, canvasPresentation.getHeight() / CanvasController.getActiveComponent().getHeight() - 0.1); //0.1 added as margin
-        final double gridSize = CanvasPresentation.GRID_SIZE * canvasPresentation.scaleXProperty().doubleValue();
-        double x = (canvasPresentation.getWidth() / 2) / newScale;
-        double y = (canvasPresentation.getHeight() / 2) / newScale;
+        final double gridSize = CanvasPresentation.GRID_SIZE / newScale;
+        double x = CanvasController.getActiveComponent().getWidth() * newScale;
+        double y = CanvasController.getActiveComponent().getHeight() * newScale;
 
         canvasPresentation.setScaleX(newScale);
         canvasPresentation.setScaleY(newScale);
 
-        canvasPresentation.setTranslateX(x - (x % gridSize) + gridSize * 0.5);
-        canvasPresentation.setTranslateY(y - (y % gridSize) + gridSize * 0.5);
+        canvasPresentation.setLayoutX(0);
+        canvasPresentation.setLayoutY(0);
+
+        canvasPresentation.setTranslateX(gridSize * 0.5);
+        canvasPresentation.setTranslateY(gridSize * 0.5);
 
         grid.setTranslateX(gridSize * 0.5);
         grid.setTranslateY(gridSize * 0.5);

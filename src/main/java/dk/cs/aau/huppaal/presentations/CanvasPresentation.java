@@ -12,7 +12,6 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
-import javafx.geometry.Bounds;
 import javafx.scene.Parent;
 import javafx.scene.input.*;
 import javafx.scene.layout.Pane;
@@ -127,6 +126,8 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         private final ArrayList<Line> verticalLines = new ArrayList<>();
 
         public Grid(final int gridSize) {
+            int screenWidthInGridSlices = (int) (Screen.getPrimary().getBounds().getWidth() - (Screen.getPrimary().getBounds().getWidth() % gridSize)) * 3;
+            int screenHeightInGridSlices = (int) (Screen.getPrimary().getBounds().getHeight() - (Screen.getPrimary().getBounds().getHeight() % gridSize)) * 3;
 
             // When the scene changes (goes from null to something)
             sceneProperty().addListener((observable, oldScene, newScene) -> {
@@ -139,10 +140,10 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                         verticalLines.remove(removeLine);
                     }
 
-                    // Add new lines (to cover the screen, with 1 line in margin in both ends)
-                    int i = -1500;
-                    while (i * gridSize - gridSize < newWidth.doubleValue() * 50) {
-                        Line line = new Line(i * gridSize, -Screen.getPrimary().getBounds().getHeight() * 2, i * gridSize, Screen.getPrimary().getBounds().getHeight() * 2);
+                    // Add new lines to cover the screen with zoom accounted for
+                    int i = -screenWidthInGridSlices;
+                    while (i * gridSize - gridSize < screenWidthInGridSlices) {
+                        Line line = new Line(i * gridSize, -screenHeightInGridSlices, i * gridSize, screenHeightInGridSlices);
                         line.getStyleClass().add("grid-line");
 
                         verticalLines.add(line);
@@ -160,10 +161,10 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                         horizontalLines.remove(removeLine);
                     }
 
-                    // Add new lines (to cover the screen, with 1 line in margin in both ends)
-                    int i = -1500;
-                    while (i * gridSize - gridSize < newHeight.doubleValue() * 50) {
-                        Line line = new Line(-Screen.getPrimary().getBounds().getWidth() * 2, i * gridSize, Screen.getPrimary().getBounds().getWidth() * 2, i * gridSize);
+                    // Add new lines to cover the screen with zoom accounted for
+                    int i = (int) -screenHeightInGridSlices;
+                    while (i * gridSize - gridSize < screenHeightInGridSlices) {
+                        Line line = new Line(-screenWidthInGridSlices, i * gridSize, screenWidthInGridSlices, i * gridSize);
                         line.getStyleClass().add("grid-line");
 
                         horizontalLines.add(line);
