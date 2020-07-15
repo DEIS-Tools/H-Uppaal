@@ -63,10 +63,11 @@ public class CanvasDragHelper {
             // The location of the mouse (added with the relative to the subject)
             double x = event.getX() + dragXOffset[0];
             double y = event.getY() + dragYOffset[0];
+            final double gridSize = CanvasPresentation.GRID_SIZE * subject.getScaleX();
 
             // Make coordinates snap to the grip on the canvas
-            x -= x % CanvasPresentation.GRID_SIZE - (CanvasPresentation.GRID_SIZE / 2);
-            y -= y % CanvasPresentation.GRID_SIZE - (CanvasPresentation.GRID_SIZE / 2);
+            x -= x % gridSize - (gridSize * 0.5);
+            y -= y % gridSize - (gridSize * 0.5);
 
             // If the subject has its x stringBinder bound have a parent where we can get the xProperty as well
             if (subject.xProperty().isBound()) {

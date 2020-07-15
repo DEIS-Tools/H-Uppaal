@@ -162,7 +162,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                     }
 
                     // Add new lines to cover the screen with zoom accounted for
-                    int i = (int) -screenHeightInGridSlices;
+                    int i = -screenHeightInGridSlices;
                     while (i * gridSize - gridSize < screenHeightInGridSlices) {
                         Line line = new Line(-screenWidthInGridSlices, i * gridSize, screenWidthInGridSlices, i * gridSize);
                         line.getStyleClass().add("grid-line");
@@ -176,11 +176,11 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         }
 
         public void handleTranslateX(double oldValue, double newValue, double scale) {
-            this.setTranslateX(this.getTranslateX() + (newValue - oldValue) * -1 / scale);
+            this.setTranslateX(this.getTranslateX() + (newValue - oldValue) / -scale);
         }
 
         public void handleTranslateY(double oldValue, double newValue, double scale) {
-            this.setTranslateY(this.getTranslateY() + (newValue - oldValue) * -1 / scale);
+            this.setTranslateY(this.getTranslateY() + (newValue - oldValue) / -scale);
         }
     }
 }
