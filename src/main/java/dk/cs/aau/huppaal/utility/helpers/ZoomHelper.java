@@ -2,11 +2,15 @@ package dk.cs.aau.huppaal.utility.helpers;
 
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.controllers.CanvasController;
+import dk.cs.aau.huppaal.controllers.ComponentController;
 import dk.cs.aau.huppaal.presentations.CanvasPresentation;
+import javafx.geometry.Bounds;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.rmi.MarshalException;
 
 public class ZoomHelper {
@@ -58,18 +62,14 @@ public class ZoomHelper {
 
     public static void zoomToFit() {
         double newScale = Math.min(canvasPresentation.getWidth() / CanvasController.getActiveComponent().getWidth() - 0.1, canvasPresentation.getHeight() / CanvasController.getActiveComponent().getHeight() - 0.1); //0.1 added as margin
-        final double gridSize = CanvasPresentation.GRID_SIZE / newScale;
-        double x = CanvasController.getActiveComponent().getWidth() * newScale;
-        double y = CanvasController.getActiveComponent().getHeight() * newScale;
+        final double gridSize = CanvasPresentation.GRID_SIZE * newScale;
+        double xOffset = newScale * canvasPresentation.getWidth() * 1.0f / 2 - newScale * CanvasController.getActiveComponent().getWidth() * 1.0f / 2;
+        double yOffset = newScale * canvasPresentation.getHeight() * 1.0f / 3 - newScale * (CanvasController.getActiveComponent().getHeight() - newScale * 100) * 1.0f / 3; //The offset places the component a bit too high, so '-newScale * 100' is used to lower it a but
 
         canvasPresentation.setScaleX(newScale);
         canvasPresentation.setScaleY(newScale);
-
-        canvasPresentation.setLayoutX(0);
-        canvasPresentation.setLayoutY(0);
-
-        canvasPresentation.setTranslateX(gridSize * 0.5);
-        canvasPresentation.setTranslateY(gridSize * 0.5);
+        canvasPresentation.setTranslateX(xOffset - (xOffset % gridSize) + gridSize * 0.5);
+        canvasPresentation.setTranslateY(yOffset - (yOffset % gridSize) + gridSize * 0.5);
 
         grid.setTranslateX(gridSize * 0.5);
         grid.setTranslateY(gridSize * 0.5);

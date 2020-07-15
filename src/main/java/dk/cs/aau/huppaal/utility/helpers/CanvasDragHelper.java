@@ -227,7 +227,7 @@ public class CanvasDragHelper {
 
             final double newX = previousXTranslation[0] + event.getScreenX() + dragXOffset[0];
             final double newY = previousYTranslation[0] + event.getScreenY() + dragYOffset[0];
-            final double gridSize = CanvasPresentation.GRID_SIZE * subject.scaleXProperty().doubleValue();
+            final double gridSize = CanvasPresentation.GRID_SIZE * subject.getScaleX();
 
             if (subject instanceof CanvasPresentation) {
                 subject.setTranslateX(newX - (newX % gridSize) + gridSize * 0.5);
