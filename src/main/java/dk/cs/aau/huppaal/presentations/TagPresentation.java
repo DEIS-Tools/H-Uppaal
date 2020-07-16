@@ -1,6 +1,7 @@
 package dk.cs.aau.huppaal.presentations;
 
 import dk.cs.aau.huppaal.abstractions.Component;
+import dk.cs.aau.huppaal.abstractions.Nail;
 import dk.cs.aau.huppaal.controllers.CanvasController;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.colors.Color;
@@ -213,18 +214,34 @@ public class TagPresentation extends StackPane {
                 textField.requestFocus();
                 textField.requestFocus(); // This needs to be done twice because of reasons
             }
+            
+            //Handle constraints for guards, selects, synchronizations, and updates
+            if(getParent() instanceof NailPresentation){
+                if(getParent().localToParent(getBoundsInParent()).getCenterX() > getComponent().widthProperty().doubleValue() - textField.getWidth()) {
+                    setTranslateX(getTranslateX() + getComponent().widthProperty().doubleValue() - textField.getWidth() - getParent().localToParent(getBoundsInParent()).getCenterX());
+                } else if (getParent().localToParent(getBoundsInParent()).getCenterX() - textField.getWidth() < 0) {
+                    setTranslateX(getTranslateX() - (getParent().localToParent(getBoundsInParent()).getCenterX() - textField.getWidth()));
+                }
 
-            if(getParent().localToParent(getBoundsInParent()).getCenterX() > getComponent().widthProperty().doubleValue() - textField.getWidth()) {
-                setTranslateX(getTranslateX() + getComponent().widthProperty().doubleValue() - textField.getWidth() - getParent().localToParent(getBoundsInParent()).getCenterX());
-            } else if (getParent().localToParent(getBoundsInParent()).getCenterX() - textField.getWidth() < 0) {
-                setTranslateX(getTranslateX() - (getParent().localToParent(getBoundsInParent()).getCenterX() - textField.getWidth()));
+                if(getParent().localToParent(getBoundsInParent()).getCenterY() > getComponent().heightProperty().doubleValue() - textField.getHeight()) {
+                    setTranslateY(getTranslateY() + getComponent().heightProperty().doubleValue() - textField.getHeight() - getParent().localToParent(getBoundsInParent()).getCenterY());
+                } else if (getParent().localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2 < 0) {
+                    setTranslateY(getTranslateY() - (getParent().localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2));
+                }
+            } else {
+                if(getParent().getParent().localToParent(getBoundsInParent()).getCenterX() > getComponent().widthProperty().doubleValue() - textField.getWidth()) {
+                    setTranslateX(getTranslateX() + getComponent().widthProperty().doubleValue() - textField.getWidth() - getParent().getParent().localToParent(getBoundsInParent()).getCenterX());
+                } else if (getParent().getParent().localToParent(getBoundsInParent()).getCenterX() - textField.getWidth() < 0) {
+                    setTranslateX(getTranslateX() - (getParent().getParent().localToParent(getBoundsInParent()).getCenterX() - textField.getWidth()));
+                }
+
+                if(getParent().getParent().localToParent(getBoundsInParent()).getCenterY() > getComponent().heightProperty().doubleValue() - textField.getHeight()) {
+                    setTranslateY(getTranslateY() + getComponent().heightProperty().doubleValue() - textField.getHeight() - getParent().getParent().localToParent(getBoundsInParent()).getCenterY());
+                } else if (getParent().getParent().localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2 < 0) {
+                    setTranslateY(getTranslateY() - (getParent().getParent().localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2));
+                }
             }
 
-            if(getParent().localToParent(getBoundsInParent()).getCenterY() > getComponent().heightProperty().doubleValue() - textField.getHeight()) {
-                setTranslateY(getTranslateY() + getComponent().heightProperty().doubleValue() - textField.getHeight() - getParent().localToParent(getBoundsInParent()).getCenterY());
-            } else if (getParent().localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2 < 0) {
-                setTranslateY(getTranslateY() - (getParent().localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2));
-            }
 
         });
 
