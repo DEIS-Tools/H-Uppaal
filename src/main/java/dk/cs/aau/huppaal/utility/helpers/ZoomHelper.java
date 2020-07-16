@@ -51,7 +51,7 @@ public class ZoomHelper {
     }
 
     public static void zoomToFit() {
-        double newScale = Math.min(canvasPresentation.getWidth() / CanvasController.getActiveComponent().getWidth() - 0.1, canvasPresentation.getHeight() / CanvasController.getActiveComponent().getHeight() - 0.1); //0.1 added as margin
+        double newScale = Math.min(canvasPresentation.getWidth() / CanvasController.getActiveComponent().getWidth() - 0.1, canvasPresentation.getHeight() / CanvasController.getActiveComponent().getHeight() - 0.2); //0.1 for width and 0.2 for height added for margin
         final double gridSize = CanvasPresentation.GRID_SIZE * newScale;
         double xOffset = newScale * canvasPresentation.getWidth() * 1.0f / 2 - newScale * CanvasController.getActiveComponent().getWidth() * 1.0f / 2;
         double yOffset = newScale * canvasPresentation.getHeight() * 1.0f / 3 - newScale * (CanvasController.getActiveComponent().getHeight() - newScale * 100) * 1.0f / 3; //The offset places the component a bit too high, so '-newScale * 100' is used to lower it a but
