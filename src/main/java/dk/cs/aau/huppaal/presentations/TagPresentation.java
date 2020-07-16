@@ -9,9 +9,11 @@ import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.beans.binding.When;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
@@ -210,6 +212,18 @@ public class TagPresentation extends StackPane {
                 textField.setMouseTransparent(false);
                 textField.requestFocus();
                 textField.requestFocus(); // This needs to be done twice because of reasons
+            }
+
+            if(getParent().localToParent(getBoundsInParent()).getCenterX() > getComponent().widthProperty().doubleValue() - textField.getWidth()) {
+                setTranslateX(getTranslateX() + getComponent().widthProperty().doubleValue() - textField.getWidth() - getParent().localToParent(getBoundsInParent()).getCenterX());
+            } else if (getParent().localToParent(getBoundsInParent()).getCenterX() - textField.getWidth() < 0) {
+                setTranslateX(getTranslateX() - (getParent().localToParent(getBoundsInParent()).getCenterX() - textField.getWidth()));
+            }
+
+            if(getParent().localToParent(getBoundsInParent()).getCenterY() > getComponent().heightProperty().doubleValue() - textField.getHeight()) {
+                setTranslateY(getTranslateY() + getComponent().heightProperty().doubleValue() - textField.getHeight() - getParent().localToParent(getBoundsInParent()).getCenterY());
+            } else if (getParent().localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2 < 0) {
+                setTranslateY(getTranslateY() - (getParent().localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2));
             }
 
         });
