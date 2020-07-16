@@ -1,17 +1,7 @@
 package dk.cs.aau.huppaal.utility.helpers;
 
-import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.controllers.CanvasController;
-import dk.cs.aau.huppaal.controllers.ComponentController;
 import dk.cs.aau.huppaal.presentations.CanvasPresentation;
-import javafx.geometry.Bounds;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.layout.Pane;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-
-import java.awt.*;
-import java.rmi.MarshalException;
 
 public class ZoomHelper {
     private static CanvasPresentation canvasPresentation;
