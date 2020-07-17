@@ -65,7 +65,7 @@ public class CanvasDragHelper {
             double y = event.getY() + dragYOffset[0];
             final double gridSize = CanvasPresentation.GRID_SIZE * subject.getScaleX();
 
-            // Make coordinates snap to the grip on the canvas
+            // Make coordinates snap to grid
             x -= x % gridSize - (gridSize * 0.5);
             y -= y % gridSize - (gridSize * 0.5);
 
@@ -228,11 +228,12 @@ public class CanvasDragHelper {
 
             final double gridSize = CanvasPresentation.GRID_SIZE * subject.getScaleX();
 
-            final double dragDistanceX = event.getScreenX() + dragXOffset[0];
-            final double dragDistanceY = event.getScreenY() + dragYOffset[0];
+            //Ensures that the subject is dragged at grid-sized intervals
+            final double dragDistanceX = event.getScreenX() + dragXOffset[0] - ((event.getScreenX() + dragXOffset[0]) % gridSize);
+            final double dragDistanceY = event.getScreenY() + dragYOffset[0] - ((event.getScreenY() + dragYOffset[0]) % gridSize);
 
-            final double newX = previousXTranslation[0] + (dragDistanceX - (dragDistanceX % gridSize));
-            final double newY = previousYTranslation[0] + (dragDistanceY - (dragDistanceY % gridSize));
+            final double newX = previousXTranslation[0] + dragDistanceX;
+            final double newY = previousYTranslation[0] + dragDistanceY;
 
             if (subject instanceof CanvasPresentation) {
                 subject.setTranslateX(newX);

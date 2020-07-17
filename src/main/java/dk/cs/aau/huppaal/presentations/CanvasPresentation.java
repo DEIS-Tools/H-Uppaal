@@ -82,6 +82,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         getChildren().add(grid);
         grid.toBack();
 
+        //When the translation coordinates are changed, make sure that it is handled for the grid as well
         this.translateXProperty().addListener(((observable, oldValue, newValue) -> grid.handleTranslateX(oldValue.doubleValue(), newValue.doubleValue(), this.scaleXProperty().doubleValue())));
         this.translateYProperty().addListener(((observable, oldValue, newValue) -> grid.handleTranslateY(oldValue.doubleValue(), newValue.doubleValue(), this.scaleYProperty().doubleValue())));
 
@@ -123,6 +124,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         private final ArrayList<Line> verticalLines = new ArrayList<>();
 
         public Grid(final int gridSize) {
+            //The screen size in GridSlices multiplied by 3 to ensure that the screen is still covered when zoomed out
             int screenWidthInGridSlices = (int) (Screen.getPrimary().getBounds().getWidth() - (Screen.getPrimary().getBounds().getWidth() % gridSize)) * 3;
             int screenHeightInGridSlices = (int) (Screen.getPrimary().getBounds().getHeight() - (Screen.getPrimary().getBounds().getHeight() % gridSize)) * 3;
 
@@ -140,7 +142,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                         verticalLines.remove(removeLine);
                     }
 
-                    // Add new lines to cover the screen with zoom accounted for
+                    // Add new lines to cover the screen, even when zoomed out
                     int i = -screenWidthInGridSlices;
                     while (i * gridSize - gridSize < screenWidthInGridSlices) {
                         Line line = new Line(i * gridSize, -screenHeightInGridSlices, i * gridSize, screenHeightInGridSlices);
@@ -161,7 +163,7 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                         horizontalLines.remove(removeLine);
                     }
 
-                    // Add new lines to cover the screen with zoom accounted for
+                    // Add new lines to cover the screen, even when zoomed out
                     int i = -screenHeightInGridSlices;
                     while (i * gridSize - gridSize < screenHeightInGridSlices) {
                         Line line = new Line(-screenWidthInGridSlices, i * gridSize, screenWidthInGridSlices, i * gridSize);
@@ -176,10 +178,12 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         }
 
         public void handleTranslateX(double oldValue, double newValue, double scale) {
+            //Move the grid in the opposite direction of the canvas drag, to keep its location on screen
             this.setTranslateX(this.getTranslateX() + (newValue - oldValue) / -scale);
         }
 
         public void handleTranslateY(double oldValue, double newValue, double scale) {
+            //Move the grid in the opposite direction of the canvas drag, to keep its location on screen
             this.setTranslateY(this.getTranslateY() + (newValue - oldValue) / -scale);
         }
     }
