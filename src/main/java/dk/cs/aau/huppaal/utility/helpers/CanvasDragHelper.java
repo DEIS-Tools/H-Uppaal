@@ -226,16 +226,20 @@ public class CanvasDragHelper {
         mouseTracker.registerOnMouseDraggedEventHandler(event -> {
             if (!presWasAllowed.get() || !isBeingDragged.get()) return;
 
-            final double newX = previousXTranslation[0] + event.getScreenX() + dragXOffset[0];
-            final double newY = previousYTranslation[0] + event.getScreenY() + dragYOffset[0];
             final double gridSize = CanvasPresentation.GRID_SIZE * subject.getScaleX();
 
+            final double dragDistanceX = event.getScreenX() + dragXOffset[0];
+            final double dragDistanceY = event.getScreenY() + dragYOffset[0];
+
+            final double newX = previousXTranslation[0] + (dragDistanceX - (dragDistanceX % gridSize));
+            final double newY = previousYTranslation[0] + (dragDistanceY - (dragDistanceY % gridSize));
+
             if (subject instanceof CanvasPresentation) {
-                subject.setTranslateX(newX - (newX % gridSize) + gridSize * 0.5);
-                subject.setTranslateY(newY - (newY % gridSize) + gridSize * 0.5);
+                subject.setTranslateX(newX);
+                subject.setTranslateY(newY);
             } else {
-                subject.xProperty().set(newX - (newX % gridSize) + gridSize * 0.5);
-                subject.yProperty().set(newY - (newY % gridSize) + gridSize * 0.5);
+                subject.xProperty().set(newX);
+                subject.yProperty().set(newY);
             }
 
             subject.setCursor(Cursor.MOVE);

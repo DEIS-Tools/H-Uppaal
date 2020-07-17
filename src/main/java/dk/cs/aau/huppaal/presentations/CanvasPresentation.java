@@ -81,12 +81,9 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         final Grid grid = new Grid(GRID_SIZE);
         getChildren().add(grid);
         grid.toBack();
+
         this.translateXProperty().addListener(((observable, oldValue, newValue) -> grid.handleTranslateX(oldValue.doubleValue(), newValue.doubleValue(), this.scaleXProperty().doubleValue())));
-
         this.translateYProperty().addListener(((observable, oldValue, newValue) -> grid.handleTranslateY(oldValue.doubleValue(), newValue.doubleValue(), this.scaleYProperty().doubleValue())));
-
-        grid.setTranslateX(0);
-        grid.setTranslateY(0);
 
         ZoomHelper.setGrid(grid);
     }
@@ -128,6 +125,9 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         public Grid(final int gridSize) {
             int screenWidthInGridSlices = (int) (Screen.getPrimary().getBounds().getWidth() - (Screen.getPrimary().getBounds().getWidth() % gridSize)) * 3;
             int screenHeightInGridSlices = (int) (Screen.getPrimary().getBounds().getHeight() - (Screen.getPrimary().getBounds().getHeight() % gridSize)) * 3;
+
+            setTranslateX(gridSize * 0.5);
+            setTranslateY(gridSize * 0.5);
 
             // When the scene changes (goes from null to something)
             sceneProperty().addListener((observable, oldScene, newScene) -> {
