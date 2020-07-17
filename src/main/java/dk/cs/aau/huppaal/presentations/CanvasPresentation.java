@@ -50,7 +50,6 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         KeyboardTracker.registerKeybind(KeyboardTracker.RESET_ZOOM, new Keybind(new KeyCodeCombination(KeyCode.DIGIT0, KeyCombination.SHORTCUT_DOWN), ZoomHelper::resetZoom));
         KeyboardTracker.registerKeybind(KeyboardTracker.ZOOM_TO_FIT, new Keybind(new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHORTCUT_DOWN), ZoomHelper::zoomToFit));
 
-
         try {
             fxmlLoader.setRoot(this);
             fxmlLoader.load(location.openStream());
