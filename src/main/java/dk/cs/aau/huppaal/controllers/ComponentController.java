@@ -662,6 +662,40 @@ public class ComponentController implements Initializable {
         final Consumer<Location> handleAddedLocation = (loc) -> {
             // Create a new presentation, and register it on the map
             final LocationPresentation newLocationPresentation = new LocationPresentation(loc, newComponent);
+            newLocationPresentation.layoutXProperty().addListener(((observable, oldX, newX) -> {
+                //When the x coordinate of the location is updated, ensure that it is not placed on-top of another location
+                for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
+                    if(entry.getValue() != newLocationPresentation &&
+                            Math.abs(entry.getValue().getLayoutX() - newLocationPresentation.getLayoutX()) < (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE) &&
+                            Math.abs(entry.getValue().getLayoutY() - newLocationPresentation.getLayoutY()) < (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE)){
+                        if(entry.getValue().getLayoutX() - newLocationPresentation.getLayoutX() > 0){
+                            //If it is left of the other location, move it further to the left
+                            newLocationPresentation.setLayoutX(entry.getValue().getLayoutX() - (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE));
+                        } else {
+                            //If it is right or at the middle of the other location, move it further to the right
+                            newLocationPresentation.setLayoutX(entry.getValue().getLayoutX() + (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE));
+                        }
+                    }
+                }
+            }));
+
+            newLocationPresentation.layoutYProperty().addListener(((observable, oldY, newY) -> {
+                //When the x coordinate of the location is updated, ensure that it is not placed on-top of another location
+                for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
+                    if(entry.getValue() != newLocationPresentation &&
+                            Math.abs(entry.getValue().getLayoutX() - newLocationPresentation.getLayoutX()) < (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE) &&
+                            Math.abs(entry.getValue().getLayoutY() - newLocationPresentation.getLayoutY()) < (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE)){
+                        if(entry.getValue().getLayoutY() - newLocationPresentation.getLayoutY() > 0){
+                            //If it is above the other location, move it further up
+                            newLocationPresentation.setLayoutY(entry.getValue().getLayoutY() - (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE));
+                        } else {
+                            //If it is beneath the other location, move it further down
+                            newLocationPresentation.setLayoutY(entry.getValue().getLayoutY() + (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE));
+                        }
+                    }
+                }
+            }));
+
             locationPresentationMap.put(loc, newLocationPresentation);
 
             // Add it to the view
