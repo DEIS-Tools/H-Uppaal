@@ -214,7 +214,7 @@ public class TagPresentation extends StackPane {
                 textField.requestFocus();
                 textField.requestFocus(); // This needs to be done twice because of reasons
             }
-            
+
             //Handle constraints for guards, selects, synchronizations, and updates
             if(getParent() instanceof NailPresentation){
                 if(getParent().localToParent(getBoundsInParent()).getCenterX() > getComponent().widthProperty().doubleValue() - textField.getWidth()) {
@@ -228,7 +228,10 @@ public class TagPresentation extends StackPane {
                 } else if (getParent().localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2 < 0) {
                     setTranslateY(getTranslateY() - (getParent().localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2));
                 }
-            } else {
+            }
+            
+            //Handle constraints for location names
+            else {
                 if(getParent().getParent().localToParent(getBoundsInParent()).getCenterX() > getComponent().widthProperty().doubleValue() - textField.getWidth()) {
                     setTranslateX(getTranslateX() + getComponent().widthProperty().doubleValue() - textField.getWidth() - getParent().getParent().localToParent(getBoundsInParent()).getCenterX());
                 } else if (getParent().getParent().localToParent(getBoundsInParent()).getCenterX() - textField.getWidth() < 0) {
