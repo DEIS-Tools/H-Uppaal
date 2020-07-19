@@ -684,10 +684,12 @@ public class ComponentController implements Initializable {
                 }
 
                 //Find an unoccupied space for the location
-                double currentOffset, latestHitRight = 0, latestHitDown = 0, latestHitLeft = 0, latestHitUp = 0;
+                double  latestHitRight = newLocationPresentation.getLayoutX(),
+                        latestHitDown = newLocationPresentation.getLayoutY(),
+                        latestHitLeft = newLocationPresentation.getLayoutX(),
+                        latestHitUp = newLocationPresentation.getLayoutY();
                 for(int i = 1; i < component.get().getWidth() / offset; i++){
                     hit = false;
-                    currentOffset = offset * i;
 
                     //Check to see, if the location can be placed to the right of the existing locations
                     if(newLocationPresentation.getController().getDragBounds().trimX(latestHitRight + offset) == latestHitRight + offset) {
