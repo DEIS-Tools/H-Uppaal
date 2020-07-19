@@ -690,10 +690,10 @@ public class ComponentController implements Initializable {
                 if(!hit) {
                     return;
                 }
+                hit = false;
 
                 //Find an unoccupied space for the location
                 for(int i = 1; i < component.get().getWidth() / offset; i++){
-                    hit = false;
 
                     //Check to see, if the location can be placed to the right of the existing locations
                     if(newLocationPresentation.getController().getDragBounds().trimX(latestHitRight + offset) == latestHitRight + offset) {
@@ -711,8 +711,8 @@ public class ComponentController implements Initializable {
                             return;
                         }
                     }
-
                     hit = false;
+
                     //Check to see, if the location can be placed below the existing locations
                     if(newLocationPresentation.getController().getDragBounds().trimY(latestHitDown + offset) == latestHitDown + offset) {
                         for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
@@ -729,8 +729,8 @@ public class ComponentController implements Initializable {
                             return;
                         }
                     }
-
                     hit = false;
+
                     //Check to see, if the location can be placed to the left of the existing locations
                     if(newLocationPresentation.getController().getDragBounds().trimX(latestHitLeft - offset) == latestHitLeft - offset) {
                         for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
@@ -747,8 +747,8 @@ public class ComponentController implements Initializable {
                             return;
                         }
                     }
-
                     hit = false;
+
                     //Check to see, if the location can be placed above the existing locations
                     if(newLocationPresentation.getController().getDragBounds().trimY(latestHitUp - offset) == latestHitUp - offset) {
                         for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
@@ -765,6 +765,8 @@ public class ComponentController implements Initializable {
                             return;
                         }
                     }
+                    hit = false;
+                    
                 }
             };
 
