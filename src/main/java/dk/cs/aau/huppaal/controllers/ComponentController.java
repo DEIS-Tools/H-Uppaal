@@ -663,34 +663,54 @@ public class ComponentController implements Initializable {
             // Create a new presentation, and register it on the map
             final LocationPresentation newLocationPresentation = new LocationPresentation(loc, newComponent);
             newLocationPresentation.layoutXProperty().addListener(((observable, oldX, newX) -> {
+                double offset = newLocationPresentation.getController().circle.getRadius() * 2 - (newLocationPresentation.getController().circle.getRadius() * 2 % GRID_SIZE) + GRID_SIZE * 1.5;
+
                 //When the x coordinate of the location is updated, ensure that it is not placed on-top of another location
                 for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
                     if(entry.getValue() != newLocationPresentation &&
-                            Math.abs(entry.getValue().getLayoutX() - newLocationPresentation.getLayoutX()) < (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE) &&
-                            Math.abs(entry.getValue().getLayoutY() - newLocationPresentation.getLayoutY()) < (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE)){
-                        if(entry.getValue().getLayoutX() - newLocationPresentation.getLayoutX() > 0){
-                            //If it is left of the other location, move it further to the left
-                            newLocationPresentation.setLayoutX(entry.getValue().getLayoutX() - (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE));
-                        } else {
-                            //If it is right or at the middle of the other location, move it further to the right
-                            newLocationPresentation.setLayoutX(entry.getValue().getLayoutX() + (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE));
+                            Math.abs(entry.getValue().getLayoutX() - newLocationPresentation.getLayoutX()) < offset &&
+                            Math.abs(entry.getValue().getLayoutY() - newLocationPresentation.getLayoutY()) < offset){
+
+                        //Check if the location can be moved further to the left without overflowing the component
+                        if(newLocationPresentation.getController().getDragBounds().trimX(entry.getValue().getLayoutX() - offset) <= (entry.getValue().getLayoutX() - offset)) {
+                            newLocationPresentation.setLayoutX(entry.getValue().getLayoutX() - offset);
+                        }
+
+                        //Check if the location can be moved further to the right without overflowing the component
+                        else if(newLocationPresentation.getController().getDragBounds().trimX(entry.getValue().getLayoutX() + offset) >= (entry.getValue().getLayoutX() + offset)) {
+                            newLocationPresentation.setLayoutX(entry.getValue().getLayoutX() + offset);
+                        }
+
+                        //If the component cannot be moved neither left nor right without overflowing the component, let the layoutY handle it (SHOULD NOT HAPPEN)
+                        else {
+                            newLocationPresentation.setLayoutY(newLocationPresentation.getLayoutY());
                         }
                     }
                 }
             }));
 
             newLocationPresentation.layoutYProperty().addListener(((observable, oldY, newY) -> {
+                double offset = newLocationPresentation.getController().circle.getRadius() * 2 - (newLocationPresentation.getController().circle.getRadius() * 2 % GRID_SIZE) + GRID_SIZE * 1.5;
+
                 //When the x coordinate of the location is updated, ensure that it is not placed on-top of another location
                 for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
                     if(entry.getValue() != newLocationPresentation &&
-                            Math.abs(entry.getValue().getLayoutX() - newLocationPresentation.getLayoutX()) < (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE) &&
-                            Math.abs(entry.getValue().getLayoutY() - newLocationPresentation.getLayoutY()) < (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE)){
-                        if(entry.getValue().getLayoutY() - newLocationPresentation.getLayoutY() > 0){
-                            //If it is above the other location, move it further up
-                            newLocationPresentation.setLayoutY(entry.getValue().getLayoutY() - (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE));
-                        } else {
-                            //If it is beneath the other location, move it further down
-                            newLocationPresentation.setLayoutY(entry.getValue().getLayoutY() + (newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE));
+                            Math.abs(entry.getValue().getLayoutX() - newLocationPresentation.getLayoutX()) < offset &&
+                            Math.abs(entry.getValue().getLayoutY() - newLocationPresentation.getLayoutY()) < offset){
+
+                        //Check if the location can be moved further up without overflowing the component
+                        if(newLocationPresentation.getController().getDragBounds().trimY(entry.getValue().getLayoutY() - offset) <= (entry.getValue().getLayoutY() - offset)) {
+                            newLocationPresentation.setLayoutY(entry.getValue().getLayoutY() - offset);
+                        }
+
+                        //Check if the location can be moved further down without overflowing the component
+                        else if(newLocationPresentation.getController().getDragBounds().trimY(entry.getValue().getLayoutY() + offset) >= (entry.getValue().getLayoutY() + offset)) {
+                            newLocationPresentation.setLayoutY(entry.getValue().getLayoutY() + offset);
+                        }
+
+                        //If the component cannot be moved neither up nor down without overflowing the component, let the layoutX handle it (SHOULD NOT HAPPEN)
+                        else{
+                            newLocationPresentation.setLayoutY(newLocationPresentation.getLayoutY());
                         }
                     }
                 }
