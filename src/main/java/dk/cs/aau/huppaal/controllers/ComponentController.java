@@ -666,7 +666,7 @@ public class ComponentController implements Initializable {
             // Create a new presentation, and register it on the map
             final LocationPresentation newLocationPresentation = new LocationPresentation(loc, newComponent);
 
-            final ChangeListener<Number> layoutChangedListener = (ChangeListener<Number>) (observable, oldValue, newValue) -> {
+            final ChangeListener<Number> layoutChangedListener = (observable, oldValue, newValue) -> {
                 final double offset = newLocationPresentation.getController().circle.getRadius() * 2 - (newLocationPresentation.getController().circle.getRadius() * 2 % GRID_SIZE) + GRID_SIZE * 0.5;
                 boolean hit = false;
                 double  latestHitRight = 0,
