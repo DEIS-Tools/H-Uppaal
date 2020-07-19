@@ -692,7 +692,7 @@ public class ComponentController implements Initializable {
             newLocationPresentation.layoutYProperty().addListener(((observable, oldY, newY) -> {
                 double offset = newLocationPresentation.getController().circle.getRadius() * 2 - (newLocationPresentation.getController().circle.getRadius() * 2 % GRID_SIZE) + GRID_SIZE * 1.5;
 
-                //When the x coordinate of the location is updated, ensure that it is not placed on-top of another location
+                //When the y coordinate of the location is updated, ensure that it is not placed on-top of another location
                 for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
                     if(entry.getValue() != newLocationPresentation &&
                             Math.abs(entry.getValue().getLayoutX() - newLocationPresentation.getLayoutX()) < offset &&
