@@ -669,6 +669,10 @@ public class ComponentController implements Initializable {
             final ChangeListener<Number> layoutChangedListener = (ChangeListener<Number>) (observable, oldValue, newValue) -> {
                 final double offset = newLocationPresentation.getController().circle.getRadius() * 2 - (newLocationPresentation.getController().circle.getRadius() * 2 % GRID_SIZE) + GRID_SIZE * 0.5;
                 boolean hit = false;
+                double  latestHitRight = 0,
+                        latestHitDown = 0,
+                        latestHitLeft = 0,
+                        latestHitUp = 0;
 
                 //Check to see if the location is placed on other location
                 for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
@@ -676,6 +680,10 @@ public class ComponentController implements Initializable {
                             Math.abs(entry.getValue().getLayoutX() - (newLocationPresentation.getLayoutX())) < offset &&
                             Math.abs(entry.getValue().getLayoutY() - (newLocationPresentation.getLayoutY())) < offset) {
                         hit = true;
+                        latestHitRight = entry.getValue().getLayoutX();
+                        latestHitDown = entry.getValue().getLayoutY();
+                        latestHitLeft = entry.getValue().getLayoutX();
+                        latestHitUp = entry.getValue().getLayoutY();
                         break;
                     }
                 }
@@ -684,10 +692,6 @@ public class ComponentController implements Initializable {
                 }
 
                 //Find an unoccupied space for the location
-                double  latestHitRight = newLocationPresentation.getLayoutX(),
-                        latestHitDown = newLocationPresentation.getLayoutY(),
-                        latestHitLeft = newLocationPresentation.getLayoutX(),
-                        latestHitUp = newLocationPresentation.getLayoutY();
                 for(int i = 1; i < component.get().getWidth() / offset; i++){
                     hit = false;
 
