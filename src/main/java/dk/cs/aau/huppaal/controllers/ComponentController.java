@@ -667,7 +667,7 @@ public class ComponentController implements Initializable {
             final LocationPresentation newLocationPresentation = new LocationPresentation(loc, newComponent);
 
             final ChangeListener<Number> layoutChangedListener = (observable, oldValue, newValue) -> {
-                final double offset = newLocationPresentation.getController().circle.getRadius() * 2 - (newLocationPresentation.getController().circle.getRadius() * 2 % GRID_SIZE) + GRID_SIZE * 0.5;
+                final double offset = newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE;
                 boolean hit = false;
                 double  latestHitRight = 0,
                         latestHitDown = 0,
@@ -712,6 +712,7 @@ public class ComponentController implements Initializable {
                         }
                     }
 
+                    hit = false;
                     //Check to see, if the location can be placed below the existing locations
                     if(newLocationPresentation.getController().getDragBounds().trimY(latestHitDown + offset) == latestHitDown + offset) {
                         for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
@@ -729,6 +730,7 @@ public class ComponentController implements Initializable {
                         }
                     }
 
+                    hit = false;
                     //Check to see, if the location can be placed to the left of the existing locations
                     if(newLocationPresentation.getController().getDragBounds().trimX(latestHitLeft - offset) == latestHitLeft - offset) {
                         for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
@@ -746,6 +748,7 @@ public class ComponentController implements Initializable {
                         }
                     }
 
+                    hit = false;
                     //Check to see, if the location can be placed above the existing locations
                     if(newLocationPresentation.getController().getDragBounds().trimY(latestHitUp - offset) == latestHitUp - offset) {
                         for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
