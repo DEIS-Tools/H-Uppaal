@@ -45,6 +45,10 @@ public class KeyboardTracker {
     public static final String NUDGE_S = "NUDGE_S";
     public static final String NUDGE_D = "NUDGE_D";
     public static final String DESELECT = "DESELECT";
+    public static final String ZOOM_IN = "ZOOM_IN";
+    public static final String ZOOM_OUT = "ZOOM_OUT";
+    public static final String RESET_ZOOM = "RESET_ZOOM";
+    public static final String ZOOM_TO_FIT = "ZOOM_TO_FIT";
 
     private static final Map<String, Keybind> keyMap = new HashMap<>();
     public static final EventHandler<KeyEvent> handleKeyPress = event -> {

@@ -6,6 +6,7 @@
          type="Group"
          fx:controller="dk.cs.aau.huppaal.controllers.EdgeController"
          onMousePressed="#edgePressed"
+         onDragDetected="#edgeDragged"
          onMouseEntered="#edgeEntered"
          onMouseExited="#edgeExited"
          mouseTransparent="true">
