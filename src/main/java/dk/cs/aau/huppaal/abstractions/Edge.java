@@ -36,8 +36,8 @@ public class Edge implements Serializable, Nearable {
     private final ObjectProperty<SubComponent> sourceSubComponent = new SimpleObjectProperty<>();
     private final ObjectProperty<SubComponent> targetSubComponent = new SimpleObjectProperty<>();
     private final ObjectProperty<Jork> sourceJork = new SimpleObjectProperty<>();
-
     private final ObjectProperty<Jork> targetJork = new SimpleObjectProperty<>();
+
     private final StringProperty select = new SimpleStringProperty("");
     private final StringProperty guard = new SimpleStringProperty("");
     private final StringProperty update = new SimpleStringProperty("");
@@ -76,7 +76,7 @@ public class Edge implements Serializable, Nearable {
         return sourceLocation.get();
     }
 
-    private void setSourceLocation(final Location sourceLocation) {
+    public void setSourceLocation(final Location sourceLocation) {
         this.sourceLocation.set(sourceLocation);
         updateSourceCircular();
     }
