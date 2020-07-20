@@ -19,6 +19,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.LineTo;
@@ -215,34 +216,28 @@ public class TagPresentation extends StackPane {
                 textField.requestFocus(); // This needs to be done twice because of reasons
             }
 
-            //Handle constraints for guards, selects, synchronizations, and updates
+            Node parent;
+
             if(getParent() instanceof NailPresentation){
-                if(getParent().localToParent(getBoundsInParent()).getCenterX() > getComponent().widthProperty().doubleValue() - textField.getWidth()) {
-                    setTranslateX(getTranslateX() + getComponent().widthProperty().doubleValue() - textField.getWidth() - getParent().localToParent(getBoundsInParent()).getCenterX());
-                } else if (getParent().localToParent(getBoundsInParent()).getCenterX() - textField.getWidth() < 0) {
-                    setTranslateX(getTranslateX() - (getParent().localToParent(getBoundsInParent()).getCenterX() - textField.getWidth()));
-                }
-
-                if(getParent().localToParent(getBoundsInParent()).getCenterY() > getComponent().heightProperty().doubleValue() - textField.getHeight()) {
-                    setTranslateY(getTranslateY() + getComponent().heightProperty().doubleValue() - textField.getHeight() - getParent().localToParent(getBoundsInParent()).getCenterY());
-                } else if (getParent().localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2 < 0) {
-                    setTranslateY(getTranslateY() - (getParent().localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2));
-                }
+                //Get the correct parent for guards, selects, synchronizations, and updates
+                parent = getParent();
+            } else {
+                //Gte the correct parent for location names
+                parent = getParent().getParent();
             }
-            
-            //Handle constraints for location names
-            else {
-                if(getParent().getParent().localToParent(getBoundsInParent()).getCenterX() > getComponent().widthProperty().doubleValue() - textField.getWidth()) {
-                    setTranslateX(getTranslateX() + getComponent().widthProperty().doubleValue() - textField.getWidth() - getParent().getParent().localToParent(getBoundsInParent()).getCenterX());
-                } else if (getParent().getParent().localToParent(getBoundsInParent()).getCenterX() - textField.getWidth() < 0) {
-                    setTranslateX(getTranslateX() - (getParent().getParent().localToParent(getBoundsInParent()).getCenterX() - textField.getWidth()));
-                }
 
-                if(getParent().getParent().localToParent(getBoundsInParent()).getCenterY() > getComponent().heightProperty().doubleValue() - textField.getHeight()) {
-                    setTranslateY(getTranslateY() + getComponent().heightProperty().doubleValue() - textField.getHeight() - getParent().getParent().localToParent(getBoundsInParent()).getCenterY());
-                } else if (getParent().getParent().localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2 < 0) {
-                    setTranslateY(getTranslateY() - (getParent().getParent().localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2));
-                }
+            //Handle the horizontal placement of the tag
+            if(parent.localToParent(getBoundsInParent()).getCenterX() > getComponent().widthProperty().doubleValue() - textField.getWidth()) {
+                setTranslateX(getTranslateX() + getComponent().widthProperty().doubleValue() - textField.getWidth() - parent.localToParent(getBoundsInParent()).getCenterX());
+            } else if (parent.localToParent(getBoundsInParent()).getCenterX() - textField.getWidth() < 0) {
+                setTranslateX(getTranslateX() - (parent.localToParent(getBoundsInParent()).getCenterX() - textField.getWidth()));
+            }
+
+            //Handle the vertical placement of the tag
+            if(parent.localToParent(getBoundsInParent()).getCenterY() > getComponent().heightProperty().doubleValue() - textField.getHeight()) {
+                setTranslateY(getTranslateY() + getComponent().heightProperty().doubleValue() - textField.getHeight() - parent.localToParent(getBoundsInParent()).getCenterY());
+            } else if (parent.localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2 < 0) {
+                setTranslateY(getTranslateY() - (parent.localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2));
             }
 
 
