@@ -669,6 +669,8 @@ public class ComponentController implements Initializable {
             final ChangeListener<Number> layoutChangedListener = (observable, oldValue, newValue) -> {
                 final double offset = newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE;
                 boolean hit = false;
+
+                //Define the x and y coordinates for the initial and final locations
                 double initialLocationX = component.get().getX() + newLocationPresentation.getController().circle.getRadius() * 2,
                         initialLocationY = component.get().getY() + newLocationPresentation.getController().circle.getRadius() * 2,
                         finalLocationX = component.get().getX() + component.get().getWidth() - newLocationPresentation.getController().circle.getRadius() * 2,
@@ -678,7 +680,7 @@ public class ComponentController implements Initializable {
                         latestHitDown = 0,
                         latestHitLeft = 0,
                         latestHitUp = 0;
-
+                
                 //Check to see if the location is placed on top of the initial location
                 if(Math.abs(initialLocationX - (newLocationPresentation.getLayoutX())) < offset &&
                         Math.abs(initialLocationY - (newLocationPresentation.getLayoutY())) < offset){
