@@ -792,7 +792,13 @@ public class ComponentController implements Initializable {
         final ListChangeListener<Location> locationListChangeListener = c -> {
             if (c.next()) {
                 // Locations are added to the component
-                c.getAddedSubList().forEach(handleAddedLocation::accept);
+                c.getAddedSubList().forEach((loc) -> {
+                    handleAddedLocation.accept(loc);
+
+                    //Change the layoutXProperty slightly to invoke listener and ensure distance to existing locations
+                    LocationPresentation locationPresentation = locationPresentationMap.get(loc);
+                    locationPresentation.setLayoutX(locationPresentation.getLayoutX() + 0.01);
+                });
 
                 // Locations are removed from the component
                 c.getRemoved().forEach(location -> {
