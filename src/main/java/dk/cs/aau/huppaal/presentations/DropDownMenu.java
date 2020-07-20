@@ -118,12 +118,11 @@ public class DropDownMenu {
             }
         }
 
-        double finalOffsetX = offsetX;
-        double finalOffsetY = offsetY;
+        //Need final temporary variables for lambda
+        final double finalOffsetX = offsetX;
+        final double finalOffsetY = offsetY;
 
-        Platform.runLater( () -> {
-            popup.show(this.source, vAlign, hAlign, finalOffsetX, finalOffsetY);
-        });
+        Platform.runLater( () -> popup.show(source, vAlign, hAlign, finalOffsetX, finalOffsetY));
     }
 
     public void addListElement(final String s) {

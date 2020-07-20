@@ -865,8 +865,6 @@ public class ComponentController implements Initializable {
         } else if (event.isSecondaryButtonDown()) {
             dropDownMenuHelperCircle.setLayoutX(event.getX());
             dropDownMenuHelperCircle.setLayoutY(event.getY());
-            DropDownMenu.x = event.getX();
-            DropDownMenu.y = event.getY();
 
             if (unfinishedEdge == null) {
                 contextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, event.getX() - getComponent().getWidth() / 2, event.getY() - getComponent().getHeight() / 2);
