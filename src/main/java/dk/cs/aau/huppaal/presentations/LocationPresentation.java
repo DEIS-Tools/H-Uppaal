@@ -50,8 +50,8 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     private final DoubleProperty animation = new SimpleDoubleProperty(0);
     private final DoubleBinding reverseAnimation = new SimpleDoubleProperty(1).subtract(animation);
     private final boolean interactable;
-    private final BooleanProperty isPlaced = new SimpleBooleanProperty(true);
-    private final Timeline shakeDeleteAnimation = new Timeline();
+    private BooleanProperty isPlaced = new SimpleBooleanProperty(true);
+    private Timeline shakeDeleteAnimation = new Timeline();
 
     public LocationPresentation(@NamedArg("initial") final String initial) {
         this(initialHelpDialogLocation(initial), null, false);

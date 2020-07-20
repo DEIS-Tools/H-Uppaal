@@ -8,10 +8,7 @@ import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.code_analysis.Nearable;
 import dk.cs.aau.huppaal.presentations.*;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
-import dk.cs.aau.huppaal.utility.helpers.BindingHelper;
-import dk.cs.aau.huppaal.utility.helpers.Circular;
-import dk.cs.aau.huppaal.utility.helpers.LocationAware;
-import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
+import dk.cs.aau.huppaal.utility.helpers.*;
 import dk.cs.aau.huppaal.utility.mouse.MouseTracker;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
@@ -661,14 +658,14 @@ public class ComponentController implements Initializable {
     }
 
     private void initializeLocationHandling(final Component newComponent) {
-
         final Consumer<Location> handleAddedLocation = (loc) -> {
             // Create a new presentation, and register it on the map
             final LocationPresentation newLocationPresentation = new LocationPresentation(loc, newComponent);
 
-            final ChangeListener<Number> layoutChangedListener = (observable, oldValue, newValue) -> {
+            final ChangeListener<Number> locationPlacementChangedListener = (observable, oldValue, newValue) -> {
                 final double offset = newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE;
                 boolean hit = false;
+                ItemDragHelper.DragBounds componentBounds = newLocationPresentation.getController().getDragBounds();
 
                 //Define the x and y coordinates for the initial and final locations
                 final double initialLocationX = component.get().getX() + newLocationPresentation.getController().circle.getRadius() * 2,
@@ -717,6 +714,7 @@ public class ComponentController implements Initializable {
                     }
                 }
 
+                //If the location is not placed on top of any other locations, do not do anything
                 if(!hit) {
                     return;
                 }
@@ -726,7 +724,7 @@ public class ComponentController implements Initializable {
                 for(int i = 1; i < component.get().getWidth() / offset; i++){
 
                     //Check to see, if the location can be placed to the right of the existing locations
-                    if(newLocationPresentation.getController().getDragBounds().trimX(latestHitRight + offset) == latestHitRight + offset) {
+                    if(componentBounds.trimX(latestHitRight + offset) == latestHitRight + offset) {
 
                         //Check if the location would be placed on the final location
                         if(Math.abs(finalLocationX - (latestHitRight + offset)) < offset &&
@@ -753,7 +751,7 @@ public class ComponentController implements Initializable {
                     hit = false;
 
                     //Check to see, if the location can be placed below the existing locations
-                    if(newLocationPresentation.getController().getDragBounds().trimY(latestHitDown + offset) == latestHitDown + offset) {
+                    if(componentBounds.trimY(latestHitDown + offset) == latestHitDown + offset) {
 
                         //Check if the location would be placed on the final location
                         if(Math.abs(finalLocationX - (newLocationPresentation.getLayoutX())) < offset &&
@@ -779,7 +777,7 @@ public class ComponentController implements Initializable {
                     hit = false;
 
                     //Check to see, if the location can be placed to the left of the existing locations
-                    if(newLocationPresentation.getController().getDragBounds().trimX(latestHitLeft - offset) == latestHitLeft - offset) {
+                    if(componentBounds.trimX(latestHitLeft - offset) == latestHitLeft - offset) {
 
                         //Check if the location would be placed on the initial location
                         if(Math.abs(initialLocationX - (latestHitLeft - offset)) < offset &&
@@ -805,7 +803,8 @@ public class ComponentController implements Initializable {
                     hit = false;
 
                     //Check to see, if the location can be placed above the existing locations
-                    if(newLocationPresentation.getController().getDragBounds().trimY(latestHitUp - offset) == latestHitUp - offset) {
+                    if(componentBounds.trimY(latestHitUp - offset) == latestHitUp - offset) {
+
                         //Check if the location would be placed on the initial location
                         if(Math.abs(initialLocationX - (newLocationPresentation.getLayoutX())) < offset &&
                                 Math.abs(initialLocationY - (latestHitUp - offset)) < offset){
@@ -832,9 +831,9 @@ public class ComponentController implements Initializable {
                 }
             };
 
-            newLocationPresentation.layoutXProperty().addListener(layoutChangedListener);
+            newLocationPresentation.layoutXProperty().addListener(locationPlacementChangedListener);
 
-            newLocationPresentation.layoutYProperty().addListener(layoutChangedListener);
+            newLocationPresentation.layoutYProperty().addListener(locationPlacementChangedListener);
 
             locationPresentationMap.put(loc, newLocationPresentation);
 
