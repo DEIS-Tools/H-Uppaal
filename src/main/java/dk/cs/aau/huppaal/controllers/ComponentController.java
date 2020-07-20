@@ -671,7 +671,7 @@ public class ComponentController implements Initializable {
                 boolean hit = false;
 
                 //Define the x and y coordinates for the initial and final locations
-                double initialLocationX = component.get().getX() + newLocationPresentation.getController().circle.getRadius() * 2,
+                final double initialLocationX = component.get().getX() + newLocationPresentation.getController().circle.getRadius() * 2,
                         initialLocationY = component.get().getY() + newLocationPresentation.getController().circle.getRadius() * 2,
                         finalLocationX = component.get().getX() + component.get().getWidth() - newLocationPresentation.getController().circle.getRadius() * 2,
                         finalLocationY = component.get().getY() + component.get().getHeight() - newLocationPresentation.getController().circle.getRadius() * 2;
@@ -680,7 +680,7 @@ public class ComponentController implements Initializable {
                         latestHitDown = 0,
                         latestHitLeft = 0,
                         latestHitUp = 0;
-                
+
                 //Check to see if the location is placed on top of the initial location
                 if(Math.abs(initialLocationX - (newLocationPresentation.getLayoutX())) < offset &&
                         Math.abs(initialLocationY - (newLocationPresentation.getLayoutY())) < offset){
@@ -691,7 +691,7 @@ public class ComponentController implements Initializable {
                     latestHitUp = initialLocationY;
                 }
 
-                //Check to see if the location is placed on top of the final location (the 41 is added because the retrieved x value is too far to the left for some reason)
+                //Check to see if the location is placed on top of the final location
                 else if (Math.abs(finalLocationX - (newLocationPresentation.getLayoutX())) < offset &&
                         Math.abs(finalLocationY - (newLocationPresentation.getLayoutY())) < offset) {
                     hit = true;
@@ -857,9 +857,14 @@ public class ComponentController implements Initializable {
                 c.getAddedSubList().forEach((loc) -> {
                     handleAddedLocation.accept(loc);
 
-                    //Change the layoutXProperty slightly to invoke listener and ensure distance to existing locations
                     LocationPresentation locationPresentation = locationPresentationMap.get(loc);
-                    locationPresentation.setLayoutX(locationPresentation.getLayoutX() + 0.01);
+
+                    //Ensure that the component is inside the bounds of the component
+                    locationPresentation.setLayoutX(locationPresentation.getController().getDragBounds().trimX(locationPresentation.getLayoutX()));
+                    locationPresentation.setLayoutY(locationPresentation.getController().getDragBounds().trimY(locationPresentation.getLayoutY()));
+
+                    //Change the layoutXProperty slightly to invoke listener and ensure distance to existing locations
+                    locationPresentation.setLayoutX(locationPresentation.getLayoutX() + 0.00001);
                 });
 
                 // Locations are removed from the component
