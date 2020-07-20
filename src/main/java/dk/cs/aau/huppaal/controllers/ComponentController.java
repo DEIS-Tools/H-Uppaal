@@ -674,19 +674,42 @@ public class ComponentController implements Initializable {
                         latestHitLeft = 0,
                         latestHitUp = 0;
 
-                //Check to see if the location is placed on other location
-                for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
-                    if (entry.getValue() != newLocationPresentation &&
-                            Math.abs(entry.getValue().getLayoutX() - (newLocationPresentation.getLayoutX())) < offset &&
-                            Math.abs(entry.getValue().getLayoutY() - (newLocationPresentation.getLayoutY())) < offset) {
-                        hit = true;
-                        latestHitRight = entry.getValue().getLayoutX();
-                        latestHitDown = entry.getValue().getLayoutY();
-                        latestHitLeft = entry.getValue().getLayoutX();
-                        latestHitUp = entry.getValue().getLayoutY();
-                        break;
+                //Check to see if the location is placed on top of the initial location
+                if(Math.abs(initialLocationGuideContainer.getLayoutX() - (newLocationPresentation.getLayoutX())) < offset &&
+                        Math.abs(initialLocationGuideContainer.getLayoutY() - (newLocationPresentation.getLayoutY())) < offset){
+                    hit = true;
+                    latestHitRight = initialLocationGuideContainer.getLayoutX();
+                    latestHitDown = initialLocationGuideContainer.getLayoutY();
+                    latestHitLeft = initialLocationGuideContainer.getLayoutX();
+                    latestHitUp = initialLocationGuideContainer.getLayoutY();
+                }
+
+                //Check to see if the location is placed on top of the final location (the 41 is added because the retrieved x value is too far to the left for some reason)
+                else if (Math.abs(finalLocationGuideContainer.getLayoutX() - (newLocationPresentation.getLayoutX())) < offset &&
+                        Math.abs(finalLocationGuideContainer.getLayoutY() - (newLocationPresentation.getLayoutY())) < offset) {
+                    hit = true;
+                    latestHitRight = finalLocationGuideContainer.getLayoutX();
+                    latestHitDown = finalLocationGuideContainer.getLayoutY();
+                    latestHitLeft = finalLocationGuideContainer.getLayoutX();
+                    latestHitUp = finalLocationGuideContainer.getLayoutY();
+                }
+
+                //Check to see if the location is placed on top of another location
+                else {
+                    for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
+                        if (entry.getValue() != newLocationPresentation &&
+                                Math.abs(entry.getValue().getLayoutX() - (newLocationPresentation.getLayoutX())) < offset &&
+                                Math.abs(entry.getValue().getLayoutY() - (newLocationPresentation.getLayoutY())) < offset) {
+                            hit = true;
+                            latestHitRight = entry.getValue().getLayoutX();
+                            latestHitDown = entry.getValue().getLayoutY();
+                            latestHitLeft = entry.getValue().getLayoutX();
+                            latestHitUp = entry.getValue().getLayoutY();
+                            break;
+                        }
                     }
                 }
+
                 if(!hit) {
                     return;
                 }
@@ -697,15 +720,24 @@ public class ComponentController implements Initializable {
 
                     //Check to see, if the location can be placed to the right of the existing locations
                     if(newLocationPresentation.getController().getDragBounds().trimX(latestHitRight + offset) == latestHitRight + offset) {
-                        for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
-                            if (entry.getValue() != newLocationPresentation &&
-                                    Math.abs(entry.getValue().getLayoutX() - (latestHitRight + offset)) < offset &&
-                                    Math.abs(entry.getValue().getLayoutY() - (newLocationPresentation.getLayoutY())) < offset) {
-                                hit = true;
-                                latestHitRight = entry.getValue().getLayoutX();
-                                break;
+
+                        //Check if the location would be placed on the final location
+                        if(Math.abs(finalLocationGuideContainer.getLayoutX() - (latestHitRight + offset)) < offset &&
+                                Math.abs(finalLocationGuideContainer.getLayoutY() - (newLocationPresentation.getLayoutY())) < offset){
+                            hit = true;
+                            latestHitRight = finalLocationGuideContainer.getLayoutX();
+                        } else {
+                            for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
+                                if (entry.getValue() != newLocationPresentation &&
+                                        Math.abs(entry.getValue().getLayoutX() - (latestHitRight + offset)) < offset &&
+                                        Math.abs(entry.getValue().getLayoutY() - (newLocationPresentation.getLayoutY())) < offset) {
+                                    hit = true;
+                                    latestHitRight = entry.getValue().getLayoutX();
+                                    break;
+                                }
                             }
                         }
+
                         if(!hit) {
                             newLocationPresentation.setLayoutX(latestHitRight + offset);
                             return;
@@ -715,13 +747,21 @@ public class ComponentController implements Initializable {
 
                     //Check to see, if the location can be placed below the existing locations
                     if(newLocationPresentation.getController().getDragBounds().trimY(latestHitDown + offset) == latestHitDown + offset) {
-                        for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
-                            if (entry.getValue() != newLocationPresentation &&
-                                    Math.abs(entry.getValue().getLayoutX() - (newLocationPresentation.getLayoutX())) < offset &&
-                                    Math.abs(entry.getValue().getLayoutY() - (latestHitDown + offset)) < offset) {
-                                hit = true;
-                                latestHitDown = entry.getValue().getLayoutY();
-                                break;
+
+                        //Check if the location would be placed on the final location
+                        if(Math.abs(finalLocationGuideContainer.getLayoutX() - (newLocationPresentation.getLayoutX())) < offset &&
+                                Math.abs(finalLocationGuideContainer.getLayoutY() - (latestHitDown + offset)) < offset){
+                            hit = true;
+                            latestHitDown = finalLocationGuideContainer.getLayoutY();
+                        } else {
+                            for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
+                                if (entry.getValue() != newLocationPresentation &&
+                                        Math.abs(entry.getValue().getLayoutX() - (newLocationPresentation.getLayoutX())) < offset &&
+                                        Math.abs(entry.getValue().getLayoutY() - (latestHitDown + offset)) < offset) {
+                                    hit = true;
+                                    latestHitDown = entry.getValue().getLayoutY();
+                                    break;
+                                }
                             }
                         }
                         if(!hit) {
@@ -733,13 +773,21 @@ public class ComponentController implements Initializable {
 
                     //Check to see, if the location can be placed to the left of the existing locations
                     if(newLocationPresentation.getController().getDragBounds().trimX(latestHitLeft - offset) == latestHitLeft - offset) {
-                        for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
-                            if (entry.getValue() != newLocationPresentation &&
-                                    Math.abs(entry.getValue().getLayoutX() - (latestHitLeft - offset)) < offset &&
-                                    Math.abs(entry.getValue().getLayoutY() - (newLocationPresentation.getLayoutY())) < offset) {
-                                hit = true;
-                                latestHitLeft = entry.getValue().getLayoutX();
-                                break;
+
+                        //Check if the location would be placed on the initial location
+                        if(Math.abs(initialLocationGuideContainer.getLayoutX() - (latestHitLeft - offset)) < offset &&
+                                Math.abs(initialLocationGuideContainer.getLayoutY() - (newLocationPresentation.getLayoutY())) < offset){
+                            hit = true;
+                            latestHitLeft = initialLocationGuideContainer.getLayoutX();
+                        } else {
+                            for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
+                                if (entry.getValue() != newLocationPresentation &&
+                                        Math.abs(entry.getValue().getLayoutX() - (latestHitLeft - offset)) < offset &&
+                                        Math.abs(entry.getValue().getLayoutY() - (newLocationPresentation.getLayoutY())) < offset) {
+                                    hit = true;
+                                    latestHitLeft = entry.getValue().getLayoutX();
+                                    break;
+                                }
                             }
                         }
                         if(!hit) {
@@ -751,13 +799,20 @@ public class ComponentController implements Initializable {
 
                     //Check to see, if the location can be placed above the existing locations
                     if(newLocationPresentation.getController().getDragBounds().trimY(latestHitUp - offset) == latestHitUp - offset) {
-                        for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
-                            if (entry.getValue() != newLocationPresentation &&
-                                    Math.abs(entry.getValue().getLayoutX() - (newLocationPresentation.getLayoutX())) < offset &&
-                                    Math.abs(entry.getValue().getLayoutY() - (latestHitUp - offset)) < offset) {
-                                hit = true;
-                                latestHitUp = entry.getValue().getLayoutY();
-                                break;
+                        //Check if the location would be placed on the initial location
+                        if(Math.abs(initialLocationGuideContainer.getLayoutX() - (newLocationPresentation.getLayoutX())) < offset &&
+                                Math.abs(initialLocationGuideContainer.getLayoutY() - (latestHitUp - offset)) < offset){
+                            hit = true;
+                            latestHitUp = initialLocationGuideContainer.getLayoutY();
+                        } else {
+                            for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
+                                if (entry.getValue() != newLocationPresentation &&
+                                        Math.abs(entry.getValue().getLayoutX() - (newLocationPresentation.getLayoutX())) < offset &&
+                                        Math.abs(entry.getValue().getLayoutY() - (latestHitUp - offset)) < offset) {
+                                    hit = true;
+                                    latestHitUp = entry.getValue().getLayoutY();
+                                    break;
+                                }
                             }
                         }
                         if(!hit) {
