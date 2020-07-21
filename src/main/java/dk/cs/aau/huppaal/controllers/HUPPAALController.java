@@ -243,6 +243,7 @@ public class HUPPAALController implements Initializable {
         initializeMessages();
         initializeMenuBar();
         initializeNoMainComponentError();
+        initializeUppalFileNotFoundWarning();
 
         initializeReachabilityAnalysisThread();
 
@@ -386,8 +387,19 @@ public class HUPPAALController implements Initializable {
                 CodeAnalysis.removeMessage(null, noMainComponentErrorMessage);
             }
         });
+    }
 
+    private void initializeUppalFileNotFoundWarning() {
+        final CodeAnalysis.Message uppalNotFoundMessage = new CodeAnalysis.Message("Please set the UPPAAL server location through the 'Preferences' tab.\n" +
+                "Make sure to have UPPAAL installed. This can be done at uppaal.org", CodeAnalysis.MessageType.WARNING);
 
+        UPPAALDriverManager.getUppalFilePathProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.equals("dummy")){
+                CodeAnalysis.addMessage(null, uppalNotFoundMessage);
+            } else {
+                CodeAnalysis.removeMessage(null, uppalNotFoundMessage);
+            }
+        });
     }
 
     private void initializeMenuBar() {
