@@ -500,18 +500,29 @@ public class ComponentController implements Initializable {
             contextMenu.addSpacerElement();
 
             contextMenu.addClickableListElement("Contains deadlock?", event -> {
-                contextMenu.close();
+                //Ensure that there is not a "No main component error"
+                boolean containsNoMainComponentError = false;
+                for (CodeAnalysis.Message error : CodeAnalysis.getErrors(null)) {
+                    if (error.getMessage().equals("No main component specified")){
+                        containsNoMainComponentError = true;
+                        break;
+                    }
+                }
 
-                // Generate the query
-                final String deadlockQuery = UPPAALDriverManager.getInstance().getExistDeadlockQuery(getComponent());
+                if(!containsNoMainComponentError){
+                    // Generate the query
+                    final String deadlockQuery = UPPAALDriverManager.getInstance().getExistDeadlockQuery(getComponent());
 
-                // Add proper comment
-                final String deadlockComment = "Does " + component.getName() + " contain a deadlock?";
+                    // Add proper comment
+                    final String deadlockComment = "Does " + component.getName() + " contain a deadlock?";
 
-                // Add new query for this component
-                final Query query = new Query(deadlockQuery, deadlockComment, QueryState.UNKNOWN);
-                HUPPAAL.getProject().getQueries().add(query);
-                query.run();
+                    // Add new query for this component
+                    final Query query = new Query(deadlockQuery, deadlockComment, QueryState.UNKNOWN);
+                    HUPPAAL.getProject().getQueries().add(query);
+                    query.run();
+                } else {
+                    HUPPAAL.showToast("Please set a main component before checking for deadlocks");
+                }
 
                 contextMenu.close();
 

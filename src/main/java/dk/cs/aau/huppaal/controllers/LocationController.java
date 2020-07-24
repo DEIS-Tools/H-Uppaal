@@ -182,16 +182,29 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
         dropDownMenu.addSpacerElement();
 
         dropDownMenu.addClickableListElement("Is " + getLocation().getId() + " reachable?", event -> {
-            // Generate the query from the backend
-            final String reachabilityQuery = UPPAALDriverManager.getInstance().getLocationReachableQuery(getLocation(), getComponent());
+            //Ensure that there is not a "No main component error"
+            boolean containsNoMainComponentError = false;
+            for (CodeAnalysis.Message error : CodeAnalysis.getErrors(null)) {
+                if (error.getMessage().equals("No main component specified")){
+                    containsNoMainComponentError = true;
+                    break;
+                }
+            }
 
-            // Add proper comment
-            final String reachabilityComment = "Is " + getLocation().getMostDescriptiveIdentifier() + " reachable?";
+            if(!containsNoMainComponentError){
+                // Generate the query from the backend
+                final String reachabilityQuery = UPPAALDriverManager.getInstance().getLocationReachableQuery(getLocation(), getComponent());
 
-            // Add new query for this location
-            final Query query = new Query(reachabilityQuery, reachabilityComment, QueryState.UNKNOWN);
-            HUPPAAL.getProject().getQueries().add(query);
-            query.run();
+                // Add proper comment
+                final String reachabilityComment = "Is " + getLocation().getMostDescriptiveIdentifier() + " reachable?";
+
+                // Add new query for this location
+                final Query query = new Query(reachabilityQuery, reachabilityComment, QueryState.UNKNOWN);
+                HUPPAAL.getProject().getQueries().add(query);
+                query.run();
+            } else {
+                HUPPAAL.showToast("Please set a main component before checking for reachability");
+            }
 
             dropDownMenu.close();
         });
