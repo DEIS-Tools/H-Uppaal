@@ -500,16 +500,8 @@ public class ComponentController implements Initializable {
             contextMenu.addSpacerElement();
 
             contextMenu.addClickableListElement("Contains deadlock?", event -> {
-                //Ensure that there is not a "No main component error"
-                boolean containsNoMainComponentError = false;
-                for (CodeAnalysis.Message error : CodeAnalysis.getErrors(null)) {
-                    if (error.getMessage().equals("No main component specified")){
-                        containsNoMainComponentError = true;
-                        break;
-                    }
-                }
-
-                if(!containsNoMainComponentError){
+                //Ensure that there is set a main component
+                if(HUPPAAL.getProject().getMainComponent() != null){
                     // Generate the query
                     final String deadlockQuery = UPPAALDriverManager.getInstance().getExistDeadlockQuery(getComponent());
 
