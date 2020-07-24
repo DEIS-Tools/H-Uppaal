@@ -525,7 +525,6 @@ public class ComponentController implements Initializable {
                 }
 
                 contextMenu.close();
-
             });
 
             contextMenu.addSpacerElement();
