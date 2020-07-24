@@ -8,7 +8,7 @@ import java.io.File;
 public final class UPPAALDriverManager {
 
     private static IUPPAALDriver instance = null;
-    private static String uppaalFilePath = ""; //HUPPAAL.preferences.get("uppaalLocation", "");
+    private static String uppaalFilePath = HUPPAAL.preferences.get("uppaalLocation", "");
 
     private UPPAALDriverManager(){}
 
