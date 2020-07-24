@@ -371,6 +371,11 @@ public class HUPPAALController implements Initializable {
     private void initializeNoMainComponentError() {
         final CodeAnalysis.Message noMainComponentErrorMessage = new CodeAnalysis.Message("No main component specified", CodeAnalysis.MessageType.ERROR);
 
+        //Add warning if there is no main component (necessary, as the project might not contain a main component to begin with)
+        if(HUPPAAL.getProject().mainComponentProperty().getValue() == null){
+            CodeAnalysis.addMessage(null, noMainComponentErrorMessage);
+        }
+
         HUPPAAL.getProject().mainComponentProperty().addListener((obs, oldMain, newMain) -> {
             if(newMain == null) {
                 CodeAnalysis.addMessage(null, noMainComponentErrorMessage);
@@ -379,8 +384,6 @@ public class HUPPAALController implements Initializable {
                 CodeAnalysis.removeMessage(null, noMainComponentErrorMessage);
             }
         });
-
-
     }
 
     private void initializeMenuBar() {
