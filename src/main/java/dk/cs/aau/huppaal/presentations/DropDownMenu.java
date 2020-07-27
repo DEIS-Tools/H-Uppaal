@@ -122,6 +122,9 @@ public class DropDownMenu {
         final double finalOffsetX = offsetX;
         final double finalOffsetY = offsetY;
 
+        x = this.source.getLayoutX() + finalOffsetX;
+        y = this.source.getLayoutY() + finalOffsetY;
+
         Platform.runLater( () -> popup.show(this.source, vAlign, hAlign, finalOffsetX, finalOffsetY));
     }
 
