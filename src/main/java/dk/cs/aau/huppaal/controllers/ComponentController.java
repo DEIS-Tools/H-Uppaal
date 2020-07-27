@@ -82,7 +82,6 @@ public class ComponentController implements Initializable {
     private MouseTracker mouseTracker;
     private DropDownMenu contextMenu;
     private DropDownMenu finishEdgeContextMenu;
-    private Circle dropDownMenuHelperCircle;
 
     // Guiding indicator for initial and final location
     public Group initialLocationGuideContainer;
@@ -380,18 +379,12 @@ public class ComponentController implements Initializable {
     }
 
     private void initializeComponentContextMenu() {
-        dropDownMenuHelperCircle = new Circle(5);
-        dropDownMenuHelperCircle.setOpacity(0);
-        dropDownMenuHelperCircle.setMouseTransparent(true);
-
-        root.getChildren().add(dropDownMenuHelperCircle);
-
         final Consumer<Component> initializeDropDownMenu = (component) -> {
             if (component == null) {
                 return;
             }
 
-            contextMenu = new DropDownMenu(dropDownMenuHelperCircle, 230, true);
+            contextMenu = new DropDownMenu(root, 230, true);
 
             contextMenu.addClickableListElement("Add Location", event -> {
                 contextMenu.close();
@@ -463,7 +456,7 @@ public class ComponentController implements Initializable {
 
             //If-statement added to avoid empty submenu being added and appearing as a white box
             if(HUPPAAL.getProject().getComponents().size() > 1){
-                subMenu = new DropDownMenu(dropDownMenuHelperCircle, 150, false);
+                subMenu = new DropDownMenu(root, 150, false);
                 HUPPAAL.getProject().getComponents().forEach(c -> {
                     if (!c.equals(component)) {
                         subMenu.addClickableListElement(c.getName(), event -> {
@@ -490,7 +483,7 @@ public class ComponentController implements Initializable {
                 });
 
             } else {
-                subMenu = new DropDownMenu(dropDownMenuHelperCircle, 150, false);
+                subMenu = new DropDownMenu(root, 150, false);
 
                 subMenu.addClickableAndDisableableListElement("No Subcomponents", new SimpleBooleanProperty(true), event -> {});
             }
@@ -556,7 +549,7 @@ public class ComponentController implements Initializable {
                 locationAware.yProperty().set(y);
             };
 
-            finishEdgeContextMenu = new DropDownMenu(dropDownMenuHelperCircle, 230, true);
+            finishEdgeContextMenu = new DropDownMenu(root, 230, true);
 
             finishEdgeContextMenu.addListElement("Finish edge in a:");
 
@@ -620,7 +613,7 @@ public class ComponentController implements Initializable {
                 }, "Finished edge '" + unfinishedEdge + "' by adding '" + jork + "' to component '" + component.getName() + "'", "add-circle");
             });
 
-            final DropDownMenu subMenu = new DropDownMenu(dropDownMenuHelperCircle, 150, false);
+            final DropDownMenu subMenu = new DropDownMenu(root, 150, false);
             HUPPAAL.getProject().getComponents().forEach(c -> {
                 if (!c.equals(component)) {
                     subMenu.addClickableListElement(c.getName(), event -> {
@@ -1047,16 +1040,11 @@ public class ComponentController implements Initializable {
 
 
         } else if (event.isSecondaryButtonDown()) {
-            dropDownMenuHelperCircle.setLayoutX(event.getX());
-            dropDownMenuHelperCircle.setLayoutY(event.getY());
-            DropDownMenu.x = event.getX();
-            DropDownMenu.y = event.getY();
-
             if (unfinishedEdge == null) {
-                contextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
+                contextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, event.getX(), event.getY());
             } else {
                 initializeFinishEdgeContextMenu(unfinishedEdge);
-                finishEdgeContextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
+                finishEdgeContextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, event.getX(), event.getY());
             }
         } else if(event.isPrimaryButtonDown()) {
             // We are drawing an edge
