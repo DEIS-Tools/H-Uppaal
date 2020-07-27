@@ -97,7 +97,5 @@ public class CanvasController implements Initializable {
                 leaveTextAreas();
             }
         };
-
     }
-
 }
