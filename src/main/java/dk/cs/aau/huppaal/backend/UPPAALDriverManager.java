@@ -2,13 +2,14 @@ package dk.cs.aau.huppaal.backend;
 
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
+import javafx.beans.property.SimpleStringProperty;
 
 import java.io.File;
 
 public final class UPPAALDriverManager {
 
     private static IUPPAALDriver instance = null;
-    private static String uppaalFilePath = HUPPAAL.preferences.get("uppaalLocation", "");
+    private static final SimpleStringProperty uppaalFilePath = new SimpleStringProperty(HUPPAAL.preferences.get("uppaalLocation", ""));
 
     private UPPAALDriverManager(){}
 
@@ -16,15 +17,11 @@ public final class UPPAALDriverManager {
 
         //If the instance is null this instantiates the correct IUPPAALDriver class
         if(instance == null){
-            File serverFile = new File(uppaalFilePath);
+            File serverFile = new File(uppaalFilePath.getValue());
             if(serverFile.exists()){
-                CodeAnalysis.removeMessage(null, new CodeAnalysis.Message("Please set the UPPAAL server location through the 'Preferences' tab.\n" +
-                        "Make sure to have UPPAAL installed. This can be done at uppaal.org", CodeAnalysis.MessageType.WARNING));
                 instance = new UPPAALDriver(serverFile);
-                //Todo: the list of warnings is updated, but the Interface does not represent this change
             } else {
-                CodeAnalysis.addMessage(null, new CodeAnalysis.Message("Please set the UPPAAL server location through the 'Preferences' tab.\n" +
-                            "Make sure to have UPPAAL installed. This can be done at uppaal.org", CodeAnalysis.MessageType.WARNING));
+                uppaalFilePath.set("dummy");
                 instance = new DummyUPPAALDriver();
             }
         }
@@ -32,16 +29,21 @@ public final class UPPAALDriverManager {
         return instance;
     }
 
-    public static String getUppaalFilePath() {
+    public static SimpleStringProperty getUppalFilePathProperty(){
         return uppaalFilePath;
+    }
+
+    public static String getUppaalFilePath() {
+        return uppaalFilePath.getValue();
     }
 
     public static void setUppaalFilePath(String filePath) {
         //Set the instance to null to allow the correct UPPAALDriver to be instantiated
+        //Todo: Insert check to see if the new value points to a UPPAAL server file
         instance = null;
 
         //Update uppaalFilePath and save the new value to preferences
-        uppaalFilePath = filePath;
+        uppaalFilePath.set(filePath);
         HUPPAAL.preferences.put("uppaalLocation", filePath);
 
         //Let HUPPAAL know that the UPPAALDriver have been updated
