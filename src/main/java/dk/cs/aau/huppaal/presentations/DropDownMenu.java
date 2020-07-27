@@ -122,6 +122,7 @@ public class DropDownMenu {
         final double finalOffsetX = offsetX;
         final double finalOffsetY = offsetY;
 
+        //Set the x and y of the dropdown to ensure that locations etc. are added correctly
         x = this.source.getLayoutX() + finalOffsetX;
         y = this.source.getLayoutY() + finalOffsetY;
 
