@@ -230,6 +230,7 @@ public class UPPAALDriver implements IUPPAALDriver {
         final File file = new File(fileName);
         try {
             uppaalDocument.save(file);
+            System.out.println(file.getAbsoluteFile());
         } catch (final IOException e) {
             // TODO Handle exception
             e.printStackTrace();

@@ -116,6 +116,7 @@ public class HUPPAALController implements Initializable {
     public MenuItem menuBarPreferencesUppaalLocation;
     public MenuItem menuBarFileSave;
     public MenuItem menuBarFileOpenProject;
+    public MenuItem menuBarFileExportAsXML;
     public MenuItem menuBarHelpHelp;
     public MenuItem menuBarEditBalance;
 
@@ -448,6 +449,31 @@ public class HUPPAALController implements Initializable {
                 try {
                     HUPPAAL.projectDirectory.set(file.getAbsolutePath());
                     HUPPAAL.initializeProjectFolder();
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        //menuBarFileExportAsXML.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.SHORTCUT_DOWN));
+        menuBarFileExportAsXML.setOnAction(event -> {
+            // Dialog title
+            final FileChooser locationPicker = new FileChooser();
+            locationPicker.setTitle("Export as");
+            locationPicker.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("XML file", "*.xml")
+            );
+
+            // If the file does not exist, we must be running it from a development environment, use a default location
+            locationPicker.setInitialDirectory(new File(HUPPAAL.projectDirectory.getValue()));
+
+            // Prompt the user to find a file (will halt the UI thread)
+            final File file = locationPicker.showSaveDialog(root.getScene().getWindow());
+            if(file != null) {
+                try {
+                    if(!file.createNewFile()){
+                        HUPPAAL.showToast("Unable to save file");
+                    }
                 } catch (final IOException e) {
                     e.printStackTrace();
                 }
