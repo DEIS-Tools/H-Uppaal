@@ -168,7 +168,7 @@
                             <FontIcon iconLiteral="gmi-folder-open" iconSize="24" fill="black"/>
                         </graphic>
                     </MenuItem>
-                    <MenuItem fx:id="menuBarFileExportAsXML" text="Export Project">
+                    <MenuItem fx:id="menuBarFileExportAsXML" text="Export as XML">
                         <graphic>
                             <FontIcon iconLiteral="gmi-folder-open" iconSize="24" fill="black"/>
                         </graphic>
