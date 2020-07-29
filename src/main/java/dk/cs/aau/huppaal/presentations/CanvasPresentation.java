@@ -4,21 +4,19 @@ import dk.cs.aau.huppaal.controllers.CanvasController;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.helpers.CanvasDragHelper;
 import dk.cs.aau.huppaal.utility.helpers.MouseTrackable;
+import dk.cs.aau.huppaal.utility.helpers.ZoomHelper;
 import dk.cs.aau.huppaal.utility.keyboard.Keybind;
 import dk.cs.aau.huppaal.utility.keyboard.KeyboardTracker;
 import dk.cs.aau.huppaal.utility.mouse.MouseTracker;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.MouseButton;
+import javafx.scene.input.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Line;
+import javafx.stage.Screen;
 
 import java.io.IOException;
 import java.net.URL;
@@ -46,6 +44,12 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         KeyboardTracker.registerKeybind(KeyboardTracker.UNDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN), UndoRedoStack::undo));
         KeyboardTracker.registerKeybind(KeyboardTracker.REDO, new Keybind(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN), UndoRedoStack::redo));
 
+        //Add keybindings for zoom functionality
+        KeyboardTracker.registerKeybind(KeyboardTracker.ZOOM_IN, new Keybind(new KeyCodeCombination(KeyCode.PLUS, KeyCombination.SHORTCUT_DOWN), ZoomHelper::zoomIn));
+        KeyboardTracker.registerKeybind(KeyboardTracker.ZOOM_OUT, new Keybind(new KeyCodeCombination(KeyCode.MINUS, KeyCombination.SHORTCUT_DOWN), ZoomHelper::zoomOut));
+        KeyboardTracker.registerKeybind(KeyboardTracker.RESET_ZOOM, new Keybind(new KeyCodeCombination(KeyCode.DIGIT0, KeyCombination.SHORTCUT_DOWN), ZoomHelper::resetZoom));
+        KeyboardTracker.registerKeybind(KeyboardTracker.ZOOM_TO_FIT, new Keybind(new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHORTCUT_DOWN), ZoomHelper::zoomToFit));
+
         try {
             fxmlLoader.setRoot(this);
             fxmlLoader.load(location.openStream());
@@ -66,7 +70,6 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
             controller.component.setLayoutY(GRID_SIZE / 2);
 
             */
-
             CanvasDragHelper.makeDraggable(this, mouseEvent -> mouseEvent.getButton().equals(MouseButton.SECONDARY));
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
@@ -77,6 +80,12 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         final Grid grid = new Grid(GRID_SIZE);
         getChildren().add(grid);
         grid.toBack();
+
+        //When the translation coordinates are changed, make sure that it is handled for the grid as well
+        this.translateXProperty().addListener(((observable, oldValue, newValue) -> grid.handleTranslateX(oldValue.doubleValue(), newValue.doubleValue(), this.scaleXProperty().doubleValue())));
+        this.translateYProperty().addListener(((observable, oldValue, newValue) -> grid.handleTranslateY(oldValue.doubleValue(), newValue.doubleValue(), this.scaleYProperty().doubleValue())));
+
+        ZoomHelper.setGrid(grid);
     }
 
     @Override
@@ -99,6 +108,10 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         return yProperty().get();
     }
 
+    public CanvasController getController() {
+        return controller;
+    }
+
     @Override
     public MouseTracker getMouseTracker() {
         return mouseTracker;
@@ -110,6 +123,12 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
         private final ArrayList<Line> verticalLines = new ArrayList<>();
 
         public Grid(final int gridSize) {
+            //The screen size in GridSlices multiplied by 3 to ensure that the screen is still covered when zoomed out
+            int screenWidthInGridSlices = (int) (Screen.getPrimary().getBounds().getWidth() - (Screen.getPrimary().getBounds().getWidth() % gridSize)) * 3;
+            int screenHeightInGridSlices = (int) (Screen.getPrimary().getBounds().getHeight() - (Screen.getPrimary().getBounds().getHeight() % gridSize)) * 3;
+
+            setTranslateX(gridSize * 0.5);
+            setTranslateY(gridSize * 0.5);
 
             // When the scene changes (goes from null to something)
             sceneProperty().addListener((observable, oldScene, newScene) -> {
@@ -122,27 +141,11 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                         verticalLines.remove(removeLine);
                     }
 
-                    // Add new lines (to cover the screen, with 1 line in margin in both ends)
-                    int i = -1;
-                    while (i * gridSize - gridSize < newWidth.doubleValue()) {
-                        final Line line = new Line(i * gridSize, 200, i * gridSize, 300);
+                    // Add new lines to cover the screen, even when zoomed out
+                    int i = -screenWidthInGridSlices;
+                    while (i * gridSize - gridSize < screenWidthInGridSlices) {
+                        Line line = new Line(i * gridSize, -screenHeightInGridSlices, i * gridSize, screenHeightInGridSlices);
                         line.getStyleClass().add("grid-line");
-
-                        final DoubleBinding parentXBinding = new DoubleBinding() {
-                            {
-                                super.bind(getParent().translateXProperty());
-                            }
-
-                            @Override
-                            protected double computeValue() {
-                                final int moveFactor = (int) (getParent().getTranslateX() / gridSize);
-                                return -1 * moveFactor * gridSize + 0.5 * gridSize;
-                            }
-                        };
-
-                        line.layoutXProperty().bind(parentXBinding);
-                        line.startYProperty().bind(getParent().layoutYProperty().subtract(getParent().translateYProperty()).subtract(50)); // the 50 is a fix
-                        line.endYProperty().bind(getParent().layoutYProperty().subtract(getParent().translateYProperty()).add(getScene().heightProperty()));
 
                         verticalLines.add(line);
                         i++;
@@ -159,27 +162,11 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                         horizontalLines.remove(removeLine);
                     }
 
-                    // Add new lines (to cover the screen, with 1 line in margin in both ends)
-                    int i = -1;
-                    while (i * gridSize - gridSize < newHeight.doubleValue()) {
-                        final Line line = new Line(200, i * gridSize, 300, i * gridSize);
+                    // Add new lines to cover the screen, even when zoomed out
+                    int i = -screenHeightInGridSlices;
+                    while (i * gridSize - gridSize < screenHeightInGridSlices) {
+                        Line line = new Line(-screenWidthInGridSlices, i * gridSize, screenWidthInGridSlices, i * gridSize);
                         line.getStyleClass().add("grid-line");
-
-                        final DoubleBinding parentYBinding = new DoubleBinding() {
-                            {
-                                super.bind(getParent().translateYProperty());
-                            }
-
-                            @Override
-                            protected double computeValue() {
-                                final int moveFactor = (int) (getParent().getTranslateY() / gridSize);
-                                return -1 * moveFactor * gridSize + 0.5 * gridSize;
-                            }
-                        };
-
-                        line.layoutYProperty().bind(parentYBinding);
-                        line.startXProperty().bind(getParent().layoutXProperty().subtract(getParent().translateXProperty()));
-                        line.endXProperty().bind(getParent().layoutXProperty().subtract(getParent().translateXProperty()).add(getScene().widthProperty()));
 
                         horizontalLines.add(line);
                         i++;
@@ -187,8 +174,16 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
                     horizontalLines.forEach(line -> getChildren().add(line));
                 });
             });
-
         }
 
+        public void handleTranslateX(double oldValue, double newValue, double scale) {
+            //Move the grid in the opposite direction of the canvas drag, to keep its location on screen
+            this.setTranslateX(this.getTranslateX() + (newValue - oldValue) / -scale);
+        }
+
+        public void handleTranslateY(double oldValue, double newValue, double scale) {
+            //Move the grid in the opposite direction of the canvas drag, to keep its location on screen
+            this.setTranslateY(this.getTranslateY() + (newValue - oldValue) / -scale);
+        }
     }
 }

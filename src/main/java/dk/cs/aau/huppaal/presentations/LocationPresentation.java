@@ -583,7 +583,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
         final KeyFrame kf2 = new KeyFrame(Duration.millis(2500), scale1x, radius1, opacity1);
         final KeyFrame kf3 = new KeyFrame(Duration.millis(3300), radius0, opacity0);
         final KeyFrame kf4 = new KeyFrame(Duration.millis(3500), scale0x);
-        final KeyFrame kfEnd = new KeyFrame(Duration.millis(8000), null);
+        final KeyFrame kfEnd = new KeyFrame(Duration.millis(8000), (KeyValue) null);
 
         scaleShakeIndicatorBackgroundAnimation.getKeyFrames().addAll(kf1, kf2, kf3, kf4, kfEnd);
 
@@ -613,7 +613,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
                 new KeyFrame(Duration.millis(2250), shakeRightX),
 
                 new KeyFrame(Duration.millis(2300), noShakeX),
-                new KeyFrame(Duration.millis(8000), null)
+                new KeyFrame(Duration.millis(8000), (KeyValue) null)
         };
 
         shakeContentAnimation.getKeyFrames().addAll(shakeFrames);

@@ -6,6 +6,7 @@ import dk.cs.aau.huppaal.utility.colors.EnabledColor;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
 import javafx.animation.ScaleTransition;
+import javafx.application.Platform;
 import javafx.beans.binding.When;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -87,13 +88,12 @@ public class DropDownMenu {
     }
 
     public void close() {
-        popup.hide();
+        Platform.runLater(
+                popup::hide
+        );
     }
 
     public void show(final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
-        //Needed to update the location of the popup before it is displayed
-        this.flashDropdown();
-
         //Check if the dropdown will appear outside the screen and change the offset accordingly
         double offsetX = initOffsetX;
         double offsetY = initOffsetY;
@@ -118,7 +118,15 @@ public class DropDownMenu {
             }
         }
 
-        popup.show(this.source, vAlign, hAlign, offsetX, offsetY);
+        //Need final temporary variables for lambda
+        final double finalOffsetX = offsetX;
+        final double finalOffsetY = offsetY;
+
+        //Set the x and y of the dropdown to ensure that locations etc. are added correctly
+        x = this.source.getLayoutX() + finalOffsetX;
+        y = this.source.getLayoutY() + finalOffsetY;
+
+        Platform.runLater( () -> popup.show(this.source, vAlign, hAlign, finalOffsetX, finalOffsetY));
     }
 
     public void addListElement(final String s) {
@@ -449,10 +457,5 @@ public class DropDownMenu {
         ObjectProperty<Color> colorProperty();
 
         ObjectProperty<Color.Intensity> colorIntensityProperty();
-    }
-
-    private void flashDropdown() {
-        popup.show(this.source, JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
-        this.close();
     }
 }

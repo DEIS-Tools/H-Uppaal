@@ -82,6 +82,9 @@ public class HUPPAALPresentation extends StackPane {
             initializeToolbarButton(controller.redo);
             initializeUndoRedoButtons();
 
+            initializeToolbarButton(controller.zoomIn);
+            initializeToolbarButton(controller.zoomOut);
+
             initializeLogo();
 
             initializeMessageContainer();

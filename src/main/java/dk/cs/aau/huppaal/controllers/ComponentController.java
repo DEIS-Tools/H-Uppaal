@@ -8,10 +8,7 @@ import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.code_analysis.Nearable;
 import dk.cs.aau.huppaal.presentations.*;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
-import dk.cs.aau.huppaal.utility.helpers.BindingHelper;
-import dk.cs.aau.huppaal.utility.helpers.Circular;
-import dk.cs.aau.huppaal.utility.helpers.LocationAware;
-import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
+import dk.cs.aau.huppaal.utility.helpers.*;
 import dk.cs.aau.huppaal.utility.mouse.MouseTracker;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
@@ -23,6 +20,8 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -83,7 +82,6 @@ public class ComponentController implements Initializable {
     private MouseTracker mouseTracker;
     private DropDownMenu contextMenu;
     private DropDownMenu finishEdgeContextMenu;
-    private Circle dropDownMenuHelperCircle;
 
     // Guiding indicator for initial and final location
     public Group initialLocationGuideContainer;
@@ -381,18 +379,12 @@ public class ComponentController implements Initializable {
     }
 
     private void initializeComponentContextMenu() {
-        dropDownMenuHelperCircle = new Circle(5);
-        dropDownMenuHelperCircle.setOpacity(0);
-        dropDownMenuHelperCircle.setMouseTransparent(true);
-
-        root.getChildren().add(dropDownMenuHelperCircle);
-
         final Consumer<Component> initializeDropDownMenu = (component) -> {
             if (component == null) {
                 return;
             }
 
-            contextMenu = new DropDownMenu(dropDownMenuHelperCircle, 230, true);
+            contextMenu = new DropDownMenu(root, 230, true);
 
             contextMenu.addClickableListElement("Add Location", event -> {
                 contextMenu.close();
@@ -464,7 +456,7 @@ public class ComponentController implements Initializable {
 
             //If-statement added to avoid empty submenu being added and appearing as a white box
             if(HUPPAAL.getProject().getComponents().size() > 1){
-                subMenu = new DropDownMenu(dropDownMenuHelperCircle, 150, false);
+                subMenu = new DropDownMenu(root, 150, false);
                 HUPPAAL.getProject().getComponents().forEach(c -> {
                     if (!c.equals(component)) {
                         subMenu.addClickableListElement(c.getName(), event -> {
@@ -491,7 +483,7 @@ public class ComponentController implements Initializable {
                 });
 
             } else {
-                subMenu = new DropDownMenu(dropDownMenuHelperCircle, 150, false);
+                subMenu = new DropDownMenu(root, 150, false);
 
                 subMenu.addClickableAndDisableableListElement("No Subcomponents", new SimpleBooleanProperty(true), event -> {});
             }
@@ -554,7 +546,7 @@ public class ComponentController implements Initializable {
                 locationAware.yProperty().set(y);
             };
 
-            finishEdgeContextMenu = new DropDownMenu(dropDownMenuHelperCircle, 230, true);
+            finishEdgeContextMenu = new DropDownMenu(root, 230, true);
 
             finishEdgeContextMenu.addListElement("Finish edge in a:");
 
@@ -618,7 +610,7 @@ public class ComponentController implements Initializable {
                 }, "Finished edge '" + unfinishedEdge + "' by adding '" + jork + "' to component '" + component.getName() + "'", "add-circle");
             });
 
-            final DropDownMenu subMenu = new DropDownMenu(dropDownMenuHelperCircle, 150, false);
+            final DropDownMenu subMenu = new DropDownMenu(root, 150, false);
             HUPPAAL.getProject().getComponents().forEach(c -> {
                 if (!c.equals(component)) {
                     subMenu.addClickableListElement(c.getName(), event -> {
@@ -659,6 +651,180 @@ public class ComponentController implements Initializable {
         final Consumer<Location> handleAddedLocation = (loc) -> {
             // Create a new presentation, and register it on the map
             final LocationPresentation newLocationPresentation = new LocationPresentation(loc, newComponent);
+
+            final ChangeListener<Number> locationPlacementChangedListener = (observable, oldValue, newValue) -> {
+                final double offset = newLocationPresentation.getController().circle.getRadius() * 2 + GRID_SIZE;
+                boolean hit = false;
+                ItemDragHelper.DragBounds componentBounds = newLocationPresentation.getController().getDragBounds();
+
+                //Define the x and y coordinates for the initial and final locations
+                final double initialLocationX = component.get().getX() + newLocationPresentation.getController().circle.getRadius() * 2,
+                        initialLocationY = component.get().getY() + newLocationPresentation.getController().circle.getRadius() * 2,
+                        finalLocationX = component.get().getX() + component.get().getWidth() - newLocationPresentation.getController().circle.getRadius() * 2,
+                        finalLocationY = component.get().getY() + component.get().getHeight() - newLocationPresentation.getController().circle.getRadius() * 2;
+
+                double latestHitRight = 0,
+                        latestHitDown = 0,
+                        latestHitLeft = 0,
+                        latestHitUp = 0;
+
+                //Check to see if the location is placed on top of the initial location
+                if(Math.abs(initialLocationX - (newLocationPresentation.getLayoutX())) < offset &&
+                        Math.abs(initialLocationY - (newLocationPresentation.getLayoutY())) < offset){
+                    hit = true;
+                    latestHitRight = initialLocationX;
+                    latestHitDown = initialLocationY;
+                    latestHitLeft = initialLocationX;
+                    latestHitUp = initialLocationY;
+                }
+
+                //Check to see if the location is placed on top of the final location
+                else if (Math.abs(finalLocationX - (newLocationPresentation.getLayoutX())) < offset &&
+                        Math.abs(finalLocationY - (newLocationPresentation.getLayoutY())) < offset) {
+                    hit = true;
+                    latestHitRight = finalLocationX;
+                    latestHitDown = finalLocationY;
+                    latestHitLeft = finalLocationX;
+                    latestHitUp = finalLocationY;
+                }
+
+                //Check to see if the location is placed on top of another location
+                else {
+                    for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
+                        if (entry.getValue() != newLocationPresentation &&
+                                Math.abs(entry.getValue().getLayoutX() - (newLocationPresentation.getLayoutX())) < offset &&
+                                Math.abs(entry.getValue().getLayoutY() - (newLocationPresentation.getLayoutY())) < offset) {
+                            hit = true;
+                            latestHitRight = entry.getValue().getLayoutX();
+                            latestHitDown = entry.getValue().getLayoutY();
+                            latestHitLeft = entry.getValue().getLayoutX();
+                            latestHitUp = entry.getValue().getLayoutY();
+                            break;
+                        }
+                    }
+                }
+
+                //If the location is not placed on top of any other locations, do not do anything
+                if(!hit) {
+                    return;
+                }
+                hit = false;
+
+                //Find an unoccupied space for the location
+                for(int i = 1; i < component.get().getWidth() / offset; i++){
+
+                    //Check to see, if the location can be placed to the right of the existing locations
+                    if(componentBounds.trimX(latestHitRight + offset) == latestHitRight + offset) {
+
+                        //Check if the location would be placed on the final location
+                        if(Math.abs(finalLocationX - (latestHitRight + offset)) < offset &&
+                                Math.abs(finalLocationY - (newLocationPresentation.getLayoutY())) < offset){
+                            hit = true;
+                            latestHitRight = finalLocationX;
+                        } else {
+                            for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
+                                if (entry.getValue() != newLocationPresentation &&
+                                        Math.abs(entry.getValue().getLayoutX() - (latestHitRight + offset)) < offset &&
+                                        Math.abs(entry.getValue().getLayoutY() - (newLocationPresentation.getLayoutY())) < offset) {
+                                    hit = true;
+                                    latestHitRight = entry.getValue().getLayoutX();
+                                    break;
+                                }
+                            }
+                        }
+
+                        if(!hit) {
+                            newLocationPresentation.setLayoutX(latestHitRight + offset);
+                            return;
+                        }
+                    }
+                    hit = false;
+
+                    //Check to see, if the location can be placed below the existing locations
+                    if(componentBounds.trimY(latestHitDown + offset) == latestHitDown + offset) {
+
+                        //Check if the location would be placed on the final location
+                        if(Math.abs(finalLocationX - (newLocationPresentation.getLayoutX())) < offset &&
+                                Math.abs(finalLocationY - (latestHitDown + offset)) < offset){
+                            hit = true;
+                            latestHitDown = finalLocationY;
+                        } else {
+                            for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
+                                if (entry.getValue() != newLocationPresentation &&
+                                        Math.abs(entry.getValue().getLayoutX() - (newLocationPresentation.getLayoutX())) < offset &&
+                                        Math.abs(entry.getValue().getLayoutY() - (latestHitDown + offset)) < offset) {
+                                    hit = true;
+                                    latestHitDown = entry.getValue().getLayoutY();
+                                    break;
+                                }
+                            }
+                        }
+                        if(!hit) {
+                            newLocationPresentation.setLayoutY(latestHitDown + offset);
+                            return;
+                        }
+                    }
+                    hit = false;
+
+                    //Check to see, if the location can be placed to the left of the existing locations
+                    if(componentBounds.trimX(latestHitLeft - offset) == latestHitLeft - offset) {
+
+                        //Check if the location would be placed on the initial location
+                        if(Math.abs(initialLocationX - (latestHitLeft - offset)) < offset &&
+                                Math.abs(initialLocationY - (newLocationPresentation.getLayoutY())) < offset){
+                            hit = true;
+                            latestHitLeft = initialLocationX;
+                        } else {
+                            for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
+                                if (entry.getValue() != newLocationPresentation &&
+                                        Math.abs(entry.getValue().getLayoutX() - (latestHitLeft - offset)) < offset &&
+                                        Math.abs(entry.getValue().getLayoutY() - (newLocationPresentation.getLayoutY())) < offset) {
+                                    hit = true;
+                                    latestHitLeft = entry.getValue().getLayoutX();
+                                    break;
+                                }
+                            }
+                        }
+                        if(!hit) {
+                            newLocationPresentation.setLayoutX(latestHitLeft - offset);
+                            return;
+                        }
+                    }
+                    hit = false;
+
+                    //Check to see, if the location can be placed above the existing locations
+                    if(componentBounds.trimY(latestHitUp - offset) == latestHitUp - offset) {
+
+                        //Check if the location would be placed on the initial location
+                        if(Math.abs(initialLocationX - (newLocationPresentation.getLayoutX())) < offset &&
+                                Math.abs(initialLocationY - (latestHitUp - offset)) < offset){
+                            hit = true;
+                            latestHitUp = initialLocationY;
+                        } else {
+                            for (Map.Entry<Location, LocationPresentation> entry : locationPresentationMap.entrySet()) {
+                                if (entry.getValue() != newLocationPresentation &&
+                                        Math.abs(entry.getValue().getLayoutX() - (newLocationPresentation.getLayoutX())) < offset &&
+                                        Math.abs(entry.getValue().getLayoutY() - (latestHitUp - offset)) < offset) {
+                                    hit = true;
+                                    latestHitUp = entry.getValue().getLayoutY();
+                                    break;
+                                }
+                            }
+                        }
+                        if(!hit) {
+                            newLocationPresentation.setLayoutY(latestHitUp - offset);
+                            return;
+                        }
+                    }
+                    hit = false;
+                    
+                }
+            };
+
+            newLocationPresentation.layoutXProperty().addListener(locationPlacementChangedListener);
+
+            newLocationPresentation.layoutYProperty().addListener(locationPlacementChangedListener);
+
             locationPresentationMap.put(loc, newLocationPresentation);
 
             // Add it to the view
@@ -677,7 +843,18 @@ public class ComponentController implements Initializable {
         final ListChangeListener<Location> locationListChangeListener = c -> {
             if (c.next()) {
                 // Locations are added to the component
-                c.getAddedSubList().forEach(handleAddedLocation::accept);
+                c.getAddedSubList().forEach((loc) -> {
+                    handleAddedLocation.accept(loc);
+
+                    LocationPresentation locationPresentation = locationPresentationMap.get(loc);
+
+                    //Ensure that the component is inside the bounds of the component
+                    locationPresentation.setLayoutX(locationPresentation.getController().getDragBounds().trimX(locationPresentation.getLayoutX()));
+                    locationPresentation.setLayoutY(locationPresentation.getController().getDragBounds().trimY(locationPresentation.getLayoutY()));
+
+                    //Change the layoutXProperty slightly to invoke listener and ensure distance to existing locations
+                    locationPresentation.setLayoutX(locationPresentation.getLayoutX() + 0.00001);
+                });
 
                 // Locations are removed from the component
                 c.getRemoved().forEach(location -> {
@@ -860,16 +1037,11 @@ public class ComponentController implements Initializable {
 
 
         } else if (event.isSecondaryButtonDown()) {
-            dropDownMenuHelperCircle.setLayoutX(event.getX());
-            dropDownMenuHelperCircle.setLayoutY(event.getY());
-            DropDownMenu.x = event.getX();
-            DropDownMenu.y = event.getY();
-
             if (unfinishedEdge == null) {
-                contextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
+                contextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, event.getX(), event.getY());
             } else {
                 initializeFinishEdgeContextMenu(unfinishedEdge);
-                finishEdgeContextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, 0, 0);
+                finishEdgeContextMenu.show(JFXPopup.PopupVPosition.TOP, JFXPopup.PopupHPosition.LEFT, event.getX(), event.getY());
             }
         } else if(event.isPrimaryButtonDown()) {
             // We are drawing an edge
