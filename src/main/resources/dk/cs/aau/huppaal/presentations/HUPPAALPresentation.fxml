@@ -163,6 +163,11 @@
                             <FontIcon iconLiteral="gmi-save" iconSize="24" fill="black"/>
                         </graphic>
                     </MenuItem>
+                    <MenuItem fx:id="menuBarFileSaveAs" text="Save Project As">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-save" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
                     <MenuItem fx:id="menuBarFileOpenProject" text="Open Project">
                         <graphic>
                             <FontIcon iconLiteral="gmi-folder-open" iconSize="24" fill="black"/>

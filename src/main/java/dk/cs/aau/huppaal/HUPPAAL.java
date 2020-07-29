@@ -47,6 +47,7 @@ public class HUPPAAL extends Application {
     public static Preferences preferences;
     public static String serverDirectory;
     public static String debugDirectory;
+    public static String temporaryProjectDirectory;
     public static boolean serializationDone = false;
     private static Project project;
     private static HUPPAALPresentation presentation;
@@ -60,6 +61,7 @@ public class HUPPAAL extends Application {
             final File jarFile = new File(codeSource.getLocation().toURI().getPath());
             final String rootDirectory = jarFile.getParentFile().getPath() + File.separator;
             projectDirectory.set(rootDirectory + "projects" + File.separator + "project");
+            temporaryProjectDirectory = rootDirectory + "projects" + File.separator + "temp";
             serverDirectory = rootDirectory + "servers";
             debugDirectory = rootDirectory + "uppaal-debug";
             forceCreateFolder(projectDirectory.getValue());
