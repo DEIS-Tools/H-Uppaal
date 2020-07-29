@@ -116,6 +116,7 @@ public class HUPPAALController implements Initializable {
     public MenuItem menuBarPreferencesUppaalLocation;
     public MenuItem menuBarFileSave;
     public MenuItem menuBarFileOpenProject;
+    public MenuItem menuBarFileNew;
     public MenuItem menuBarHelpHelp;
     public MenuItem menuBarEditBalance;
 
@@ -433,6 +434,32 @@ public class HUPPAALController implements Initializable {
             // Dialog title
             final DirectoryChooser projectPicker = new DirectoryChooser();
             projectPicker.setTitle("Open project");
+
+            // The initial location for the file choosing dialog
+            final File jarDir = new File(System.getProperty("java.class.path")).getAbsoluteFile().getParentFile();
+
+            // If the file does not exist, we must be running it from a development environment, use a default location
+            if(jarDir.exists()) {
+                projectPicker.setInitialDirectory(jarDir);
+            }
+
+            // Prompt the user to find a file (will halt the UI thread)
+            final File file = projectPicker.showDialog(root.getScene().getWindow());
+            if(file != null) {
+                try {
+                    HUPPAAL.projectDirectory.set(file.getAbsolutePath());
+                    HUPPAAL.initializeProjectFolder();
+                } catch (final IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        menuBarFileNew.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
+        menuBarFileNew.setOnAction(event -> {
+            // Dialog title
+            final DirectoryChooser projectPicker = new DirectoryChooser();
+            projectPicker.setTitle("Select folder to place files of new project");
 
             // The initial location for the file choosing dialog
             final File jarDir = new File(System.getProperty("java.class.path")).getAbsoluteFile().getParentFile();
