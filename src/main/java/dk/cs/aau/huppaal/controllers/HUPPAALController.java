@@ -459,7 +459,7 @@ public class HUPPAALController implements Initializable {
         menuBarFileExportAsXML.setOnAction(event -> {
             // Dialog title
             final FileChooser locationPicker = new FileChooser();
-            locationPicker.setTitle("Export as");
+            locationPicker.setTitle("Export as XML");
             locationPicker.getExtensionFilters().addAll(
                     new FileChooser.ExtensionFilter("XML file", "*.xml")
             );

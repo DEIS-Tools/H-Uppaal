@@ -231,7 +231,7 @@ public class UPPAALDriver implements IUPPAALDriver {
         try {
             uppaalDocument.save(file);
         } catch (final IOException e) {
-            // TODO Handle exception
+            HUPPAAL.showToast("Unable to store UPPAAL document: " + e.getMessage());
             e.printStackTrace();
         }
     }
