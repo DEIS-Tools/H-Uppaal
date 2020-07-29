@@ -154,8 +154,8 @@ public class ProjectPaneController implements Initializable {
                 HUPPAAL.getProject().getComponents().add(component);
             }, "Deleted component " + component.getName(), "delete");
 
-            //Check if the component to be removed is the main component
-            if(component.isIsMain()) {
+            //Check if the component to be removed is the main component and that there exists another component
+            if(component.isIsMain() && !componentPresentationMap.isEmpty()) {
                 //Set another component as the main component
                 componentPresentationMap.keySet().iterator().next().setIsMain(true);
             }
