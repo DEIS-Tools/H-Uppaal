@@ -182,21 +182,16 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
         dropDownMenu.addSpacerElement();
 
         dropDownMenu.addClickableListElement("Is " + getLocation().getId() + " reachable?", event -> {
-            //Ensure that there is set a main component
-            if(HUPPAAL.getProject().getMainComponent() != null){
-                // Generate the query from the backend
-                final String reachabilityQuery = UPPAALDriverManager.getInstance().getLocationReachableQuery(getLocation(), getComponent());
+            // Generate the query from the backend
+            final String reachabilityQuery = UPPAALDriverManager.getInstance().getLocationReachableQuery(getLocation(), getComponent());
 
-                // Add proper comment
-                final String reachabilityComment = "Is " + getLocation().getMostDescriptiveIdentifier() + " reachable?";
+            // Add proper comment
+            final String reachabilityComment = "Is " + getLocation().getMostDescriptiveIdentifier() + " reachable?";
 
-                // Add new query for this location
-                final Query query = new Query(reachabilityQuery, reachabilityComment, QueryState.UNKNOWN);
-                HUPPAAL.getProject().getQueries().add(query);
-                query.run();
-            } else {
-                HUPPAAL.showToast("Please set a main component before checking for reachability");
-            }
+            // Add new query for this location
+            final Query query = new Query(reachabilityQuery, reachabilityComment, QueryState.UNKNOWN);
+            HUPPAAL.getProject().getQueries().add(query);
+            query.run();
 
             dropDownMenu.close();
         });

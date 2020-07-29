@@ -500,21 +500,16 @@ public class ComponentController implements Initializable {
             contextMenu.addSpacerElement();
 
             contextMenu.addClickableListElement("Contains deadlock?", event -> {
-                //Ensure that there is set a main component
-                if(HUPPAAL.getProject().getMainComponent() != null){
-                    // Generate the query
-                    final String deadlockQuery = UPPAALDriverManager.getInstance().getExistDeadlockQuery(getComponent());
+                // Generate the query
+                final String deadlockQuery = UPPAALDriverManager.getInstance().getExistDeadlockQuery(getComponent());
 
-                    // Add proper comment
-                    final String deadlockComment = "Does " + component.getName() + " contain a deadlock?";
+                // Add proper comment
+                final String deadlockComment = "Does " + component.getName() + " contain a deadlock?";
 
-                    // Add new query for this component
-                    final Query query = new Query(deadlockQuery, deadlockComment, QueryState.UNKNOWN);
-                    HUPPAAL.getProject().getQueries().add(query);
-                    query.run();
-                } else {
-                    HUPPAAL.showToast("Please set a main component before checking for deadlocks");
-                }
+                // Add new query for this component
+                final Query query = new Query(deadlockQuery, deadlockComment, QueryState.UNKNOWN);
+                HUPPAAL.getProject().getQueries().add(query);
+                query.run();
 
                 contextMenu.close();
             });
