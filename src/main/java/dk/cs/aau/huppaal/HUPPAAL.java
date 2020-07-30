@@ -60,7 +60,8 @@ public class HUPPAAL extends Application {
             final CodeSource codeSource = HUPPAAL.class.getProtectionDomain().getCodeSource();
             final File jarFile = new File(codeSource.getLocation().toURI().getPath());
             final String rootDirectory = jarFile.getParentFile().getPath() + File.separator;
-            projectDirectory.set(rootDirectory + "projects" + File.separator + "project");
+            projectDirectory.set(preferences.get("latestProject", rootDirectory + "projects" + File.separator + "project"));
+            projectDirectory.addListener((observable, oldValue, newValue) -> {preferences.put("latestProject", newValue);});
             temporaryProjectDirectory = rootDirectory + "projects" + File.separator + "temp";
             serverDirectory = rootDirectory + "servers";
             debugDirectory = rootDirectory + "uppaal-debug";
