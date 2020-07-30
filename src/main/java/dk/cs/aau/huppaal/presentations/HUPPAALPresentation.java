@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXSnackbarLayout;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Query;
+import dk.cs.aau.huppaal.backend.DummyUPPAALDriver;
 import dk.cs.aau.huppaal.backend.UPPAALDriver;
 import dk.cs.aau.huppaal.backend.UPPAALDriverManager;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
@@ -341,12 +342,12 @@ public class HUPPAALPresentation extends StackPane {
 
             controller.generateUppaalModel.setMaskType(JFXRippler.RipplerMask.CIRCLE);
             controller.generateUppaalModel.setRipplerFill(color.getTextColor(colorIntensity));
-        if(UPPAALDriverManager.getInstance() instanceof UPPAALDriver){
-            controller.generateUppaalModel.setEnabled(true);
-            controller.generateUppaalModel.setOpacity(1);
-        } else {
+        if(UPPAALDriverManager.getInstance() instanceof DummyUPPAALDriver){
             controller.generateUppaalModel.setEnabled(false);
             controller.generateUppaalModel.setOpacity(0.3);
+        } else {
+            controller.generateUppaalModel.setEnabled(true);
+            controller.generateUppaalModel.setOpacity(1);
         }
     }
 
