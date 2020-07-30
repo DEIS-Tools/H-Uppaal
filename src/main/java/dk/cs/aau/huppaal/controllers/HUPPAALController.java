@@ -472,8 +472,6 @@ public class HUPPAALController implements Initializable {
             final File file = locationPicker.showSaveDialog(root.getScene().getWindow());
             if(file != null) {
                 try {
-                    FileWriter fw = new FileWriter(file, false);
-
                     //TODO: Export file
                 } catch (final IOException e) {
                     HUPPAAL.showToast("Unable to export the project: " + e.getMessage());
