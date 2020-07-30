@@ -45,6 +45,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -471,10 +472,11 @@ public class HUPPAALController implements Initializable {
             final File file = locationPicker.showSaveDialog(root.getScene().getWindow());
             if(file != null) {
                 try {
-                    if(!file.createNewFile()){
-                        HUPPAAL.showToast("Unable to save file");
-                    }
+                    FileWriter fw = new FileWriter(file, false);
+
+                    //TODO: Export file
                 } catch (final IOException e) {
+                    HUPPAAL.showToast("Unable to export the project: " + e.getMessage());
                     e.printStackTrace();
                 }
             }
