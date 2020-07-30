@@ -471,12 +471,12 @@ public class HUPPAALController implements Initializable {
             // Prompt the user to find a file (will halt the UI thread)
             final File file = locationPicker.showSaveDialog(root.getScene().getWindow());
             if(file != null) {
-                try {
+                /*try {
                     //TODO: Export file
                 } catch (final IOException e) {
                     HUPPAAL.showToast("Unable to export the project: " + e.getMessage());
                     e.printStackTrace();
-                }
+                }*/
             }
         });
 
