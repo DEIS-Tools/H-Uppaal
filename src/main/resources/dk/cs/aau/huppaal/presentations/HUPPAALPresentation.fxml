@@ -76,7 +76,7 @@
 
                         <Region minWidth="8"/>
 
-                        <!-- RESET ZOOM -->
+                        <!-- ZOOM TO FIT -->
                         <JFXRippler fx:id="zoomToFit">
                             <StackPane minWidth="40" minHeight="40" onMouseClicked="#zoomToFitClicked">
                                 <FontIcon iconLiteral="gmi-zoom-out-map" iconSize="24" fill="white"/>
@@ -158,9 +158,9 @@
             <MenuBar fx:id="menuBar">
 
                 <Menu text="File">
-                    <MenuItem fx:id="menuBarFileSave" text="Save Project">
+                    <MenuItem fx:id="menuBarFileNew" text="New Project">
                         <graphic>
-                            <FontIcon iconLiteral="gmi-save" iconSize="24" fill="black"/>
+                            <FontIcon iconLiteral="gmi-add" iconSize="24" fill="black"/>
                         </graphic>
                     </MenuItem>
                     <MenuItem fx:id="menuBarFileOpenProject" text="Open Project">
@@ -168,9 +168,24 @@
                             <FontIcon iconLiteral="gmi-folder-open" iconSize="24" fill="black"/>
                         </graphic>
                     </MenuItem>
-                    <MenuItem fx:id="menuBarFileExportAsXML" text="Export as XML">
+                    <MenuItem fx:id="menuBarFileSave" text="Save Project">
                         <graphic>
-                            <FontIcon iconLiteral="gmi-folder-open" iconSize="24" fill="black"/>
+                            <FontIcon iconLiteral="gmi-save" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                    <MenuItem fx:id="menuBarFileSaveAs" text="Save Project As">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-save" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                    <MenuItem fx:id="menuBarFileExport" text="Export Project">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                    <MenuItem fx:id="menuBarFileExportAsXML" text="Export Project As">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="black"/>
                         </graphic>
                     </MenuItem>
                 </Menu>

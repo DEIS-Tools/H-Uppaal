@@ -38,6 +38,11 @@ public class UPPAALDriver implements IUPPAALDriver {
         storeUppaalFile(huppaalDocument.toUPPAALDocument(), HUPPAAL.debugDirectory + File.separator + "debug.xml");
     }
 
+    public void saveUPPAALModel(String fileName) throws Exception {
+        buildHUPPAALDocument();
+        storeUppaalFile(huppaalDocument.toUPPAALDocument(), fileName);
+    }
+
     public void buildHUPPAALDocument() throws BackendException, Exception {
         final Component mainComponent = HUPPAAL.getProject().getMainComponent();
         if (mainComponent == null) {

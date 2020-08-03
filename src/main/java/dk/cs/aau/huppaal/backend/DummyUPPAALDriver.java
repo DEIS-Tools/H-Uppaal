@@ -21,6 +21,11 @@ public class DummyUPPAALDriver implements IUPPAALDriver {
     }
 
     @Override
+    public void saveUPPAALModel(String fileName) throws Exception {
+        throw new BackendException("The specified UPPAAL server file does not exist. Check the 'warnings' tab for more information");
+    }
+
+    @Override
     public void buildHUPPAALDocument() throws BackendException, Exception {
         throw new BackendException("The specified UPPAAL server file does not exist. Check the 'warnings' tab for more information");
     }
