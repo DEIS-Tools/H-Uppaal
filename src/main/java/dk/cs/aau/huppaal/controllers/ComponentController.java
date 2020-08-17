@@ -283,6 +283,10 @@ public class ComponentController implements Initializable {
             @Override
             public void onChanged(final Change<? extends Location> c) {
                 while (c.next()) {
+                    if(!c.getRemoved().isEmpty()){
+                        alreadyRunningNoIncomingEdgesCheck = false;
+                        lastChanged = 0;
+                    }
                     checkLocations.accept(component);
                 }
             }
