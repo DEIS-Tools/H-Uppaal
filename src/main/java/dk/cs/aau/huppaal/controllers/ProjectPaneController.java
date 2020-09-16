@@ -83,13 +83,19 @@ public class ProjectPaneController implements Initializable {
          * IS MAIN
          */
         moreInformationDropDown.addTogglableListElement("Main", filePresentation.getComponent().isMainProperty(), event -> {
-            final boolean wasMain = component.isIsMain();
+            //Check if the component is already true (added to avoid having no main component)
+            if(!component.isIsMain()){
+                final boolean wasMain = component.isIsMain();
 
-            UndoRedoStack.push(() -> { // Perform
-                component.setIsMain(!wasMain);
-            }, () -> { // Undo
-                component.setIsMain(wasMain);
-            }, "Component " + component.getName() + " isMain: " + !wasMain, "star");
+                UndoRedoStack.push(() -> { // Perform
+                    component.setIsMain(!wasMain);
+                }, () -> { // Undo
+                    component.setIsMain(wasMain);
+                }, "Component " + component.getName() + " isMain: " + !wasMain, "star");
+            } else {
+                //Inform the user that it is not possible to have no main component
+                HUPPAAL.showToast("To change the main component, please set another component as main");
+            }
         });
 
         /*
@@ -147,6 +153,12 @@ public class ProjectPaneController implements Initializable {
             }, () -> { // Undo
                 HUPPAAL.getProject().getComponents().add(component);
             }, "Deleted component " + component.getName(), "delete");
+
+            //Check if the component to be removed is the main component and that there exists another component
+            if(component.isIsMain() && !componentPresentationMap.isEmpty()) {
+                //Set another component as the main component
+                componentPresentationMap.keySet().iterator().next().setIsMain(true);
+            }
 
             moreInformationDropDown.close();
         });

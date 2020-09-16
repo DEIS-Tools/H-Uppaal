@@ -68,7 +68,7 @@ public class UPPAALDriver implements IUPPAALDriver {
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        synchronized (dk.cs.aau.huppaal.backend.IUPPAALDriver.engineLock) {
+                        synchronized (engineLock) {
                             if(engine == null) return;
                             engine.cancel();
                         }
@@ -172,7 +172,7 @@ public class UPPAALDriver implements IUPPAALDriver {
                     // Something went wrong
                     failure.accept(new BackendException.BadUPPAALQueryException("Unable to run query", e));
                 } finally {
-                    synchronized (dk.cs.aau.huppaal.backend.IUPPAALDriver.engineLock) {
+                    synchronized (engineLock) {
                         releaseOSDependentEngine(engine);
                         engine = null;
                     }
