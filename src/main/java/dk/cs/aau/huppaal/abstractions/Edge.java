@@ -1,6 +1,7 @@
 package dk.cs.aau.huppaal.abstractions;
 
 import dk.cs.aau.huppaal.code_analysis.Nearable;
+import dk.cs.aau.huppaal.controllers.ComponentController;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
 import dk.cs.aau.huppaal.presentations.JorkPresentation;
 import dk.cs.aau.huppaal.utility.colors.Color;
@@ -605,10 +606,22 @@ public class Edge implements Serializable, Nearable {
 
     private void bindReachabilityAnalysis() {
 
-        selectProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
-        guardProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
-        syncProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
-        updateProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
+        selectProperty().addListener((observable, oldValue, newValue) -> {
+            HUPPAALController.runReachabilityAnalysis();
+            ComponentController.setLastChanged();
+        });
+        guardProperty().addListener((observable, oldValue, newValue) -> {
+            HUPPAALController.runReachabilityAnalysis();
+            ComponentController.setLastChanged();
+        });
+        syncProperty().addListener((observable, oldValue, newValue) -> {
+            HUPPAALController.runReachabilityAnalysis();
+            ComponentController.setLastChanged();
+        });
+        updateProperty().addListener((observable, oldValue, newValue) -> {
+            HUPPAALController.runReachabilityAnalysis();
+            ComponentController.setLastChanged();
+        });
     }
 
 }

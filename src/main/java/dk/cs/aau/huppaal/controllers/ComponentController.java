@@ -55,11 +55,13 @@ public class ComponentController implements Initializable {
     private static final Map<Component, ListChangeListener<Location>> locationListChangeListenerMap = new HashMap<>();
     private static final Map<Component, Boolean> errorsAndWarningsInitialized = new HashMap<>();
     private static Location placingLocation = null;
+    private static double lastChanged = 0;
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
     private final Map<Edge, EdgePresentation> edgePresentationMap = new HashMap<>();
     private final Map<Location, LocationPresentation> locationPresentationMap = new HashMap<>();
     private final Map<SubComponent, SubComponentPresentation> subComponentPresentationMap = new HashMap<>();
     private final Map<Jork, JorkPresentation> jorkPresentationMap = new HashMap<>();
+    private Boolean alreadyRunningNoIncomingEdgesCheck = false;
     public BorderPane toolbar;
     public Rectangle background;
     public StyleClassedTextArea declaration;
@@ -99,6 +101,10 @@ public class ComponentController implements Initializable {
 
     public static void setPlacingLocation(final Location placingLocation) {
         ComponentController.placingLocation = placingLocation;
+    }
+
+    public static void setLastChanged() {
+        lastChanged = System.currentTimeMillis() + 500;
     }
 
     @Override
@@ -200,40 +206,63 @@ public class ComponentController implements Initializable {
         };
 
         final Consumer<Component> checkLocations = (component) -> {
-            final List<Location> ignored = new ArrayList<>();
-
-            // Run through all of the locations we are currently displaying a warning for, checking if we should remove them
-            final Set<Location> removeMessages = new HashSet<>();
-            messages.keySet().forEach(location -> {
-                // Check if the location has some incoming edges
-                final boolean result = hasIncomingEdges.apply(location);
-
-                // The location has at least one incoming edge
-                if (result) {
-                    CodeAnalysis.removeMessage(component, messages.get(location));
-                    removeMessages.add(location);
-                }
-
-                // Ignore this location from now on (we already checked it)
-                ignored.add(location);
-            });
-            removeMessages.forEach(messages::remove);
-
-            // Run through all non-ignored locations
-            for (final Location location : component.getLocations()) {
-                if (ignored.contains(location)) continue; // Skip ignored
-                if (messages.containsKey(location)) continue; // Skip locations that already have warnings associated
-
-                // Check if the location has some incoming edges
-                final boolean result = hasIncomingEdges.apply(location);
-
-                // The location has no incoming edge
-                if (!result) {
-                    final CodeAnalysis.Message message = new CodeAnalysis.Message("Location has no incoming edges", CodeAnalysis.MessageType.WARNING, location);
-                    messages.put(location, message);
-                    CodeAnalysis.addMessage(component, message);
-                }
+            if(alreadyRunningNoIncomingEdgesCheck) {
+                return;
             }
+
+            new Thread(() -> {
+                alreadyRunningNoIncomingEdgesCheck = true;
+
+                while(lastChanged > System.currentTimeMillis() - 5000){
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        final List<Location> ignored = new ArrayList<>();
+
+                        // Run through all of the locations we are currently displaying a warning for, checking if we should remove them
+                        final Set<Location> removeMessages = new HashSet<>();
+                        messages.keySet().forEach(location -> {
+                            // Check if the location has some incoming edges
+                            final boolean result = hasIncomingEdges.apply(location);
+
+                            // The location has at least one incoming edge
+                            if (result) {
+                                CodeAnalysis.removeMessage(component, messages.get(location));
+                                removeMessages.add(location);
+                            }
+
+                            // Ignore this location from now on (we already checked it)
+                            ignored.add(location);
+                        });
+                        removeMessages.forEach(messages::remove);
+
+                        // Run through all non-ignored locations
+                        for (final Location location : component.getLocations()) {
+                            if (ignored.contains(location)) continue; // Skip ignored
+                            if (messages.containsKey(location)) continue; // Skip locations that already have warnings associated
+
+                            // Check if the location has some incoming edges
+                            final boolean result = hasIncomingEdges.apply(location);
+
+                            // The location has no incoming edge
+                            if (!result) {
+                                final CodeAnalysis.Message message = new CodeAnalysis.Message("Location has no incoming edges", CodeAnalysis.MessageType.WARNING, location);
+                                messages.put(location, message);
+                                CodeAnalysis.addMessage(component, message);
+                            }
+                        }
+                    }
+                });
+
+                alreadyRunningNoIncomingEdgesCheck = false;
+            }).start();
         };
 
         final Component component = getComponent();
@@ -254,6 +283,10 @@ public class ComponentController implements Initializable {
             @Override
             public void onChanged(final Change<? extends Location> c) {
                 while (c.next()) {
+                    if(!c.getRemoved().isEmpty()){
+                        alreadyRunningNoIncomingEdgesCheck = false;
+                        lastChanged = 0;
+                    }
                     checkLocations.accept(component);
                 }
             }
