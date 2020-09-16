@@ -1,6 +1,7 @@
 package dk.cs.aau.huppaal.abstractions;
 
 import dk.cs.aau.huppaal.HUPPAAL;
+import dk.cs.aau.huppaal.controllers.ComponentController;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
 import dk.cs.aau.huppaal.presentations.DropDownMenu;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
@@ -568,9 +569,21 @@ public class Component implements Serializable, DropDownMenu.HasColor {
     }
 
     private void bindReachabilityAnalysis() {
-        locations.addListener((ListChangeListener<? super Location>) c -> HUPPAALController.runReachabilityAnalysis());
-        edges.addListener((ListChangeListener<? super Edge>) c -> HUPPAALController.runReachabilityAnalysis());
-        declarationsProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
-        includeInPeriodicCheckProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
+        locations.addListener((ListChangeListener<? super Location>) c -> {
+            HUPPAALController.runReachabilityAnalysis();
+            ComponentController.setLastChanged();
+        });
+        edges.addListener((ListChangeListener<? super Edge>) c -> {
+            HUPPAALController.runReachabilityAnalysis();
+            ComponentController.setLastChanged();
+        });
+        declarationsProperty().addListener((observable, oldValue, newValue) -> {
+            HUPPAALController.runReachabilityAnalysis();
+            ComponentController.setLastChanged();
+        });
+        includeInPeriodicCheckProperty().addListener((observable, oldValue, newValue) -> {
+            HUPPAALController.runReachabilityAnalysis();
+            ComponentController.setLastChanged();
+        });
     }
 }
