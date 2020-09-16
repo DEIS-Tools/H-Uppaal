@@ -263,8 +263,8 @@ public class HUPPAALController implements Initializable {
         new Thread(() -> {
             while (true) {
 
-                // Wait for the reachability (the last time we changed the model) becomes smaller than the current time
-                while (reachabilityTime > System.currentTimeMillis()) {
+                // Wait for the reachability (the last time we changed the model) becomes smaller than the current time with a 5 second delay
+                while (reachabilityTime > System.currentTimeMillis() - 5000) {
                     try {
                         Thread.sleep(2000);
                         Debug.backgroundThreads.removeIf(thread -> !thread.isAlive());
@@ -384,6 +384,7 @@ public class HUPPAALController implements Initializable {
                 CodeAnalysis.addMessage(null, noMainComponentErrorMessage);
             } else {
                 HUPPAALController.runReachabilityAnalysis();
+                ComponentController.setLastChanged();
                 CodeAnalysis.removeMessage(null, noMainComponentErrorMessage);
             }
         });
