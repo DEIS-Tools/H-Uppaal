@@ -89,8 +89,8 @@ public class Query implements Serializable {
     private Boolean forcedCancel = false;
 
     private void initializeRunQuery() {
-        IUPPAALDriver uppaalDriver = UPPAALDriverManager.getInstance();
         runQuery = (buildHUPPAALDocument) -> {
+            IUPPAALDriver uppaalDriver = UPPAALDriverManager.getInstance();
             setQueryState(QueryState.RUNNING);
 
             final Component mainComponent = HUPPAAL.getProject().getMainComponent();
