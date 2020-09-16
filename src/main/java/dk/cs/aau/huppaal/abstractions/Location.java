@@ -1,6 +1,7 @@
 package dk.cs.aau.huppaal.abstractions;
 
 import dk.cs.aau.huppaal.code_analysis.Nearable;
+import dk.cs.aau.huppaal.controllers.ComponentController;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
 import dk.cs.aau.huppaal.presentations.DropDownMenu;
 import dk.cs.aau.huppaal.utility.colors.Color;
@@ -130,6 +131,7 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
 
     public void setUrgency(final Urgency urgency) {
         HUPPAALController.runReachabilityAnalysis();
+        ComponentController.setLastChanged();
         this.urgency.set(urgency);
     }
 
@@ -253,6 +255,7 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
 
     public void setInvariantY(final double invariantY) {
         HUPPAALController.runReachabilityAnalysis();
+        ComponentController.setLastChanged();
         this.invariantY.set(invariantY);
     }
 
@@ -344,8 +347,14 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
 
     private void bindReachabilityAnalysis() {
 
-        invariantProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
-        urgencyProperty().addListener((observable, oldValue, newValue) -> HUPPAALController.runReachabilityAnalysis());
+        invariantProperty().addListener((observable, oldValue, newValue) -> {
+            HUPPAALController.runReachabilityAnalysis();
+            ComponentController.setLastChanged();
+        });
+        urgencyProperty().addListener((observable, oldValue, newValue) -> {
+            HUPPAALController.runReachabilityAnalysis();
+            ComponentController.setLastChanged();
+        });
     }
 
 

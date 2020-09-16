@@ -217,7 +217,7 @@ public class HUPPAALDocument {
                 final com.uppaal.model.core2.Location pseudoEnter = subComponentPseudoLocationMap.get(generateName(hEdge.getTargetSubComponent())).getKey();
                 addEdge(template, hEdge, 0, pseudoEnter);
             }
-
+            
             // If the edge starts somewhere and ends in a fork
             if (hEdge.getTargetJork() != null && hEdge.getTargetJork().getType().equals(Jork.Type.FORK)) {
                 // Find all outgoing edges from this fork and make sure that they are sub-components
