@@ -525,8 +525,6 @@ public class ComponentController implements Initializable {
             contextMenu.addSpacerElement();
 
             contextMenu.addClickableListElement("Contains deadlock?", event -> {
-                contextMenu.close();
-
                 // Generate the query
                 final String deadlockQuery = UPPAALDriverManager.getInstance().getExistDeadlockQuery(getComponent());
 
@@ -539,7 +537,6 @@ public class ComponentController implements Initializable {
                 query.run();
 
                 contextMenu.close();
-
             });
 
             contextMenu.addSpacerElement();
