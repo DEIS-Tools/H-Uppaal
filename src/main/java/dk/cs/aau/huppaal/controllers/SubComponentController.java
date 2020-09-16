@@ -118,9 +118,11 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
                     UndoRedoStack.push(() -> { // Perform
                         getSubComponent().setComponent(c);
                         HUPPAALController.runReachabilityAnalysis();
+                        ComponentController.setLastChanged();
                     }, () -> { // Undo
                         getSubComponent().setComponent(oldComponent);
                         HUPPAALController.runReachabilityAnalysis();
+                        ComponentController.setLastChanged();
                     }, "Updated component for  subcomponent '" + getSubComponent().toString() + "' to component '" + c.getName() + "'", "edit");
                 });
             }

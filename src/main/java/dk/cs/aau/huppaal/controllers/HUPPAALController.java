@@ -115,7 +115,9 @@ public class HUPPAALController implements Initializable {
     public MenuItem menuBarViewQueryPanel;
     public MenuItem menuBarPreferencesUppaalLocation;
     public MenuItem menuBarFileSave;
+    public MenuItem menuBarFileSaveAs;
     public MenuItem menuBarFileOpenProject;
+    public MenuItem menuBarFileNew;
     public MenuItem menuBarHelpHelp;
     public MenuItem menuBarEditBalance;
 
@@ -263,8 +265,8 @@ public class HUPPAALController implements Initializable {
         new Thread(() -> {
             while (true) {
 
-                // Wait for the reachability (the last time we changed the model) becomes smaller than the current time
-                while (reachabilityTime > System.currentTimeMillis()) {
+                // Wait for the reachability (the last time we changed the model) becomes smaller than the current time with a 5 second delay
+                while (reachabilityTime > System.currentTimeMillis() - 5000) {
                     try {
                         Thread.sleep(2000);
                         Debug.backgroundThreads.removeIf(thread -> !thread.isAlive());
@@ -384,6 +386,7 @@ public class HUPPAALController implements Initializable {
                 CodeAnalysis.addMessage(null, noMainComponentErrorMessage);
             } else {
                 HUPPAALController.runReachabilityAnalysis();
+                ComponentController.setLastChanged();
                 CodeAnalysis.removeMessage(null, noMainComponentErrorMessage);
             }
         });
@@ -405,26 +408,32 @@ public class HUPPAALController implements Initializable {
     private void initializeMenuBar() {
         menuBarFileSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
         menuBarFileSave.setOnAction(event -> {
-            HUPPAAL.save();
+            //Check if the current project is an unsaved new project
+            if(HUPPAAL.projectDirectory.getValue().equals(HUPPAAL.temporaryProjectDirectory)){
+                this.menuBarFileSaveAs.fire();
+            } else {
+                HUPPAAL.save();
+            }
         });
 
-        menuBarPreferencesUppaalLocation.setOnAction(event -> {
+        menuBarFileSaveAs.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
+        menuBarFileSaveAs.setOnAction(event -> {
             // Dialog title
             final FileChooser filePicker = new FileChooser();
-            filePicker.setTitle("Choose UPPAAL server file");
+            filePicker.setTitle("Save project as");
+            filePicker.setInitialFileName("New project");
 
-            // The initial location for the file choosing dialog
-            final File uppaalFile = new File(UPPAALDriverManager.getUppaalFilePath()).getAbsoluteFile().getParentFile();
-
-            // If the file does not exist, use a default location
-            if(uppaalFile.exists()) {
-                filePicker.setInitialDirectory(uppaalFile);
+            //Open dialog at project location if it exists and is not an unsaved new project (added to avoid exception if the current project directory has been deleted during execution)
+            File currentProject = new File(HUPPAAL.projectDirectory.getValue());
+            if(currentProject.exists() && !HUPPAAL.projectDirectory.getValue().equals(HUPPAAL.temporaryProjectDirectory)){
+                filePicker.setInitialDirectory(currentProject);
             }
 
-            // Prompt the user to select the file (will halt the UI thread)
-            final File file = filePicker.showOpenDialog(root.getScene().getWindow());
+            // Prompt the user to find a location and give a project name (will halt the UI thread)
+            final File file = filePicker.showSaveDialog(root.getScene().getWindow());
             if(file != null) {
-                UPPAALDriverManager.setUppaalFilePath(file.getAbsolutePath());
+                HUPPAAL.projectDirectory.set(file.getAbsolutePath());
+                HUPPAAL.save();
             }
         });
 
@@ -454,6 +463,39 @@ public class HUPPAALController implements Initializable {
             }
         });
 
+        menuBarFileNew.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
+        menuBarFileNew.setOnAction(event -> {
+            //Set the project directory to the temporary location to handle save correctly later (will not save anything to the directory)
+            HUPPAAL.projectDirectory.set(HUPPAAL.temporaryProjectDirectory);
+
+            //Clear the errors, warning, and loaded project
+            CodeAnalysis.getBackendErrors().clear();
+            CodeAnalysis.getErrors().clear();
+            CodeAnalysis.getWarnings().clear();
+            HUPPAAL.getProject().getQueries().clear();
+            HUPPAAL.getProject().getComponents().clear();
+            HUPPAAL.getProject().setMainComponent(null);
+        });
+
+        menuBarPreferencesUppaalLocation.setOnAction(event -> {
+            // Dialog title
+            final FileChooser filePicker = new FileChooser();
+            filePicker.setTitle("Choose UPPAAL server file");
+
+            // The initial location for the file choosing dialog
+            final File uppaalFile = new File(UPPAALDriverManager.getUppaalFilePath()).getAbsoluteFile().getParentFile();
+
+            // If the file does not exist, use a default location
+            if(uppaalFile.exists()) {
+                filePicker.setInitialDirectory(uppaalFile);
+            }
+
+            // Prompt the user to select the file (will halt the UI thread)
+            final File file = filePicker.showOpenDialog(root.getScene().getWindow());
+            if(file != null) {
+                UPPAALDriverManager.setUppaalFilePath(file.getAbsolutePath());
+            }
+        });
 
         menuBarViewFilePanel.getGraphic().setOpacity(1);
         menuBarViewFilePanel.setAccelerator(new KeyCodeCombination(KeyCode.F));
