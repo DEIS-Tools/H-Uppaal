@@ -12,6 +12,8 @@ public interface IUPPAALDriver {
 
     void generateDebugUPPAALModel() throws Exception, BackendException;
 
+    void saveUPPAALModel(String fileName) throws Exception;
+
     void buildHUPPAALDocument() throws Exception, BackendException;
 
     Thread runQuery(final String query,

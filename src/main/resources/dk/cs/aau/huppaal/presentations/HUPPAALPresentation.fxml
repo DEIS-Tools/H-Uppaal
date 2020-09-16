@@ -158,6 +158,16 @@
             <MenuBar fx:id="menuBar">
 
                 <Menu text="File">
+                    <MenuItem fx:id="menuBarFileNew" text="New Project">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-add" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                    <MenuItem fx:id="menuBarFileOpenProject" text="Open Project">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-folder-open" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
                     <MenuItem fx:id="menuBarFileSave" text="Save Project">
                         <graphic>
                             <FontIcon iconLiteral="gmi-save" iconSize="24" fill="black"/>
@@ -168,14 +178,14 @@
                             <FontIcon iconLiteral="gmi-save" iconSize="24" fill="black"/>
                         </graphic>
                     </MenuItem>
-                    <MenuItem fx:id="menuBarFileOpenProject" text="Open Project">
+                    <MenuItem fx:id="menuBarFileExport" text="Export Project">
                         <graphic>
-                            <FontIcon iconLiteral="gmi-folder-open" iconSize="24" fill="black"/>
+                            <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="black"/>
                         </graphic>
                     </MenuItem>
-                    <MenuItem fx:id="menuBarFileNew" text="New Project">
+                    <MenuItem fx:id="menuBarFileExportAsXML" text="Export Project As">
                         <graphic>
-                            <FontIcon iconLiteral="gmi-add" iconSize="24" fill="black"/>
+                            <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="black"/>
                         </graphic>
                     </MenuItem>
                 </Menu>
