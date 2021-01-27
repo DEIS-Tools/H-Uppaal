@@ -36,9 +36,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.security.CodeSource;
 import java.util.*;
 import java.util.prefs.Preferences;
 

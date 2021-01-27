@@ -1,6 +1,5 @@
 package dk.cs.aau.huppaal.presentations;
 
-import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.colors.EnabledColor;
 import com.jfoenix.controls.JFXPopup;
