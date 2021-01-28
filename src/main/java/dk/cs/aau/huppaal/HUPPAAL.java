@@ -91,8 +91,8 @@ public class HUPPAAL extends Application {
     public static void save() {
         // Clear the project folder .json files
         try {
-            List<Path> paths = java.nio.file.Files.walk(Paths.get(projectDirectory.getValue()))
-                    .filter(p -> java.nio.file.Files.isRegularFile(p) && p.endsWith(".json"))
+            List<Path> paths = java.nio.file.Files.walk(Paths.get(projectDirectory.getValue()+"/"))
+                    .filter(p -> java.nio.file.Files.isRegularFile(p) && p.getFileName().toString().endsWith(".json"))
                     .collect(Collectors.toList());
 
             for (Path pth:paths) {
