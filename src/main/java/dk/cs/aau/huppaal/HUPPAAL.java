@@ -333,7 +333,7 @@ public class HUPPAAL extends Application {
         JsonObject mainJsonComponent = null;
 
         for (final File file : projectFiles) {
-            if (!file.getName().contains(".json"))
+            if (!file.getName().endsWith(".json"))
                 continue;
 
             final String fileContent = Files.toString(file, Charset.defaultCharset());
