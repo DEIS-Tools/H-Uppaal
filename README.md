@@ -1,12 +1,10 @@
 # H-UPPAAL
-**A NEW INTEGRATED DEVELOPMENT ENVIRONMENT FOR MODEL CHECKING**
-
-By Niklas Kirk Mouritzsen and Rasmus Holm Jensen
+**A new integrated development environment for Hierarchical Timed Automata**
 
 -----
 
 ## Installation
-Before installing H-UPPAAL, make sure that you have Java 8 and JavaFX installed.
+Before installing H-UPPAAL, make sure that you have Java 8 and JavaFX installed. We recommend using https://www.azul.com/downloads/zulu-community/?version=java-11-lts&package=jre-fx
 
 1. Download and extract `huppaal.zip` from [one of the releases](https://github.com/ulriknyman/H-Uppaal/releases).
 2. *Optional*: Copy server binaries to the `/server/` folder (see [Using the UPPAAL backend](#using-the-uppaal-backend)). 
@@ -18,8 +16,6 @@ If you are using Linux, you may install JavaFX with the following command:
 ```
 $ sudo apt-get install openjfx
 ```
-
-For an out of the box solution, use Oracle's [JDK 8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) (this comes prepackaged with JavaFX)
 
 If you experience a blank white screen in H-UPPAAL, disable hardware acceleration in the VM-options ([source](https://www.reddit.com/r/javahelp/comments/84w6i6/problem_displaying_anything_with_javafx_only/))
 ```
@@ -53,3 +49,14 @@ When saving a HUPPAAL model, it will be saved in the `project/` folder located i
 |   |-- ...
 |   |-- Queries.json
 ```
+
+## About 
+H-UPPAAL was originally developed as a student project at Aalborg University by Niklas Kirk Mouritzsen and Rasmus Holm Jensen supervised by Ulrik Nyman. H-UPPAAL is today maintained by Distributed Embedded Intelligent Systems Group at Department of Computer Science, Aalborg University. 
+
+We would like to thanks the following people and organizations for the contributions and support of H-UPPAAL: 
+
+  - Niklas Kirk Mouritzsen 
+  - Rasmus Holm Jensen
+  - Niels Vistisen
+  - HMK Bilcon
+  
