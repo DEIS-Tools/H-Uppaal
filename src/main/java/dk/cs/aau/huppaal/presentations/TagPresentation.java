@@ -1,7 +1,6 @@
 package dk.cs.aau.huppaal.presentations;
 
 import dk.cs.aau.huppaal.abstractions.Component;
-import dk.cs.aau.huppaal.abstractions.Nail;
 import dk.cs.aau.huppaal.controllers.CanvasController;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.colors.Color;
@@ -10,11 +9,9 @@ import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.beans.binding.When;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableBooleanValue;
-import javafx.beans.value.ObservableDoubleValue;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Insets;

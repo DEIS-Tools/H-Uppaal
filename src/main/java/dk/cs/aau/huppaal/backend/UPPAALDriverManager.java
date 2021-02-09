@@ -1,7 +1,6 @@
 package dk.cs.aau.huppaal.backend;
 
 import dk.cs.aau.huppaal.HUPPAAL;
-import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.io.File;
