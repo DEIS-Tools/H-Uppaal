@@ -38,9 +38,12 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 public class HUPPAAL extends Application {
 
@@ -87,12 +90,15 @@ public class HUPPAAL extends Application {
     }
 
     public static void save() {
-        // Clear the project folder
+        // Clear the project folder .json files
         try {
-            final File directory = new File(projectDirectory.getValue());
+            List<Path> paths = java.nio.file.Files.walk(Paths.get(projectDirectory.getValue()+"/"))
+                    .filter(p -> java.nio.file.Files.isRegularFile(p) && p.getFileName().toString().endsWith(".json"))
+                    .collect(Collectors.toList());
 
-            FileUtils.forceMkdir(directory);
-            FileUtils.cleanDirectory(directory);
+            for (Path pth:paths) {
+                java.nio.file.Files.delete(pth);
+            }
         } catch (final IOException e) {
             showToast("Save failed: " + e.getMessage());
             e.printStackTrace();
@@ -328,6 +334,8 @@ public class HUPPAAL extends Application {
         JsonObject mainJsonComponent = null;
 
         for (final File file : projectFiles) {
+            if (!file.getName().endsWith(".json"))
+                continue;
 
             final String fileContent = Files.toString(file, Charset.defaultCharset());
 
