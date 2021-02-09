@@ -1,11 +1,9 @@
 package dk.cs.aau.huppaal.backend;
 
 import com.uppaal.engine.Engine;
-import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Component;
 import dk.cs.aau.huppaal.abstractions.Location;
 
-import java.io.File;
 import java.util.function.Consumer;
 
 /**

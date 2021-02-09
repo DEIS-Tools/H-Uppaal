@@ -28,7 +28,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import jiconfont.icons.GoogleMaterialDesignIcons;
+import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
 import jiconfont.javafx.IconFontFX;
 import org.apache.commons.io.FileUtils;
 
@@ -60,9 +60,13 @@ public class HUPPAAL extends Application {
     {
         try {
             preferences = Preferences.userRoot().node("HUPPAAL");
-            final CodeSource codeSource = HUPPAAL.class.getProtectionDomain().getCodeSource();
-            final File jarFile = new File(codeSource.getLocation().toURI().getPath());
-            final String rootDirectory = jarFile.getParentFile().getPath() + File.separator;
+            final File dir = new File(System.getProperty("user.home") + File.separator + "H-UPPAAL");
+            final String rootDirectory = dir.getPath() + File.separator;
+            if (!dir.exists()) {
+                if (!dir.mkdir()) {
+                    throw new IOException("Could not create project directory "+dir);
+                }
+            }
             projectDirectory.set(preferences.get("latestProject", rootDirectory + "projects" + File.separator + "project"));
             projectDirectory.addListener((observable, oldValue, newValue) -> {preferences.put("latestProject", newValue);});
             temporaryProjectDirectory = rootDirectory + "projects" + File.separator + "temp";
@@ -71,9 +75,6 @@ public class HUPPAAL extends Application {
             forceCreateFolder(projectDirectory.getValue());
             forceCreateFolder(serverDirectory);
             forceCreateFolder(debugDirectory);
-        } catch (final URISyntaxException e) {
-            System.out.println("Could not create project directory!");
-            System.exit(1);
         } catch (final IOException e) {
             System.out.println("Could not create project directory!");
             System.exit(2);

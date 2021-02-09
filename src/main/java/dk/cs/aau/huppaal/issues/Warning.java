@@ -2,7 +2,7 @@ package dk.cs.aau.huppaal.issues;
 
 import javafx.beans.Observable;
 import javafx.scene.Node;
-import jiconfont.icons.GoogleMaterialDesignIcons;
+import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
 
 import java.util.function.Predicate;
 

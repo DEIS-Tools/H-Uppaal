@@ -3,7 +3,6 @@ package dk.cs.aau.huppaal.controllers;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Query;
 import dk.cs.aau.huppaal.abstractions.QueryState;
-import dk.cs.aau.huppaal.backend.UPPAALDriver;
 import dk.cs.aau.huppaal.backend.UPPAALDriverManager;
 import dk.cs.aau.huppaal.presentations.QueryPresentation;
 import dk.cs.aau.huppaal.utility.helpers.DropShadowHelper;
