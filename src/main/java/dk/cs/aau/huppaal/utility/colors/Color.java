@@ -365,10 +365,8 @@ public enum Color {
         public Intensity next(final int levels) {
             final Intensity[] values = values();
 
-            // One of the first 10 elements
-            if (this.ordinal() <= 9) {
-                final int index = this.ordinal() + levels;
-
+            final int index = this.ordinal() + levels;
+            if (this.ordinal() <= 9) { // One of the first 10 elements
                 if (index < 0) {
                     return values[0];
                 } else if (index > 9) {
@@ -376,11 +374,7 @@ public enum Color {
                 } else {
                     return values[index];
                 }
-            }
-            // One of the last 4 elements
-            else {
-                final int index = this.ordinal() + levels;
-
+            } else { // One of the last 4 elements
                 if (index < 10) {
                     return values[10];
                 } else if (index > 13) {
@@ -400,13 +394,11 @@ public enum Color {
 
     private static class ColorParser {
 
-        private final String colorHex;
         private final String textColorRgbaString;
         private final javafx.scene.paint.Color color;
         private final javafx.scene.paint.Color textColor;
 
         public ColorParser(final String color, final String textColor) {
-            colorHex = color;
             textColorRgbaString = textColor;
             this.color = javafx.scene.paint.Color.web(color);
             this.textColor = javafx.scene.paint.Color.web(textColor);
