@@ -17,6 +17,10 @@ javafx {
     modules = ['javafx.controls', 'javafx.fxml']
 }
 
+application {
+    applicationDefaultJvmArgs = ['--illegal-access=permit']
+}
+
 repositories {
     mavenCentral()
 }
