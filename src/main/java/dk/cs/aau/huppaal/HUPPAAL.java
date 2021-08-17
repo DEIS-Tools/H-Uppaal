@@ -337,11 +337,13 @@ public class HUPPAAL extends Application {
             if (!file.getName().endsWith(".json"))
                 continue;
 
-            final String fileContent = Files.toString(file, Charset.defaultCharset());
+            final String fileContent = Files.asCharSource(file, Charset.defaultCharset()).read();
+
+            final var parsedContent = JsonParser.parseString(fileContent);
 
             // If the file represents the queries
             if (file.getName().equals("Queries.json")) {
-                new JsonParser().parse(fileContent).getAsJsonArray().forEach(jsonElement -> {
+                parsedContent.getAsJsonArray().forEach(jsonElement -> {
                     final Query newQuery = new Query((JsonObject) jsonElement);
                     getProject().getQueries().add(newQuery);
                 });
@@ -350,7 +352,7 @@ public class HUPPAAL extends Application {
             }
 
             // Parse the file to an json object
-            final JsonObject jsonObject = new JsonParser().parse(fileContent).getAsJsonObject();
+            final JsonObject jsonObject = parsedContent.getAsJsonObject();
 
             // Fetch the name of the component
             final String componentName = jsonObject.get("name").getAsString();
