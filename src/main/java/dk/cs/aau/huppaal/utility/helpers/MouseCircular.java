@@ -57,9 +57,15 @@ public class MouseCircular implements Circular {
 
         //Unregister the eventHandler when a new source is found
         mouseTracker.registerOnMouseClickedEventHandler(event -> {
-            if (SelectHelper.getSelectedElements().get(0) instanceof LocationController ||
-                    SelectHelper.getSelectedElements().get(0) instanceof JorkController ||
-                    SelectHelper.getSelectedElements().get(0) instanceof SubComponentController) {
+            var elements = SelectHelper.getSelectedElements();
+
+            if (elements == null || elements.isEmpty())
+                return;
+
+            var selectable = elements.get(0);
+            if (selectable instanceof LocationController ||
+                selectable instanceof JorkController ||
+                selectable instanceof SubComponentController) {
                 mouseTracker.unregisterOnMouseClickedEventHandler(eventHandler);
             }
         });
