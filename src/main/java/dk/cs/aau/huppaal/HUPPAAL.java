@@ -36,11 +36,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.CodeSource;
 import java.util.*;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -68,7 +66,7 @@ public class HUPPAAL extends Application {
                 }
             }
             projectDirectory.set(preferences.get("latestProject", rootDirectory + "projects" + File.separator + "project"));
-            projectDirectory.addListener((observable, oldValue, newValue) -> {preferences.put("latestProject", newValue);});
+            projectDirectory.addListener((observable, oldValue, newValue) -> preferences.put("latestProject", newValue));
             temporaryProjectDirectory = rootDirectory + "projects" + File.separator + "temp";
             serverDirectory = rootDirectory + "servers";
             debugDirectory = rootDirectory + "uppaal-debug";
@@ -119,9 +117,7 @@ public class HUPPAAL extends Application {
         });
 
         final JsonArray queries = new JsonArray();
-        HUPPAAL.getProject().getQueries().forEach(query -> {
-            queries.add(query.serialize());
-        });
+        HUPPAAL.getProject().getQueries().forEach(query -> queries.add(query.serialize()));
 
         final Writer writer;
         try {
@@ -269,14 +265,10 @@ public class HUPPAAL extends Application {
             final File directory = new File(projectDirectory.get());
             FileUtils.forceMkdir(directory);
 
-            CodeAnalysis.getErrors().addListener(new ListChangeListener<CodeAnalysis.Message>() {
-                @Override
-                public void onChanged(Change<? extends CodeAnalysis.Message> c) {
-                    CodeAnalysis.getErrors().forEach(message -> {
-                        System.out.println(message.getMessage());
-                    });
-                }
-            });
+            CodeAnalysis.getErrors()
+                    .addListener((ListChangeListener<CodeAnalysis.Message>) c ->
+                            CodeAnalysis.getErrors().forEach(message ->
+                                    System.out.println(message.getMessage())));
 
             CodeAnalysis.getBackendErrors().removeIf(message -> true);
             CodeAnalysis.getErrors().removeIf(message -> true);
@@ -337,11 +329,13 @@ public class HUPPAAL extends Application {
             if (!file.getName().endsWith(".json"))
                 continue;
 
-            final String fileContent = Files.toString(file, Charset.defaultCharset());
+            final String fileContent = Files.asCharSource(file, Charset.defaultCharset()).read();
+
+            final var parsedContent = JsonParser.parseString(fileContent);
 
             // If the file represents the queries
             if (file.getName().equals("Queries.json")) {
-                new JsonParser().parse(fileContent).getAsJsonArray().forEach(jsonElement -> {
+                parsedContent.getAsJsonArray().forEach(jsonElement -> {
                     final Query newQuery = new Query((JsonObject) jsonElement);
                     getProject().getQueries().add(newQuery);
                 });
@@ -350,7 +344,7 @@ public class HUPPAAL extends Application {
             }
 
             // Parse the file to an json object
-            final JsonObject jsonObject = new JsonParser().parse(fileContent).getAsJsonObject();
+            final JsonObject jsonObject = parsedContent.getAsJsonObject();
 
             // Fetch the name of the component
             final String componentName = jsonObject.get("name").getAsString();
@@ -374,7 +368,7 @@ public class HUPPAAL extends Application {
 
         final List<Map.Entry<JsonObject, Integer>> list = new LinkedList<>(componentMaxDepthMap.entrySet());
         // Defined Custom Comparator here
-        Collections.sort(list, (o1, o2) -> o1.getValue().compareTo(o2.getValue()));
+        list.sort(Map.Entry.comparingByValue());
 
         final List<JsonObject> orderedJsonComponents = new ArrayList<>();
 
@@ -403,9 +397,7 @@ public class HUPPAAL extends Application {
 
         final List<String> subComponentNames = new ArrayList<>();
 
-        jsonObject.get("sub_components").getAsJsonArray().forEach(jsonElement -> {
-            subComponentNames.add(jsonElement.getAsJsonObject().get("component").getAsString());
-        });
+        jsonObject.get("sub_components").getAsJsonArray().forEach(jsonElement -> subComponentNames.add(jsonElement.getAsJsonObject().get("component").getAsString()));
 
         for (final String subComponentName : subComponentNames) {
             updateDepthMap(nameToJson.get(subComponentName), depth + 1, nameToJson, jsonToDpeth);

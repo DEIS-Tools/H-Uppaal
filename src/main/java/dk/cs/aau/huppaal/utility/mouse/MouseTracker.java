@@ -8,19 +8,20 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MouseTracker {
 
     private final DoubleProperty xProperty = new SimpleDoubleProperty(0);
     private final DoubleProperty yProperty = new SimpleDoubleProperty(0);
-    private final ArrayList<EventHandler<MouseEvent>> onMouseMovedEventHandlers = new ArrayList<>();
-    private final ArrayList<EventHandler<MouseEvent>> onMouseClickedEventHandlers = new ArrayList<>();
-    private final ArrayList<EventHandler<MouseEvent>> onMouseEnteredEventHandlers = new ArrayList<>();
-    private final ArrayList<EventHandler<MouseEvent>> onMouseExitedEventHandlers = new ArrayList<>();
-    private final ArrayList<EventHandler<MouseEvent>> onMouseDraggedEventHandlers = new ArrayList<>();
-    private final ArrayList<EventHandler<MouseEvent>> onMousePressedEventHandlers = new ArrayList<>();
-    private final ArrayList<EventHandler<MouseEvent>> onMouseReleasedEventHandlers = new ArrayList<>();
+    private final List<EventHandler<MouseEvent>> onMouseMovedEventHandlers = new LinkedList<>();
+    private final List<EventHandler<MouseEvent>> onMouseClickedEventHandlers = new LinkedList<>();
+    private final List<EventHandler<MouseEvent>> onMouseEnteredEventHandlers = new LinkedList<>();
+    private final List<EventHandler<MouseEvent>> onMouseExitedEventHandlers = new LinkedList<>();
+    private final List<EventHandler<MouseEvent>> onMouseDraggedEventHandlers = new LinkedList<>();
+    private final List<EventHandler<MouseEvent>> onMousePressedEventHandlers = new LinkedList<>();
+    private final List<EventHandler<MouseEvent>> onMouseReleasedEventHandlers = new LinkedList<>();
     private boolean isActive = true;
 
     private final DoubleBinding gridX = new DoubleBinding() {
