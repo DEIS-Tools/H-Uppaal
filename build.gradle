@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.10'
-    id 'org.beryx.jlink' version '2.24.1'
+    id 'org.beryx.jlink' version '2.24.4'
 }
 
 mainClassName = 'HUPPAAL'
@@ -13,12 +13,43 @@ java {
 }
 
 javafx {
-    version = "16"
+    version = "17"
     modules = ['javafx.controls', 'javafx.fxml']
 }
 
+// This list of "allowed" illegal reflection access definitions originates from jfoenix in this github issue:
+//    https://github.com/sshahine/JFoenix/issues/1200#issuecomment-828541961
+// It's been edited to remove duplicate lines and to add consistency. Most of these generate a warning at runtime
+//    that the mentioned module is unknown, but I'm keeping these until jfoenix starts fixing their awful codebase.
+def reflectionHack = [
+    "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+    "--add-opens=java.base/java.lang.reflect=com.jfoenix",
+    "--add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED",
+    "--add-opens=javafx.controls/javafx.scene.control.skin=com.jfoenix",
+    "--add-exports=java.base/java.lang.reflect=ALL-UNNAMED",
+    "--add-exports=java.base/java.lang.reflect=com.jfoenix",
+    "--add-exports=javafx.base/com.sun.javafx.binding=ALL-UNNAMED",
+    "--add-exports=javafx.base/com.sun.javafx.binding=com.jfoenix",
+    "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED",
+    "--add-exports=javafx.base/com.sun.javafx.event=com.jfoenix",
+    "--add-exports=javafx.controls/com.Sun.javafx.scene.control.behavior=ALL-UNNAMED",
+    "--add-exports=javafx.controls/com.Sun.javafx.scene.control.behavior=com.jfoenix",
+    "--add-exports=javafx.controls/com.sun.javafx.binding=ALL-UNNAMED",
+    "--add-exports=javafx.controls/com.sun.javafx.binding=com.jfoenix",
+    "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED",
+    "--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix",
+    "--add-exports=javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED",
+    "--add-exports=javafx.controls/com.sun.javafx.scene.control=com.jfoenix",
+    "--add-exports=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED",
+    "--add-exports=javafx.controls/javafx.scene.control.skin=com.jfoenix",
+    "--add-exports=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED",
+    "--add-exports=javafx.graphics/com.sun.javafx.scene=com.jfoenix",
+    "--add-exports=javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED",
+    "--add-exports=javafx.graphics/com.sun.javafx.stage=com.jfoenix",
+]
+
 application {
-    applicationDefaultJvmArgs = ['--illegal-access=permit', '-XX:+UseZGC']
+    applicationDefaultJvmArgs = ['-XX:+UseZGC'] + reflectionHack
 }
 
 repositories {
@@ -46,15 +77,15 @@ dependencies {
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-core', version: '12.2.0'
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-material-pack', version: '12.2.0'
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: '12.2.0'
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.7'
-    implementation group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.9'
+    implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
     implementation group: 'org.hildan.fxgson', name: 'fx-gson', version: '4.0.1'
-    implementation group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.10.6'
+    implementation group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.10.7'
 
     //Junit
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.2'
-    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.2'
-    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-vintage-engine', version: '5.7.2'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.1'
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.1'
+    testRuntimeOnly group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.8.1'
 }
 
 test {
