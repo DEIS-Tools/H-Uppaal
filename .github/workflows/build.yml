@@ -26,13 +26,13 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew runtimeZip
+      run: ./gradlew jpackageImage
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
       with:
         name: h-uppaal-linux
         path: |
-          build/image.zip
+          build/jpackage
           
   build-macos:
     runs-on: macOS-latest
@@ -52,13 +52,13 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
-        run: ./gradlew runtimeZip
+        run: ./gradlew jpackageImage
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
           name: h-uppaal-osx
           path: |
-            build/image.zip
+            build/jpackage
             
   build-windows:
     runs-on: windows-latest
@@ -70,11 +70,11 @@ jobs:
           java-version: 17
           java-package: jdk
       - name: Build with Gradle
-        run: ./gradlew runtimeZip
+        run: ./gradlew jpackageImage
         working-directory: ${{ github.workspace }}
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
           name: h-uppaal-windows
           path: |
-            build/image.zip
+            build/jpackage
