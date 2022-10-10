@@ -12,15 +12,20 @@ Before installing H-UPPAAL, make sure that you have Java 8 and JavaFX installed.
 
 -----
 
-If you are using Linux, you may install JavaFX with the following command:
-```
-$ sudo apt-get install openjfx
-```
-
 If you experience a blank white screen in H-UPPAAL, disable hardware acceleration in the VM-options ([source](https://www.reddit.com/r/javahelp/comments/84w6i6/problem_displaying_anything_with_javafx_only/))
 ```
 -Dprism.order=sw
 ```
+
+### Linux
+If you are using Linux, you may have to install JavaFX with the following command:
+```
+$ sudo apt install openjfx
+```
+### Windows/OSX
+If the app fails to load javafx, you can download the runtime libraries of openjfx from the [gluonhq site](https://gluonhq.com/products/javafx/)
+
+On OSX, you might have to add an exception in the security settings panel in order to launch H-Uppaal.
 
 ## Using the UPPAAL backend
 When running the program, please make sure that you have the following folder structure (relative to the `huppaal.jar`-file). Feel free to only include binary-files for you operating system that you are using, e.g. `bin-Win32`. These binaries are found in the UPPAAL distibution and can simply be copied over to the `huppaal.jar` location.
