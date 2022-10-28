@@ -42,19 +42,18 @@ public class TagPresentation extends StackPane {
     private LineTo l2, l3, l4;
     private double previousX;
     private double previousY;
+    private double dragOffsetX, dragOffsetY;
     private boolean wasDragged;
     private boolean hadInitialFocus = false;
 
     private static double TAG_HEIGHT = 1.6 * GRID_SIZE;
 
     public TagPresentation() {
-        final URL location = this.getClass().getResource("TagPresentation.fxml");
-
-        final FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(location);
-        fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
-
         try {
+            var location = this.getClass().getResource("TagPresentation.fxml");
+            var fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(location);
+            fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
             fxmlLoader.setRoot(this);
             fxmlLoader.load(location.openStream());
 
@@ -62,9 +61,8 @@ public class TagPresentation extends StackPane {
             initializeLabel();
             initializeMouseTransparency();
             initializeTextFocusHandler();
-
-        } catch (final IOException ioe) {
-            throw new IllegalStateException(ioe);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
     }
 
@@ -187,21 +185,22 @@ public class TagPresentation extends StackPane {
         shape.setOnMousePressed(event -> {
             previousX = getTranslateX();
             previousY = getTranslateY();
+            dragOffsetX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).subtract(getLocationAware().xProperty()).subtract(previousX).doubleValue();
+            dragOffsetY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).subtract(getLocationAware().yProperty()).subtract(previousY).doubleValue();
         });
 
         shape.setOnMouseDragged(event -> {
             event.consume();
-            var newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).subtract(getLocationAware().xProperty()).doubleValue() - getMinWidth() / 2;
+            var newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).subtract(getLocationAware().xProperty()).doubleValue() - dragOffsetX;
+            var newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).subtract(getLocationAware().yProperty()).doubleValue() - dragOffsetY;
             setTranslateX(newX);
-            var newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).subtract(getLocationAware().yProperty()).doubleValue() - getHeight() / 2;
-            setTranslateY(newY - 2);
+            setTranslateY(newY);
             wasDragged = true; // Tell the mouse release action that we can store an update
         });
 
         var textField = (JFXTextArea) lookup("#textField");
         shape.setOnMouseReleased(event -> {
             if (wasDragged) {
-                // Add to undo redo stack
                 var currentX = getTranslateX();
                 var currentY = getTranslateY();
                 var storePreviousX = previousX;
@@ -225,7 +224,7 @@ public class TagPresentation extends StackPane {
                 textField.requestFocus(); // This needs to be done twice because of reasons
             }
 
-            // agj - 2022-10-28: Disabled due to not working with very large expressions
+            // agj - 2022-10-28: Disabled due to not working with very large expressions (also, it's annoying)
             //stayWithinParent(textField);
         });
 
