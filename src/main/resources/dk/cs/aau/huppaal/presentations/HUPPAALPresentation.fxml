@@ -117,13 +117,18 @@
                         <Region minWidth="16"/>
 
                         <!-- GENERATE UPPAAL MODEL FOR PROJECT -->
-                        <JFXRippler fx:id="generateUppaalModel">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#generateUppaalModelClicked">
-                                <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="white"/>
+                        <JFXRippler fx:id="callExternalToolCommand">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#externalToolCommand">
+                                <FontIcon iconLiteral="gmi-build" iconSize="19" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <JFXRippler fx:id="launchDebugger">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#launchDebugger">
+                                <FontIcon iconLiteral="gmi-bug-report" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
                     </HBox>
-
                 </StackPane>
 
                 <QueryPanePresentation
@@ -212,9 +217,14 @@
                 </Menu>
 
                 <Menu text="Preferences">
-                    <MenuItem fx:id="menuBarPreferencesUppaalLocation" text="Change UPPAAL Location">
+                    <MenuItem fx:id="menuBarPreferencesExternalToolCommand" text="Set external tool command">
                         <graphic>
-                            <FontIcon iconLiteral="gmi-insert-drive-file" iconSize="24" fill="black"/>
+                            <FontIcon iconLiteral="gmi-build" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                    <MenuItem fx:id="menuBarPreferencesDebuggerCommand" text="Set debugger tool command">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-bug-report" iconSize="24" fill="black"/>
                         </graphic>
                     </MenuItem>
                 </Menu>

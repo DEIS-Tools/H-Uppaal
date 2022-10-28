@@ -69,7 +69,8 @@ public class HUPPAALController implements Initializable {
     public StackPane modalBar;
     public JFXTextField queryTextField;
     public JFXTextField commentTextField;
-    public JFXRippler generateUppaalModel;
+    public JFXRippler callExternalToolCommand;
+    public JFXRippler launchDebugger;
     public JFXRippler colorSelected;
     public JFXRippler deleteSelected;
     public JFXRippler undo;
@@ -111,6 +112,7 @@ public class HUPPAALController implements Initializable {
     public MenuItem menuBarViewFilePanel;
     public MenuItem menuBarViewQueryPanel;
     public MenuItem menuBarPreferencesUppaalLocation;
+    public MenuItem menuBarPreferencesExternalToolCommand, menuBarPreferencesDebuggerCommand;
     public MenuItem menuBarFileNew;
     public MenuItem menuBarFileOpenProject;
     public MenuItem menuBarFileSave;
@@ -146,7 +148,6 @@ public class HUPPAALController implements Initializable {
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-
         dialog.setDialogContainer(dialogContainer);
         dialogContainer.opacityProperty().bind(dialog.getChildren().get(0).scaleXProperty());
         dialog.setOnDialogClosed(event -> dialogContainer.setVisible(false));
@@ -201,7 +202,7 @@ public class HUPPAALController implements Initializable {
         // Keybinds for coloring the selected elements
         EnabledColor.enabledColors.forEach(enabledColor -> {
             KeyboardTracker.registerKeybind(KeyboardTracker.COLOR_SELECTED + "_" + enabledColor.keyCode.getName(), new Keybind(new KeyCodeCombination(enabledColor.keyCode), () -> {
-                final List<Pair<SelectHelper.ItemSelectable, EnabledColor>> previousColor = new ArrayList<>();
+                var previousColor = new ArrayList<Pair<SelectHelper.ItemSelectable, EnabledColor>>();
 
                 SelectHelper.getSelectedElements().forEach(selectable -> {
                     previousColor.add(new Pair<>(selectable, new EnabledColor(selectable.getColor(), selectable.getColorIntensity())));
@@ -247,15 +248,6 @@ public class HUPPAALController implements Initializable {
         initializeUppalFileNotFoundWarning();
 
         initializeReachabilityAnalysisThread();
-
-        //Adds a tooltip to the generateUppaalModelButton if UPPAAL was not found
-        IUPPAALDriver uppaalDriver = UPPAALDriverManager.getInstance();
-        if(uppaalDriver instanceof DummyUPPAALDriver){
-            JFXTooltip generateUPPAALToolTip = new JFXTooltip("The UPPAAL server file does not exist");
-            JFXTooltip.setVisibleDuration(new Duration(10000));
-            JFXTooltip.setLeftDelay(null); //Sets the standard delay time (200 milliseconds)
-            JFXTooltip.install(generateUppaalModel, generateUPPAALToolTip);
-        }
 
         ZoomHelper.setCanvas(canvas);
     }
@@ -515,24 +507,24 @@ public class HUPPAALController implements Initializable {
             }
         });
 
-        menuBarPreferencesUppaalLocation.setOnAction(event -> {
-            // Dialog title
-            final FileChooser filePicker = new FileChooser();
-            filePicker.setTitle("Choose UPPAAL server file");
+        menuBarPreferencesExternalToolCommand.setOnAction(event -> {
+            var existingCommand = HUPPAAL.preferences.get("externalToolCommand", "");
+            var dialog = new TextInputDialog(existingCommand);
+            dialog.setTitle("External Tool Command Dialog");
+            dialog.setHeaderText("What commandline command should the button call?");
+            dialog.setContentText("Enter a command:");
+            var result = dialog.showAndWait();
+            result.ifPresent(command -> HUPPAAL.preferences.put("externalToolCommand", command));
+        });
 
-            // The initial location for the file choosing dialog
-            final File uppaalFile = new File(UPPAALDriverManager.getUppaalFilePath()).getAbsoluteFile().getParentFile();
-
-            // If the file does not exist, use a default location
-            if(uppaalFile.exists()) {
-                filePicker.setInitialDirectory(uppaalFile);
-            }
-
-            // Prompt the user to select the file (will halt the UI thread)
-            final File file = filePicker.showOpenDialog(root.getScene().getWindow());
-            if(file != null) {
-                UPPAALDriverManager.setUppaalFilePath(file.getAbsolutePath());
-            }
+        menuBarPreferencesDebuggerCommand.setOnAction(event -> {
+            var existingCommand = HUPPAAL.preferences.get("debuggerToolCommand", "");
+            var dialog = new TextInputDialog(existingCommand);
+            dialog.setTitle("External Debugger Command Dialog");
+            dialog.setHeaderText("What commandline command should the button call?");
+            dialog.setContentText("Enter a command:");
+            var result = dialog.showAndWait();
+            result.ifPresent(command -> HUPPAAL.preferences.put("debuggerToolCommand", command));
         });
 
         menuBarViewFilePanel.getGraphic().setOpacity(1);
@@ -745,15 +737,13 @@ public class HUPPAALController implements Initializable {
     }
 
     public void expandMessagesIfNotExpanded() {
-        if (tabPaneContainer.getMaxHeight() <= 35) {
+        if (tabPaneContainer.getMaxHeight() <= 35)
             expandMessagesContainer.play();
-        }
     }
 
-    public void collapseMessagesIfNotCollapsed() {
-        final Transition collapse = new Transition() {
-            double height = tabPaneContainer.getMaxHeight();
-
+    private Transition collapseTransition() {
+        return new Transition() {
+            private final double height = tabPaneContainer.getMaxHeight();
             {
                 setInterpolator(Interpolator.SPLINE(0.645, 0.045, 0.355, 1));
                 setCycleDuration(Duration.millis(200));
@@ -764,42 +754,34 @@ public class HUPPAALController implements Initializable {
                 tabPaneContainer.setMaxHeight(((height - 35) * (1 - frac)) + 35);
             }
         };
+    }
 
-        if (tabPaneContainer.getMaxHeight() > 35) {
+    public void collapseMessagesIfNotCollapsed() {
+        var collapse = collapseTransition();
+        if (tabPaneContainer.getMaxHeight() > 35)
             collapse.play();
-        }
     }
 
     @FXML
     public void collapseMessagesClicked() {
-        final Transition collapse = new Transition() {
-            double height = tabPaneContainer.getMaxHeight();
-
-            {
-                setInterpolator(Interpolator.SPLINE(0.645, 0.045, 0.355, 1));
-                setCycleDuration(Duration.millis(200));
-            }
-
-            @Override
-            protected void interpolate(final double frac) {
-                tabPaneContainer.setMaxHeight(((height - 35) * (1 - frac)) + 35);
-            }
-        };
-
-        if (tabPaneContainer.getMaxHeight() > 35) {
+        var collapse = collapseTransition();
+        if (tabPaneContainer.getMaxHeight() > 35)
             collapse.play();
-        } else {
+        else
             expandMessagesContainer.play();
-        }
     }
 
     @FXML
-    private void generateUppaalModelClicked() {
-        final Component mainComponent = HUPPAAL.getProject().getMainComponent();
+    private void externalToolCommand() {
+        // agj - 2022-10-28 disabled due to being old
+        //callUPPAAL();
+    }
 
+    private void callUPPAAL() {
+        var mainComponent = HUPPAAL.getProject().getMainComponent();
         if (mainComponent == null) {
-            HUPPAAL.showToast("Cannot generate UPPAAL file without a main component");
-            return; // We cannot generate a UPPAAL file without a main component
+            HUPPAAL.showToast("no main component");
+            return;
         }
 
         try {
@@ -809,6 +791,11 @@ public class HUPPAALController implements Initializable {
             HUPPAAL.showToast("UPPAAL debug file not stored: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void launchDebugger() {
+        HUPPAAL.showToast("No debugger installed");
     }
 
     private void nudgeSelected(final NudgeDirection direction) {

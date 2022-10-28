@@ -1,11 +1,9 @@
 package dk.cs.aau.huppaal.presentations;
 
-import com.jfoenix.controls.JFXSnackbar;
-import com.jfoenix.controls.JFXSnackbarLayout;
+import com.jfoenix.controls.*;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Query;
 import dk.cs.aau.huppaal.backend.DummyUPPAALDriver;
-import dk.cs.aau.huppaal.backend.UPPAALDriver;
 import dk.cs.aau.huppaal.backend.UPPAALDriverManager;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
@@ -13,8 +11,6 @@ import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.colors.EnabledColor;
 import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
-import com.jfoenix.controls.JFXPopup;
-import com.jfoenix.controls.JFXRippler;
 import javafx.animation.*;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -38,6 +34,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import static dk.cs.aau.huppaal.utility.colors.EnabledColor.enabledColors;
 
@@ -70,7 +67,7 @@ public class HUPPAALPresentation extends StackPane {
             initializeTopBar();
             initializeToolbar();
             initializeQueryDetailsDialog();
-            initializeGenerateUppaalModelButton();
+            initializeExternalToolButton();
             initializeColorSelector();
 
             initializeToggleQueryPaneFunctionality();
@@ -330,19 +327,33 @@ public class HUPPAALPresentation extends StackPane {
         });
     }
 
-    private void initializeGenerateUppaalModelButton() {
-            final Color color = Color.GREY_BLUE;
-            final Color.Intensity colorIntensity = Color.Intensity.I800;
+    private void initializeExternalToolButton() {
+        var toolCommand = HUPPAAL.preferences.get("externalToolCommand", "");
+        var debuggerCommand = HUPPAAL.preferences.get("debuggerToolCommand", "");
+        var colorIntensity = Color.Intensity.I800;
+        var color = Color.GREY_BLUE;
+        controller.callExternalToolCommand.setMaskType(JFXRippler.RipplerMask.CIRCLE);
+        controller.callExternalToolCommand.setRipplerFill(color.getTextColor(colorIntensity));
 
-            controller.generateUppaalModel.setMaskType(JFXRippler.RipplerMask.CIRCLE);
-            controller.generateUppaalModel.setRipplerFill(color.getTextColor(colorIntensity));
-        if(UPPAALDriverManager.getInstance() instanceof DummyUPPAALDriver){
-            controller.generateUppaalModel.setEnabled(false);
-            controller.generateUppaalModel.setOpacity(0.3);
+        JFXTooltip externalToolTooltip;
+        if(toolCommand.isEmpty()) {
+            externalToolTooltip = new JFXTooltip("no external tool command is configured");
+            controller.callExternalToolCommand.setEnabled(false);
+            controller.callExternalToolCommand.setOpacity(0.3);
         } else {
-            controller.generateUppaalModel.setEnabled(true);
-            controller.generateUppaalModel.setOpacity(1);
+            externalToolTooltip = new JFXTooltip("call external tool command");
         }
+
+        var debuggerTooltip = new JFXTooltip("Launch debugger");
+        if(debuggerCommand.isEmpty()) {
+            debuggerTooltip = new JFXTooltip("no debugger is configured");
+            controller.launchDebugger.setEnabled(false);
+            controller.launchDebugger.setOpacity(0.3);
+        } else
+            debuggerTooltip = new JFXTooltip("Launch debugger");
+
+        JFXTooltip.install(controller.callExternalToolCommand, externalToolTooltip);
+        JFXTooltip.install(controller.launchDebugger, debuggerTooltip);
     }
 
     private void initializeSelectDependentToolbarButton(final JFXRippler button) {
@@ -579,6 +590,6 @@ public class HUPPAALPresentation extends StackPane {
 
     public void uppaalDriverUpdated(){
         //Reflect update in GUI, by resetting the GenerateUPPAALModelButton
-        initializeGenerateUppaalModelButton();
+        initializeExternalToolButton();
     }
 }
