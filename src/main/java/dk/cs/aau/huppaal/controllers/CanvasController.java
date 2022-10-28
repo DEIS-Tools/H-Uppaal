@@ -93,7 +93,7 @@ public class CanvasController implements Initializable {
         leaveTextAreas = () -> {root.requestFocus();};
 
         leaveOnEnterPressed = (keyEvent) -> {
-            if (keyEvent.getCode().equals(KeyCode.ENTER) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+            if ((keyEvent.getCode().equals(KeyCode.ENTER) && keyEvent.isControlDown()) || keyEvent.getCode().equals(KeyCode.ESCAPE)) {
                 leaveTextAreas();
             }
         };

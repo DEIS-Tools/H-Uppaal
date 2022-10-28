@@ -1,11 +1,11 @@
 package dk.cs.aau.huppaal.presentations;
 
+import com.jfoenix.controls.JFXTextArea;
 import dk.cs.aau.huppaal.abstractions.Component;
 import dk.cs.aau.huppaal.controllers.CanvasController;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.helpers.LocationAware;
-import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.beans.binding.When;
 import javafx.beans.property.ObjectProperty;
@@ -39,8 +39,7 @@ public class TagPresentation extends StackPane {
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
     private final ObjectProperty<LocationAware> locationAware = new SimpleObjectProperty<>(null);
 
-    private LineTo l2;
-    private LineTo l3;
+    private LineTo l2, l3, l4;
     private double previousX;
     private double previousY;
     private boolean wasDragged;
@@ -85,7 +84,7 @@ public class TagPresentation extends StackPane {
     }
 
     private void initializeTextAid() {
-        final JFXTextField textField = (JFXTextField) lookup("#textField");
+        var textField = (JFXTextArea) lookup("#textField");
 
         textField.textProperty().addListener((obs, oldText, newText) -> {
             if (newText.contains(" ")) {
@@ -96,55 +95,54 @@ public class TagPresentation extends StackPane {
     }
 
     private void initializeLabel() {
-        final Label label = (Label) lookup("#label");
-        final JFXTextField textField = (JFXTextField) lookup("#textField");
-        final Path shape = (Path) lookup("#shape");
-
-        final Insets insets = new Insets(0,2,0,2);
-        textField.setPadding(insets);
+        var label = (Label) lookup("#label");
+        var text = (JFXTextArea) lookup("#textField");
+        var shape = (Path) lookup("#shape");
+        var insets = new Insets(0,2,0,2);
+        text.setPadding(insets);
         label.setPadding(insets);
-
-        final int padding = 0;
-
         label.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
-            double newWidth = Math.max(newBounds.getWidth(), 10);
-            final double res = GRID_SIZE * 2 - (newWidth % (GRID_SIZE * 2));
-            newWidth += res;
+            var newWidth = Math.max(newBounds.getWidth(), 10);
+            var newHeight = Math.max(newBounds.getHeight(), TAG_HEIGHT);
+            var resX = GRID_SIZE * 2 - (newWidth % (GRID_SIZE * 2));
+            var resY = GRID_SIZE * 2 - (newHeight % (GRID_SIZE * 2));
+            newWidth += resX;
+            newHeight += resY;
 
-            textField.setMinWidth(newWidth);
-            textField.setMaxWidth(newWidth);
+            text.setMinWidth(newWidth);
+            text.setPrefWidth(newWidth);
+            text.setMinHeight(TAG_HEIGHT);
+            text.setPrefHeight(TAG_HEIGHT);
 
-            l2.setX(newWidth + padding);
-            l3.setX(newWidth + padding);
+            l2.setX(newWidth);
+            l3.setX(newWidth);
+            l3.setY(newHeight);
+            l4.setY(newHeight);
 
-            setMinWidth(newWidth + padding);
-            setMaxWidth(newWidth + padding);
+            setMinWidth(newWidth);
+            setMaxWidth(newWidth);
 
-            textField.setMinHeight(TAG_HEIGHT);
-            textField.setMaxHeight(TAG_HEIGHT);
-
-            textField.focusedProperty().addListener((observable, oldFocused, newFocused) -> {
+            text.focusedProperty().addListener((observable, oldFocused, newFocused) -> {
                 if (newFocused) {
                     shape.setTranslateY(2);
-                    textField.setTranslateY(2);
+                    text.setTranslateY(2);
                 }
             });
 
             if (getWidth() >= 1000) {
                 setWidth(newWidth);
-                setHeight(TAG_HEIGHT);
+                setHeight(newHeight);
                 shape.setTranslateY(-1);
-                textField.setTranslateY(-1);
+                text.setTranslateY(-1);
             }
 
             // Fixes the jumping of the shape when the text field is empty
-            if (textField.getText().isEmpty()) {
+            if (text.getText().isEmpty()) {
                 shape.setLayoutX(0);
             }
         });
 
-        label.textProperty().bind(new When(textField.textProperty().isNotEmpty()).then(textField.textProperty()).otherwise(textField.promptTextProperty()));
-
+        label.textProperty().bind(new When(text.textProperty().isNotEmpty()).then(text.textProperty()).otherwise(text.promptTextProperty()));
     }
 
     private void stayWithinParent(TextField textField) {
@@ -171,24 +169,19 @@ public class TagPresentation extends StackPane {
     }
 
     private void initializeShape() {
-        final int WIDTH = 5000;
-        final double HEIGHT = TAG_HEIGHT;
+        var width = 5000;
+        var height = 5000;
+        var shape = (Path) lookup("#shape");
+        var start = new MoveTo(0, 0);
 
-        final Path shape = (Path) lookup("#shape");
-
-        final MoveTo start = new MoveTo(0, 0);
-
-        l2 = new LineTo(WIDTH, 0);
-        l3 = new LineTo(WIDTH, HEIGHT);
-        final LineTo l4 = new LineTo(0, HEIGHT);
-        final LineTo l6 = new LineTo(0, 0);
+        l2 = new LineTo(width, 0);
+        l3 = new LineTo(width, height);
+        l4 = new LineTo(0, height);
+        var l6 = new LineTo(0, 0);
 
         shape.getElements().addAll(start, l2, l3, l4, l6);
-
         shape.setFill(backgroundColor.getColor(backgroundColorIntensity));
         shape.setStroke(backgroundColor.getColor(backgroundColorIntensity.next(4)));
-
-        final JFXTextField textField = (JFXTextField) lookup("#textField");
         shape.setCursor(Cursor.OPEN_HAND);
 
         shape.setOnMousePressed(event -> {
@@ -198,24 +191,21 @@ public class TagPresentation extends StackPane {
 
         shape.setOnMouseDragged(event -> {
             event.consume();
-
-            final double newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).subtract(getLocationAware().xProperty()).doubleValue() - getMinWidth() / 2;
+            var newX = CanvasPresentation.mouseTracker.gridXProperty().subtract(getComponent().xProperty()).subtract(getLocationAware().xProperty()).doubleValue() - getMinWidth() / 2;
             setTranslateX(newX);
-
-            final double newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).subtract(getLocationAware().yProperty()).doubleValue() - getHeight() / 2;
+            var newY = CanvasPresentation.mouseTracker.gridYProperty().subtract(getComponent().yProperty()).subtract(getLocationAware().yProperty()).doubleValue() - getHeight() / 2;
             setTranslateY(newY - 2);
-
-            // Tell the mouse release action that we can store an update
-            wasDragged = true;
+            wasDragged = true; // Tell the mouse release action that we can store an update
         });
 
+        var textField = (JFXTextArea) lookup("#textField");
         shape.setOnMouseReleased(event -> {
             if (wasDragged) {
                 // Add to undo redo stack
-                final double currentX = getTranslateX();
-                final double currentY = getTranslateY();
-                final double storePreviousX = previousX;
-                final double storePreviousY = previousY;
+                var currentX = getTranslateX();
+                var currentY = getTranslateY();
+                var storePreviousX = previousX;
+                var storePreviousY = previousY;
                 UndoRedoStack.push(
                         () -> {
                             setTranslateX(currentX);
@@ -228,9 +218,7 @@ public class TagPresentation extends StackPane {
                         String.format("Moved tag from (%f,%f) to (%f,%f)", currentX, currentY, storePreviousX, storePreviousY),
                         "pin-drop"
                 );
-
-                // Reset the was dragged boolean
-                wasDragged = false;
+                wasDragged = false; // Reset the was dragged boolean
             } else if(event.getClickCount() == 2){
                 textField.setMouseTransparent(false);
                 textField.requestFocus();
@@ -261,7 +249,7 @@ public class TagPresentation extends StackPane {
     public void bindToColor(final ObjectProperty<Color> color, final ObjectProperty<Color.Intensity> intensity, final boolean doColorBackground) {
         final BiConsumer<Color, Color.Intensity> recolor = (newColor, newIntensity) -> {
 
-            final JFXTextField textField = (JFXTextField) lookup("#textField");
+            var textField = (JFXTextArea) lookup("#textField");
             textField.setUnFocusColor(TRANSPARENT);
             textField.setFocusColor(newColor.getColor(newIntensity));
 
@@ -285,7 +273,7 @@ public class TagPresentation extends StackPane {
     }
 
     public void setAndBindString(final StringProperty string) {
-        final JFXTextField textField = (JFXTextField) lookup("#textField");
+        var textField = (JFXTextArea) lookup("#textField");
 
         textField.textProperty().unbind();
         textField.setText(string.get());
@@ -293,7 +281,7 @@ public class TagPresentation extends StackPane {
     }
 
     public void setPlaceholder(final String placeholder) {
-        final JFXTextField textField = (JFXTextField) lookup("#textField");
+        var textField = (JFXTextArea) lookup("#textField");
         textField.setPromptText(placeholder);
     }
 
@@ -302,12 +290,12 @@ public class TagPresentation extends StackPane {
     }
 
     public void requestTextFieldFocus() {
-        final JFXTextField textField = (JFXTextField) lookup("#textField");
+        var textField = (JFXTextArea) lookup("#textField");
         Platform.runLater(textField::requestFocus);
     }
 
     public ObservableBooleanValue textFieldFocusProperty() {
-        final JFXTextField textField = (JFXTextField) lookup("#textField");
+        var textField = (JFXTextArea) lookup("#textField");
         return textField.focusedProperty();
     }
 
