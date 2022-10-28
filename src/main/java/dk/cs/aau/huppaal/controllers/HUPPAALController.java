@@ -41,12 +41,15 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class HUPPAALController implements Initializable {
@@ -776,6 +779,26 @@ public class HUPPAALController implements Initializable {
     private void externalToolCommand() {
         // agj - 2022-10-28 disabled due to being old
         //callUPPAAL();
+        var command = HUPPAAL.preferences.get("externalToolCommand", "");
+        if(command.isEmpty()) {
+            HUPPAAL.showToast("not configured");
+            return;
+        }
+        try {
+            var rt = Runtime.getRuntime();
+            var proc = rt.exec(command);
+            var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+            proc.waitFor(10, TimeUnit.SECONDS); // TODO: This should run in a seperate thread, and the GUI should indicate a running process
+            String s;
+            while((s = stdi.readLine()) != null)
+                CodeAnalysis.addMessage(null, new CodeAnalysis.Message(s, CodeAnalysis.MessageType.WARNING, () -> ""));
+            while((s = stde.readLine()) != null)
+                System.err.println(s);
+        } catch (Exception e) {
+            HUPPAAL.showToast(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void callUPPAAL() {
