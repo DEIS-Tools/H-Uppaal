@@ -247,7 +247,8 @@ public class HUPPAALController implements Initializable {
         initializeNoMainComponentError();
         initializeUppalFileNotFoundWarning();
 
-        initializeReachabilityAnalysisThread();
+        // agj - 2022-10-28 disabled, but this should be an optional thread that runs if you need it
+        // initializeReachabilityAnalysisThread();
 
         ZoomHelper.setCanvas(canvas);
     }

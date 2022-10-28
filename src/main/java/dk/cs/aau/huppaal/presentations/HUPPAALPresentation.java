@@ -344,7 +344,7 @@ public class HUPPAALPresentation extends StackPane {
             externalToolTooltip = new JFXTooltip("call external tool command");
         }
 
-        var debuggerTooltip = new JFXTooltip("Launch debugger");
+        JFXTooltip debuggerTooltip;
         if(debuggerCommand.isEmpty()) {
             debuggerTooltip = new JFXTooltip("no debugger is configured");
             controller.launchDebugger.setEnabled(false);
