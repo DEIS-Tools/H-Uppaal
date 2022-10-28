@@ -25,17 +25,14 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.function.BiConsumer;
 
 import static dk.cs.aau.huppaal.presentations.CanvasPresentation.GRID_SIZE;
 import static javafx.scene.paint.Color.TRANSPARENT;
 
 public class TagPresentation extends StackPane {
-
     private final static Color backgroundColor = Color.GREY;
     private final static Color.Intensity backgroundColorIntensity = Color.Intensity.I50;
-
     private final ObjectProperty<Component> component = new SimpleObjectProperty<>(null);
     private final ObjectProperty<LocationAware> locationAware = new SimpleObjectProperty<>(null);
 
@@ -245,24 +242,15 @@ public class TagPresentation extends StackPane {
         bindToColor(color, intensity, false);
     }
 
-    public void bindToColor(final ObjectProperty<Color> color, final ObjectProperty<Color.Intensity> intensity, final boolean doColorBackground) {
+    public void bindToColor(final ObjectProperty<Color> color, final ObjectProperty<Color.Intensity> intensity, final boolean isNickname) {
         final BiConsumer<Color, Color.Intensity> recolor = (newColor, newIntensity) -> {
-
             var textField = (JFXTextArea) lookup("#textField");
             textField.setUnFocusColor(TRANSPARENT);
             textField.setFocusColor(newColor.getColor(newIntensity));
-
-            if (doColorBackground) {
-                final Path shape = (Path) lookup("#shape");
-                shape.setFill(newColor.getColor(newIntensity.next(-1)));
-                shape.setStroke(newColor.getColor(newIntensity.next(-1).next(2)));
-
-                textField.setStyle("-fx-prompt-text-fill: rgba(255, 255, 255, 0.6); -fx-text-fill: " + newColor.getTextColorRgbaString(newIntensity) + ";");
-                textField.setFocusColor(newColor.getTextColor(newIntensity));
-            } else {
+            if (isNickname)
+                textField.setStyle("-fx-prompt-text-fill: rgba(0, 0, 0, 0.6); -fx-border-color: "+newColor.toHexString(newIntensity)+"; -fx-border-radius: 3");
+            else
                 textField.setStyle("-fx-prompt-text-fill: rgba(0, 0, 0, 0.6);");
-            }
-
         };
 
         color.addListener(observable -> recolor.accept(color.get(), intensity.get()));

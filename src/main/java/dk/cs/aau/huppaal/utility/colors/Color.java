@@ -323,6 +323,24 @@ public enum Color {
         return colorMap.get(intensity).getColor();
     }
 
+    public String toHexString(final Intensity intensity) {
+        var c = colorMap.get(intensity).getColor();
+        var r = (int)Math.round(c.getRed() * 255.0);
+        var g = (int)Math.round(c.getGreen() * 255.0);
+        var b = (int)Math.round(c.getBlue() * 255.0);
+        var o = (int)Math.round(c.getOpacity() * 255.0);
+        return String.format("#%02x%02x%02x%02x" , r, g, b, o);
+    }
+
+    public String toRgbaString(final Intensity intensity) {
+        var c = colorMap.get(intensity).getColor();
+        var r = (int)Math.round(c.getRed() * 255.0);
+        var g = (int)Math.round(c.getGreen() * 255.0);
+        var b = (int)Math.round(c.getBlue() * 255.0);
+        var o = (int)Math.round(c.getOpacity() * 255.0);
+        return String.format("rgba(%d,%d,%d,%d)" , r, g, b, o);
+    }
+
     public javafx.scene.paint.Color getColor(final Intensity intensity, final double opacity) {
         final javafx.scene.paint.Color color = colorMap.get(intensity).getColor();
         return new javafx.scene.paint.Color(color.getRed(), color.getGreen(), color.getBlue(), opacity);
