@@ -18,6 +18,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -146,6 +147,29 @@ public class TagPresentation extends StackPane {
 
     }
 
+    private void stayWithinParent(TextField textField) {
+        Node parent;
+        if(getParent() instanceof NailPresentation){
+            //Get the correct parent for guards, selects, synchronizations, and updates
+            parent = getParent();
+        } else {
+            //Gte the correct parent for location names
+            parent = getParent().getParent();
+        }
+        //Handle the horizontal placement of the tag
+        if(parent.localToParent(getBoundsInParent()).getCenterX() > getComponent().widthProperty().doubleValue() - textField.getWidth()) {
+            setTranslateX(getTranslateX() + getComponent().widthProperty().doubleValue() - textField.getWidth() - parent.localToParent(getBoundsInParent()).getCenterX());
+        } else if (parent.localToParent(getBoundsInParent()).getCenterX() - textField.getWidth() < 0) {
+            setTranslateX(getTranslateX() - (parent.localToParent(getBoundsInParent()).getCenterX() - textField.getWidth()));
+        }
+        //Handle the vertical placement of the tag
+        if(parent.localToParent(getBoundsInParent()).getCenterY() > getComponent().heightProperty().doubleValue() - textField.getHeight()) {
+            setTranslateY(getTranslateY() + getComponent().heightProperty().doubleValue() - textField.getHeight() - parent.localToParent(getBoundsInParent()).getCenterY());
+        } else if (parent.localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2 < 0) {
+            setTranslateY(getTranslateY() - (parent.localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2));
+        }
+    }
+
     private void initializeShape() {
         final int WIDTH = 5000;
         final double HEIGHT = TAG_HEIGHT;
@@ -213,31 +237,8 @@ public class TagPresentation extends StackPane {
                 textField.requestFocus(); // This needs to be done twice because of reasons
             }
 
-            Node parent;
-
-            if(getParent() instanceof NailPresentation){
-                //Get the correct parent for guards, selects, synchronizations, and updates
-                parent = getParent();
-            } else {
-                //Gte the correct parent for location names
-                parent = getParent().getParent();
-            }
-
-            //Handle the horizontal placement of the tag
-            if(parent.localToParent(getBoundsInParent()).getCenterX() > getComponent().widthProperty().doubleValue() - textField.getWidth()) {
-                setTranslateX(getTranslateX() + getComponent().widthProperty().doubleValue() - textField.getWidth() - parent.localToParent(getBoundsInParent()).getCenterX());
-            } else if (parent.localToParent(getBoundsInParent()).getCenterX() - textField.getWidth() < 0) {
-                setTranslateX(getTranslateX() - (parent.localToParent(getBoundsInParent()).getCenterX() - textField.getWidth()));
-            }
-
-            //Handle the vertical placement of the tag
-            if(parent.localToParent(getBoundsInParent()).getCenterY() > getComponent().heightProperty().doubleValue() - textField.getHeight()) {
-                setTranslateY(getTranslateY() + getComponent().heightProperty().doubleValue() - textField.getHeight() - parent.localToParent(getBoundsInParent()).getCenterY());
-            } else if (parent.localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2 < 0) {
-                setTranslateY(getTranslateY() - (parent.localToParent(getBoundsInParent()).getCenterY() - textField.getHeight() - GRID_SIZE * 2));
-            }
-
-
+            // agj - 2022-10-28: Disabled due to not working with very large expressions
+            //stayWithinParent(textField);
         });
 
         textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
