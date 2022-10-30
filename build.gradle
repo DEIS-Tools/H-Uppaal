@@ -3,9 +3,49 @@ plugins {
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.13'
     id 'org.beryx.runtime' version '1.12.7'
+    id 'de.fuerstenau.buildconfig' version '1.1.8'
 }
 
 mainClassName = 'HUPPAAL'
+
+allprojects {
+    group = 'dk.cs.aau.huppaal'
+    version = '1.1.0'
+}
+
+def getGitCommitSha = { ->
+    try (def stdout = new ByteArrayOutputStream()) {
+        exec {
+            commandLine 'git', 'describe','--long','--always','--dirty','--exclude=*','--abbrev=8'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+}
+def getGitCommitShaLong = { ->
+    try (def stdout = new ByteArrayOutputStream()) {
+        exec {
+            commandLine 'git', 'describe','--long','--always','--exclude=*','--abbrev=40'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+}
+
+buildConfig {
+    appName = project.name
+    version = project.version
+    buildConfigField('String', 'COMMIT_SHA', "${getGitCommitShaLong()}")
+    buildConfigField('String', 'COMMIT_SHA_SHORT', "${getGitCommitSha()}")
+
+    clsName = 'BuildConfig'
+    packageName = 'dk.cs.aau.huppaal'
+    charset = 'UTF-8'
+}
+
+configurations {
+    create("compile")
+}
 
 java {
     sourceCompatibility = gradle.ext.javaVersion
