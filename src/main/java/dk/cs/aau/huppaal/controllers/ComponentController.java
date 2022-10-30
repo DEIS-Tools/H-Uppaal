@@ -917,25 +917,23 @@ public class ComponentController implements Initializable {
 
     private void initializeSubComponentHandling(final Component newSubComponent) {
         final Consumer<SubComponent> handleAddedSubComponent = subComponent -> {
-            final SubComponentPresentation subComponentPresentation = new SubComponentPresentation(subComponent, getComponent());
+            if(subComponent.getComponent() == null)
+                return;
+            var subComponentPresentation = new SubComponentPresentation(subComponent, getComponent());
             subComponentPresentationMap.put(subComponent, subComponentPresentation);
             modelContainerSubComponent.getChildren().add(subComponentPresentation);
         };
 
-        // React on addition of sub components to the component
-        newSubComponent.getSubComponents().addListener(new ListChangeListener<SubComponent>() {
-            @Override
-            public void onChanged(final Change<? extends SubComponent> c) {
-                if (c.next()) {
-                    // SubComponents are added to the component
-                    c.getAddedSubList().forEach(handleAddedSubComponent::accept);
-
-                    // SubComponents are removed from the component
-                    c.getRemoved().forEach(subComponent -> {
-                        final SubComponentPresentation subComponentPresentation = subComponentPresentationMap.get(subComponent);
-                        modelContainerSubComponent.getChildren().remove(subComponentPresentation);
-                    });
-                }
+        // React on addition of subcomponents to the component
+        newSubComponent.getSubComponents().addListener((ListChangeListener<SubComponent>) c -> {
+            if (c.next()) {
+                // SubComponents are added to the component
+                c.getAddedSubList().forEach(handleAddedSubComponent);
+                // SubComponents are removed from the component
+                c.getRemoved().forEach(subComponent -> {
+                    final SubComponentPresentation subComponentPresentation = subComponentPresentationMap.get(subComponent);
+                    modelContainerSubComponent.getChildren().remove(subComponentPresentation);
+                });
             }
         });
 

@@ -112,7 +112,9 @@ public class SubComponent implements Serializable, Circular, Nearable {
 
     @Override
     public JsonObject serialize() {
-        final JsonObject result = new JsonObject();
+        if(getComponent() == null)
+            return null;
+        var result = new JsonObject();
 
         result.addProperty(COMPONENT, getComponent().getName());
         result.addProperty(IDENTIFIER, getIdentifier());
