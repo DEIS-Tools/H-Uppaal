@@ -1,12 +1,11 @@
 package dk.cs.aau.huppaal.presentations;
 
-import dk.cs.aau.huppaal.HUPPAAL;
+import com.sun.javafx.event.RedirectedEvent;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.colors.EnabledColor;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
 import javafx.animation.ScaleTransition;
-import javafx.application.Platform;
 import javafx.beans.binding.When;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -20,8 +19,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.stage.PopupWindow;
 import javafx.stage.Screen;
 import javafx.stage.Popup;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -53,7 +54,8 @@ public class DropDownMenu {
         this.source = source;
 
         popup = new Popup();
-        popup.setHideOnEscape(closeOnMouseExit);
+        popup.setHideOnEscape(true);
+        popup.setAutoHide(true);
 
         list = new VBox();
         list.setStyle("-fx-background-color: white; -fx-padding: 8 0 8 0;");
@@ -66,18 +68,22 @@ public class DropDownMenu {
         content.setMinHeight(1);
         content.setMaxHeight(1);
 
-        if (closeOnMouseExit) {
-            final Runnable checkIfWeShouldClose = () -> {
-                if (!isHoveringMenu.get() && !isHoveringSubMenu.get())
-                    this.close();
-            };
-            isHoveringMenu.addListener(observable -> checkIfWeShouldClose.run());
-            isHoveringSubMenu.addListener(observable -> checkIfWeShouldClose.run());
-        }
         content.setOnMouseExited(event -> isHoveringMenu.set(false));
         content.setOnMouseEntered(event -> isHoveringMenu.set(true));
 
         popup.getContent().add(content);
+        closeWhenClickingOutsidePopup();
+    }
+
+    private void closeWhenClickingOutsidePopup() {
+        popup.getScene().getWindow().setEventDispatcher((event, tail) -> {
+            if (event.getEventType() == RedirectedEvent.REDIRECTED) {
+                if (((RedirectedEvent) event).getOriginalEvent().getEventType() == MouseEvent.MOUSE_PRESSED)
+                    close();
+            } else
+                tail.dispatchEvent(event);
+            return null;
+        });
     }
 
     public void close() {
