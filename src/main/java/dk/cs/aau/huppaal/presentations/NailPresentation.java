@@ -79,9 +79,8 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
     }
 
     private void initializePropertyTag() {
-
-        final TagPresentation propertyTag = controller.propertyTag;
-        final Line propertyTagLine = controller.propertyTagLine;
+        var propertyTag = controller.propertyTag;
+        var propertyTagLine = controller.propertyTagLine;
         propertyTag.setComponent(controller.getComponent());
         propertyTag.setLocationAware(controller.getNail());
 
@@ -93,12 +92,10 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
 
         // Updates visibility and placeholder of the tag depending on the type of nail
         final Consumer<Edge.PropertyType> updatePropertyType = (propertyType) -> {
-
             // If it is not a property nail hide the tag otherwise show it and write proper placeholder
             if(propertyType.equals(Edge.PropertyType.NONE)) {
                 propertyTag.setVisible(false);
             } else {
-
                 // Show the property tag since the nail is a property nail
                 propertyTag.setVisible(true);
 
@@ -143,7 +140,7 @@ public class NailPresentation extends Group implements SelectHelper.Selectable {
             }
         };
 
-        // Whenever the property type updates update the tag
+        // Whenever the property type updates the tag
         controller.getNail().propertyTypeProperty().addListener((obs, oldPropertyType, newPropertyType) -> {
             updatePropertyType.accept(newPropertyType);
         });

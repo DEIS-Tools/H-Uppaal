@@ -411,9 +411,8 @@ public class ComponentController implements Initializable {
 
     private void initializeComponentContextMenu() {
         final Consumer<Component> initializeDropDownMenu = (component) -> {
-            if (component == null) {
+            if (component == null)
                 return;
-            }
 
             contextMenu = new DropDownMenu(root, 230, true);
 
@@ -459,7 +458,7 @@ public class ComponentController implements Initializable {
                     component.addJork(newJork);
                 }, () -> { // Undo
                     component.removeJork(newJork);
-                }, "Added fork '" + newJork.toString() + "' to component '" + component.getName() + "'", "add-circle");
+                }, "Added fork '" + newJork + "' to component '" + component.getName() + "'", "add-circle");
             });
 
             contextMenu.addClickableListElement("Add Join", event -> {
@@ -483,88 +482,63 @@ public class ComponentController implements Initializable {
                 }, "Added join '" + newJork.toString() + "' to component '" + component.getName() + "'", "add-circle");
             });
 
-            final DropDownMenu subMenu;
-
             //If-statement added to avoid empty submenu being added and appearing as a white box
-            if(HUPPAAL.getProject().getComponents().size() > 1){
-                subMenu = new DropDownMenu(root, 150, false);
+            final DropDownMenu subcomponentSelectionMenu;
+            if(HUPPAAL.getProject().getComponents().size() > 1) {
+                subcomponentSelectionMenu = new DropDownMenu(root, 150, false);
                 HUPPAAL.getProject().getComponents().forEach(c -> {
                     if (!c.equals(component)) {
-                        subMenu.addClickableListElement(c.getName(), event -> {
+                        subcomponentSelectionMenu.addClickableListElement(c.getName(), event -> {
                             contextMenu.close();
-
-                            final SubComponent newSubComponent = new SubComponent(c);
-
-                            double x = DropDownMenu.x - GRID_SIZE * 2;
+                            var newSubComponent = new SubComponent(c);
+                            var x = DropDownMenu.x - GRID_SIZE * 2;
+                            var y = DropDownMenu.y - GRID_SIZE * 2;
                             x -= x % GRID_SIZE;
-                            newSubComponent.setX(x);
-
-                            double y = DropDownMenu.y - GRID_SIZE * 2;
                             y -= y % GRID_SIZE;
+                            newSubComponent.setX(x);
                             newSubComponent.setY(y);
 
-                            // Add a new sub-component
-                            UndoRedoStack.push(() -> { // Perform
+                            UndoRedoStack.push(() -> {
                                 component.addSubComponent(newSubComponent);
-                            }, () -> { // Undo
+                            }, () -> {
                                 component.removeSubComponent(newSubComponent);
-                            }, "Added sub-component '" + newSubComponent.toString() + "' to component '" + component.getName() + "'", "add-circle");
+                            }, "Added sub-component '" + newSubComponent + "' to component '" + component.getName() + "'", "add-circle");
                         });
                     }
                 });
-
             } else {
-                subMenu = new DropDownMenu(root, 150, false);
-
-                subMenu.addClickableAndDisableableListElement("No Subcomponents", new SimpleBooleanProperty(true), event -> {});
+                subcomponentSelectionMenu = new DropDownMenu(root, 150, false);
+                subcomponentSelectionMenu.addClickableAndDisableableListElement("No Subcomponents", new SimpleBooleanProperty(true), event -> {});
             }
-            contextMenu.addSubMenu("Add Subcomponent", subMenu, 3 * 35);
-
+            contextMenu.addSubMenu("Add Subcomponent", subcomponentSelectionMenu, 3 * 35);
             contextMenu.addSpacerElement();
-
             contextMenu.addClickableListElement("Contains deadlock?", event -> {
-                // Generate the query
-                final String deadlockQuery = UPPAALDriverManager.getInstance().getExistDeadlockQuery(getComponent());
-
-                // Add proper comment
-                final String deadlockComment = "Does " + component.getName() + " contain a deadlock?";
-
-                // Add new query for this component
-                final Query query = new Query(deadlockQuery, deadlockComment, QueryState.UNKNOWN);
+                var deadlockQuery = UPPAALDriverManager.getInstance().getExistDeadlockQuery(getComponent());
+                var deadlockComment = "Does " + component.getName() + " contain a deadlock?";
+                var query = new Query(deadlockQuery, deadlockComment, QueryState.UNKNOWN);
                 HUPPAAL.getProject().getQueries().add(query);
                 query.run();
-
                 contextMenu.close();
             });
 
             contextMenu.addSpacerElement();
-
             contextMenu.addListElement("Color");
-
             contextMenu.addColorPicker(component, component::color);
         };
-
 
         component.addListener((obs, oldComponent, newComponent) -> {
             initializeDropDownMenu.accept(newComponent);
         });
 
-        HUPPAAL.getProject().getComponents().addListener(new ListChangeListener<Component>() {
-            @Override
-            public void onChanged(final Change<? extends Component> c) {
-                initializeDropDownMenu.accept(getComponent());
-            }
-        });
+        HUPPAAL.getProject().getComponents().addListener((ListChangeListener<Component>) c -> initializeDropDownMenu.accept(getComponent()));
 
         initializeDropDownMenu.accept(getComponent());
     }
 
     private void initializeFinishEdgeContextMenu(final Edge unfinishedEdge) {
-
         final Consumer<Component> initializeDropDownMenu = (component) -> {
-            if (component == null) {
+            if (component == null)
                 return;
-            }
 
             final Consumer<LocationAware> setCoordinates = (locationAware) -> {
                 double x = DropDownMenu.x;
@@ -943,25 +917,23 @@ public class ComponentController implements Initializable {
 
     private void initializeSubComponentHandling(final Component newSubComponent) {
         final Consumer<SubComponent> handleAddedSubComponent = subComponent -> {
-            final SubComponentPresentation subComponentPresentation = new SubComponentPresentation(subComponent, getComponent());
+            if(subComponent.getComponent() == null)
+                return;
+            var subComponentPresentation = new SubComponentPresentation(subComponent, getComponent());
             subComponentPresentationMap.put(subComponent, subComponentPresentation);
             modelContainerSubComponent.getChildren().add(subComponentPresentation);
         };
 
-        // React on addition of sub components to the component
-        newSubComponent.getSubComponents().addListener(new ListChangeListener<SubComponent>() {
-            @Override
-            public void onChanged(final Change<? extends SubComponent> c) {
-                if (c.next()) {
-                    // SubComponents are added to the component
-                    c.getAddedSubList().forEach(handleAddedSubComponent::accept);
-
-                    // SubComponents are removed from the component
-                    c.getRemoved().forEach(subComponent -> {
-                        final SubComponentPresentation subComponentPresentation = subComponentPresentationMap.get(subComponent);
-                        modelContainerSubComponent.getChildren().remove(subComponentPresentation);
-                    });
-                }
+        // React on addition of subcomponents to the component
+        newSubComponent.getSubComponents().addListener((ListChangeListener<SubComponent>) c -> {
+            if (c.next()) {
+                // SubComponents are added to the component
+                c.getAddedSubList().forEach(handleAddedSubComponent);
+                // SubComponents are removed from the component
+                c.getRemoved().forEach(subComponent -> {
+                    final SubComponentPresentation subComponentPresentation = subComponentPresentationMap.get(subComponent);
+                    modelContainerSubComponent.getChildren().remove(subComponentPresentation);
+                });
             }
         });
 

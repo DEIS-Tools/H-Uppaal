@@ -1,11 +1,11 @@
 package dk.cs.aau.huppaal.presentations;
 
+import com.sun.javafx.event.RedirectedEvent;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.colors.EnabledColor;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
 import javafx.animation.ScaleTransition;
-import javafx.application.Platform;
 import javafx.beans.binding.When;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -19,11 +19,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.stage.PopupWindow;
 import javafx.stage.Screen;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import javax.swing.*;
+import java.awt.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -38,7 +41,7 @@ public class DropDownMenu {
     private final int width;
     private final StackPane content;
     private final VBox list;
-    private final JFXPopup popup;
+    private final Popup popup;
     private final SimpleBooleanProperty isHoveringSubMenu = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty isHoveringMenu = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty showSubMenu = new SimpleBooleanProperty(false);
@@ -50,7 +53,9 @@ public class DropDownMenu {
         this.width = width;
         this.source = source;
 
-        popup = new JFXPopup();
+        popup = new Popup();
+        popup.setHideOnEscape(true);
+        popup.setAutoHide(true);
 
         list = new VBox();
         list.setStyle("-fx-background-color: white; -fx-padding: 8 0 8 0;");
@@ -63,33 +68,26 @@ public class DropDownMenu {
         content.setMinHeight(1);
         content.setMaxHeight(1);
 
-        if (closeOnMouseExit) {
-            final Runnable checkIfWeShouldClose = () -> {
-                if (!isHoveringMenu.get() && !isHoveringSubMenu.get()) {
-                    final Timer timer = new Timer(20, arg0 -> {
-                        if (!isHoveringMenu.get() && !isHoveringSubMenu.get()) {
-                            this.close();
-                        }
-                    });
-                    timer.setRepeats(false); // Only execute once
-                    timer.start(); // Go go go!
-                }
-            };
-            isHoveringMenu.addListener(observable -> checkIfWeShouldClose.run());
-            isHoveringSubMenu.addListener(observable -> checkIfWeShouldClose.run());
-        }
+        content.setOnMouseExited(event -> isHoveringMenu.set(false));
+        content.setOnMouseEntered(event -> isHoveringMenu.set(true));
 
+        popup.getContent().add(content);
+        closeWhenClickingOutsidePopup();
+    }
 
-        list.setOnMouseExited(event -> isHoveringMenu.set(false));
-        list.setOnMouseEntered(event -> isHoveringMenu.set(true));
-
-        popup.setPopupContent(content);
+    private void closeWhenClickingOutsidePopup() {
+        popup.getScene().getWindow().setEventDispatcher((event, tail) -> {
+            if (event.getEventType() == RedirectedEvent.REDIRECTED) {
+                if (((RedirectedEvent) event).getOriginalEvent().getEventType() == MouseEvent.MOUSE_PRESSED)
+                    close();
+            } else
+                tail.dispatchEvent(event);
+            return null;
+        });
     }
 
     public void close() {
-        Platform.runLater(
-                popup::hide
-        );
+        popup.hide();
     }
 
     public void show(final JFXPopup.PopupVPosition vAlign, final JFXPopup.PopupHPosition hAlign, final double initOffsetX, final double initOffsetY) {
@@ -109,23 +107,19 @@ public class DropDownMenu {
         }
 
         //Set the x-coordinate of the potential submenu to avoid screen overflow
-        if(subMenuContent != null){
-            if(Screen.getPrimary().getBounds().getWidth() - (popup.getAnchorX() + width) < width){
-                subMenuContent.setTranslateX(- width);
-            } else{
+        if(subMenuContent != null) {
+            if(Screen.getPrimary().getBounds().getWidth() - (popup.getAnchorX() + width) < width)
+                subMenuContent.setTranslateX(-width);
+            else
                 subMenuContent.setTranslateX(width);
-            }
         }
 
-        //Need final temporary variables for lambda
-        final double finalOffsetX = offsetX;
-        final double finalOffsetY = offsetY;
-
         //Set the x and y of the dropdown to ensure that locations etc. are added correctly
-        x = this.source.getLayoutX() + finalOffsetX;
-        y = this.source.getLayoutY() + finalOffsetY;
+        x = this.source.getLayoutX() + offsetX;
+        y = this.source.getLayoutY() + offsetY;
 
-        Platform.runLater( () -> popup.show(this.source, vAlign, hAlign, finalOffsetX, finalOffsetY));
+        var mouseLocation = MouseInfo.getPointerInfo().getLocation();
+        popup.show(this.source, mouseLocation.getX(), mouseLocation.getY());
     }
 
     public void addListElement(final String s) {

@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Path?>
+<?import com.jfoenix.controls.JFXTextArea?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="StackPane">
-
     <Path id="shape" StackPane.alignment="CENTER_LEFT" strokeType="INSIDE"/>
-
     <Label id="label" styleClass="sub-caption" StackPane.alignment="CENTER_LEFT" visible="false"/>
-
-    <JFXTextField id="textField" styleClass="sub-caption" StackPane.alignment="CENTER_LEFT" mouseTransparent="true"/>
-
+    <JFXTextArea id="textArea" styleClass="sub-caption" StackPane.alignment="CENTER_LEFT" mouseTransparent="true"/>
 </fx:root>

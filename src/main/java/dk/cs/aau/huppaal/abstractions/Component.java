@@ -446,40 +446,39 @@ public class Component implements Serializable, DropDownMenu.HasColor {
 
     @Override
     public JsonObject serialize() {
-        final JsonObject result = new JsonObject();
-
+        var result = new JsonObject();
         result.addProperty(NAME, getName());
         result.addProperty(DECLARATIONS, getDeclarations());
 
-        final JsonArray locations = new JsonArray();
+        var locations = new JsonArray();
         getLocations().forEach(location -> locations.add(location.serialize()));
         result.add(LOCATIONS, locations);
-
         result.add(INITIAL_LOCATION, getInitialLocation().serialize());
         result.add(FINAL_LOCATION, getFinalLocation().serialize());
 
-        final JsonArray jorks = new JsonArray();
+        var jorks = new JsonArray();
         getJorks().forEach(jork -> jorks.add(jork.serialize()));
         result.add(JORKS, jorks);
 
-        final JsonArray subComponents = new JsonArray();
-        getSubComponents().forEach(subComponent -> subComponents.add(subComponent.serialize()));
+        var subComponents = new JsonArray();
+        getSubComponents().forEach(subComponent -> {
+            var subcomponentVal = subComponent.serialize();
+            if(subcomponentVal != null)
+                subComponents.add(subcomponentVal);
+        });
         result.add(SUBCOMPONENTS, subComponents);
 
-        final JsonArray edges = new JsonArray();
+        var edges = new JsonArray();
         getEdges().forEach(edge -> edges.add(edge.serialize()));
         result.add(EDGES, edges);
 
         result.addProperty(IS_MAIN, isIsMain());
-
         result.addProperty(DESCRIPTION, getDescription());
-
         result.addProperty(X, getX());
         result.addProperty(Y, getY());
         result.addProperty(WIDTH, getWidth());
         result.addProperty(HEIGHT, getHeight());
         result.addProperty(COLOR, EnabledColor.getIdentifier(getColor()));
-
         result.addProperty(INCLUDE_IN_PERIODIC_CHECK, isIncludeInPeriodicCheck());
 
         return result;

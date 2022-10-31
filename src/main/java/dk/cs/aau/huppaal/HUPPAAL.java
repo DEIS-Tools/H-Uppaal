@@ -88,47 +88,35 @@ public class HUPPAAL extends Application {
     }
 
     public static void save() {
-        // Clear the project folder .json files
         try {
-            List<Path> paths = java.nio.file.Files.walk(Paths.get(projectDirectory.getValue()+"/"))
+            // Check that the folder exists, if it doesn't, create it.
+            if(!java.nio.file.Files.exists(Path.of(projectDirectory.getValue() + File.separator)))
+                java.nio.file.Files.createDirectory(Path.of(projectDirectory.getValue() + File.separator));
+
+            // Clear the project folder .json files
+            var paths = java.nio.file.Files.walk(Paths.get(projectDirectory.getValue() + File.separator))
                     .filter(p -> java.nio.file.Files.isRegularFile(p) && p.getFileName().toString().endsWith(".json"))
-                    .collect(Collectors.toList());
+                    .toList();
+            for (var p : paths)
+                java.nio.file.Files.delete(p);
 
-            for (Path pth:paths) {
-                java.nio.file.Files.delete(pth);
-            }
-        } catch (final IOException e) {
-            showToast("Save failed: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        HUPPAAL.getProject().getComponents().forEach(component -> {
-            try {
-                final Writer writer = new FileWriter(String.format(projectDirectory.getValue() + File.separator + "%s.json", component.getName()));
-                final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-                gson.toJson(component.serialize(), writer);
-
+            // Save components
+            var gson = new GsonBuilder().setPrettyPrinting().create();
+            for(var c : HUPPAAL.getProject().getComponents()) {
+                var writer = new FileWriter(String.format(projectDirectory.getValue() + File.separator + "%s.json", c.getName()));
+                gson.toJson(c.serialize(), writer);
                 writer.close();
-            } catch (final IOException e) {
-                showToast("Could not save project: " + e.getMessage());
-                e.printStackTrace();
             }
-        });
 
-        final JsonArray queries = new JsonArray();
-        HUPPAAL.getProject().getQueries().forEach(query -> queries.add(query.serialize()));
-
-        final Writer writer;
-        try {
-            writer = new FileWriter(projectDirectory.getValue() + File.separator + "Queries.json");
-            final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
+            // Save queries
+            var queries = new JsonArray();
+            HUPPAAL.getProject().getQueries().forEach(query -> queries.add(query.serialize()));
+            var writer = new FileWriter(projectDirectory.getValue() + File.separator + "Queries.json");
             gson.toJson(queries, writer);
             writer.close();
 
             showToast("Project saved!");
-        } catch (final IOException e) {
+        } catch (Exception e) {
             showToast("Could not save project: " + e.getMessage());
             e.printStackTrace();
         }
