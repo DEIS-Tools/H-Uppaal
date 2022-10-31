@@ -146,7 +146,7 @@ public class TagPresentation extends StackPane {
             //Get the correct parent for guards, selects, synchronizations, and updates
             parent = getParent();
         } else {
-            //Gte the correct parent for location names
+            //Get the correct parent for location names
             parent = getParent().getParent();
         }
         //Handle the horizontal placement of the tag
