@@ -79,7 +79,7 @@ public class TagPresentation extends StackPane {
     }
 
     private void initializeTextAid() {
-        var textField = (JFXTextArea) lookup("#textField");
+        var textField = (JFXTextArea) lookup("#textArea");
 
         textField.textProperty().addListener((obs, oldText, newText) -> {
             if (newText.contains(" ")) {
@@ -91,7 +91,7 @@ public class TagPresentation extends StackPane {
 
     private void initializeLabel() {
         var label = (Label) lookup("#label");
-        var text = (JFXTextArea) lookup("#textField");
+        var text = (JFXTextArea) lookup("#textArea");
         var shape = (Path) lookup("#shape");
         var insets = new Insets(0,2,0,2);
         text.setPadding(insets);
@@ -195,7 +195,7 @@ public class TagPresentation extends StackPane {
             wasDragged = true; // Tell the mouse release action that we can store an update
         });
 
-        var textField = (JFXTextArea) lookup("#textField");
+        var textField = (JFXTextArea) lookup("#textArea");
         shape.setOnMouseReleased(event -> {
             if (wasDragged) {
                 var currentX = getTranslateX();
@@ -244,7 +244,7 @@ public class TagPresentation extends StackPane {
 
     public void bindToColor(final ObjectProperty<Color> color, final ObjectProperty<Color.Intensity> intensity, final boolean isNickname) {
         final BiConsumer<Color, Color.Intensity> recolor = (newColor, newIntensity) -> {
-            var textField = (JFXTextArea) lookup("#textField");
+            var textField = (JFXTextArea) lookup("#textArea");
             textField.setUnFocusColor(TRANSPARENT);
             textField.setFocusColor(newColor.getColor(newIntensity));
             if (isNickname)
@@ -260,7 +260,7 @@ public class TagPresentation extends StackPane {
     }
 
     public void setAndBindString(final StringProperty string) {
-        var textField = (JFXTextArea) lookup("#textField");
+        var textField = (JFXTextArea) lookup("#textArea");
 
         textField.textProperty().unbind();
         textField.setText(string.get());
@@ -268,7 +268,7 @@ public class TagPresentation extends StackPane {
     }
 
     public void setPlaceholder(final String placeholder) {
-        var textField = (JFXTextArea) lookup("#textField");
+        var textField = (JFXTextArea) lookup("#textArea");
         textField.setPromptText(placeholder);
     }
 
@@ -277,12 +277,12 @@ public class TagPresentation extends StackPane {
     }
 
     public void requestTextFieldFocus() {
-        var textField = (JFXTextArea) lookup("#textField");
+        var textField = (JFXTextArea) lookup("#textArea");
         Platform.runLater(textField::requestFocus);
     }
 
     public ObservableBooleanValue textFieldFocusProperty() {
-        var textField = (JFXTextArea) lookup("#textField");
+        var textField = (JFXTextArea) lookup("#textArea");
         return textField.focusedProperty();
     }
 

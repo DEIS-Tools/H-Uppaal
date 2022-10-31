@@ -8,5 +8,5 @@
          type="StackPane">
     <Path id="shape" StackPane.alignment="CENTER_LEFT" strokeType="INSIDE"/>
     <Label id="label" styleClass="sub-caption" StackPane.alignment="CENTER_LEFT" visible="false"/>
-    <JFXTextArea id="textField" styleClass="sub-caption" StackPane.alignment="CENTER_LEFT" mouseTransparent="true"/>
+    <JFXTextArea id="textArea" styleClass="sub-caption" StackPane.alignment="CENTER_LEFT" mouseTransparent="true"/>
 </fx:root>
