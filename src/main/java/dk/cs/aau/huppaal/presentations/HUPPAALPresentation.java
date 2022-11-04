@@ -327,6 +327,20 @@ public class HUPPAALPresentation extends StackPane {
         });
     }
 
+    private void initializeGenerateUppaalModelButton() {
+        var color = Color.GREY_BLUE;
+        var colorIntensity = Color.Intensity.I800;
+        controller.generateUppaalModel.setMaskType(JFXRippler.RipplerMask.CIRCLE);
+        controller.generateUppaalModel.setRipplerFill(color.getTextColor(colorIntensity));
+        if(UPPAALDriverManager.getInstance() instanceof DummyUPPAALDriver) {
+            controller.generateUppaalModel.setEnabled(false);
+            controller.generateUppaalModel.setOpacity(0.3);
+        } else {
+            controller.generateUppaalModel.setEnabled(true);
+            controller.generateUppaalModel.setOpacity(1.0);
+        }
+    }
+
     private void initializeExternalToolButton() {
         var toolCommand = HUPPAAL.preferences.get("externalToolCommand", "");
         var debuggerCommand = HUPPAAL.preferences.get("debuggerToolCommand", "");
@@ -590,6 +604,6 @@ public class HUPPAALPresentation extends StackPane {
 
     public void uppaalDriverUpdated(){
         //Reflect update in GUI, by resetting the GenerateUPPAALModelButton
-        initializeExternalToolButton();
+        initializeGenerateUppaalModelButton();
     }
 }

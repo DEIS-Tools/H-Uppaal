@@ -116,16 +116,29 @@
                         </StackPane>
                         <Region minWidth="16"/>
 
-                        <!-- GENERATE UPPAAL MODEL FOR PROJECT -->
+                        <!-- Call an external CLI command TODO: These external commands should be a drop-down -->
                         <JFXRippler fx:id="callExternalToolCommand">
                             <StackPane minWidth="40" minHeight="40" onMouseClicked="#externalToolCommand">
                                 <FontIcon iconLiteral="gmi-build" iconSize="19" fill="white"/>
                             </StackPane>
                         </JFXRippler>
-
+                        <!-- Call a different external CLI command -->
                         <JFXRippler fx:id="launchDebugger">
                             <StackPane minWidth="40" minHeight="40" onMouseClicked="#launchDebugger">
                                 <FontIcon iconLiteral="gmi-bug-report" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region minWidth="16"/>
+                        <StackPane>
+                            <Rectangle width="1" height="32" fill="black" opacity="0.2"/>
+                        </StackPane>
+                        <Region minWidth="16"/>
+
+                        <!-- GENERATE UPPAAL MODEL FOR PROJECT -->
+                        <JFXRippler fx:id="generateUppaalModel">
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#generateUppaalModelClicked">
+                                <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
                     </HBox>
@@ -217,6 +230,11 @@
                 </Menu>
 
                 <Menu text="Preferences">
+                    <MenuItem fx:id="menuBarPreferencesUppaalLocation" text="Set UPPAAL Location">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-insert-drive-file" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
                     <MenuItem fx:id="menuBarPreferencesExternalToolCommand" text="Set external tool command">
                         <graphic>
                             <FontIcon iconLiteral="gmi-build" iconSize="24" fill="black"/>
