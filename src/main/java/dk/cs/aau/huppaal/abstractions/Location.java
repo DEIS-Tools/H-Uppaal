@@ -288,7 +288,7 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
 
     @Override
     public JsonObject serialize() {
-        final JsonObject result = new JsonObject();
+        var result = new JsonObject();
         result.addProperty(ID, getId());
         result.addProperty(NICKNAME, getNickname());
         result.addProperty(INVARIANT, getInvariant());
@@ -315,19 +315,30 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
         setType(new Gson().fromJson(json.getAsJsonPrimitive(TYPE), Type.class));
         setUrgency(new Gson().fromJson(json.getAsJsonPrimitive(URGENCY), Urgency.class));
 
-        setX(json.getAsJsonPrimitive(X).getAsDouble());
-        setY(json.getAsJsonPrimitive(Y).getAsDouble());
-
-        final EnabledColor enabledColor = EnabledColor.fromIdentifier(json.getAsJsonPrimitive(COLOR).getAsString());
+        var enabledColor = EnabledColor.fromIdentifier(json.getAsJsonPrimitive(COLOR).getAsString());
         if (enabledColor != null) {
             setColorIntensity(enabledColor.intensity);
             setColor(enabledColor.color);
         }
 
-        setNicknameX(json.getAsJsonPrimitive(NICKNAME_X).getAsDouble());
-        setNicknameY(json.getAsJsonPrimitive(NICKNAME_Y).getAsDouble());
-        setInvariantX(json.getAsJsonPrimitive(INVARIANT_X).getAsDouble());
-        setInvariantY(json.getAsJsonPrimitive(INVARIANT_Y).getAsDouble());
+        var jsonX = json.getAsJsonPrimitive(X);
+        var jsonY = json.getAsJsonPrimitive(Y);
+        var jsonNicknameX = json.getAsJsonPrimitive(NICKNAME_X);
+        var jsonNicknameY = json.getAsJsonPrimitive(NICKNAME_Y);
+        var jsonInvariantX = json.getAsJsonPrimitive(INVARIANT_X);
+        var jsonInvariantY = json.getAsJsonPrimitive(INVARIANT_Y);
+        if(jsonX != null)
+            setX(jsonX.getAsDouble());
+        if (jsonY != null)
+            setY(jsonY.getAsDouble());
+        if (jsonNicknameX != null)
+            setNicknameX(jsonNicknameX.getAsDouble());
+        if (jsonNicknameY != null)
+            setNicknameY(jsonNicknameY.getAsDouble());
+        if (jsonInvariantX != null)
+            setInvariantX(jsonInvariantX.getAsDouble());
+        if (jsonInvariantY != null)
+            setInvariantY(jsonInvariantY.getAsDouble());
     }
 
     @Override
@@ -357,7 +368,6 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
     }
 
     private void bindReachabilityAnalysis() {
-
         invariantProperty().addListener((observable, oldValue, newValue) -> {
             HUPPAALController.runReachabilityAnalysis();
             ComponentController.setLastChanged();
@@ -367,6 +377,4 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
             ComponentController.setLastChanged();
         });
     }
-
-
 }
