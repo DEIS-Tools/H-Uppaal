@@ -7,6 +7,7 @@ import dk.cs.aau.huppaal.presentations.JorkPresentation;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.helpers.ArrayUtils;
 import dk.cs.aau.huppaal.utility.helpers.Circular;
+import dk.cs.aau.huppaal.utility.helpers.circular.*;
 import dk.cs.aau.huppaal.utility.serialize.Serializable;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -16,8 +17,6 @@ import javafx.collections.ObservableList;
 
 import java.util.UUID;
 import java.util.function.Consumer;
-
-import static dk.cs.aau.huppaal.presentations.CanvasPresentation.GRID_SIZE;
 
 public class Edge implements Serializable, Nearable {
     private static final String UUID = "uuid";
@@ -53,8 +52,8 @@ public class Edge implements Serializable, Nearable {
     private final ObservableList<Nail> nails = FXCollections.observableArrayList();
 
     // Circulars
-    private ObjectProperty<Circular> sourceCircular = new SimpleObjectProperty<>();
-    private ObjectProperty<Circular> targetCircular = new SimpleObjectProperty<>();
+    private final ObjectProperty<Circular> sourceCircular = new SimpleObjectProperty<>();
+    private final ObjectProperty<Circular> targetCircular = new SimpleObjectProperty<>();
 
     private final Component parent;
 
@@ -261,249 +260,90 @@ public class Edge implements Serializable, Nearable {
     }
 
     public Circular getSourceCircular() {
-        if(sourceCircular != null) {
+        if(sourceCircular != null)
             return sourceCircular.get();
-        }
         return null;
     }
 
     public Circular getTargetCircular() {
-        if(targetCircular != null) {
+        if(targetCircular != null)
             return targetCircular.get();
-        }
         return null;
 
     }
 
     private void updateSourceCircular() {
-        if(getSourceLocation() != null) {
+        if(getSourceLocation() != null)
             sourceCircular.set(getSourceLocation());
-        } else if(getSourceSubComponent() != null) {
-            sourceCircular.set(new Circular() {
-                DoubleProperty x = new SimpleDoubleProperty();
-                DoubleProperty y = new SimpleDoubleProperty();
-                {
-                    x.bind(getSourceSubComponent().xProperty().add(getSourceSubComponent().widthProperty()).subtract(GRID_SIZE * 2));
-                    y.bind(getSourceSubComponent().yProperty().add(getSourceSubComponent().heightProperty()).subtract(GRID_SIZE * 2));
-                }
-
-                @Override
-                public DoubleProperty radiusProperty() {
-                    return getSourceSubComponent().getComponent().getFinalLocation().radiusProperty();
-                }
-
-                @Override
-                public DoubleProperty scaleProperty() {
-                    return getSourceSubComponent().getComponent().getFinalLocation().scaleProperty();
-                }
-
-                @Override
-                public DoubleProperty xProperty() {
-                    return x;
-                }
-
-                @Override
-                public DoubleProperty yProperty() {
-                    return y;
-                }
-
-                @Override
-                public double getX() {
-                    return xProperty().get();
-                }
-
-                @Override
-                public double getY() {
-                    return yProperty().get();
-                }
-            });
-        } else if (getSourceJork() != null) {
-            sourceCircular.set(new Circular() {
-                DoubleProperty x = new SimpleDoubleProperty();
-                DoubleProperty y = new SimpleDoubleProperty();
-
-                {
-                    x.bind(getSourceJork().xProperty().add(JorkPresentation.JORK_WIDTH / 2));
-                    y.bind(getSourceJork().yProperty().add(JorkPresentation.JORK_HEIGHT + JorkPresentation.JORK_Y_TRANSLATE));
-                }
-
-                @Override
-                public DoubleProperty radiusProperty() {
-                    return new SimpleDoubleProperty(0);
-                }
-
-                @Override
-                public DoubleProperty scaleProperty() {
-                    return new SimpleDoubleProperty(0);
-                }
-
-                @Override
-                public DoubleProperty xProperty() {
-                    return x;
-                }
-
-                @Override
-                public DoubleProperty yProperty() {
-                    return y;
-                }
-
-                @Override
-                public double getX() {
-                    return xProperty().get();
-                }
-
-                @Override
-                public double getY() {
-                    return yProperty().get();
-                }
-            });
-        }
+        else if(getSourceSubComponent() != null)
+            sourceCircular.set(new SourceSubComponentCircular(getSourceSubComponent()));
+        else if (getSourceJork() != null)
+            sourceCircular.set(new SourceJorkCircular(getSourceJork()));
     }
 
     private void updateTargetCircular() {
-        if(getTargetLocation() != null) {
+        if(getTargetLocation() != null)
             targetCircular.set(getTargetLocation());
-        } else if(getTargetSubComponent() != null) {
-            targetCircular.set(new Circular() {
-                DoubleProperty x = new SimpleDoubleProperty();
-                DoubleProperty y = new SimpleDoubleProperty();
-                {
-                    x.bind(getTargetSubComponent().xProperty().add(GRID_SIZE * 2));
-                    y.bind(getTargetSubComponent().yProperty().add(GRID_SIZE * 2));
-                }
-
-                @Override
-                public DoubleProperty radiusProperty() {
-                    return getTargetSubComponent().getComponent().getInitialLocation().radiusProperty();
-                }
-
-                @Override
-                public DoubleProperty scaleProperty() {
-                    return getTargetSubComponent().getComponent().getInitialLocation().scaleProperty();
-                }
-
-                @Override
-                public DoubleProperty xProperty() {
-                    return x;
-                }
-
-                @Override
-                public DoubleProperty yProperty() {
-                    return y;
-                }
-
-                @Override
-                public double getX() {
-                    return xProperty().get();
-                }
-
-                @Override
-                public double getY() {
-                    return yProperty().get();
-                }
-            });
-        } else if (getTargetJork() != null) {
-            targetCircular.set(new Circular() {
-                DoubleProperty x = new SimpleDoubleProperty();
-                DoubleProperty y = new SimpleDoubleProperty();
-
-                {
-                    x.bind(getTargetJork().xProperty().add(JorkPresentation.JORK_WIDTH / 2));
-                    y.bind(getTargetJork().yProperty().add(JorkPresentation.JORK_Y_TRANSLATE));
-                }
-
-                @Override
-                public DoubleProperty radiusProperty() {
-                    return new SimpleDoubleProperty(0);
-                }
-
-                @Override
-                public DoubleProperty scaleProperty() {
-                    return new SimpleDoubleProperty(0);
-                }
-
-                @Override
-                public DoubleProperty xProperty() {
-                    return x;
-                }
-
-                @Override
-                public DoubleProperty yProperty() {
-                    return y;
-                }
-
-                @Override
-                public double getX() {
-                    return xProperty().get();
-                }
-
-                @Override
-                public double getY() {
-                    return yProperty().get();
-                }
-            });
-        }
+        else if(getTargetSubComponent() != null)
+            targetCircular.set(new TargetSubComponentCircular(getTargetSubComponent()));
+        else if (getTargetJork() != null)
+            targetCircular.set(new TargetJorkCircular(getTargetJork()));
     }
 
     public String getProperty(final PropertyType propertyType) {
-        if (propertyType.equals(PropertyType.SELECTION)) {
-            return getSelect();
-        } else if (propertyType.equals(PropertyType.GUARD)) {
-            return getGuard();
-        } else if (propertyType.equals(PropertyType.SYNCHRONIZATION)) {
-            return getSync();
-        } else if (propertyType.equals(PropertyType.UPDATE)) {
-            return getUpdate();
-        } else {
-            return "";
-        }
+        return switch (propertyType) {
+            case SELECTION -> getSelect();
+            case GUARD -> getGuard();
+            case SYNCHRONIZATION -> getSync();
+            case UPDATE -> getUpdate();
+            default -> "";
+        };
     }
 
     public void setProperty(final PropertyType propertyType, final String newProperty) {
-        if (propertyType.equals(PropertyType.SELECTION)) {
-            selectProperty().unbind();
-            setSelect(newProperty);
-        } else if (propertyType.equals(PropertyType.GUARD)) {
-            guardProperty().unbind();
-            setGuard(newProperty);
-        } else if (propertyType.equals(PropertyType.SYNCHRONIZATION)) {
-            syncProperty().unbind();
-            setSync(newProperty);
-        } else if (propertyType.equals(PropertyType.UPDATE)) {
-            updateProperty().unbind();
-            setUpdate(newProperty);
+        switch (propertyType) {
+            case SELECTION -> {
+                selectProperty().unbind();
+                setSelect(newProperty);
+            }
+            case GUARD -> {
+                guardProperty().unbind();
+                setGuard(newProperty);
+            }
+            case SYNCHRONIZATION -> {
+                syncProperty().unbind();
+                setSync(newProperty);
+            }
+            case UPDATE -> {
+                updateProperty().unbind();
+                setUpdate(newProperty);
+            }
         }
     }
 
     @Override
     public JsonObject serialize() {
-        final JsonObject result = new JsonObject();
-
+        var result = new JsonObject();
         result.addProperty(UUID, uuid.toString());
         if (getSourceLocation() != null) {
             result.addProperty(SOURCE_LOCATION, getSourceLocation().getId());
-        }
-        if (getTargetLocation() != null) {
+        if (getTargetLocation() != null)
             result.addProperty(TARGET_LOCATION, getTargetLocation().getId());
-        }
-        if (getSourceSubComponent() != null) {
+        if (getSourceSubComponent() != null)
             result.addProperty(SOURCE_SUB_COMPONENT, getSourceSubComponent().getIdentifier());
-        }
-        if (getTargetSubComponent() != null) {
+        if (getTargetSubComponent() != null)
             result.addProperty(TARGET_SUB_COMPONENT, getTargetSubComponent().getIdentifier());
-        }
-        if (getSourceJork() != null) {
+        if (getSourceJork() != null)
             result.addProperty(SOURCE_JORK, getSourceJork().getId());
-        }
-        if (getTargetJork() != null) {
+        if (getTargetJork() != null)
             result.addProperty(TARGET_JORK, getTargetJork().getId());
-        }
+
         result.addProperty(SELECT, getSelect());
         result.addProperty(GUARD, getGuard());
         result.addProperty(UPDATE, getUpdate());
         result.addProperty(SYNC, getSync());
 
-        final JsonArray nails = new JsonArray();
+        var nails = new JsonArray();
         getNails().forEach(nail -> nails.add(nail.serialize()));
         result.add(NAILS, nails);
 
@@ -512,25 +352,23 @@ public class Edge implements Serializable, Nearable {
 
     @Override
     public void deserialize(final JsonObject json) {
-        // todo: We can't deserialize this object without knowledge about locations. Use the method below
+        throw new RuntimeException("Unable to deserialize edges without knowledge about locations");
     }
 
     public void deserialize(final JsonObject json, final Component component) {
         // Find the initial and final location of the component of the edge
-        final Location initialLocation = component.getInitialLocation();
-        final Location finalLocation = component.getFinalLocation();
+        var initialLocation = component.getInitialLocation();
+        var finalLocation = component.getFinalLocation();
 
         if(json.has(UUID))
             uuid = java.util.UUID.fromString(json.get(UUID).getAsJsonPrimitive().getAsString());
 
         // Sets a location to be either source or target location if the location matches the json content
-        final Consumer<Location> setFromAndToLocationIfMatches = (location) -> {
-            if (json.get(SOURCE_LOCATION) != null && location.getId().equals(json.getAsJsonPrimitive(SOURCE_LOCATION).getAsString())) {
+        var setFromAndToLocationIfMatches = (Consumer<Location>)(location) -> {
+            if (json.get(SOURCE_LOCATION) != null && location.getId().equals(json.getAsJsonPrimitive(SOURCE_LOCATION).getAsString()))
                 setSourceLocation(location);
-            }
-            if (json.get(TARGET_LOCATION) != null && location.getId().equals(json.getAsJsonPrimitive(TARGET_LOCATION).getAsString())) {
+            if (json.get(TARGET_LOCATION) != null && location.getId().equals(json.getAsJsonPrimitive(TARGET_LOCATION).getAsString()))
                 setTargetLocation(location);
-            }
         };
 
         component.getLocations().forEach(setFromAndToLocationIfMatches);
@@ -538,25 +376,21 @@ public class Edge implements Serializable, Nearable {
         setFromAndToLocationIfMatches.accept(finalLocation);
 
         // Sets a sub component to be either source or target sub component if the sub component matches the json content
-        final Consumer<SubComponent> setFromAndToSubComponentIfMatches = (subComponent) -> {
-            if (json.get(SOURCE_SUB_COMPONENT) != null && subComponent.getIdentifier().equals(json.getAsJsonPrimitive(SOURCE_SUB_COMPONENT).getAsString())) {
+        var setFromAndToSubComponentIfMatches = (Consumer<SubComponent>)(subComponent) -> {
+            if (json.get(SOURCE_SUB_COMPONENT) != null && subComponent.getIdentifier().equals(json.getAsJsonPrimitive(SOURCE_SUB_COMPONENT).getAsString()))
                 setSourceSubComponent(subComponent);
-            }
-            if (json.get(TARGET_SUB_COMPONENT) != null && subComponent.getIdentifier().equals(json.getAsJsonPrimitive(TARGET_SUB_COMPONENT).getAsString())) {
+            if (json.get(TARGET_SUB_COMPONENT) != null && subComponent.getIdentifier().equals(json.getAsJsonPrimitive(TARGET_SUB_COMPONENT).getAsString()))
                 setTargetSubComponent(subComponent);
-            }
         };
 
         component.getSubComponents().forEach(setFromAndToSubComponentIfMatches);
 
         // Sets a jork to be either source or target jork if the jork matches the json content
-        final Consumer<Jork> setFromAndToJorkIfMatches = (jork) -> {
-            if (json.get(SOURCE_JORK) != null && jork.getId().equals(json.getAsJsonPrimitive(SOURCE_JORK).getAsString())) {
+        var setFromAndToJorkIfMatches = (Consumer<Jork>)(jork) -> {
+            if (json.get(SOURCE_JORK) != null && jork.getId().equals(json.getAsJsonPrimitive(SOURCE_JORK).getAsString()))
                 setSourceJork(jork);
-            }
-            if (json.get(TARGET_JORK) != null && jork.getId().equals(json.getAsJsonPrimitive(TARGET_JORK).getAsString())) {
+            if (json.get(TARGET_JORK) != null && jork.getId().equals(json.getAsJsonPrimitive(TARGET_JORK).getAsString()))
                 setTargetJork(jork);
-            }
         };
 
         component.getJorks().forEach(setFromAndToJorkIfMatches);
@@ -566,10 +400,7 @@ public class Edge implements Serializable, Nearable {
         setUpdate(json.getAsJsonPrimitive(UPDATE).getAsString());
         setSync(json.getAsJsonPrimitive(SYNC).getAsString());
 
-        json.getAsJsonArray(NAILS).forEach(jsonElement -> {
-            final Nail newNail = new Nail((JsonObject) jsonElement);
-            nails.add(newNail);
-        });
+        json.getAsJsonArray(NAILS).forEach(jsonElement -> nails.add(new Nail((JsonObject) jsonElement)));
     }
 
     @Override
@@ -622,7 +453,6 @@ public class Edge implements Serializable, Nearable {
     }
 
     public boolean isSelfLoop() {
-
         return (getSourceLocation() != null && getSourceLocation().equals(getTargetLocation())) ||
                 (getSourceSubComponent() != null && getSourceSubComponent().equals(getTargetSubComponent())) ||
                 (getSourceJork() != null && getSourceJork().equals(getTargetJork()));
@@ -630,7 +460,6 @@ public class Edge implements Serializable, Nearable {
     }
 
     private void bindReachabilityAnalysis() {
-
         selectProperty().addListener((observable, oldValue, newValue) -> {
             HUPPAALController.runReachabilityAnalysis();
             ComponentController.setLastChanged();
