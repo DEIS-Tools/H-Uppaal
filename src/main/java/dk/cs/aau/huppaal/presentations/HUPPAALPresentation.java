@@ -359,7 +359,7 @@ public class HUPPAALPresentation extends StackPane {
                 proc.waitFor(10, TimeUnit.SECONDS); // TODO: should wait forever until cancelled (requires a "cancel" button)
                 String s;
                 while((s = stdi.readLine()) != null)
-                    CodeAnalysis.addMessage(null, new CodeAnalysis.Message(s, CodeAnalysis.MessageType.WARNING, () -> ""));
+                    CodeAnalysis.addMessage(s); // TODO: This shouldn't be a "warning"
                 while((s = stde.readLine()) != null)
                     System.err.println(s);
             } catch (Exception e) {
@@ -371,7 +371,6 @@ public class HUPPAALPresentation extends StackPane {
 
     private void initializeRunConfigPicker() {
         // TODO: RunConfigurations should be saved in the project files, not in preferences!
-        // Load last used runConfig
         var runConfigsJson = HUPPAAL.preferences.get(RunConfigurationPreferencesKeys.ConfigurationsList, "[]");
         var lastRunConfig = HUPPAAL.preferences.get(RunConfigurationPreferencesKeys.CurrentlySelected, "");
         var gson = new Gson();
@@ -385,6 +384,7 @@ public class HUPPAALPresentation extends StackPane {
         for(var c : runConfigurations)
             controller.runConfigurationPicker.getItems().add(new RunConfigurationButton(Optional.of(c), new JFXButton(c.name)));
 
+        // set the last picked run config to be the currently selected one
         if(!Strings.isNullOrEmpty(lastRunConfig)) {
             var e = controller.runConfigurationPicker.getItems().stream().filter(b -> {
                 if(b.runConfiguration().isPresent())
@@ -394,12 +394,15 @@ public class HUPPAALPresentation extends StackPane {
             e.ifPresent(b -> controller.runConfigurationPicker.setValue(b));
         }
 
+        // When a new selection happens
         controller.runConfigurationPicker.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
             if(oldValue == newValue || newValue == null)
                 return;
             newValue.button().fire();
             if(newValue.runConfiguration().isEmpty())
                 Platform.runLater(() -> controller.runConfigurationPicker.setValue(oldValue));
+            else
+                HUPPAAL.preferences.put(RunConfigurationPreferencesKeys.CurrentlySelected, newValue.runConfiguration().get().name);
             initializeRunConfigExecuteButton();
         });
 
