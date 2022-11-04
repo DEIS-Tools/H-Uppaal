@@ -1,5 +1,8 @@
 package dk.cs.aau.huppaal.presentations;
 
+import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.jfoenix.controls.*;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Query;
@@ -7,11 +10,15 @@ import dk.cs.aau.huppaal.backend.DummyUPPAALDriver;
 import dk.cs.aau.huppaal.backend.UPPAALDriverManager;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
+import dk.cs.aau.huppaal.runconfig.RunConfigurationPreferencesKeys;
+import dk.cs.aau.huppaal.runconfig.RunConfiguration;
+import dk.cs.aau.huppaal.runconfig.RunConfigurationButton;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.colors.EnabledColor;
 import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
@@ -23,18 +30,25 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static dk.cs.aau.huppaal.utility.colors.EnabledColor.enabledColors;
 
@@ -67,7 +81,7 @@ public class HUPPAALPresentation extends StackPane {
             initializeTopBar();
             initializeToolbar();
             initializeQueryDetailsDialog();
-            initializeExternalToolButton();
+            initializeRunConfigPicker();
             initializeColorSelector();
 
             initializeToggleQueryPaneFunctionality();
@@ -114,11 +128,8 @@ public class HUPPAALPresentation extends StackPane {
             if (oldScene == null && newScene != null) {
                 // scene is set for the first time. Now its the time to listen stage changes.
                 newScene.windowProperty().addListener((observableWindow, oldWindow, newWindow) -> {
-                    if (oldWindow == null && newWindow != null) {
-                        newWindow.widthProperty().addListener((observableWidth, oldWidth, newWidth) -> {
-                            controller.tabPaneResizeElement.setWidth(newWidth.doubleValue() - 30);
-                        });
-                    }
+                    if (oldWindow == null && newWindow != null)
+                        newWindow.widthProperty().addListener((observableWidth, oldWidth, newWidth) -> controller.tabPaneResizeElement.setWidth(newWidth.doubleValue() - 30));
                 });
             }
         });
@@ -158,49 +169,25 @@ public class HUPPAALPresentation extends StackPane {
         };
 
         // Update the tab-text and expand/collapse the view
-        CodeAnalysis.getBackendErrors().addListener(new InvalidationListener() {
-            @Override
-            public void invalidated(final Observable observable) {
-                final int errors = CodeAnalysis.getBackendErrors().size();
-                if (errors == 0) {
-                    controller.backendErrorsTab.setText("Backend Errors");
-                } else {
-                    controller.backendErrorsTab.setText("Backend Errors (" + errors + ")");
-                }
-
-                collapseIfNoErrorsOrWarnings.run();
-            }
+        CodeAnalysis.getBackendErrors().addListener((InvalidationListener) observable -> {
+            var errors = CodeAnalysis.getBackendErrors().size();
+            controller.backendErrorsTab.setText("Backend Errors" + (errors != 0 ? " ("+errors+") " : ""));
+            collapseIfNoErrorsOrWarnings.run();
         });
 
         // Update the tab-text and expand/collapse the view
-        CodeAnalysis.getErrors().addListener(new InvalidationListener() {
-            @Override
-            public void invalidated(final Observable observable) {
-                final int errors = CodeAnalysis.getErrors().size();
-                if (errors == 0) {
-                    controller.errorsTab.setText("Errors");
-                } else {
-                    controller.errorsTab.setText("Errors (" + errors + ")");
-                }
-
-                collapseIfNoErrorsOrWarnings.run();
-            }
+        CodeAnalysis.getErrors().addListener((InvalidationListener) observable -> {
+            var errors = CodeAnalysis.getErrors().size();
+            controller.errorsTab.setText("Errors" + (errors != 0 ? " ("+errors+") " : ""));
+            collapseIfNoErrorsOrWarnings.run();
         });
 
 
         // Update the tab-text and expand/collapse the view
-        CodeAnalysis.getWarnings().addListener(new InvalidationListener() {
-            @Override
-            public void invalidated(final Observable observable) {
-                final int warnings = CodeAnalysis.getWarnings().size();
-                if (warnings == 0) {
-                    controller.warningsTab.setText("Warnings");
-                } else {
-                    controller.warningsTab.setText("Warnings (" + warnings + ")");
-                }
-
-                collapseIfNoErrorsOrWarnings.run();
-            }
+        CodeAnalysis.getWarnings().addListener((InvalidationListener) observable -> {
+            var warnings = CodeAnalysis.getWarnings().size();
+            controller.warningsTab.setText("Warnings" + (warnings != 0 ? " ("+warnings+") " : ""));
+            collapseIfNoErrorsOrWarnings.run();
         });
     }
 
@@ -243,7 +230,6 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private void initializeColorSelector() {
-
         final JFXPopup popup = new JFXPopup();
 
         final double listWidth = 136;
@@ -341,33 +327,105 @@ public class HUPPAALPresentation extends StackPane {
         }
     }
 
-    private void initializeExternalToolButton() {
-        var toolCommand = HUPPAAL.preferences.get("externalToolCommand", "");
-        var debuggerCommand = HUPPAAL.preferences.get("debuggerToolCommand", "");
+    private void initializeRunConfigExecuteButton() {
         var colorIntensity = Color.Intensity.I800;
         var color = Color.GREY_BLUE;
-        controller.callExternalToolCommand.setMaskType(JFXRippler.RipplerMask.CIRCLE);
-        controller.callExternalToolCommand.setRipplerFill(color.getTextColor(colorIntensity));
+        controller.runConfigurationExecuteButton.setMaskType(JFXRippler.RipplerMask.CIRCLE);
+        controller.runConfigurationExecuteButton.setRipplerFill(color.getTextColor(colorIntensity));
 
-        JFXTooltip externalToolTooltip;
-        if(toolCommand.isEmpty()) {
-            externalToolTooltip = new JFXTooltip("no external tool command is configured");
-            controller.callExternalToolCommand.setEnabled(false);
-            controller.callExternalToolCommand.setOpacity(0.3);
+        JFXTooltip tooltip;
+        var c = controller.runConfigurationPicker.getSelectionModel().getSelectedItem();
+        if(c == null || c.runConfiguration().isEmpty()) {
+            tooltip = new JFXTooltip("no run configuration is selected");
+            controller.runConfigurationExecuteButton.setEnabled(false);
+            controller.runConfigurationExecuteButton.setOpacity(0.3);
+            controller.runConfigurationExecuteButton.setOnMouseClicked(e -> HUPPAAL.showToast("no run configuration is selected"));
         } else {
-            externalToolTooltip = new JFXTooltip("call external tool command");
+            tooltip = new JFXTooltip("Run " + c.runConfiguration().get().name);
+            controller.runConfigurationExecuteButton.setEnabled(true);
+            controller.runConfigurationExecuteButton.setOpacity(1.0);
+            controller.runConfigurationExecuteButton.setOnMouseClicked(e -> executeRunConfiguration(c.runConfiguration().get()));
+        }
+        JFXTooltip.install(controller.runConfigurationExecuteButton, tooltip);
+    }
+
+    private void executeRunConfiguration(RunConfiguration config) {
+        Platform.runLater(() -> {
+            try {
+                var rt = Runtime.getRuntime();
+                var proc = rt.exec(config.program, config.arguments.toArray(String[]::new));
+                var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+                var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+                proc.waitFor(10, TimeUnit.SECONDS); // TODO: should wait forever until cancelled (requires a "cancel" button)
+                String s;
+                while((s = stdi.readLine()) != null)
+                    CodeAnalysis.addMessage(null, new CodeAnalysis.Message(s, CodeAnalysis.MessageType.WARNING, () -> ""));
+                while((s = stde.readLine()) != null)
+                    System.err.println(s);
+            } catch (Exception e) {
+                HUPPAAL.showToast(e.getMessage());
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void initializeRunConfigPicker() {
+        // TODO: RunConfigurations should be saved in the project files, not in preferences!
+        // Load last used runConfig
+        var runConfigsJson = HUPPAAL.preferences.get(RunConfigurationPreferencesKeys.ConfigurationsList, "[]");
+        var lastRunConfig = HUPPAAL.preferences.get(RunConfigurationPreferencesKeys.CurrentlySelected, "");
+        var gson = new Gson();
+        List<RunConfiguration> runConfigurations = gson.fromJson(runConfigsJson, RunConfiguration.listTypeToken);
+
+        // Add all the default things
+        controller.runConfigurationPicker.getItems().clear(); // Clear, because this function might be called again during runtime
+        controller.runConfigurationPicker.getItems().add(generateRunConfigurationEditButton());
+        if(runConfigurations.isEmpty())
+            controller.runConfigurationPicker.getItems().add(new RunConfigurationButton(Optional.empty(), new JFXButton("<no run configurations>")));
+        for(var c : runConfigurations)
+            controller.runConfigurationPicker.getItems().add(new RunConfigurationButton(Optional.of(c), new JFXButton(c.name)));
+
+        if(!Strings.isNullOrEmpty(lastRunConfig)) {
+            var e = controller.runConfigurationPicker.getItems().stream().filter(b -> {
+                if(b.runConfiguration().isPresent())
+                    return b.runConfiguration().get().name.equals(lastRunConfig);
+                return false;
+            }).findAny();
+            e.ifPresent(b -> controller.runConfigurationPicker.setValue(b));
         }
 
-        JFXTooltip debuggerTooltip;
-        if(debuggerCommand.isEmpty()) {
-            debuggerTooltip = new JFXTooltip("no debugger is configured");
-            controller.launchDebugger.setEnabled(false);
-            controller.launchDebugger.setOpacity(0.3);
-        } else
-            debuggerTooltip = new JFXTooltip("Launch debugger");
+        controller.runConfigurationPicker.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+            if(oldValue == newValue || newValue == null)
+                return;
+            newValue.button().fire();
+            if(newValue.runConfiguration().isEmpty())
+                Platform.runLater(() -> controller.runConfigurationPicker.setValue(oldValue));
+            initializeRunConfigExecuteButton();
+        });
 
-        JFXTooltip.install(controller.callExternalToolCommand, externalToolTooltip);
-        JFXTooltip.install(controller.launchDebugger, debuggerTooltip);
+        initializeRunConfigExecuteButton();
+    }
+
+    Stage runconfigWindow;
+    RunConfigurationEditorPresentation runConfigurationEditorPresentation;
+    private RunConfigurationButton generateRunConfigurationEditButton() {
+        var btn = new JFXButton("Edit Configs...");
+        btn.setOnAction(event -> {
+            try {
+                if(runconfigWindow == null) {
+                    runconfigWindow = new Stage();
+                    runconfigWindow.setTitle("Run Configuration Editor");
+                    runConfigurationEditorPresentation = new RunConfigurationEditorPresentation(runconfigWindow);
+                    runConfigurationEditorPresentation.setOnRunConfigsSaved(this::initializeRunConfigPicker);
+                    runconfigWindow.setScene(new Scene(runConfigurationEditorPresentation.parent));
+                }
+                runconfigWindow.show();
+                runconfigWindow.requestFocus();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        return new RunConfigurationButton(Optional.empty(), btn);
     }
 
     private void initializeSelectDependentToolbarButton(final JFXRippler button) {

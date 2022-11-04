@@ -116,16 +116,10 @@
                         </StackPane>
                         <Region minWidth="16"/>
 
-                        <!-- Call an external CLI command TODO: These external commands should be a drop-down -->
-                        <JFXRippler fx:id="callExternalToolCommand">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#externalToolCommand">
-                                <FontIcon iconLiteral="gmi-build" iconSize="19" fill="white"/>
-                            </StackPane>
-                        </JFXRippler>
-                        <!-- Call a different external CLI command -->
-                        <JFXRippler fx:id="launchDebugger">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#launchDebugger">
-                                <FontIcon iconLiteral="gmi-bug-report" iconSize="24" fill="white"/>
+                        <JFXComboBox fx:id="runConfigurationPicker" minHeight="40" promptText="Select Config"/>
+                        <JFXRippler fx:id="runConfigurationExecuteButton">
+                            <StackPane minWidth="40" minHeight="40">
+                                <FontIcon iconLiteral="gmi-play-arrow" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
 
@@ -233,16 +227,6 @@
                     <MenuItem fx:id="menuBarPreferencesUppaalLocation" text="Set UPPAAL Location">
                         <graphic>
                             <FontIcon iconLiteral="gmi-insert-drive-file" iconSize="24" fill="black"/>
-                        </graphic>
-                    </MenuItem>
-                    <MenuItem fx:id="menuBarPreferencesExternalToolCommand" text="Set external tool command">
-                        <graphic>
-                            <FontIcon iconLiteral="gmi-build" iconSize="24" fill="black"/>
-                        </graphic>
-                    </MenuItem>
-                    <MenuItem fx:id="menuBarPreferencesDebuggerCommand" text="Set debugger tool command">
-                        <graphic>
-                            <FontIcon iconLiteral="gmi-bug-report" iconSize="24" fill="black"/>
                         </graphic>
                     </MenuItem>
                 </Menu>

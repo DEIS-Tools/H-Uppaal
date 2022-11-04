@@ -6,6 +6,7 @@ import dk.cs.aau.huppaal.abstractions.*;
 import dk.cs.aau.huppaal.backend.*;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.presentations.*;
+import dk.cs.aau.huppaal.runconfig.RunConfigurationButton;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.colors.EnabledColor;
@@ -73,8 +74,8 @@ public class HUPPAALController implements Initializable {
     public JFXTextField queryTextField;
     public JFXTextField commentTextField;
     public JFXRippler generateUppaalModel;
-    public JFXRippler callExternalToolCommand;
-    public JFXRippler launchDebugger;
+    public JFXComboBox<RunConfigurationButton> runConfigurationPicker;
+    public JFXRippler runConfigurationExecuteButton;
     public JFXRippler colorSelected;
     public JFXRippler deleteSelected;
     public JFXRippler undo;
@@ -116,7 +117,6 @@ public class HUPPAALController implements Initializable {
     public MenuItem menuBarViewFilePanel;
     public MenuItem menuBarViewQueryPanel;
     public MenuItem menuBarPreferencesUppaalLocation;
-    public MenuItem menuBarPreferencesExternalToolCommand, menuBarPreferencesDebuggerCommand;
     public MenuItem menuBarFileNew;
     public MenuItem menuBarFileOpenProject;
     public MenuItem menuBarFileSave;
@@ -522,26 +522,6 @@ public class HUPPAALController implements Initializable {
                 UPPAALDriverManager.setUppaalFilePath(file.getAbsolutePath());
         });
 
-        menuBarPreferencesExternalToolCommand.setOnAction(event -> {
-            var existingCommand = HUPPAAL.preferences.get("externalToolCommand", "");
-            var dialog = new TextInputDialog(existingCommand);
-            dialog.setTitle("External Tool Command Dialog");
-            dialog.setHeaderText("What commandline command should the button call?");
-            dialog.setContentText("Enter a command:");
-            var result = dialog.showAndWait();
-            result.ifPresent(command -> HUPPAAL.preferences.put("externalToolCommand", command));
-        });
-
-        menuBarPreferencesDebuggerCommand.setOnAction(event -> {
-            var existingCommand = HUPPAAL.preferences.get("debuggerToolCommand", "");
-            var dialog = new TextInputDialog(existingCommand);
-            dialog.setTitle("External Debugger Command Dialog");
-            dialog.setHeaderText("What commandline command should the button call?");
-            dialog.setContentText("Enter a command:");
-            var result = dialog.showAndWait();
-            result.ifPresent(command -> HUPPAAL.preferences.put("debuggerToolCommand", command));
-        });
-
         menuBarViewFilePanel.getGraphic().setOpacity(1);
         menuBarViewFilePanel.setAccelerator(new KeyCodeCombination(KeyCode.F));
         menuBarViewFilePanel.setOnAction(event -> {
@@ -765,32 +745,6 @@ public class HUPPAALController implements Initializable {
     }
 
     @FXML
-    private void externalToolCommand() {
-        // agj - 2022-10-28 disabled due to being old
-        //callUPPAAL();
-        var command = HUPPAAL.preferences.get("externalToolCommand", "");
-        if(command.isEmpty()) {
-            HUPPAAL.showToast("not configured");
-            return;
-        }
-        try {
-            var rt = Runtime.getRuntime();
-            var proc = rt.exec(command);
-            var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-            proc.waitFor(10, TimeUnit.SECONDS); // TODO: This should run in a seperate thread, and the GUI should indicate a running process
-            String s;
-            while((s = stdi.readLine()) != null)
-                CodeAnalysis.addMessage(null, new CodeAnalysis.Message(s, CodeAnalysis.MessageType.WARNING, () -> ""));
-            while((s = stde.readLine()) != null)
-                System.err.println(s);
-        } catch (Exception e) {
-            HUPPAAL.showToast(e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
     private void generateUppaalModelClicked() {
         var mainComponent = HUPPAAL.getProject().getMainComponent();
         if (mainComponent == null) {
@@ -804,11 +758,6 @@ public class HUPPAALController implements Initializable {
         } catch (final Exception e) {
             HUPPAAL.showToast("UPPAAL debug file not stored: " + e.getMessage());
         }
-    }
-
-    @FXML
-    private void launchDebugger() {
-        HUPPAAL.showToast("No debugger installed");
     }
 
     private void nudgeSelected(final NudgeDirection direction) {
