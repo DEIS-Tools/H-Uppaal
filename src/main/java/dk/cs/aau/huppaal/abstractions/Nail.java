@@ -118,24 +118,32 @@ public class Nail implements Circular, Serializable {
 
     @Override
     public JsonObject serialize() {
-        final JsonObject result = new JsonObject();
-
+        var result = new JsonObject();
         result.addProperty(X, getX());
         result.addProperty(Y, getY());
         result.add(PROPERTY_TYPE, new Gson().toJsonTree(getPropertyType(), Edge.PropertyType.class));
         result.addProperty(PROPERTY_X, getPropertyX());
         result.addProperty(PROPERTY_Y, getPropertyY());
-
         return result;
     }
 
     @Override
     public void deserialize(final JsonObject json) {
-        setX(json.getAsJsonPrimitive(X).getAsDouble());
-        setY(json.getAsJsonPrimitive(Y).getAsDouble());
-        setPropertyType(new Gson().fromJson(json.getAsJsonPrimitive(PROPERTY_TYPE), Edge.PropertyType.class));
-        setPropertyX(json.getAsJsonPrimitive(PROPERTY_X).getAsDouble());
-        setPropertyY(json.getAsJsonPrimitive(PROPERTY_Y).getAsDouble());
+        var jsonX = json.getAsJsonPrimitive(X);
+        var jsonY = json.getAsJsonPrimitive(Y);
+        var jsonType = json.getAsJsonPrimitive(PROPERTY_TYPE);
+        var jsonPropX = json.getAsJsonPrimitive(PROPERTY_X);
+        var jsonPropY = json.getAsJsonPrimitive(PROPERTY_Y);
+        if (jsonX != null)
+            setX(jsonX.getAsDouble());
+        if (jsonY != null)
+            setY(jsonY.getAsDouble());
+        if (jsonType != null)
+            setPropertyType(new Gson().fromJson(jsonType, Edge.PropertyType.class));
+        if (jsonPropX != null)
+            setPropertyX(jsonPropX.getAsDouble());
+        if (jsonPropY != null)
+            setPropertyY(jsonPropY.getAsDouble());
     }
 
 }
