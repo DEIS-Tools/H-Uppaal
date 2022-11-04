@@ -47,8 +47,9 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.prefs.Preferences;
 
-public class HUPPAAL extends Application {
+import static dk.cs.aau.huppaal.code_analysis.CodeAnalysis.addBackendError;
 
+public class HUPPAAL extends Application {
     public static Preferences preferences;
     public static String serverDirectory;
     public static String debugDirectory;
@@ -65,13 +66,10 @@ public class HUPPAAL extends Application {
     {
         try {
             preferences = Preferences.userRoot().node("HUPPAAL");
-            final File dir = new File(System.getProperty("user.home") + File.separator + "H-UPPAAL");
-            final String rootDirectory = dir.getPath() + File.separator;
-            if (!dir.exists()) {
-                if (!dir.mkdir()) {
-                    throw new IOException("Could not create project directory "+dir);
-                }
-            }
+            var dir = new File(System.getProperty("user.home") + File.separator + "H-UPPAAL");
+            var rootDirectory = dir.getPath() + File.separator;
+            if (!dir.exists() && !dir.mkdir())
+                throw new IOException("Could not create project directory "+dir);
             projectDirectory.set(preferences.get("latestProject", rootDirectory + "projects" + File.separator + "project"));
             projectDirectory.addListener((observable, oldValue, newValue) -> preferences.put("latestProject", newValue));
             temporaryProjectDirectory = rootDirectory + "projects" + File.separator + "temp";
@@ -80,7 +78,7 @@ public class HUPPAAL extends Application {
             forceCreateFolder(projectDirectory.getValue());
             forceCreateFolder(serverDirectory);
             forceCreateFolder(debugDirectory);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             System.out.println("Could not create project directory!");
             System.exit(2);
         }
@@ -351,39 +349,34 @@ public class HUPPAAL extends Application {
     }
 
     private static void deserializeProject(final File projectFolder) throws IOException {
-
         // If there are no files do not try to deserialize
-        final File[] projectFiles = projectFolder.listFiles();
-        if (projectFiles == null || projectFiles.length == 0) return;
+        var projectFiles = projectFolder.listFiles((file, s) -> s.endsWith(".json"));
+        if (projectFiles == null || projectFiles.length == 0) {
+            var msg = "Failed to open project in folder "+projectFolder.getPath();
+            showToast(msg);
+            throw new IOException(msg);
+        }
 
         // Create maps for deserialization
-        final Map<String, JsonObject> componentJsonMap = new HashMap<>();
-        final Map<JsonObject, Integer> componentMaxDepthMap = new HashMap<>();
+        var componentJsonMap = new HashMap<String, JsonObject>();
+        var componentMaxDepthMap = new HashMap<JsonObject, Integer>();
         JsonObject mainJsonComponent = null;
 
-        for (final File file : projectFiles) {
-            if (!file.getName().endsWith(".json"))
-                continue;
-
-            final String fileContent = Files.asCharSource(file, Charset.defaultCharset()).read();
-
-            final var parsedContent = JsonParser.parseString(fileContent);
+        for (var file : projectFiles) {
+            var fileContent = Files.asCharSource(file, Charset.defaultCharset()).read();
+            var parsedContent = JsonParser.parseString(fileContent);
 
             // If the file represents the queries
             if (file.getName().equals("Queries.json")) {
-                parsedContent.getAsJsonArray().forEach(jsonElement -> {
-                    final Query newQuery = new Query((JsonObject) jsonElement);
-                    getProject().getQueries().add(newQuery);
-                });
-                // Do not parse Queries.json as a component
-                continue;
+                parsedContent.getAsJsonArray().forEach(jsonElement -> getProject().getQueries().add(new Query((JsonObject) jsonElement)));
+                continue; // Do not parse Queries.json as a component
             }
 
-            // Parse the file to an json object
-            final JsonObject jsonObject = parsedContent.getAsJsonObject();
+            // Parse the file to a json object
+            var jsonObject = parsedContent.getAsJsonObject();
 
             // Fetch the name of the component
-            final String componentName = jsonObject.get("name").getAsString();
+            var componentName = jsonObject.get("name").getAsString();
 
             // Add the name and the json object to the map
             componentJsonMap.put(componentName, jsonObject);
@@ -392,52 +385,41 @@ public class HUPPAAL extends Application {
             componentMaxDepthMap.put(jsonObject, 0);
 
             // Find the main name of the main component
-            if (jsonObject.get("main").getAsBoolean()) {
+            if (jsonObject.get("main").getAsBoolean())
                 mainJsonComponent = jsonObject;
-            }
-
         }
 
-        if (mainJsonComponent != null) {
+        if (mainJsonComponent != null)
             updateDepthMap(mainJsonComponent, 0, componentJsonMap, componentMaxDepthMap);
-        }
 
-        final List<Map.Entry<JsonObject, Integer>> list = new LinkedList<>(componentMaxDepthMap.entrySet());
+        var list = new LinkedList<>(componentMaxDepthMap.entrySet());
         // Defined Custom Comparator here
         list.sort(Map.Entry.comparingByValue());
 
-        final List<JsonObject> orderedJsonComponents = new ArrayList<>();
-
-
-        for (final Map.Entry<JsonObject, Integer> mapEntry : list) {
+        var orderedJsonComponents = new ArrayList<JsonObject>();
+        for (final Map.Entry<JsonObject, Integer> mapEntry : list)
             orderedJsonComponents.add(mapEntry.getKey());
-        }
 
         // Reverse the list such that the greatest depth is first in the list
         Collections.reverse(orderedJsonComponents);
 
         // Add the components to the list
         orderedJsonComponents.forEach(jsonObject -> {
-
-            // It is important that the components are added the list prior to deserialiation
-            final Component newComponent = new Component();
+            // It is important that the components are added the list prior to deserialization
+            var newComponent = new Component();
             getProject().getComponents().add(newComponent);
             newComponent.deserialize(jsonObject);
         });
     }
 
     private static void updateDepthMap(final JsonObject jsonObject, final int depth, final Map<String, JsonObject> nameToJson, final Map<JsonObject, Integer> jsonToDpeth) {
-        if (jsonToDpeth.get(jsonObject) < depth) {
+        if (jsonToDpeth.get(jsonObject) < depth)
             jsonToDpeth.put(jsonObject, depth);
-        }
 
-        final List<String> subComponentNames = new ArrayList<>();
-
+        var subComponentNames = new ArrayList<String>();
         jsonObject.get("sub_components").getAsJsonArray().forEach(jsonElement -> subComponentNames.add(jsonElement.getAsJsonObject().get("component").getAsString()));
-
-        for (final String subComponentName : subComponentNames) {
+        for (final String subComponentName : subComponentNames)
             updateDepthMap(nameToJson.get(subComponentName), depth + 1, nameToJson, jsonToDpeth);
-        }
     }
 
     private void loadFonts() {
@@ -459,7 +441,6 @@ public class HUPPAAL extends Application {
         Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-Regular.ttf"), 14);
         Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-Thin.ttf"), 14);
         Font.loadFont(getClass().getResourceAsStream("fonts/roboto/Roboto-ThinItalic.ttf"), 14);
-
         Font.loadFont(getClass().getResourceAsStream("fonts/roboto_mono/RobotoMono-Bold.ttf"), 14);
         Font.loadFont(getClass().getResourceAsStream("fonts/roboto_mono/RobotoMono-BoldItalic.ttf"), 14);
         Font.loadFont(getClass().getResourceAsStream("fonts/roboto_mono/RobotoMono-Italic.ttf"), 14);
