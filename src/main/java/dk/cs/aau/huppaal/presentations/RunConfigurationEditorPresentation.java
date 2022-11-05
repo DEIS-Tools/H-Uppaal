@@ -74,7 +74,7 @@ public class RunConfigurationEditorPresentation extends BorderPane {
         // Add program text field
         programFieldButton.setOnAction(e -> {
             var f = programField.showOpenDialog(getScene().getWindow());
-            if(!(f.exists() && f.isFile() && f.canExecute())) {
+            if(!(f != null && f.exists() && f.isFile() && f.canExecute())) {
                 HUPPAAL.showToast("Program file must exist, be a file and executable");
                 return;
             }
@@ -96,7 +96,7 @@ public class RunConfigurationEditorPresentation extends BorderPane {
         // Add execution dir text field
         execDirFieldButton.setOnAction(e -> {
             var f = execDirField.showDialog(getScene().getWindow());
-            if(!(f.exists() && f.isDirectory())) {
+            if(!(f != null && f.exists() && f.isDirectory())) {
                 HUPPAAL.showToast("Execution directory must be a directory and exist");
                 return;
             }
