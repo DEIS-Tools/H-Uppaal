@@ -21,7 +21,9 @@ import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.geometry.Bounds;
@@ -360,7 +362,7 @@ public class HUPPAALPresentation extends StackPane {
                     throw new Exception(String.format("'%s' does not exist or is not a directory", config.executionDir));
 
                 var proc = rt.exec(config.program + " " + config.arguments,
-                                sysEnv, // TODO: RunConfiguration should provide additional environment variables
+                                sysEnv, // TODO: RunConfiguration should be able to provide additional environment variables
                                 dir);
                 var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
                 var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
@@ -368,12 +370,16 @@ public class HUPPAALPresentation extends StackPane {
                 controller.runConfigurationExecuteButtonIcon.setIconLiteral("gmi-stop");
                 controller.runConfigurationExecuteButtonIcon.setIconColor(javafx.scene.paint.Color.web("#ff7e79"));
                 var exitValue = proc.waitFor(); // TODO: should wait forever until cancelled (requires a "cancel" button)
+                HUPPAAL.showToast(config.name + " finished ("+exitValue+")");
+
+                // TODO: This shouldn't be a "warning" - also not allowed on separate threads (look at the 'refactor/logging' git branch for progress on this)
                 String s;
-                while((s = stdi.readLine()) != null)
-                    CodeAnalysis.addMessage(s); // TODO: This shouldn't be a "warning" - also not allowed on separate threads
+                while((s = stdi.readLine()) != null) {
+                    var finalS = s;
+                    Platform.runLater(() -> CodeAnalysis.addMessage(finalS));
+                }
                 while((s = stde.readLine()) != null)
                     System.err.println(s);
-                HUPPAAL.showToast(config.name + " finished ("+exitValue+")");
             } catch (Exception e) {
                 HUPPAAL.showToast(e.getMessage());
                 e.printStackTrace();
@@ -422,15 +428,14 @@ public class HUPPAALPresentation extends StackPane {
         initializeRunConfigExecuteButton();
     }
 
-    // TODO: RunConfigurations should be saved in the project files, not in preferences!
     private List<RunConfiguration> parseRunConfigurationsClearPreferencesIfFails(String json) {
         try {
             return new Gson().fromJson(json, RunConfiguration.listTypeToken);
-        } catch (Exception e) {
-            System.err.println("Could not parse RunConfigurations: " + e.getMessage());
+        } catch (Exception e) { // TODO: RunConfigurations should be saved in the project files, not in preferences!
+            System.err.println("Could not parse RunConfigurations. Will clear the list, reason: " + e.getMessage());
             HUPPAAL.preferences.put(RunConfigurationPreferencesKeys.ConfigurationsList, "[]");
+            return new ArrayList<>();
         }
-        return new ArrayList<>();
     }
 
     Stage runconfigWindow;
