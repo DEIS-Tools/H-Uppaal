@@ -36,6 +36,7 @@ public class RunConfigurationEditorPresentation extends BorderPane {
     private final TextField argumentsField = new TextField();
     private final JFXButton execDirFieldButton = new JFXButton("Folder");
     private final DirectoryChooser execDirField = new DirectoryChooser();
+    private final TextField environmentVariablesField = new TextField();
 
     public RunConfigurationEditorPresentation(Stage stage) {
         try {
@@ -107,7 +108,9 @@ public class RunConfigurationEditorPresentation extends BorderPane {
         });
         controller.propertyGridPane.addRow(rc++, new StackPane(new Label("execution directory")), new StackPane(execDirFieldButton));
 
-        // TODO: Add environment variables editor
+        // Add environment variables field
+        environmentVariablesField.textProperty().addListener((b,o,n) -> getCurrentlySelectedConfiguration().ifPresent(c -> c.environmentVariables = n));
+        controller.propertyGridPane.addRow(rc++, new StackPane(new Label("environment")), new StackPane(environmentVariablesField));
     }
 
     private void populatePropertyGridPane(RunConfiguration r) {
@@ -135,7 +138,7 @@ public class RunConfigurationEditorPresentation extends BorderPane {
     private void initializeAddAndRemoveButtons() {
         controller.addNewRunConfigurationButton.setOnMouseClicked(e ->
                 controller.savedConfigurationsList.getItems().add(
-                        new RunConfiguration("new config", "", "", HUPPAAL.projectDirectory.get())));
+                        new RunConfiguration("new config", "", "", HUPPAAL.projectDirectory.get(), "")));
         controller.removeSelectedRunConfigurationButton.setOnMouseClicked(e ->
                 getCurrentlySelectedConfiguration().ifPresent(runConfiguration ->
                         controller.savedConfigurationsList.getItems().remove(runConfiguration)));

@@ -16,6 +16,7 @@ import dk.cs.aau.huppaal.runconfig.RunConfigurationButton;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.colors.EnabledColor;
+import dk.cs.aau.huppaal.utility.helpers.ArrayUtils;
 import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
 import javafx.animation.*;
 import javafx.application.Platform;
@@ -48,6 +49,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -368,9 +370,8 @@ public class HUPPAALPresentation extends StackPane {
                 var dir = new File(config.executionDir);
                 if(!(dir.exists() && dir.isDirectory()))
                     throw new Exception(String.format("'%s' does not exist or is not a directory", config.executionDir));
-
                 proc = rt.exec(config.program + " " + config.arguments,
-                                sysEnv, // TODO: RunConfiguration should be able to provide additional environment variables
+                                ArrayUtils.merge(sysEnv, config.environmentVariables.split(";")),
                                 dir);
                 var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
                 var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));

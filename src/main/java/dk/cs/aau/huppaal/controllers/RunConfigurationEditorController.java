@@ -9,10 +9,7 @@ import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.runconfig.RunConfiguration;
 import dk.cs.aau.huppaal.runconfig.RunConfigurationPreferencesKeys;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 
 import java.net.URL;
 import java.util.List;
@@ -20,7 +17,6 @@ import java.util.ResourceBundle;
 
 public class RunConfigurationEditorController implements Initializable {
     public JFXListView<RunConfiguration> savedConfigurationsList;
-    public Label versionLabel;
     public JFXButton okButton, cancelButton, applyButton;
     public JFXRippler addNewRunConfigurationButton, removeSelectedRunConfigurationButton;
     public GridPane propertyGridPane;
@@ -30,7 +26,6 @@ public class RunConfigurationEditorController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initializeSavedConfigurationsList();
-        initializeVersionLabel();
     }
 
     private void initializeSavedConfigurationsList() {
@@ -41,9 +36,5 @@ public class RunConfigurationEditorController implements Initializable {
         savedConfigurationsList.getItems().addAll(runConfigurations);
         // TODO: set that c is selected if c.isPresent()
         // var c = savedConfigurationsList.getItems().stream().filter(e -> e.name().equals(currentConfig)).findAny();
-    }
-
-    private void initializeVersionLabel() {
-        versionLabel.setText("v"+BuildConfig.VERSION+"+"+BuildConfig.COMMIT_SHA_SHORT);
     }
 }
