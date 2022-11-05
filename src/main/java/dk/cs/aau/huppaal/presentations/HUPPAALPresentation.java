@@ -20,10 +20,7 @@ import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
@@ -40,6 +37,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
+import org.reactfx.Observable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -347,28 +345,34 @@ public class HUPPAALPresentation extends StackPane {
         }
         JFXTooltip.install(controller.runConfigurationExecuteButton, tooltip);
     }
-
+    
     private void executeRunConfiguration(RunConfiguration config) {
-        Platform.runLater(() -> {
+        new Thread(() -> {
             try {
                 var rt = Runtime.getRuntime();
-                var proc = rt.exec(config.program, config.arguments.toArray(String[]::new));
+                if(config.program.isEmpty())
+                    throw new Exception("No program to run in selected run configuration");
+                var proc = rt.exec(
+                        config.program +
+                                " " +
+                                String.join(" ", config.arguments));
                 var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
                 var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
                 controller.runConfigurationExecuteButtonIcon.setIconLiteral("gmi-sync");
-                proc.waitFor(10, TimeUnit.SECONDS); // TODO: should wait forever until cancelled (requires a "cancel" button)
+                proc.waitFor(30, TimeUnit.SECONDS); // TODO: should wait forever until cancelled (requires a "cancel" button)
                 String s;
                 while((s = stdi.readLine()) != null)
-                    CodeAnalysis.addMessage(s); // TODO: This shouldn't be a "warning"
+                    CodeAnalysis.addMessage(s); // TODO: This shouldn't be a "warning" - also not allowed on seperate threads
                 while((s = stde.readLine()) != null)
                     System.err.println(s);
+                HUPPAAL.showToast(config.name + " finished ("+proc.exitValue()+")");
             } catch (Exception e) {
                 HUPPAAL.showToast(e.getMessage());
                 e.printStackTrace();
             } finally {
                 controller.runConfigurationExecuteButtonIcon.setIconLiteral("gmi-play-arrow");
             }
-        });
+        }).start();
     }
 
     private void initializeRunConfigPicker() {
@@ -381,15 +385,15 @@ public class HUPPAALPresentation extends StackPane {
         // Add all the default things
         controller.runConfigurationPicker.getItems().clear(); // Clear, because this function might be called again during runtime
         controller.runConfigurationPicker.getItems().add(generateRunConfigurationEditButton());
-        if(runConfigurations.isEmpty())
+        if (runConfigurations.isEmpty())
             controller.runConfigurationPicker.getItems().add(new RunConfigurationButton(Optional.empty(), new JFXButton("<no run configurations>")));
-        for(var c : runConfigurations)
+        for (var c : runConfigurations)
             controller.runConfigurationPicker.getItems().add(new RunConfigurationButton(Optional.of(c), new JFXButton(c.name)));
 
         // set the last picked run config to be the currently selected one
-        if(!Strings.isNullOrEmpty(lastRunConfig)) {
+        if (!Strings.isNullOrEmpty(lastRunConfig)) {
             var e = controller.runConfigurationPicker.getItems().stream().filter(b -> {
-                if(b.runConfiguration().isPresent())
+                if (b.runConfiguration().isPresent())
                     return b.runConfiguration().get().name.equals(lastRunConfig);
                 return false;
             }).findAny();
@@ -398,10 +402,10 @@ public class HUPPAALPresentation extends StackPane {
 
         // When a new selection happens
         controller.runConfigurationPicker.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
-            if(oldValue == newValue || newValue == null)
+            if (oldValue == newValue || newValue == null)
                 return;
             newValue.button().fire();
-            if(newValue.runConfiguration().isEmpty())
+            if (newValue.runConfiguration().isEmpty())
                 Platform.runLater(() -> controller.runConfigurationPicker.setValue(oldValue));
             else
                 HUPPAAL.preferences.put(RunConfigurationPreferencesKeys.CurrentlySelected, newValue.runConfiguration().get().name);

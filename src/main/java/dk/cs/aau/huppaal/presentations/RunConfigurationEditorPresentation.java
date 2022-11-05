@@ -1,6 +1,8 @@
 package dk.cs.aau.huppaal.presentations;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.jfoenix.controls.JFXButton;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.controllers.RunConfigurationEditorController;
 import dk.cs.aau.huppaal.runconfig.RunConfiguration;
@@ -15,6 +17,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -27,9 +30,10 @@ public class RunConfigurationEditorPresentation extends BorderPane {
     private final Gson gson;
     private Runnable onRunConfigsSaved = null;
     private final TextField nameField = new TextField();
-    private final TextField programField = new TextField(); // TODO: should be a file-picker (check for executable)
+    private final JFXButton programFieldButton = new JFXButton("File...");
+    private final FileChooser programField = new FileChooser(); // TODO: should be a file-picker (check for executable)
     private final TextField argumentsField = new TextField(); // TODO: should be a list-editor
-    private final TextField execDirField = new TextField();  // TODO: should be a folder-picker
+    private final TextField execDirField = new TextField();  // TODO: should be a folder-picker (DirectoryChooser)
 
     public RunConfigurationEditorPresentation(Stage stage) {
         try {
@@ -37,9 +41,9 @@ public class RunConfigurationEditorPresentation extends BorderPane {
             var fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(location);
             fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
+            fxmlLoader.setRoot(this);
             this.stage = stage;
             this.gson = new Gson();
-            fxmlLoader.setRoot(this);
             parent = fxmlLoader.load();
             controller = fxmlLoader.getController();
             initialize();
@@ -68,8 +72,17 @@ public class RunConfigurationEditorPresentation extends BorderPane {
         controller.propertyGridPane.addRow(rc++, new StackPane(new Label("name")), new StackPane(nameField));
 
         // Add program text field
-        programField.textProperty().addListener((b,o,n) -> getCurrentlySelectedConfiguration().ifPresent(c -> c.program = n));
-        controller.propertyGridPane.addRow(rc++, new StackPane(new Label("program")), new StackPane(programField));
+        //programField.textProperty().addListener((b,o,n) -> getCurrentlySelectedConfiguration().ifPresent(c -> c.program = n));
+        programFieldButton.setOnAction(e -> {
+            var f = programField.showOpenDialog(getScene().getWindow());
+            if(!(f.exists() && f.isFile() && f.canExecute())) {
+                HUPPAAL.showToast("Program file must exist, be a file and executable");
+                return;
+            }
+            getCurrentlySelectedConfiguration().ifPresent(c -> c.program = f.getAbsolutePath());
+        });
+
+        controller.propertyGridPane.addRow(rc++, new StackPane(new Label("program")), new StackPane(programFieldButton));
 
         // Add arguments text field
         argumentsField.textProperty().addListener((b,o,n) -> getCurrentlySelectedConfiguration().ifPresent(c -> {
@@ -88,7 +101,10 @@ public class RunConfigurationEditorPresentation extends BorderPane {
 
     private void populatePropertyGridPane(RunConfiguration r) {
         nameField.setText(r.name);
-        programField.setText(r.program);
+        if(!Strings.isNullOrEmpty(r.program))
+            programFieldButton.setText(r.program);
+        else
+            programFieldButton.setText("File");
         argumentsField.setText(String.join(" ", r.arguments));
         execDirField.setText(r.executionDir);
     }
