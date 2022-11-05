@@ -114,9 +114,13 @@
                         <StackPane>
                             <Rectangle width="1" height="32" fill="black" opacity="0.2"/>
                         </StackPane>
-                        <Region minWidth="16"/>
 
-                        <JFXComboBox fx:id="runConfigurationPicker" minHeight="40" promptText="Select Config"/>
+                        <Region minWidth="16"/>
+                        <StackPane>
+                            <ComboBox fx:id="runConfigurationPicker" promptText="Select Config"/>
+                        </StackPane>
+
+                        <Region minWidth="16"/>
                         <JFXRippler fx:id="runConfigurationExecuteButton">
                             <StackPane minWidth="40" minHeight="40">
                                 <FontIcon iconLiteral="gmi-play-arrow" iconSize="24" fill="white"/>

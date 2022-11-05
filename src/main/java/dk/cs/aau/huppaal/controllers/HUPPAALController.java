@@ -74,7 +74,7 @@ public class HUPPAALController implements Initializable {
     public JFXTextField queryTextField;
     public JFXTextField commentTextField;
     public JFXRippler generateUppaalModel;
-    public JFXComboBox<RunConfigurationButton> runConfigurationPicker;
+    public ComboBox<RunConfigurationButton> runConfigurationPicker;
     public JFXRippler runConfigurationExecuteButton;
     public JFXRippler colorSelected;
     public JFXRippler deleteSelected;
