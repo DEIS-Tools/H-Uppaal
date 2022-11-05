@@ -140,6 +140,7 @@ public class HUPPAALController implements Initializable {
     private static JFXDialog _queryDialog;
     private static Text _queryTextResult;
     private static Text _queryTextQuery;
+    public FontIcon runConfigurationExecuteButtonIcon;
 
     private double tabPanePreviousY = 0;
     private boolean shouldISkipOpeningTheMessagesContainer = true;

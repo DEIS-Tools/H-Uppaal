@@ -330,7 +330,6 @@ public class HUPPAALPresentation extends StackPane {
     private void initializeRunConfigExecuteButton() {
         var colorIntensity = Color.Intensity.I800;
         var color = Color.GREY_BLUE;
-        controller.runConfigurationExecuteButton.setMaskType(JFXRippler.RipplerMask.CIRCLE);
         controller.runConfigurationExecuteButton.setRipplerFill(color.getTextColor(colorIntensity));
 
         JFXTooltip tooltip;
@@ -356,6 +355,7 @@ public class HUPPAALPresentation extends StackPane {
                 var proc = rt.exec(config.program, config.arguments.toArray(String[]::new));
                 var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
                 var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+                controller.runConfigurationExecuteButtonIcon.setIconLiteral("gmi-sync");
                 proc.waitFor(10, TimeUnit.SECONDS); // TODO: should wait forever until cancelled (requires a "cancel" button)
                 String s;
                 while((s = stdi.readLine()) != null)
@@ -365,6 +365,8 @@ public class HUPPAALPresentation extends StackPane {
             } catch (Exception e) {
                 HUPPAAL.showToast(e.getMessage());
                 e.printStackTrace();
+            } finally {
+                controller.runConfigurationExecuteButtonIcon.setIconLiteral("gmi-play-arrow");
             }
         });
     }
