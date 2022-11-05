@@ -34,12 +34,14 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
 import org.reactfx.Observable;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -345,42 +347,47 @@ public class HUPPAALPresentation extends StackPane {
         }
         JFXTooltip.install(controller.runConfigurationExecuteButton, tooltip);
     }
-    
+
+    private final static String[] sysEnv = System.getenv().entrySet().stream().map((e) -> e.getKey() + "=" + e.getValue()).toArray(String[]::new);
     private void executeRunConfiguration(RunConfiguration config) {
         new Thread(() -> {
             try {
                 var rt = Runtime.getRuntime();
                 if(config.program.isEmpty())
                     throw new Exception("No program to run in selected run configuration");
-                var proc = rt.exec(
-                        config.program +
-                                " " +
-                                String.join(" ", config.arguments));
+                var dir = new File(config.executionDir);
+                if(!(dir.exists() && dir.isDirectory()))
+                    throw new Exception(String.format("'%s' does not exist or is not a directory", config.executionDir));
+
+                var proc = rt.exec(config.program + " " + config.arguments,
+                                sysEnv, // TODO: RunConfiguration should provide additional environment variables
+                                dir);
                 var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
                 var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-                controller.runConfigurationExecuteButtonIcon.setIconLiteral("gmi-sync");
-                proc.waitFor(30, TimeUnit.SECONDS); // TODO: should wait forever until cancelled (requires a "cancel" button)
+                // TODO: Make clicking the button when running actually stop the process
+                controller.runConfigurationExecuteButtonIcon.setIconLiteral("gmi-stop");
+                controller.runConfigurationExecuteButtonIcon.setIconColor(javafx.scene.paint.Color.web("#ff7e79"));
+                var exitValue = proc.waitFor(); // TODO: should wait forever until cancelled (requires a "cancel" button)
                 String s;
                 while((s = stdi.readLine()) != null)
-                    CodeAnalysis.addMessage(s); // TODO: This shouldn't be a "warning" - also not allowed on seperate threads
+                    CodeAnalysis.addMessage(s); // TODO: This shouldn't be a "warning" - also not allowed on separate threads
                 while((s = stde.readLine()) != null)
                     System.err.println(s);
-                HUPPAAL.showToast(config.name + " finished ("+proc.exitValue()+")");
+                HUPPAAL.showToast(config.name + " finished ("+exitValue+")");
             } catch (Exception e) {
                 HUPPAAL.showToast(e.getMessage());
                 e.printStackTrace();
             } finally {
                 controller.runConfigurationExecuteButtonIcon.setIconLiteral("gmi-play-arrow");
+                controller.runConfigurationExecuteButtonIcon.setIconColor(javafx.scene.paint.Color.WHITE);
             }
         }).start();
     }
 
     private void initializeRunConfigPicker() {
-        // TODO: RunConfigurations should be saved in the project files, not in preferences!
         var runConfigsJson = HUPPAAL.preferences.get(RunConfigurationPreferencesKeys.ConfigurationsList, "[]");
         var lastRunConfig = HUPPAAL.preferences.get(RunConfigurationPreferencesKeys.CurrentlySelected, "");
-        var gson = new Gson();
-        List<RunConfiguration> runConfigurations = gson.fromJson(runConfigsJson, RunConfiguration.listTypeToken);
+        var runConfigurations = parseRunConfigurationsClearPreferencesIfFails(runConfigsJson);
 
         // Add all the default things
         controller.runConfigurationPicker.getItems().clear(); // Clear, because this function might be called again during runtime
@@ -413,6 +420,17 @@ public class HUPPAALPresentation extends StackPane {
         });
 
         initializeRunConfigExecuteButton();
+    }
+
+    // TODO: RunConfigurations should be saved in the project files, not in preferences!
+    private List<RunConfiguration> parseRunConfigurationsClearPreferencesIfFails(String json) {
+        try {
+            return new Gson().fromJson(json, RunConfiguration.listTypeToken);
+        } catch (Exception e) {
+            System.err.println("Could not parse RunConfigurations: " + e.getMessage());
+            HUPPAAL.preferences.put(RunConfigurationPreferencesKeys.ConfigurationsList, "[]");
+        }
+        return new ArrayList<>();
     }
 
     Stage runconfigWindow;

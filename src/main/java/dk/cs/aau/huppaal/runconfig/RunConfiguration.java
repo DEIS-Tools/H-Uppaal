@@ -10,11 +10,11 @@ import java.util.List;
 public class RunConfiguration {
     public String name;
     public String program;
-    public List<String> arguments;
+    public String arguments;
     public String executionDir;
     public static final TypeToken<ArrayList<RunConfiguration>> listTypeToken = new TypeToken<>() {};
 
-    public RunConfiguration(String name, String program, List<String> arguments, String executionDir) {
+    public RunConfiguration(String name, String program, String arguments, String executionDir) {
         this.name = name;
         this.program = program;
         this.arguments = arguments;

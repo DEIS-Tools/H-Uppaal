@@ -17,6 +17,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -30,10 +31,11 @@ public class RunConfigurationEditorPresentation extends BorderPane {
     private final Gson gson;
     private Runnable onRunConfigsSaved = null;
     private final TextField nameField = new TextField();
-    private final JFXButton programFieldButton = new JFXButton("File...");
-    private final FileChooser programField = new FileChooser(); // TODO: should be a file-picker (check for executable)
-    private final TextField argumentsField = new TextField(); // TODO: should be a list-editor
-    private final TextField execDirField = new TextField();  // TODO: should be a folder-picker (DirectoryChooser)
+    private final JFXButton programFieldButton = new JFXButton("File");
+    private final FileChooser programField = new FileChooser();
+    private final TextField argumentsField = new TextField();
+    private final JFXButton execDirFieldButton = new JFXButton("Folder");
+    private final DirectoryChooser execDirField = new DirectoryChooser();
 
     public RunConfigurationEditorPresentation(Stage stage) {
         try {
@@ -64,37 +66,46 @@ public class RunConfigurationEditorPresentation extends BorderPane {
     }
 
     private void initializePropertyGridPane() {
-        // TODO: For each (reflection) field on a RunConfiguration
-        // TODO: Depending on the field, use a different javafx thingy to edit the value
         var rc = controller.propertyGridPane.getRowCount();
         // Add name text field
         nameField.textProperty().addListener((b,o,n) -> getCurrentlySelectedConfiguration().ifPresent(c -> c.name = n));
         controller.propertyGridPane.addRow(rc++, new StackPane(new Label("name")), new StackPane(nameField));
 
         // Add program text field
-        //programField.textProperty().addListener((b,o,n) -> getCurrentlySelectedConfiguration().ifPresent(c -> c.program = n));
         programFieldButton.setOnAction(e -> {
             var f = programField.showOpenDialog(getScene().getWindow());
             if(!(f.exists() && f.isFile() && f.canExecute())) {
                 HUPPAAL.showToast("Program file must exist, be a file and executable");
                 return;
             }
-            getCurrentlySelectedConfiguration().ifPresent(c -> c.program = f.getAbsolutePath());
+            getCurrentlySelectedConfiguration().ifPresent(c -> {
+                c.program = f.getAbsolutePath();
+                populatePropertyGridPane(c);
+            });
         });
 
         controller.propertyGridPane.addRow(rc++, new StackPane(new Label("program")), new StackPane(programFieldButton));
 
         // Add arguments text field
         argumentsField.textProperty().addListener((b,o,n) -> getCurrentlySelectedConfiguration().ifPresent(c -> {
-            if(!c.arguments.isEmpty())
-                c.arguments.clear();
-            c.arguments.add(n);
+            c.arguments = n;
+            populatePropertyGridPane(c);
         }));
         controller.propertyGridPane.addRow(rc++, new StackPane(new Label("arguments")), new StackPane(argumentsField));
 
         // Add execution dir text field
-        execDirField.textProperty().addListener((b,o,n) -> getCurrentlySelectedConfiguration().ifPresent(c -> c.executionDir = n));
-        controller.propertyGridPane.addRow(rc++, new StackPane(new Label("execution directory")), new StackPane(execDirField));
+        execDirFieldButton.setOnAction(e -> {
+            var f = execDirField.showDialog(getScene().getWindow());
+            if(!(f.exists() && f.isDirectory())) {
+                HUPPAAL.showToast("Execution directory must be a directory and exist");
+                return;
+            }
+            getCurrentlySelectedConfiguration().ifPresent(c -> {
+                c.executionDir = f.getAbsolutePath();
+                populatePropertyGridPane(c);
+            });
+        });
+        controller.propertyGridPane.addRow(rc++, new StackPane(new Label("execution directory")), new StackPane(execDirFieldButton));
 
         // TODO: Add environment variables editor
     }
@@ -106,7 +117,10 @@ public class RunConfigurationEditorPresentation extends BorderPane {
         else
             programFieldButton.setText("File");
         argumentsField.setText(String.join(" ", r.arguments));
-        execDirField.setText(r.executionDir);
+        if(!Strings.isNullOrEmpty(r.executionDir))
+            execDirFieldButton.setText(r.executionDir);
+        else
+            execDirFieldButton.setText("Folder");
     }
 
     private void initializeOkCancelApplyButtons() {
@@ -121,7 +135,7 @@ public class RunConfigurationEditorPresentation extends BorderPane {
     private void initializeAddAndRemoveButtons() {
         controller.addNewRunConfigurationButton.setOnMouseClicked(e ->
                 controller.savedConfigurationsList.getItems().add(
-                        new RunConfiguration("new config", "", new ArrayList<>(), HUPPAAL.projectDirectory.get())));
+                        new RunConfiguration("new config", "", "", HUPPAAL.projectDirectory.get())));
         controller.removeSelectedRunConfigurationButton.setOnMouseClicked(e ->
                 getCurrentlySelectedConfiguration().ifPresent(runConfiguration ->
                         controller.savedConfigurationsList.getItems().remove(runConfiguration)));

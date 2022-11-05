@@ -62,9 +62,9 @@
             <Pane HBox.hgrow="ALWAYS"/>
             <ButtonBar prefHeight="40.0" maxHeight="40.0">
                 <buttons>
-                    <JFXButton fx:id="okButton" defaultButton="true" text="OK"/>
-                    <JFXButton fx:id="cancelButton" cancelButton="true" text="Cancel"/>
-                    <JFXButton fx:id="applyButton" text="Apply"/>
+                    <JFXButton fx:id="okButton" defaultButton="true" text="OK" style="-fx-border-width: 1; -fx-border-radius: 5; -fx-border-color: cornflowerblue"/>
+                    <JFXButton fx:id="cancelButton" cancelButton="true" text="Cancel" style="-fx-border-width: 1; -fx-border-radius: 5;"/>
+                    <JFXButton fx:id="applyButton" text="Apply" style="-fx-border-width: 1; -fx-border-radius: 5;"/>
                 </buttons>
             </ButtonBar>
             <padding>
