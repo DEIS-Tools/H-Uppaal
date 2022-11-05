@@ -377,9 +377,6 @@ public class HUPPAALPresentation extends StackPane {
                 var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
                 controller.runConfigurationExecuteButtonIcon.setIconLiteral("gmi-stop");
                 controller.runConfigurationExecuteButtonIcon.setIconColor(javafx.scene.paint.Color.web("#ff7e79"));
-                var exitValue = proc.waitFor();
-                HUPPAAL.showToast(config.name + " finished ("+exitValue+")");
-
                 String s;
                 while((s = stdi.readLine()) != null) {
                     var finalS = s;
@@ -389,6 +386,7 @@ public class HUPPAALPresentation extends StackPane {
                     var finalS = s;
                     Platform.runLater(() -> CodeAnalysis.addMessage(new CodeAnalysis.Message(finalS, CodeAnalysis.MessageType.ERROR)));
                 }
+                HUPPAAL.showToast(config.name + " finished("+proc.exitValue()+")");
             } catch (Exception e) {
                 HUPPAAL.showToast(e.getMessage());
                 e.printStackTrace();
