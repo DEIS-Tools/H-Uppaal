@@ -351,7 +351,15 @@ public class HUPPAALPresentation extends StackPane {
     }
 
     private final static String[] sysEnv = System.getenv().entrySet().stream().map((e) -> e.getKey() + "=" + e.getValue()).toArray(String[]::new);
+    private Process proc;
     private void executeRunConfiguration(RunConfiguration config) {
+        // Stop the currently running process if it is running
+        if(proc != null && proc.isAlive()) {
+            proc.destroy();
+            return;
+        }
+
+        // Else start the run configuration
         new Thread(() -> {
             try {
                 var rt = Runtime.getRuntime();
@@ -361,15 +369,14 @@ public class HUPPAALPresentation extends StackPane {
                 if(!(dir.exists() && dir.isDirectory()))
                     throw new Exception(String.format("'%s' does not exist or is not a directory", config.executionDir));
 
-                var proc = rt.exec(config.program + " " + config.arguments,
+                proc = rt.exec(config.program + " " + config.arguments,
                                 sysEnv, // TODO: RunConfiguration should be able to provide additional environment variables
                                 dir);
                 var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
                 var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-                // TODO: Make clicking the button when running actually stop the process
                 controller.runConfigurationExecuteButtonIcon.setIconLiteral("gmi-stop");
                 controller.runConfigurationExecuteButtonIcon.setIconColor(javafx.scene.paint.Color.web("#ff7e79"));
-                var exitValue = proc.waitFor(); // TODO: should wait forever until cancelled (requires a "cancel" button)
+                var exitValue = proc.waitFor();
                 HUPPAAL.showToast(config.name + " finished ("+exitValue+")");
 
                 String s;
