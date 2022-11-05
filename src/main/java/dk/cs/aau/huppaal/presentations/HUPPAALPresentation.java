@@ -9,6 +9,7 @@ import dk.cs.aau.huppaal.backend.UPPAALDriver;
 import dk.cs.aau.huppaal.backend.UPPAALDriverManager;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
+import dk.cs.aau.huppaal.logging.Log;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.colors.EnabledColor;
@@ -89,6 +90,7 @@ public class HUPPAALPresentation extends StackPane {
             initializeLogo();
 
             initializeMessageContainer();
+
 
             initializeSnackbar();
 

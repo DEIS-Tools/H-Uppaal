@@ -1,10 +1,13 @@
 package dk.cs.aau.huppaal.controllers;
 
+import dk.cs.aau.huppaal.BuildConfig;
 import dk.cs.aau.huppaal.Debug;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.*;
 import dk.cs.aau.huppaal.backend.*;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
+import dk.cs.aau.huppaal.logging.Log;
+import dk.cs.aau.huppaal.logging.LogLevel;
 import dk.cs.aau.huppaal.presentations.*;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.colors.Color;
@@ -134,7 +137,9 @@ public class HUPPAALController implements Initializable {
     private static JFXDialog _queryDialog;
     private static Text _queryTextResult;
     private static Text _queryTextQuery;
-
+    public LogTabPresentation infoLog, warnLog, errLog;
+    public Tab infoLogTab, warnLogTab, errLogTab;
+    public FontIcon runConfigurationExecuteIcon;
     private double tabPanePreviousY = 0;
     private boolean shouldISkipOpeningTheMessagesContainer = true;
 
@@ -244,7 +249,8 @@ public class HUPPAALController implements Initializable {
         initializeMessages();
         initializeMenuBar();
         initializeNoMainComponentError();
-        initializeUppalFileNotFoundWarning();
+        initializeGenerateUppaalButton();
+        initializeLogTabs();
 
         initializeReachabilityAnalysisThread();
 
@@ -258,6 +264,30 @@ public class HUPPAALController implements Initializable {
         }
 
         ZoomHelper.setCanvas(canvas);
+    }
+
+    private void initializeLogTabs() {
+        infoLog.controller.level = LogLevel.Information;
+        warnLog.controller.level = LogLevel.Warning;
+        errLog.controller.level  = LogLevel.Error;
+        infoLogTab.setGraphic(createLogTabIcon("gmi-info-outline", javafx.scene.paint.Color.WHITE));
+        warnLogTab.setGraphic(createLogTabIcon("gmi-warning", javafx.scene.paint.Color.YELLOW));
+        errLogTab.setGraphic(createLogTabIcon("gmi-error-outline", javafx.scene.paint.Color.DARKRED));
+        // TODO: Hook up a "clear logs" button
+    }
+
+    private FontIcon createLogTabIcon(String iconName, javafx.scene.paint.Color color) {
+        var i = new FontIcon(iconName);
+        i.setIconColor(color);
+        return i;
+    }
+
+    private void initializeGenerateUppaalButton() {
+        var uppaalDriver = UPPAALDriverManager.getInstance();
+        if(uppaalDriver instanceof DummyUPPAALDriver)
+            JFXTooltip.install(generateUppaalModel, new JFXTooltip("The UPPAAL server file does not exist"));
+        else
+            initializeReachabilityAnalysisThread();
     }
 
     private void initializeReachabilityAnalysisThread() {

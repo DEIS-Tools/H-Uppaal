@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.shape.Line?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         fx:controller="dk.cs.aau.huppaal.controllers.LogController"
+         type="VBox" style="-fx-padding: 3;">
+    <HBox>
+        <StackPane>
+            <Circle id="indicator" radius="16"/>
+            <FontIcon fx:id="logIcon" iconLiteral="gmi-description" iconSize="22" fill="white" mouseTransparent="true"/>
+        </StackPane>
+        <!-- Headline => Log.id -->
+        <Label fx:id="headline" styleClass="body1"
+               style="-fx-text-fill: darkorange;"
+               translateX="8" translateY="6"/>
+    </HBox>
+
+    <!-- children => message (split over newline) -->
+    <HBox translateX="15">
+        <Line endY="16" strokeWidth="2" id="line"/>
+        <Region minWidth="24"/>
+        <VBox fx:id="referencesBox"/>
+        <VBox fx:id="messagesBox"/>
+    </HBox>
+</fx:root>
