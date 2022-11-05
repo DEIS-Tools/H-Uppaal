@@ -304,25 +304,31 @@
     <HBox minHeight="20" maxHeight="20" StackPane.alignment="BOTTOM_CENTER"
           fx:id="statusBar"
           style="-fx-padding: 0 10 0 10">
-
-        <StackPane>
-            <Label fx:id="statusLabel" styleClass="sub-caption"/>
-        </StackPane>
-
-        <Region HBox.hgrow="ALWAYS"/>
-
-        <HBox fx:id="queryStatusContainer" opacity="0">
-            <StackPane>
-                <JFXSpinner radius="5"/>
-            </StackPane>
-
-            <Region minWidth="5"/>
-
-            <StackPane>
-                <Label fx:id="queryLabel" styleClass="sub-caption"/>
-            </StackPane>
-        </HBox>
-
+        <BorderPane HBox.hgrow="ALWAYS">
+            <left>
+                <StackPane>
+                    <Label fx:id="statusLabel" styleClass="sub-caption"/>
+                </StackPane>
+            </left>
+            <center>
+                <HBox fx:id="queryStatusContainer" opacity="0">
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane>
+                        <JFXSpinner radius="3"/>
+                    </StackPane>
+                    <Region minWidth="5"/>
+                    <StackPane>
+                        <Label fx:id="queryLabel" styleClass="sub-caption"/>
+                    </StackPane>
+                    <Region minWidth="5" HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </center>
+            <right>
+                <StackPane>
+                    <Label fx:id="versionLabel" styleClass="sub-caption"/>
+                </StackPane>
+            </right>
+        </BorderPane>
     </HBox>
 
     <!-- Query Result Dialog -->

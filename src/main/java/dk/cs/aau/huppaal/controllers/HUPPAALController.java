@@ -1,5 +1,6 @@
 package dk.cs.aau.huppaal.controllers;
 
+import dk.cs.aau.huppaal.BuildConfig;
 import dk.cs.aau.huppaal.Debug;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.*;
@@ -129,6 +130,7 @@ public class HUPPAALController implements Initializable {
     public JFXSnackbar snackbar;
     public HBox statusBar;
     public Label statusLabel;
+    public Label versionLabel;
     public Label queryLabel;
     public HBox queryStatusContainer;
 
@@ -357,6 +359,10 @@ public class HUPPAALController implements Initializable {
                 Insets.EMPTY
         )));
 
+        versionLabel.setTextFill(Color.GREY_BLUE.getColor(Color.Intensity.I50));
+        versionLabel.setText(BuildConfig.NAME+" v"+BuildConfig.VERSION+"+"+BuildConfig.COMMIT_SHA_SHORT);
+        versionLabel.setOpacity(0.5);
+
         statusLabel.setTextFill(Color.GREY_BLUE.getColor(Color.Intensity.I50));
         statusLabel.textProperty().bind(HUPPAAL.projectDirectory);
         statusLabel.setOpacity(0.5);
@@ -364,19 +370,16 @@ public class HUPPAALController implements Initializable {
         queryLabel.setTextFill(Color.GREY_BLUE.getColor(Color.Intensity.I50));
         queryLabel.setOpacity(0.5);
 
-        Debug.backgroundThreads.addListener(new ListChangeListener<Thread>() {
-            @Override
-            public void onChanged(final Change<? extends Thread> c) {
-                while (c.next()) {
-                    Platform.runLater(() -> {
-                        if(Debug.backgroundThreads.size() == 0) {
-                            queryStatusContainer.setOpacity(0);
-                        } else {
-                            queryStatusContainer.setOpacity(1);
-                            queryLabel.setText(Debug.backgroundThreads.size() + " background queries running");
-                        }
-                    });
-                }
+        Debug.backgroundThreads.addListener((ListChangeListener<Thread>) c -> {
+            while (c.next()) {
+                Platform.runLater(() -> {
+                    if(Debug.backgroundThreads.size() == 0) {
+                        queryStatusContainer.setOpacity(0);
+                    } else {
+                        queryStatusContainer.setOpacity(1);
+                        queryLabel.setText(Debug.backgroundThreads.size() + " background queries running");
+                    }
+                });
             }
         });
     }
