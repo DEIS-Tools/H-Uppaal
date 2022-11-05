@@ -41,8 +41,8 @@
                         <Region minWidth="16"/>
 
                         <!-- UNDO -->
-                        <JFXRippler fx:id="undo" styleClass="huppaalButton">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#undoClicked">
+                        <JFXRippler fx:id="undo">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#undoClicked">
                                 <FontIcon iconLiteral="gmi-undo" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -50,8 +50,8 @@
                         <Region minWidth="8"/>
 
                         <!-- REDO -->
-                        <JFXRippler fx:id="redo" styleClass="huppaalButton">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#redoClicked">
+                        <JFXRippler fx:id="redo">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#redoClicked">
                                 <FontIcon iconLiteral="gmi-redo" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -59,8 +59,8 @@
                         <Region minWidth="64"/>
 
                         <!-- ZOOM IN -->
-                        <JFXRippler fx:id="zoomIn" styleClass="huppaalButton">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#zoomInClicked">
+                        <JFXRippler fx:id="zoomIn">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#zoomInClicked">
                                 <FontIcon iconLiteral="gmi-zoom-in" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -68,8 +68,8 @@
                         <Region minWidth="8"/>
 
                         <!-- ZOOM IN -->
-                        <JFXRippler fx:id="zoomOut" styleClass="huppaalButton">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#zoomOutClicked">
+                        <JFXRippler fx:id="zoomOut">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#zoomOutClicked">
                                 <FontIcon iconLiteral="gmi-zoom-out" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -77,8 +77,8 @@
                         <Region minWidth="8"/>
 
                         <!-- ZOOM TO FIT -->
-                        <JFXRippler fx:id="zoomToFit" styleClass="huppaalButton">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#zoomToFitClicked">
+                        <JFXRippler fx:id="zoomToFit">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#zoomToFitClicked">
                                 <FontIcon iconLiteral="gmi-zoom-out-map" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -86,8 +86,8 @@
                         <Region minWidth="8"/>
 
                         <!-- RESET ZOOM -->
-                        <JFXRippler fx:id="resetZoom" styleClass="huppaalButton">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#resetZoomClicked">
+                        <JFXRippler fx:id="resetZoom">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#resetZoomClicked">
                                 <FontIcon iconLiteral="gmi-crop-original" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -95,8 +95,8 @@
                         <Region HBox.hgrow="ALWAYS" />
 
                         <!-- DELETE SELECTED -->
-                        <JFXRippler fx:id="deleteSelected" styleClass="huppaalButton">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#deleteSelectedClicked">
+                        <JFXRippler fx:id="deleteSelected">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#deleteSelectedClicked">
                                 <FontIcon iconLiteral="gmi-delete" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -104,8 +104,8 @@
                         <Region minWidth="8"/>
 
                         <!-- COLOR SELECTED -->
-                        <JFXRippler fx:id="colorSelected" styleClass="huppaalButton">
-                            <StackPane minWidth="40" minHeight="40">
+                        <JFXRippler fx:id="colorSelected">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton">
                                 <FontIcon iconLiteral="gmi-color-lens" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -121,8 +121,9 @@
                         </StackPane>
 
                         <Region minWidth="16"/>
-                        <JFXRippler fx:id="runConfigurationExecuteButton" styleClass="huppaalButton">
-                            <StackPane minWidth="40" minHeight="40">
+
+                        <JFXRippler fx:id="runConfigurationExecuteButton">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton">
                                 <FontIcon fx:id="runConfigurationExecuteButtonIcon" iconLiteral="gmi-play-arrow" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -134,8 +135,8 @@
                         <Region minWidth="16"/>
 
                         <!-- GENERATE UPPAAL MODEL FOR PROJECT -->
-                        <JFXRippler fx:id="generateUppaalModel" styleClass="huppaalButton">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#generateUppaalModelClicked">
+                        <JFXRippler fx:id="generateUppaalModel">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#generateUppaalModelClicked">
                                 <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
