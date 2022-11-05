@@ -372,14 +372,15 @@ public class HUPPAALPresentation extends StackPane {
                 var exitValue = proc.waitFor(); // TODO: should wait forever until cancelled (requires a "cancel" button)
                 HUPPAAL.showToast(config.name + " finished ("+exitValue+")");
 
-                // TODO: This shouldn't be a "warning" - also not allowed on separate threads (look at the 'refactor/logging' git branch for progress on this)
                 String s;
                 while((s = stdi.readLine()) != null) {
                     var finalS = s;
                     Platform.runLater(() -> CodeAnalysis.addMessage(finalS));
                 }
-                while((s = stde.readLine()) != null)
-                    System.err.println(s);
+                while((s = stde.readLine()) != null) {
+                    var finalS = s;
+                    Platform.runLater(() -> CodeAnalysis.addMessage(new CodeAnalysis.Message(finalS, CodeAnalysis.MessageType.ERROR)));
+                }
             } catch (Exception e) {
                 HUPPAAL.showToast(e.getMessage());
                 e.printStackTrace();

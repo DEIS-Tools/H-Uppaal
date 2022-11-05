@@ -140,7 +140,11 @@ public class CodeAnalysis {
         private ObservableList<Nearable> nearables = FXCollections.observableArrayList();
 
         public Message(String message) {
-            this(message, MessageType.WARNING, new ArrayList<>());
+            this(message, MessageType.WARNING);
+        }
+
+        public Message(String message, MessageType type) {
+            this(message, type, new ArrayList<>());
         }
 
         public Message(String message, MessageType messageType, Nearable... nearables) {
