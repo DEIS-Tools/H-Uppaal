@@ -261,3 +261,8 @@
 .combo-box-base:disabled {
 	-fx-opacity: .4;
 }
+
+.huppaalButton:hover {
+	-fx-background-color: rgba(255, 255, 255, 0.1);
+	-fx-background-radius: 5;
+}
