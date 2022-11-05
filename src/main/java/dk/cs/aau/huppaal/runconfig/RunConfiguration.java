@@ -1,6 +1,8 @@
 package dk.cs.aau.huppaal.runconfig;
 
 import com.google.gson.reflect.TypeToken;
+import javafx.scene.control.TextField;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;

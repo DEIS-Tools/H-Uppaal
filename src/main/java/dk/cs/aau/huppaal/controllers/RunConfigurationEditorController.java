@@ -3,6 +3,7 @@ package dk.cs.aau.huppaal.controllers;
 import com.google.gson.Gson;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXRippler;
 import dk.cs.aau.huppaal.BuildConfig;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.runconfig.RunConfiguration;
@@ -10,6 +11,8 @@ import dk.cs.aau.huppaal.runconfig.RunConfigurationPreferencesKeys;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 
 import java.net.URL;
 import java.util.List;
@@ -19,8 +22,8 @@ public class RunConfigurationEditorController implements Initializable {
     public JFXListView<RunConfiguration> savedConfigurationsList;
     public Label versionLabel;
     public JFXButton okButton, cancelButton, applyButton;
-    public JFXButton addNewRunConfigurationButton, removeSelectedRunConfigurationButton;
-    public TextField nameText, commandText, argumentsText, execDirText;
+    public JFXRippler addNewRunConfigurationButton, removeSelectedRunConfigurationButton;
+    public GridPane propertyGridPane;
 
     public RunConfigurationEditorController() {}
 

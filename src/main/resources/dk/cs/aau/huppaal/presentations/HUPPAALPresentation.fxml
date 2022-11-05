@@ -288,9 +288,7 @@
                 <StackPane minWidth="50" minHeight="35"
                            onMouseClicked="#collapseMessagesClicked"
                            StackPane.alignment="TOP_RIGHT">
-
                     <FontIcon fx:id="collapseMessagesIcon" iconLiteral="gmi-expand-less" iconSize="24" fill="white"/>
-
                 </StackPane>
             </JFXRippler>
         </HBox>

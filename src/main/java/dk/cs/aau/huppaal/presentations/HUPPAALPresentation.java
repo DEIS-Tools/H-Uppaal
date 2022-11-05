@@ -422,10 +422,9 @@ public class HUPPAALPresentation extends StackPane {
                     runconfigWindow.setTitle("Run Configuration Editor");
                     runConfigurationEditorPresentation = new RunConfigurationEditorPresentation(runconfigWindow);
                     runConfigurationEditorPresentation.setOnRunConfigsSaved(this::initializeRunConfigPicker);
-                    runconfigWindow.setScene(new Scene(runConfigurationEditorPresentation.parent));
+                    runconfigWindow.setScene(new Scene(runConfigurationEditorPresentation));
                 }
                 runconfigWindow.show();
-                runconfigWindow.requestFocus();
             } catch (Exception e) {
                 e.printStackTrace();
             }
