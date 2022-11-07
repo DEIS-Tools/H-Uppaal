@@ -122,6 +122,12 @@
                                 <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
+
+                        <JFXRippler>
+                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#debugCreateALog_PleaseKillMe">
+                                <FontIcon iconLiteral="gmi-sports-kabaddi" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
                     </HBox>
 
                 </StackPane>
@@ -238,19 +244,13 @@
                style="-fx-padding: 0 0 20 0">
         <JFXTabPane fx:id="tabPane" style="-fx-background-color: -grey-200;">
             <Tab text="Information" fx:id="infoLogTab">
-                <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="edge-to-edge">
-                    <LogTabPresentation fx:id="infoLog"/>
-                </ScrollPane>
+                <LogTabPresentation fx:id="infoLog"/>
             </Tab>
             <Tab text="Warning" fx:id="warnLogTab">
-                <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="edge-to-edge">
-                    <LogTabPresentation fx:id="warnLog"/>
-                </ScrollPane>
+                <LogTabPresentation fx:id="warnLog"/>
             </Tab>
             <Tab text="Error" fx:id="errLogTab">
-                <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="edge-to-edge">
-                    <LogTabPresentation fx:id="errLog"/>
-                </ScrollPane>
+                <LogTabPresentation fx:id="errLog"/>
             </Tab>
 
             <Tab fx:id="backendErrorsTab" text="Backend Errors">

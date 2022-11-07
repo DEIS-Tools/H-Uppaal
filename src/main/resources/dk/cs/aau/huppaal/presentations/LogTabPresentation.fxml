@@ -1,8 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.control.ScrollPane?>
+<?import com.jfoenix.controls.JFXRippler?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
-         style="-fx-padding: 10"
-         type="VBox"
+         style="-fx-background-color: -grey-800; -fx-padding: 0 0 0 10"
+         type="HBox"
          fx:controller="dk.cs.aau.huppaal.controllers.LogTabController">
+    <BorderPane HBox.hgrow="ALWAYS">
+        <left>
+            <HBox style="-fx-padding: 8 0 0 0">
+                <VBox spacing="5">
+                    <JFXRippler>
+                        <StackPane styleClass="hoverbutton" fx:id="clearLogsButton">
+                            <FontIcon iconLiteral="gmi-clear-all" iconColor="white" iconSize="22"/>
+                        </StackPane>
+                    </JFXRippler>
+                    <JFXRippler>
+                        <StackPane styleClass="hoverbutton" fx:id="filterLogsButton">
+                            <FontIcon iconLiteral="gmi-filter-list" iconColor="white" iconSize="22"/>
+                        </StackPane>
+                    </JFXRippler>
+                    <JFXRippler>
+                        <StackPane styleClass="hoverbutton" fx:id="autoscrollLogButton">
+                            <FontIcon iconLiteral="gmi-playlist-play" iconColor="white" iconSize="22" fx:id="autoscrollLogButtonIcon"/>
+                        </StackPane>
+                    </JFXRippler>
+                </VBox>
+                <Region minWidth="10"/>
+            </HBox>
+        </left>
+        <center>
+            <ScrollPane style="-fx-background-color: transparent; -fx-border-width: 0.1; -fx-border-color: white;"
+                        fitToWidth="true" fitToHeight="true" fx:id="logBoxScrollPane">
+                <VBox fx:id="logBox" style="-fx-padding: 8 8 8 8"/>
+            </ScrollPane>
+        </center>
+    </BorderPane>
 </fx:root>

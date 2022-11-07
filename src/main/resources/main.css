@@ -225,3 +225,16 @@
 .styled-text-area {
 	-fx-padding: 20 0 40 0;
 }
+
+.light-text {
+	-fx-fill: white;
+}
+
+.hoverbutton {
+	-fx-background-radius: 5;
+	-fx-padding: 3 3 3 3;
+}
+
+.hoverbutton:hover {
+	-fx-background-color: rgba(255, 255, 255, 0.1);
+}

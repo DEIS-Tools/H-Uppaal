@@ -1,20 +1,57 @@
 package dk.cs.aau.huppaal.presentations;
 
+import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.controllers.LogTabController;
 import dk.cs.aau.huppaal.logging.Log;
 import dk.cs.aau.huppaal.presentations.util.PresentationFxmlLoader;
-import javafx.scene.layout.VBox;
+import javafx.geometry.Insets;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
 
-public class LogTabPresentation extends VBox {
+public class LogTabPresentation extends HBox {
     public LogTabController controller;
+    public boolean autoscroll;
     public LogTabPresentation() {
         controller = PresentationFxmlLoader.loadSetRoot("LogTabPresentation.fxml", this);
-        Log.addOnLogAddedListener(this::OnLogAdded);
+        autoscroll = true;
+        Log.addOnLogAddedListener(this::onLogAdded);
+        initializeButtons();
+        setupAutoscroll();
     }
 
-    private void OnLogAdded(Log log) {
+    private void onLogAdded(Log log) {
         if(!log.level().equals(controller.level))
             return;
-        getChildren().add(new LogPresentation(log));
+        controller.logBox.getChildren().add(new LogPresentation(log));
+    }
+
+    private void initializeButtons() {
+        controller.clearLogsButton.setOnMouseClicked(e -> Log.clearLogsForLevel(controller.level));
+        controller.filterLogsButton.setOnMouseClicked(e -> {
+            Log.addError("Not implemented yet!");
+            HUPPAAL.showToast("Not implemented yet!");
+        });
+        controller.autoscrollLogButton.setOnMouseClicked(e -> toggleAutoScroll());
+        controller.logBoxScrollPane.setOnScrollStarted(e -> {
+            if(autoscroll)
+                toggleAutoScroll();
+        });
+    }
+
+    private void toggleAutoScroll() {
+        autoscroll = !autoscroll;
+        setupAutoscroll();
+    }
+
+    private void setupAutoscroll() {
+        if(autoscroll) {
+            controller.logBoxScrollPane.vvalueProperty().bind(controller.logBox.heightProperty());
+            controller.autoscrollLogButtonIcon.setIconLiteral("gmi-playlist-add-check");
+        } else {
+            controller.logBoxScrollPane.vvalueProperty().unbind();
+            controller.autoscrollLogButtonIcon.setIconLiteral("gmi-playlist-play");
+        }
     }
 }
