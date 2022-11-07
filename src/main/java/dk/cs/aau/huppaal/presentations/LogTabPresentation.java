@@ -4,10 +4,6 @@ import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.controllers.LogTabController;
 import dk.cs.aau.huppaal.logging.Log;
 import dk.cs.aau.huppaal.presentations.util.PresentationFxmlLoader;
-import javafx.geometry.Insets;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 
 public class LogTabPresentation extends HBox {
@@ -28,7 +24,11 @@ public class LogTabPresentation extends HBox {
     }
 
     private void initializeButtons() {
-        controller.clearLogsButton.setOnMouseClicked(e -> Log.clearLogsForLevel(controller.level));
+        controller.clearLogsButton.setOnMouseClicked(e -> {
+            controller.logBox.getChildren().clear();
+            // This is just to be polite to the logging framework (and your RAM)
+            Log.clearLogsForLevel(controller.level);
+        });
         controller.filterLogsButton.setOnMouseClicked(e -> {
             Log.addError("Not implemented yet!");
             HUPPAAL.showToast("Not implemented yet!");

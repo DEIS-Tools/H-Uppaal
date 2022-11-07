@@ -10,25 +10,18 @@
          fx:controller="dk.cs.aau.huppaal.controllers.LogTabController">
     <BorderPane HBox.hgrow="ALWAYS">
         <left>
-            <HBox style="-fx-padding: 8 0 0 0">
+            <HBox style="-fx-padding: 8 8 0 0">
                 <VBox spacing="5">
-                    <JFXRippler>
-                        <StackPane styleClass="hoverbutton" fx:id="clearLogsButton">
-                            <FontIcon iconLiteral="gmi-clear-all" iconColor="white" iconSize="22"/>
-                        </StackPane>
+                    <JFXRippler fx:id="clearLogsButton" ripplerFill="white" styleClass="hoverbutton">
+                        <FontIcon iconLiteral="gmi-clear-all" iconColor="white" iconSize="22"/>
                     </JFXRippler>
-                    <JFXRippler>
-                        <StackPane styleClass="hoverbutton" fx:id="filterLogsButton">
-                            <FontIcon iconLiteral="gmi-filter-list" iconColor="white" iconSize="22"/>
-                        </StackPane>
+                    <JFXRippler fx:id="filterLogsButton" ripplerFill="white" styleClass="hoverbutton">
+                        <FontIcon iconLiteral="gmi-filter-list" iconColor="white" iconSize="22"/>
                     </JFXRippler>
-                    <JFXRippler>
-                        <StackPane styleClass="hoverbutton" fx:id="autoscrollLogButton">
-                            <FontIcon iconLiteral="gmi-playlist-play" iconColor="white" iconSize="22" fx:id="autoscrollLogButtonIcon"/>
-                        </StackPane>
+                    <JFXRippler fx:id="autoscrollLogButton" ripplerFill="white" styleClass="hoverbutton">
+                        <FontIcon iconLiteral="gmi-playlist-play" iconColor="white" iconSize="22" fx:id="autoscrollLogButtonIcon"/>
                     </JFXRippler>
                 </VBox>
-                <Region minWidth="10"/>
             </HBox>
         </left>
         <center>

@@ -1,5 +1,6 @@
 package dk.cs.aau.huppaal.controllers;
 
+import com.jfoenix.controls.JFXRippler;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.logging.LogLevel;
 import javafx.fxml.Initializable;
@@ -14,7 +15,7 @@ import java.util.ResourceBundle;
 public class LogTabController implements Initializable {
     public LogLevel level;
     public VBox logBox;
-    public StackPane autoscrollLogButton, clearLogsButton, filterLogsButton;
+    public JFXRippler autoscrollLogButton, clearLogsButton, filterLogsButton;
     public ScrollPane logBoxScrollPane;
     public FontIcon autoscrollLogButtonIcon;
 
