@@ -1,7 +1,10 @@
 package dk.cs.aau.huppaal.logging;
 
-public class ContextLabel extends MonoTextLogField {
-    public ContextLabel(String text) {
+import javafx.scene.control.TextField;
+
+public class LogTextField extends TextField {
+    private final Log log;
+    public LogTextField(Log log) {
         // TODO: Implement clickable links like so:
         //       location regex:      !location:ComponentName/LocationId
         //       edge regex:          !edge:ComponentName/EdgeId
@@ -12,6 +15,11 @@ public class ContextLabel extends MonoTextLogField {
         //        - If a regex is recognized, but the link doesn't work, highlight the link with red
         //          and make it un-clickable
         //        - Make sure to subscribe the link to "on deleted" of the referenced things
-        super(text);
+        super(log.message());
+        this.log = log;
+        setEditable(false);
+        getStyleClass().add("copyable-label");
+        getStyleClass().add("body2-mono");
+        setStyle("-fx-text-fill: white");
     }
 }
