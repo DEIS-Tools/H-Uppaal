@@ -1,6 +1,6 @@
 package dk.cs.aau.huppaal.logging;
 
-public class ContextLabel extends MonoTextLabel {
+public class ContextLabel extends MonoTextLogField {
     public ContextLabel(String text) {
         // TODO: Implement clickable links like so:
         //       location regex:      !location:ComponentName/LocationId

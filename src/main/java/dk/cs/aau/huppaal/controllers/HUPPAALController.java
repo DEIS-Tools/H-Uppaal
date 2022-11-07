@@ -852,6 +852,23 @@ public class HUPPAALController implements Initializable {
         Log.addError("another process", "Some very useful information here");
     }
 
+    @FXML
+    private void debugCreateALog_PleaseKillMe2() {
+        new Thread(() -> {
+            var r = new Random();
+            while(true) {
+                try {
+                    Log.addInfo("Hello: " + r.nextInt(10));
+                    Log.addWarning("Hello: " + r.nextInt(10));
+                    Log.addError("Hello: " + r.nextInt(10));
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+        }).start();
+    }
+
     private void nudgeSelected(final NudgeDirection direction) {
         final List<SelectHelper.ItemSelectable> selectedElements = SelectHelper.getSelectedElements();
 

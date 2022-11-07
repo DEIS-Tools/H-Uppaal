@@ -3,6 +3,7 @@ package dk.cs.aau.huppaal.presentations;
 import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.controllers.LogTabController;
 import dk.cs.aau.huppaal.logging.Log;
+import dk.cs.aau.huppaal.logging.MonoTextLogField;
 import dk.cs.aau.huppaal.presentations.util.PresentationFxmlLoader;
 import javafx.scene.layout.HBox;
 
@@ -20,7 +21,7 @@ public class LogTabPresentation extends HBox {
     private void onLogAdded(Log log) {
         if(!log.level().equals(controller.level))
             return;
-        controller.logBox.getChildren().add(new LogPresentation(log));
+        controller.logBox.getChildren().add(new MonoTextLogField(log.message()));
     }
 
     private void initializeButtons() {

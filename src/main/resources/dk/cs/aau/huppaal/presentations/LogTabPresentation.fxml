@@ -27,7 +27,7 @@
         <center>
             <ScrollPane style="-fx-background-color: transparent; -fx-border-width: 0.1; -fx-border-color: white;"
                         fitToWidth="true" fitToHeight="true" fx:id="logBoxScrollPane">
-                <VBox fx:id="logBox" style="-fx-padding: 8 8 8 8"/>
+                <VBox fx:id="logBox" style="-fx-padding: 8 8 8 8; -fx-background-color: #323232"/>
             </ScrollPane>
         </center>
     </BorderPane>
