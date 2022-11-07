@@ -57,9 +57,9 @@ public class LogPresentation extends VBox {
 
     public void initializeLogIcon() {
         switch (log.level()) {
-            case Information -> setLogIcon("gmi-info-outline");
+            case Information -> setLogIcon("gmi-info");
             case Warning -> setLogIcon("gmi-warning");
-            case Error -> setLogIcon("gmi-error-outline");
+            case Error -> setLogIcon("gmi-error");
         }
     }
 

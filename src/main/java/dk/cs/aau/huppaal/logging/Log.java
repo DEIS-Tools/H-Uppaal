@@ -2,8 +2,8 @@ package dk.cs.aau.huppaal.logging;
 
 import dk.cs.aau.huppaal.BuildConfig;
 import dk.cs.aau.huppaal.utility.FuncInterfaces.Runnable1;
+import javafx.application.Platform;
 
-import javax.swing.*;
 import java.util.*;
 
 public record Log(
@@ -39,16 +39,13 @@ public record Log(
     public static void addLog(String message) {
         addLog(new Log(UUID.randomUUID(), DEFAULT_SERVICE, message, Collections.emptyList(), LogLevel.Information));
     }
-    public static void addLog(Log message) {
+    public static synchronized void addLog(Log message) {
         System.out.println(message.service + ": " + message.message);
-        if(!logs.containsKey(message.service())) {
-            var l = new ArrayList<Log>();
-            l.add(message);
-            logs.put(message.service(), l);
-            return;
-        }
+        if(!logs.containsKey(message.service()))
+            logs.put(message.service(), new ArrayList<>());
         logs.get(message.service()).add(message);
-        onLogAddedSubscribers.forEach(r -> r.run(message));
+        // Use runLater because the addLog might've been called from a thread that's not the main thread
+        onLogAddedSubscribers.forEach(r -> Platform.runLater(() -> r.run(message)));
     }
     public static void clearAllLogs() {
         for(var l : logs.entrySet())

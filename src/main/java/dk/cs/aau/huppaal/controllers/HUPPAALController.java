@@ -270,9 +270,9 @@ public class HUPPAALController implements Initializable {
         infoLog.controller.level = LogLevel.Information;
         warnLog.controller.level = LogLevel.Warning;
         errLog.controller.level  = LogLevel.Error;
-        infoLogTab.setGraphic(createLogTabIcon("gmi-info-outline", javafx.scene.paint.Color.WHITE));
-        warnLogTab.setGraphic(createLogTabIcon("gmi-warning", javafx.scene.paint.Color.YELLOW));
-        errLogTab.setGraphic(createLogTabIcon("gmi-error-outline", javafx.scene.paint.Color.DARKRED));
+        infoLogTab.setGraphic(createLogTabIcon("gmi-info", javafx.scene.paint.Color.WHITE));
+        warnLogTab.setGraphic(createLogTabIcon("gmi-warning", javafx.scene.paint.Color.WHITE));
+        errLogTab.setGraphic(createLogTabIcon("gmi-error", javafx.scene.paint.Color.WHITE));
         // TODO: Hook up a "clear logs" button
     }
 
@@ -839,6 +839,17 @@ public class HUPPAALController implements Initializable {
             HUPPAAL.showToast("UPPAAL debug file not stored: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void debugCreateALog_PleaseKillMe() {
+        Log.addInfo("Hello Info!");
+        Log.addWarning("Hello Warning!");
+        Log.addError("Hello Error!");
+
+        Log.addInfo("another process", "Some very useful information here");
+        Log.addWarning("another process", "Some very useful information here");
+        Log.addError("another process", "Some very useful information here");
     }
 
     private void nudgeSelected(final NudgeDirection direction) {
