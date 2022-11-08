@@ -21,7 +21,7 @@ public class LogTextField extends TextField {
         //        - If a regex is recognized, but the link doesn't work, highlight the link with red
         //          and make it un-clickable
         //        - Make sure to subscribe the link to "on deleted" of the referenced things
-        super(log.message());
+        super(String.format("[%s]: %s", log.service(), log.message()));
         this.log = log;
         setEditable(false);
         getStyleClass().add("copyable-label");

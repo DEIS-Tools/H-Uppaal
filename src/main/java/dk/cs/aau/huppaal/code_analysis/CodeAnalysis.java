@@ -1,6 +1,5 @@
 package dk.cs.aau.huppaal.code_analysis;
 
-import dk.cs.aau.huppaal.BuildConfig;
 import dk.cs.aau.huppaal.abstractions.Component;
 import dk.cs.aau.huppaal.logging.Log;
 import dk.cs.aau.huppaal.logging.LogLevel;
@@ -226,8 +225,14 @@ public class CodeAnalysis {
         @Deprecated()
         public Log toLog(Component service) {
             // Messy, super-ugly hack to circumvent issues relating to ObservableList
-            var finalButNotFinalMessageWrapper = new Object() { String msg = message.get(); };
-            nearables.forEach(n -> finalButNotFinalMessageWrapper.msg += ", " + n.generateNearString());
+            var finalButNotFinalMessageWrapper = new Object() { String msg = ""; String sep = ""; };
+            nearables.forEach(n -> {
+                finalButNotFinalMessageWrapper.msg += finalButNotFinalMessageWrapper.sep + n.generateNearString();
+                finalButNotFinalMessageWrapper.sep = ", ";
+            });
+            if(!nearables.isEmpty())
+                finalButNotFinalMessageWrapper.msg += ": ";
+            finalButNotFinalMessageWrapper.msg += message.get();
             var s = Log.DEFAULT_SERVICE;
             if(service != null)
                 s = service.getName();

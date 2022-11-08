@@ -5,12 +5,12 @@
 <?import com.jfoenix.controls.JFXRippler?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
-         style="-fx-background-color: -grey-800; -fx-padding: 0 0 0 10"
+         style="-fx-background-color: -grey-800;"
          type="HBox"
          fx:controller="dk.cs.aau.huppaal.controllers.LogTabController">
     <BorderPane HBox.hgrow="ALWAYS">
         <left>
-            <HBox style="-fx-padding: 8 8 0 0">
+            <HBox style="-fx-padding: 8 8 8 8; -fx-border-width: 0.1; -fx-border-color: white; -fx-border-style: hidden solid hidden hidden;">
                 <VBox spacing="5">
                     <JFXRippler fx:id="clearLogsButton" ripplerFill="white" styleClass="hoverbutton">
                         <FontIcon iconLiteral="gmi-clear-all" iconColor="white" iconSize="22"/>
@@ -25,7 +25,7 @@
             </HBox>
         </left>
         <center>
-            <ScrollPane style="-fx-background-color: transparent; -fx-border-width: 0.1; -fx-border-color: white;"
+            <ScrollPane style="-fx-background-color: transparent;"
                         fitToWidth="true" fitToHeight="true" fx:id="logBoxScrollPane">
                 <VBox fx:id="logBox" style="-fx-padding: 8 8 8 8; -fx-background-color: #323232"/>
             </ScrollPane>
