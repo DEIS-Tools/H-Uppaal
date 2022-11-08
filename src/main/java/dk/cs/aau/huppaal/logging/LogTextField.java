@@ -2,6 +2,12 @@ package dk.cs.aau.huppaal.logging;
 
 import javafx.scene.control.TextField;
 
+// TODO: Having a TextField for each log entry makes only one log entry
+//       selectable at a time. The official solution to this is to use
+//       a TextArea, however when I tried, there were a lot of scrollpane
+//       issues. At the time of writing there are more important features
+//       to implement, but if you want to solve this take a look at the
+//       TextArea solution again. It will very likely work.
 public class LogTextField extends TextField {
     private final Log log;
     public LogTextField(Log log) {

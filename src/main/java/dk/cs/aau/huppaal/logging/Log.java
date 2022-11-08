@@ -72,4 +72,18 @@ public record Log(
     public static synchronized void addOnLogRemovedListener(Runnable r) {
         onLogRemovedSubscribers.add(r);
     }
+    public static synchronized void removeUuid(UUID logId) {
+        removeUuid(DEFAULT_SERVICE, logId);
+    }
+    public static synchronized void removeUuid(String service, UUID logId) {
+        if(!logs.containsKey(service))
+            return;
+        var ls = logs.get(service);
+        Log x = null;
+        for(var l : ls)
+            if(l.id().equals(logId))
+                x = l;
+        if(x != null)
+            ls.remove(x);
+    }
 }
