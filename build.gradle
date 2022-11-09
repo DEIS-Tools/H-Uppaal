@@ -154,6 +154,8 @@ dependencies {
     implementation group: 'org.openjfx', name: 'javafx-controls', version: '19'
     implementation group: 'org.openjfx', name: 'javafx-base', version: '19'
 
+    implementation group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.10.9'
+
     //Junit
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.9.0'
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.9.0'

@@ -5,6 +5,7 @@ import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.logging.LogLevel;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -17,6 +18,7 @@ public class LogTabController implements Initializable {
     public JFXRippler autoscrollLogButton, clearLogsButton, filterLogsButton;
     public ScrollPane logBoxScrollPane;
     public FontIcon autoscrollLogButtonIcon;
+    public StackPane a;
 
     public LogTabController() {
         level = LogLevel.Information;

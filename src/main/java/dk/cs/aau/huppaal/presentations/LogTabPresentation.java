@@ -5,23 +5,41 @@ import dk.cs.aau.huppaal.controllers.LogTabController;
 import dk.cs.aau.huppaal.logging.Log;
 import dk.cs.aau.huppaal.logging.LogTextField;
 import dk.cs.aau.huppaal.presentations.util.PresentationFxmlLoader;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
+import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.InlineCssTextArea;
+import org.fxmisc.richtext.StyleClassedTextArea;
+
+import java.awt.*;
 
 public class LogTabPresentation extends HBox {
     public LogTabController controller;
     public boolean autoscroll;
+    private final StyleClassedTextArea logArea;
+    private final VirtualizedScrollPane<StyleClassedTextArea> scrollPane;
     public LogTabPresentation() {
         controller = PresentationFxmlLoader.loadSetRoot("LogTabPresentation.fxml", this);
         autoscroll = true;
-        Log.addOnLogAddedListener(this::onLogAdded);
+
+        logArea = new StyleClassedTextArea();
+        logArea.getStyleClass().add("log-text");
+        logArea.setWrapText(true);
+        logArea.setEditable(false);
+        scrollPane = new VirtualizedScrollPane<>(logArea);
+        controller.a.getChildren().add(scrollPane);
+
         initializeButtons();
         setupAutoscroll();
+        Log.addOnLogAddedListener(this::onLogAdded);
     }
 
     private void onLogAdded(Log log) {
         if(!log.level().equals(controller.level))
             return;
-        controller.logBox.getChildren().add(new LogTextField(log));
+        // TODO: Highlighting, hyperlinking, check if it already ends in a newline etc.
+        logArea.append(log.message() + "\n", "log-text-entry");
     }
 
     private void initializeButtons() {
@@ -35,7 +53,7 @@ public class LogTabPresentation extends HBox {
             HUPPAAL.showToast("Not implemented yet!");
         });
         controller.autoscrollLogButton.setOnMouseClicked(e -> toggleAutoScroll());
-        controller.logBoxScrollPane.setOnScrollStarted(e -> {
+        scrollPane.setOnScrollStarted(e -> {
             if(autoscroll)
                 toggleAutoScroll();
         });
@@ -43,15 +61,16 @@ public class LogTabPresentation extends HBox {
 
     private void toggleAutoScroll() {
         autoscroll = !autoscroll;
+        Log.addError("Not implemented yet!");
+        HUPPAAL.showToast("Not implemented yet!");
         setupAutoscroll();
     }
 
     private void setupAutoscroll() {
         if(autoscroll) {
-            controller.logBoxScrollPane.vvalueProperty().bind(controller.logBox.heightProperty());
+            // TODO: how to autoscroll a virtualized scroll pane?
             controller.autoscrollLogButtonIcon.setIconLiteral("gmi-playlist-add-check");
         } else {
-            controller.logBoxScrollPane.vvalueProperty().unbind();
             controller.autoscrollLogButtonIcon.setIconLiteral("gmi-playlist-play");
         }
     }
