@@ -6,13 +6,12 @@ import dk.cs.aau.huppaal.logging.Log;
 import dk.cs.aau.huppaal.logging.LogTextField;
 import dk.cs.aau.huppaal.presentations.util.PresentationFxmlLoader;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.StyleClassedTextArea;
-
-import java.awt.*;
 
 public class LogTabPresentation extends HBox {
     public LogTabController controller;
@@ -47,12 +46,18 @@ public class LogTabPresentation extends HBox {
             controller.logBox.getChildren().clear();
             // This is just to be polite to the logging framework (and your RAM)
             Log.clearLogsForLevel(controller.level);
+            logArea.clear();
         });
+        Tooltip.install(controller.clearLogsButton, new Tooltip("Clear log"));
+
         controller.filterLogsButton.setOnMouseClicked(e -> {
             Log.addError("Not implemented yet!");
             HUPPAAL.showToast("Not implemented yet!");
         });
+        Tooltip.install(controller.filterLogsButton, new Tooltip("Filter logs"));
+
         controller.autoscrollLogButton.setOnMouseClicked(e -> toggleAutoScroll());
+        Tooltip.install(controller.autoscrollLogButton, new Tooltip("Toggle autoscroll"));
         scrollPane.setOnScrollStarted(e -> {
             if(autoscroll)
                 toggleAutoScroll();
@@ -70,8 +75,10 @@ public class LogTabPresentation extends HBox {
         if(autoscroll) {
             // TODO: how to autoscroll a virtualized scroll pane?
             controller.autoscrollLogButtonIcon.setIconLiteral("gmi-playlist-add-check");
+            controller.autoscrollLogButton.setStyle("-fx-background-color: rgba(255,255,255,0.1)");
         } else {
             controller.autoscrollLogButtonIcon.setIconLiteral("gmi-playlist-play");
+            controller.autoscrollLogButton.setStyle("");
         }
     }
 }

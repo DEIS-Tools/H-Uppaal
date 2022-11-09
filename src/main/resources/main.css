@@ -261,7 +261,7 @@
 }
 
 .log-text {
-	-fx-font-family: "Courier New";
+	-fx-font-family: "Roboto Mono Medium";
 	-fx-font-size: 13.0;
 	-fx-background-color: #323232;
 	-fx-padding: 8;
