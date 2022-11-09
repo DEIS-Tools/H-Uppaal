@@ -271,3 +271,8 @@
 	-fx-text-fill: white;
 	-fx-fill: white;
 }
+
+.hyperlink {
+	-fx-text-fill: #ffa86c;
+	-fx-fill: #ffa86c;
+}

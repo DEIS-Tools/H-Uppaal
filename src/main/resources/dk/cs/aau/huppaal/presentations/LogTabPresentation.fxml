@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
-<?import javafx.scene.control.ScrollPane?>
 <?import com.jfoenix.controls.JFXRippler?>
-<?import org.fxmisc.flowless.VirtualizedScrollPane?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          style="-fx-background-color: -grey-800;"
@@ -26,14 +24,7 @@
             </HBox>
         </left>
         <center>
-            <StackPane fx:id="a" styleClass="body2-mono"/>
+            <StackPane fx:id="logAreaInsertionPoint" styleClass="body2-mono"/>
         </center>
-        <right>
-            <!-- Delete this -->
-            <ScrollPane style="-fx-background-color: transparent;"
-                        fitToWidth="true" fitToHeight="true" fx:id="logBoxScrollPane">
-                <VBox fx:id="logBox" style="-fx-padding: 8 8 8 8; -fx-background-color: #323232"/>
-            </ScrollPane>
-        </right>
     </BorderPane>
 </fx:root>

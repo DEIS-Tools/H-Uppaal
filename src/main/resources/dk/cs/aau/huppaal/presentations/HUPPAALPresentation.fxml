@@ -249,13 +249,13 @@
                style="-fx-padding: 0 0 20 0">
         <JFXTabPane fx:id="tabPane" style="-fx-background-color: -grey-200;">
             <Tab text="Information" fx:id="infoLogTab">
-                <LogTabPresentation fx:id="infoLog"/>
+                <LogTabPresentation fx:id="infoLog" textColor="#FFFFFF"/>
             </Tab>
             <Tab text="Warning" fx:id="warnLogTab">
-                <LogTabPresentation fx:id="warnLog"/>
+                <LogTabPresentation fx:id="warnLog" textColor="#FDEFBD"/>
             </Tab>
             <Tab text="Error" fx:id="errLogTab">
-                <LogTabPresentation fx:id="errLog"/>
+                <LogTabPresentation fx:id="errLog" textColor="#FF8082"/>
             </Tab>
 
             <Tab fx:id="backendErrorsTab" text="Backend Errors">
