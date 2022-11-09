@@ -1,4 +1,4 @@
-package dk.cs.aau.huppaal.presentations.log;
+package dk.cs.aau.huppaal.presentations.logging;
 
 import org.fxmisc.richtext.model.SegmentOpsBase;
 

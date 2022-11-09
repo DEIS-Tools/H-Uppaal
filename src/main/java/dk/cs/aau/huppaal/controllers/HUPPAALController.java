@@ -843,13 +843,10 @@ public class HUPPAALController implements Initializable {
 
     @FXML
     private void debugCreateALog_PleaseKillMe() {
-        Log.addInfo("Hello Info!");
+        Log.addInfo("!location:EMR/L332 is not really as cool as !location:Main/L0 am I right or am I right?");
+        Log.addInfo("Did you know that !component:EMR is cool and all, but not as cool as !file:google.com");
         Log.addWarning("Hello Warning!");
         Log.addError("Hello Error!");
-
-        Log.addInfo("another process", "Some very useful information here");
-        Log.addWarning("another process", "Some very useful information here");
-        Log.addError("another process", "Some very useful information here");
     }
 
     @FXML

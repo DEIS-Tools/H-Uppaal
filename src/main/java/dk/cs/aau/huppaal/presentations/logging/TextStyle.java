@@ -1,4 +1,4 @@
-package dk.cs.aau.huppaal.presentations.log;
+package dk.cs.aau.huppaal.presentations.logging;
 
 import javafx.scene.paint.Color;
 import org.fxmisc.richtext.model.Codec;
@@ -6,6 +6,7 @@ import org.fxmisc.richtext.model.Codec;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 
 /**
  * Holds information about the style of a text fragment.
@@ -23,6 +24,13 @@ public class TextStyle {
     public static TextStyle fontFamily(String family) { return EMPTY.updateFontFamily(family); }
     public static TextStyle textColor(Color color) { return EMPTY.updateTextColor(color); }
     public static TextStyle backgroundColor(Color color) { return EMPTY.updateBackgroundColor(color); }
+    public static TextStyle randomTextColor() {
+        var r = new Random();
+        return EMPTY.updateTextColor(Color.color(
+                r.nextDouble(),
+                r.nextDouble(),
+                r.nextDouble()));
+    }
 
     static String cssColor(Color color) {
         int red = (int) (color.getRed() * 255);

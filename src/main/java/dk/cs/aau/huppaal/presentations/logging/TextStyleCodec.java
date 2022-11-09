@@ -1,4 +1,4 @@
-package dk.cs.aau.huppaal.presentations.log;
+package dk.cs.aau.huppaal.presentations.logging;
 
 import javafx.scene.paint.Color;
 import org.fxmisc.richtext.model.Codec;

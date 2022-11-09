@@ -1,13 +1,13 @@
-package dk.cs.aau.huppaal.presentations.log;
+package dk.cs.aau.huppaal.presentations.logging;
 
 import javafx.geometry.VPos;
-import javafx.scene.paint.Color;
 import org.fxmisc.richtext.GenericStyledArea;
 import org.fxmisc.richtext.TextExt;
 import org.fxmisc.richtext.model.ReadOnlyStyledDocument;
 import org.fxmisc.richtext.model.SegmentOps;
 import org.fxmisc.richtext.model.TextOps;
 import org.reactfx.util.Either;
+import org.w3c.dom.Text;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -31,20 +31,29 @@ public class HyperlinkTextArea extends GenericStyledArea<Void, Either<String, Hy
                 if (hyperlink.isReal()) {
                     t.setText(hyperlink.getDisplayedText());
                     t.getStyleClass().add("hyperlink");
+                    t.setStyle(e.getStyle().toCss());
                     t.setOnMouseClicked(ae -> showLink.accept(hyperlink.getLink()));
                 }})));
         getStyleClass().add("text-hyperlink-area");
     }
 
-    public void appendWithLink(String displayedText, String link) {
-        replaceWithLink(getLength(), getLength(), displayedText, link);
+    public void append(String text, TextStyle style) {
+        replace(getLength(), getLength(), ReadOnlyStyledDocument.fromString(text, null, style, EITHER_OPS));
     }
 
-    public void replaceWithLink(int start, int end, String displayedText, String link) {
+    public void appendWithLink(String displayedText, String link, TextStyle style) {
+        replaceWithLink(getLength(), getLength(), displayedText, link, style);
+    }
+
+    public void appendWithLink(String displayedText, String link) {
+        appendWithLink(displayedText, link, TextStyle.EMPTY);
+    }
+
+    public void replaceWithLink(int start, int end, String displayedText, String link, TextStyle style) {
         replace(start, end, ReadOnlyStyledDocument.fromSegment(
                 Either.right(new Hyperlink(displayedText, displayedText, link)),
                 null,
-                TextStyle.EMPTY,
+                style,
                 EITHER_OPS
         ));
     }
@@ -57,7 +66,7 @@ public class HyperlinkTextArea extends GenericStyledArea<Void, Either<String, Hy
             var segList = getDocument().subSequence( s, e ).getParagraph(0).getSegments();
             if (!segList.isEmpty() && segList.get(0).isRight()) {
                 var link = segList.get(0).getRight().getLink();
-                replaceWithLink( start, end, text, link );
+                replaceWithLink( start, end, text, link, TextStyle.EMPTY );
                 return;
             }
         }

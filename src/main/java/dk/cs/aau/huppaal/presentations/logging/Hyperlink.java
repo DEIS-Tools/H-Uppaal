@@ -1,4 +1,4 @@
-package dk.cs.aau.huppaal.presentations.log;
+package dk.cs.aau.huppaal.presentations.logging;
 
 public class Hyperlink {
     private final String originalDisplayedText, displayedText, link;
