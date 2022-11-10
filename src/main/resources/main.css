@@ -263,8 +263,12 @@
 .log-text {
 	-fx-font-family: "Roboto Mono Medium";
 	-fx-font-size: 13.0;
-	-fx-background-color: #323232;
+	-fx-background-color: #323738;
 	-fx-padding: 8;
+}
+
+.log-toolbar {
+	-fx-background-color: #334850;
 }
 
 .log-text-entry {
