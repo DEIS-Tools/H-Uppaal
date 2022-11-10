@@ -13,6 +13,7 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static dk.cs.aau.huppaal.presentations.CanvasPresentation.GRID_SIZE;
@@ -557,7 +558,35 @@ public class Edge implements Serializable, Nearable {
 
     @Override
     public String generateNearString() {
-        String result = "Edge";
+        // TODO: edges should know their parent
+        // TODO: edges should have a UUID id
+        return "[%s](edge:%s/%s)".formatted(generateFromToString(),
+                "ParentPlaceholder", "IdPlaceholder");
+    }
+
+    private String generateFromToString() {
+        return "%s->%s".formatted(getSourceName(), getTargetName());
+    }
+
+    private String getSourceName() {
+        if(getSourceLocation() != null)
+            return getSourceLocation().generateNearString();
+        if(getSourceJork() != null)
+            return getSourceJork().generateNearString();
+        return getSourceCircular().toString();
+    }
+
+    private String getTargetName() {
+        if(getTargetLocation() != null)
+            return getTargetLocation().generateNearString();
+        if (getTargetJork() != null)
+            return getTargetJork().generateNearString();
+        return getTargetCircular().toString();
+    }
+
+    @Deprecated
+    private String generateNearStringOld() {
+        var result = "Edge";
 
         if (getSourceLocation() != null) {
             result += " from " + getSourceLocation().generateNearString();

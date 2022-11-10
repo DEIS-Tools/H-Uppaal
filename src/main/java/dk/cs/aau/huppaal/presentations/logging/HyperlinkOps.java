@@ -1,12 +1,13 @@
 package dk.cs.aau.huppaal.presentations.logging;
 
+import dk.cs.aau.huppaal.logging.LogLinkQuantifier;
 import org.fxmisc.richtext.model.SegmentOpsBase;
 
 import java.util.Optional;
 
 public class HyperlinkOps<S> extends SegmentOpsBase<Hyperlink, S> {
     public HyperlinkOps() {
-        super(new Hyperlink("", "", ""));
+        super(new Hyperlink("", "", "", LogLinkQuantifier.UNKNOWN));
     }
 
     @Override

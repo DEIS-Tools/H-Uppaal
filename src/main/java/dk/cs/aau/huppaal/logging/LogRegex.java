@@ -2,25 +2,27 @@ package dk.cs.aau.huppaal.logging;
 
 import java.util.regex.Pattern;
 
-// location regex:      !location:ComponentName/LocationId
-// edge regex:          !edge:ComponentName/EdgeId
-// subcomponent regex:  !subcomponent:ComponentName/SubcomponentId
-// jork regex:          !jork:ComponentName/JorkId
-// tag regex:           !tag:ComponentName/TagId
-// query regex:         !query:QueryId
-// component regex:     !component:ComponentName
-// file:                !file:filename (open OS default app)
+// location regex:      [text](location:ComponentName/LocationId)
+// edge regex:          [text](edge:ComponentName/EdgeId)
+// subcomponent regex:  [text](subcomponent:ComponentName/SubcomponentId)
+// jork regex:          [text](jork:ComponentName/JorkId)
+// tag regex:           [text](tag:ComponentName/TagId)
+// query regex:         [text](query:QueryId)
+// component regex:     [text](component:ComponentName)
+// file:                [text](file:filename) (open OS default app)
 public class LogRegex {
     public static Pattern PATTERN = getPattern();
     private static Pattern getPattern() {
         var sb = new StringBuilder();
         var sep = "";
-        for(var quantifier : LogRegexQuantifiers.values()) {
+        for(var quantifier : LogLinkQuantifier.values()) {
             sb.append(sep).append(quantifier.name());
             sep = "|";
             sb.append(sep).append(quantifier.name().toLowerCase());
         }
-        var x = "!(?<quantifier>"+ sb +"):(?<reference>\\S+(/\\S+)?)";
+        // For humans:
+        // [<display>](<quantifier>:<ref1>/<ref2>?)
+        var x = "\\[(?<display>[^]]+)]\\((?<quantifier>"+sb+"):(?<ref>(?<ref1>[^\\s/]+)(?<ref2>/\\S+)?)\\)";
         return Pattern.compile(x);
     }
 }

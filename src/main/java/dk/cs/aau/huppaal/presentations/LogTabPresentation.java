@@ -1,23 +1,29 @@
 package dk.cs.aau.huppaal.presentations;
 
+import com.hp.hpl.jena.shared.NotFoundException;
+import dk.cs.aau.huppaal.BuildConfig;
 import dk.cs.aau.huppaal.HUPPAAL;
+import dk.cs.aau.huppaal.controllers.CanvasController;
 import dk.cs.aau.huppaal.controllers.LogTabController;
 import dk.cs.aau.huppaal.logging.Log;
 import dk.cs.aau.huppaal.logging.LogRegex;
-import dk.cs.aau.huppaal.logging.LogRegexQuantifiers;
+import dk.cs.aau.huppaal.logging.LogLinkQuantifier;
+import dk.cs.aau.huppaal.presentations.logging.Hyperlink;
 import dk.cs.aau.huppaal.presentations.logging.HyperlinkTextArea;
 import dk.cs.aau.huppaal.presentations.logging.TextStyle;
 import dk.cs.aau.huppaal.presentations.util.PresentationFxmlLoader;
+import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
 import javafx.beans.NamedArg;
+import javafx.collections.FXCollections;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 public class LogTabPresentation extends HBox {
     public LogTabController controller;
@@ -35,21 +41,42 @@ public class LogTabPresentation extends HBox {
         Log.addOnLogAddedListener(this::onLogAdded);
     }
 
-    private void onLinkClick(String linkString) {
-        // TODO: Implement clickable links like so:
-        //       location regex:      !location:ComponentName/LocationId
-        //       edge regex:          !edge:ComponentName/EdgeId
-        //       subcomponent regex:  !subcomponent:ComponentName/SubcomponentId
-        //       jork regex:          !jork:ComponentName/JorkId
-        //       tag regex:           !tag:ComponentName/TagId
-        //       component regex:     !component:ComponentName
-        //       file:                !file:filename (open OS default app)
+    private void onLinkClick(Hyperlink link) {
         try {
-            Desktop.getDesktop().browse(new URI(linkString));
-        } catch (IOException | URISyntaxException e) {
+            var matcher = LogRegex.PATTERN.matcher(link.getLink());
+            if(!matcher.find()) // *should* never happen
+                throw new RuntimeException("Not a valid %s link pattern: %s".formatted(BuildConfig.NAME,link.getLink()));
+            // TODO: When syntactic elements have UUIDs to identify them, we should look at those IDs (instead/aswell)
+            var ref  = matcher.group("ref");
+            var ref1 = matcher.group("ref1");
+            var ref2 = Optional.ofNullable(matcher.group("ref2"));
+            switch (link.getQuantifier()) {
+                case LOCATION -> {
+                    if(ref2.isEmpty())
+                        Log.addWarning("Not a valid location link: %s - directing to the component anyway".formatted(link.getLink()));
+                    selectComponent(ref1); // TODO: Select Location
+                }
+                case COMPONENT -> selectComponent(ref1);
+                // Try to open the link
+                default -> Desktop.getDesktop().browse(new URI(ref));
+            }
+        } catch (Exception e) {
             HUPPAAL.showToast(e.getMessage());
             Log.addError(e.getMessage());
         }
+    }
+
+    // TODO: This function should be in SelectHelper, not the LogTabPresentation!
+    private void selectComponent(String componentId) throws NotFoundException {
+        var component = HUPPAAL.getProject().getComponents().stream().filter(c -> c.getName().equals(componentId)).findAny();
+        if(component.isEmpty())
+            throw new NotFoundException("No such component %s".formatted(componentId));
+        if(!CanvasController.getActiveComponent().equals(component.get())) {
+            SelectHelper.elementsToBeSelected = FXCollections.observableArrayList();
+            CanvasController.setActiveComponent(component.get());
+        }
+        SelectHelper.clearSelectedElements();
+        // TODO: SelectHelper.select(nearable);
     }
 
     private synchronized void onLogAdded(Log log) {
@@ -61,8 +88,8 @@ public class LogTabPresentation extends HBox {
         while(matcher.find()) {
             logArea.appendText(logMessage.substring(index, matcher.start()));
             index = matcher.end();
-            logArea.appendWithLink(matcher.group("reference"), "http://www.google.com",
-                    LogRegexQuantifiers.valueOf(matcher.group("quantifier").toUpperCase()).getStyle());
+            var q = LogLinkQuantifier.valueOf(matcher.group("quantifier").toUpperCase());
+            logArea.appendWithLink(matcher.group("display"), matcher.group(), q);
         }
         logArea.appendText(logMessage.substring(index) + "\n");
     }

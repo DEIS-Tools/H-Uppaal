@@ -109,17 +109,16 @@ public class Jork implements Serializable, Nearable, LocationAware {
 
     @Override
     public String generateNearString() {
-        String result = "";
+        // TODO: Jorks should know their parent component
+        // TODO: id Should be a UUID
+        return "[%s](jork:%s/%s)".formatted(generateNearStringOld(),
+                "ParentPlaceholder", "IdPlaceholder");
+    }
 
-        if (getType().equals(Type.FORK)) {
-            result += "Fork ";
-        } else {
-            result += "Join ";
-        }
-
-        result += getId();
-
-        return result;
+    private String generateNearStringOld() {
+        if (getType().equals(Type.FORK))
+            return "Fork " + getId();
+        return "Join " + getId();
     }
 
     public enum Type {

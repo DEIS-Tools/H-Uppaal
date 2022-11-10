@@ -175,14 +175,14 @@ public class CodeAnalysis {
             this.message = new SimpleStringProperty(message);
             this.messageType = messageType;
             this.id = UUID.randomUUID();
-            Collections.addAll(this.nearables, nearables);
+            this.nearables.addAll(nearables);
         }
 
         public Message(final String message, final MessageType messageType, final List<Nearable> nearables) {
             this.message = new SimpleStringProperty(message);
             this.messageType = messageType;
             this.id = UUID.randomUUID();
-            nearables.forEach(nearable -> this.nearables.add(nearable));
+            this.nearables.addAll(nearables);
         }
 
         public MessageType getMessageType() {
