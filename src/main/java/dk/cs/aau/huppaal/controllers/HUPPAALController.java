@@ -845,6 +845,7 @@ public class HUPPAALController implements Initializable {
     private void debugCreateALog_PleaseKillMe() {
         Log.addInfo("CODE_ANALYSIS", "[EMR L332](location:EMR/L332) is not really as cool as [Main L0](location:Main/L0) am I right or am I right?");
         Log.addInfo("CODE_ANALYSIS", "Did you know that [secret](component:EMR) is cool and all, but not as cool as [duck duck go](file:https://google.com)");
+        Log.addLog("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum");
     }
 
     @FXML

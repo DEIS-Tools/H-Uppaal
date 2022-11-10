@@ -20,24 +20,24 @@ import javafx.scene.layout.HBox;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 
 import java.awt.Desktop;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Optional;
 
 public class LogTabPresentation extends HBox {
     public LogTabController controller;
-    public boolean autoscroll;
+    public boolean autoscroll, wordwrap;
     private final HyperlinkTextArea logArea;
     private final VirtualizedScrollPane<HyperlinkTextArea> scrollPane;
     public LogTabPresentation(@NamedArg("textColor") String textColor) {
         controller = PresentationFxmlLoader.loadSetRoot("LogTabPresentation.fxml", this);
         autoscroll = true;
+        wordwrap = true;
         logArea = new HyperlinkTextArea(this::onLinkClick);
         scrollPane = new VirtualizedScrollPane<>(logArea);
         initializeLogArea(textColor);
         initializeButtons();
         setupAutoscroll();
+        setupWordWrap();
         Log.addOnLogAddedListener(this::onLogAdded);
     }
 
@@ -98,7 +98,6 @@ public class LogTabPresentation extends HBox {
         logArea.setTextInsertionStyle(new TextStyle().updateTextColorWeb(textColor));
         logArea.getStyleClass().add("log-text");
         logArea.setEditable(false);
-        logArea.setWrapText(true);
         controller.logAreaInsertionPoint.getChildren().add(scrollPane);
     }
 
@@ -109,35 +108,38 @@ public class LogTabPresentation extends HBox {
             logArea.clear();
         });
 
-        controller.filterLogsButton.setOnMouseClicked(e -> {
-            Log.addError("Not implemented yet!");
-            HUPPAAL.showToast("Not implemented yet!");
+        Tooltip.install(controller.wrapTextButton, new Tooltip("Toggle word wrap"));
+        controller.wrapTextButton.setOnMouseClicked(e -> {
+            wordwrap = !wordwrap;
+            setupWordWrap();
         });
-        Tooltip.install(controller.filterLogsButton, new Tooltip("Filter logs"));
 
         Tooltip.install(controller.autoscrollLogButton, new Tooltip("Toggle autoscroll"));
         controller.autoscrollLogButton.setOnMouseClicked(e -> toggleAutoScroll());
-        scrollPane.setOnScrollStarted(e -> {
-            if(autoscroll)
-                toggleAutoScroll();
-        });
     }
 
     private void toggleAutoScroll() {
         autoscroll = !autoscroll;
-        Log.addError("Not implemented yet!");
-        HUPPAAL.showToast("Not implemented yet!");
         setupAutoscroll();
     }
 
     private void setupAutoscroll() {
         if(autoscroll) {
-            // TODO: how to autoscroll a virtualized scroll pane?
             controller.autoscrollLogButtonIcon.setIconLiteral("gmi-playlist-add-check");
             controller.autoscrollLogButton.setStyle("-fx-background-color: rgba(255,255,255,0.1)");
+            scrollPane.estimatedScrollYProperty().bind(scrollPane.getContent().totalHeightEstimateProperty());
         } else {
             controller.autoscrollLogButtonIcon.setIconLiteral("gmi-playlist-play");
             controller.autoscrollLogButton.setStyle("");
+            scrollPane.estimatedScrollYProperty().unbind();
         }
+    }
+
+    private void setupWordWrap() {
+        logArea.setWrapText(wordwrap);
+        if(wordwrap)
+            controller.wrapTextButton.setStyle("-fx-background-color: rgba(255,255,255,0.1)");
+        else
+            controller.wrapTextButton.setStyle("");
     }
 }

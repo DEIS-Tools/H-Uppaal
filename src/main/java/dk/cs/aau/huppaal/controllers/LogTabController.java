@@ -12,8 +12,8 @@ import java.util.ResourceBundle;
 
 public class LogTabController implements Initializable {
     public LogLevel level;
-    public JFXRippler autoscrollLogButton, clearLogsButton, filterLogsButton;
-    public FontIcon autoscrollLogButtonIcon;
+    public JFXRippler autoscrollLogButton, clearLogsButton, wrapTextButton;
+    public FontIcon autoscrollLogButtonIcon, wrapTextButtonIcon;
     public StackPane logAreaInsertionPoint;
 
     public LogTabController() {

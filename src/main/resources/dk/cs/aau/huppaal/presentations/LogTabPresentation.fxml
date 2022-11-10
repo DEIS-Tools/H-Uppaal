@@ -14,8 +14,8 @@
                     <JFXRippler fx:id="clearLogsButton" ripplerFill="white" styleClass="hoverbutton">
                         <FontIcon iconLiteral="gmi-clear-all" iconColor="white" iconSize="22"/>
                     </JFXRippler>
-                    <JFXRippler fx:id="filterLogsButton" ripplerFill="white" styleClass="hoverbutton">
-                        <FontIcon iconLiteral="gmi-filter-list" iconColor="white" iconSize="22"/>
+                    <JFXRippler fx:id="wrapTextButton" ripplerFill="white" styleClass="hoverbutton">
+                        <FontIcon iconLiteral="gmi-wrap-text" iconColor="white" iconSize="22" fx:id="wrapTextButtonIcon"/>
                     </JFXRippler>
                     <JFXRippler fx:id="autoscrollLogButton" ripplerFill="white" styleClass="hoverbutton">
                         <FontIcon iconLiteral="gmi-playlist-play" iconColor="white" iconSize="22" fx:id="autoscrollLogButtonIcon"/>
