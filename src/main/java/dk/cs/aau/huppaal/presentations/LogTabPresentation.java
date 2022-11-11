@@ -13,7 +13,9 @@ import dk.cs.aau.huppaal.presentations.logging.HyperlinkTextArea;
 import dk.cs.aau.huppaal.presentations.logging.TextStyle;
 import dk.cs.aau.huppaal.presentations.util.PresentationFxmlLoader;
 import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
+import javafx.application.Platform;
 import javafx.beans.NamedArg;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
@@ -27,17 +29,17 @@ public class LogTabPresentation extends HBox {
     public LogTabController controller;
     public boolean autoscroll, wordwrap;
     private final HyperlinkTextArea logArea;
-    private final VirtualizedScrollPane<HyperlinkTextArea> scrollPane;
+    private VirtualizedScrollPane<HyperlinkTextArea> scrollPane;
     public LogTabPresentation(@NamedArg("textColor") String textColor) {
         controller = PresentationFxmlLoader.loadSetRoot("LogTabPresentation.fxml", this);
-        autoscroll = true;
         wordwrap = true;
+        autoscroll = true;
         logArea = new HyperlinkTextArea(this::onLinkClick);
         scrollPane = new VirtualizedScrollPane<>(logArea);
         initializeLogArea(textColor);
         initializeButtons();
-        setupAutoscroll();
         setupWordWrap();
+        setupAutoscroll();
         Log.addOnLogAddedListener(this::onLogAdded);
     }
 
@@ -79,7 +81,7 @@ public class LogTabPresentation extends HBox {
         // TODO: SelectHelper.select(nearable);
     }
 
-    private synchronized void onLogAdded(Log log) {
+    private void onLogAdded(Log log) {
         if(!log.level().equals(controller.level))
             return;
         var logMessage = log.message();
@@ -119,20 +121,36 @@ public class LogTabPresentation extends HBox {
     }
 
     private void toggleAutoScroll() {
-        autoscroll = !autoscroll;
+        setAutoscroll(!autoscroll);
+    }
+
+    private void setAutoscroll(boolean value) {
+        autoscroll = value;
         setupAutoscroll();
     }
+
+    private final ChangeListener<String> logAreaChangeEventListener = (e,o,n) -> {
+        if(scrollPane == null)
+            return;
+        Platform.runLater(this::scrollToLastLine);
+    };
 
     private void setupAutoscroll() {
         if(autoscroll) {
             controller.autoscrollLogButtonIcon.setIconLiteral("gmi-playlist-add-check");
             controller.autoscrollLogButton.setStyle("-fx-background-color: rgba(255,255,255,0.1)");
-            scrollPane.estimatedScrollYProperty().bind(scrollPane.getContent().totalHeightEstimateProperty());
+            logArea.textProperty().addListener(logAreaChangeEventListener);
+            scrollToLastLine();
         } else {
             controller.autoscrollLogButtonIcon.setIconLiteral("gmi-playlist-play");
             controller.autoscrollLogButton.setStyle("");
+            logArea.textProperty().removeListener(logAreaChangeEventListener);
             scrollPane.estimatedScrollYProperty().unbind();
         }
+    }
+
+    private void scrollToLastLine() {
+        scrollPane.estimatedScrollYProperty().setValue(scrollPane.getContent().totalHeightEstimateProperty().getValue());
     }
 
     private void setupWordWrap() {
