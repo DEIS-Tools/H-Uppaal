@@ -10,9 +10,13 @@ import javafx.collections.ObservableList;
 
 import java.util.*;
 
+/**
+ * Logging system for analysis conclusions to be presented.
+ * e.g. if a location has no incoming edges, that indicates an implementation error
+ * @deprecated Use the new logging framework ({@link Log}) for this
+ * */
 @Deprecated
 public class CodeAnalysis {
-
     private static boolean ENABLED = true;
 
     private static final ObservableList<Message> backendErrors = FXCollections.observableArrayList();
@@ -71,7 +75,6 @@ public class CodeAnalysis {
     @Deprecated
     private static void addToErrors(final Component component, final Message message) {
         Log.addLog(message.toLog(component));
-        // TODO: Delete this old code
         if(!ENABLED) return;
 
         final ObservableList<Message> list = getErrors(component);
@@ -88,7 +91,6 @@ public class CodeAnalysis {
             Log.removeUuid(component.getName(), message.id);
         else
             Log.removeUuid(message.id);
-        // TODO: Delete this old code
         if(!ENABLED) return;
 
         final ObservableList<Message> list = getErrors(component);
@@ -99,7 +101,6 @@ public class CodeAnalysis {
 
     @Deprecated
     public static void addMessage(final Component component, final Message message) {
-        // TODO: Delete this old code
         if(!ENABLED) return;
 
         if (message.getMessageType().equals(MessageType.WARNING)) {
@@ -111,7 +112,6 @@ public class CodeAnalysis {
 
     @Deprecated
     public static void removeMessage(final Component component, final Message message) {
-        // TODO: Delete this old code
         if(!ENABLED) return;
 
         if (message.getMessageType().equals(MessageType.WARNING)) {
@@ -124,14 +124,12 @@ public class CodeAnalysis {
     @Deprecated
     public static void clearWarnings(final Component component) {
         Log.clearLogsForLevel(LogLevel.Warning);
-        // TODO: Delete this old code
         getWarnings(component).clear();
     }
 
     @Deprecated
     public static void clearErrors(final Component component) {
         Log.clearLogsForLevel(LogLevel.Error);
-        // TODO: Delete this old code
         getErrors(component).clear();
     }
 
