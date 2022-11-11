@@ -122,17 +122,6 @@
                                 <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
-
-                        <JFXRippler>
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#debugCreateALog_PleaseKillMe">
-                                <FontIcon iconLiteral="gmi-sports-kabaddi" iconSize="24" fill="white"/>
-                            </StackPane>
-                        </JFXRippler>
-                        <JFXRippler>
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#debugCreateALog_PleaseKillMe2">
-                                <FontIcon iconLiteral="gmi-sports-handball" iconSize="24" fill="white"/>
-                            </StackPane>
-                        </JFXRippler>
                     </HBox>
 
                 </StackPane>
