@@ -239,27 +239,6 @@
 	-fx-background-color: rgba(255, 255, 255, 0.1);
 }
 
-.copyable-label, .copyable-label:focused {
-	-fx-background-color: transparent ;
-	-fx-background-insets: 0px ;
-	-fx-padding: 0 0 0 0;
-}
-.copyable-label .scroll-pane {
-	-fx-background-color: transparent;
-	-fx-background-insets: 0px ;
-	-fx-padding: 0 0 0 0;
-}
-.copyable-label .scroll-pane .viewport{
-	-fx-background-color: transparent;
-	-fx-background-insets: 0px ;
-	-fx-padding: 0 0 0 0;
-}
-.copyable-label .scroll-pane .content{
-	-fx-background-color: transparent;
-	-fx-background-insets: 0px ;
-	-fx-padding: 0 0 0 0;
-}
-
 .log-text {
 	-fx-font-family: "Roboto Mono Medium";
 	-fx-font-size: 13.0;

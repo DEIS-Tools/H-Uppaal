@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 // tag regex:           [text](tag:ComponentName/TagId)
 // query regex:         [text](query:QueryId)
 // component regex:     [text](component:ComponentName)
-// file:                [text](file:filename) (open OS default app)
+// file:                [text](generic:filename) (open OS default app)
 public class LogRegex {
     public static Pattern PATTERN = getPattern();
     private static Pattern getPattern() {

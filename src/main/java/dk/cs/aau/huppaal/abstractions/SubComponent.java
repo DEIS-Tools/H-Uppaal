@@ -158,6 +158,5 @@ public class SubComponent implements Serializable, Circular, Nearable {
         // TODO: getIdentifier() gives a humanly readable name, this should link to a UUID
         // TODO: Subcomponents should know their parent component
         return "[%s](subcomponent:%s/%s)".formatted(getIdentifier(), "ParentPlaceholder", getIdentifier());
-        // return "Subcomponent " + getIdentifier();
     }
 }

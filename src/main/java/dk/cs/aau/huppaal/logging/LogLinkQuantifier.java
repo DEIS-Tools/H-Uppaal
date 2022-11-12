@@ -7,7 +7,7 @@ public enum LogLinkQuantifier {
     // CASE/Link Color
     LOCATION("#ffa86c"),
     COMPONENT("#C9FF6C"),
-    FILE("#766CFF"),
+    GENERIC("#abc1fb"),
     UNKNOWN;
 
     private final TextStyle style;

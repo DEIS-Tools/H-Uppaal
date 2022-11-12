@@ -84,7 +84,6 @@ public class LogTabPresentation extends HBox {
     private void onLogAdded(Log log) {
         if(!log.level().equals(controller.level))
             return;
-        // TODO: If tab is not in focus, add "*"
         var logMessage = log.message();
         var matcher = LogRegex.PATTERN.matcher(log.message());
         var index = 0;

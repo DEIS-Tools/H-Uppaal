@@ -38,7 +38,5 @@ public class LogTabController implements Initializable {
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        // TODO: Maybe grab the loglevel from resources?
-    }
+    public void initialize(URL location, ResourceBundle resources) {}
 }
