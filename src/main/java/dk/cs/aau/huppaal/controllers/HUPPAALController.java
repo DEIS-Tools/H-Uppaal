@@ -20,11 +20,14 @@ import dk.cs.aau.huppaal.utility.keyboard.NudgeDirection;
 import dk.cs.aau.huppaal.utility.keyboard.Nudgeable;
 import com.jfoenix.controls.*;
 import javafx.animation.Interpolator;
+import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.When;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -151,7 +154,6 @@ public class HUPPAALController implements Initializable {
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-
         dialog.setDialogContainer(dialogContainer);
         dialogContainer.opacityProperty().bind(dialog.getChildren().get(0).scaleXProperty());
         dialog.setOnDialogClosed(event -> dialogContainer.setVisible(false));
@@ -264,6 +266,60 @@ public class HUPPAALController implements Initializable {
         }
 
         ZoomHelper.setCanvas(canvas);
+
+        initializeNotificationJumpTransition();
+        initializeLogTabNotifications();
+    }
+
+    private ScaleTransition infoIconJumpTransition, warnIconJumpTransition, errorIconJumpTransition;
+
+    private void initializeNotificationJumpTransition() {
+        infoIconJumpTransition = createNotificationJumpTransition();
+        infoIconJumpTransition.setNode(infoLogTab.getGraphic());
+        warnIconJumpTransition = createNotificationJumpTransition();
+        warnIconJumpTransition.setNode(warnLogTab.getGraphic());
+        errorIconJumpTransition = createNotificationJumpTransition();
+        errorIconJumpTransition.setNode(errLogTab.getGraphic());
+    }
+
+    private ScaleTransition createNotificationJumpTransition() {
+        var notificationJumpTransition = new ScaleTransition();
+        notificationJumpTransition.interpolatorProperty().set(Interpolator.SPLINE(.87, .13, .62, .32));
+        notificationJumpTransition.setDuration(new Duration(200));
+        notificationJumpTransition.setFromX(1);
+        notificationJumpTransition.setFromY(1);
+        notificationJumpTransition.setByX(1.15);
+        notificationJumpTransition.setByY(1.15);
+        notificationJumpTransition.setAutoReverse(true);
+        notificationJumpTransition.setCycleCount(2);
+        return notificationJumpTransition;
+    }
+
+    private void initializeLogTabNotifications() {
+        Log.addOnLogAddedListener(log -> {
+            var selectedTab = Optional.ofNullable(tabPane.getSelectionModel().selectedItemProperty().get());
+            Optional<Tab> tabToChange = switch (log.level()) {
+                case Information -> Optional.of(infoLogTab);
+                case Warning -> Optional.of(warnLogTab);
+                case Error -> Optional.of(errLogTab);
+                default -> Optional.empty();
+            };
+            if(tabToChange.isEmpty())
+                return;
+            if(selectedTab.isEmpty() || selectedTab.get() != tabToChange.get()) {
+                ((FontIcon) tabToChange.get().getGraphic()).setIconColor(Color.YELLOW.getColor(Color.Intensity.I800));
+                switch (log.level()) {
+                    case Information -> infoIconJumpTransition.play();
+                    case Warning -> warnIconJumpTransition.play();
+                    case Error -> errorIconJumpTransition.play();
+                }
+            }
+        });
+        tabPane.getSelectionModel().selectedItemProperty().addListener((e,o,n) -> {
+            if(n == null)
+                return;
+            ((FontIcon) n.getGraphic()).setIconColor(javafx.scene.paint.Color.WHITE);
+        });
     }
 
     private void initializeLogTabs() {
@@ -273,7 +329,6 @@ public class HUPPAALController implements Initializable {
         infoLogTab.setGraphic(createLogTabIcon("gmi-info", javafx.scene.paint.Color.WHITE));
         warnLogTab.setGraphic(createLogTabIcon("gmi-warning", javafx.scene.paint.Color.WHITE));
         errLogTab.setGraphic(createLogTabIcon("gmi-error", javafx.scene.paint.Color.WHITE));
-        // TODO: Hook up a "clear logs" button
     }
 
     private FontIcon createLogTabIcon(String iconName, javafx.scene.paint.Color color) {
@@ -368,9 +423,10 @@ public class HUPPAALController implements Initializable {
 
                 } catch (final BackendException e) {
                     // Something went wrong with creating the document
+                    Log.addError(e.getMessage());
                     e.printStackTrace();
-                } catch (final Exception ignored) {
-                    // The main component is null. Ignore.
+                } catch (final Exception e) {
+                    Log.addError(e.getMessage());
                 }
             }
         }).start();
