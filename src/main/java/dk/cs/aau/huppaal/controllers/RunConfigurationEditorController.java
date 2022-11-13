@@ -34,7 +34,7 @@ public class RunConfigurationEditorController implements Initializable {
         var gson = new Gson();
         List<RunConfiguration> runConfigurations = gson.fromJson(runConfigsJson, RunConfiguration.listTypeToken);
         savedConfigurationsList.getItems().addAll(runConfigurations);
-        // TODO: set that c is selected if c.isPresent()
-        // var c = savedConfigurationsList.getItems().stream().filter(e -> e.name().equals(currentConfig)).findAny();
+        var currentRunConfig = savedConfigurationsList.getItems().stream().filter(e -> e.name.equals(currentConfig)).findAny();
+        currentRunConfig.ifPresent(c -> savedConfigurationsList.getSelectionModel().select(c));
     }
 }
