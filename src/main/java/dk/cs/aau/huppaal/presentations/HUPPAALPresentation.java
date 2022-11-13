@@ -376,7 +376,7 @@ public class HUPPAALPresentation extends StackPane {
                 var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
                 var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
                 controller.runConfigurationExecuteButtonIcon.setIconLiteral("gmi-stop");
-                controller.runConfigurationExecuteButtonIcon.setIconColor(javafx.scene.paint.Color.web("#ff7e79"));
+                controller.runConfigurationExecuteButtonIcon.setIconColor(Color.RED.getColor(Color.Intensity.I300));
                 String s;
                 while((s = stdi.readLine()) != null) {
                     var finalS = s;
