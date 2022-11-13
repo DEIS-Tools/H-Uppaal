@@ -7,21 +7,17 @@ import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.controllers.RunConfigurationEditorController;
 import dk.cs.aau.huppaal.runconfig.RunConfiguration;
 import dk.cs.aau.huppaal.runconfig.RunConfigurationPreferencesKeys;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 public class RunConfigurationEditorPresentation extends BorderPane {
@@ -29,7 +25,7 @@ public class RunConfigurationEditorPresentation extends BorderPane {
     public final Parent parent;
     private final Stage stage;
     private final Gson gson;
-    private Runnable onRunConfigsSaved = null;
+    private Runnable onWindowClosed = null;
     private final TextField nameField = new TextField();
     private final JFXButton programFieldButton = new JFXButton("File");
     private final FileChooser programField = new FileChooser();
@@ -55,8 +51,8 @@ public class RunConfigurationEditorPresentation extends BorderPane {
         }
     }
 
-    public void setOnRunConfigsSaved(Runnable r) {
-        onRunConfigsSaved = r;
+    public void setOnClosed(Runnable r) {
+        onWindowClosed = r;
     }
 
     private void initialize() {
@@ -157,12 +153,14 @@ public class RunConfigurationEditorPresentation extends BorderPane {
 
     private void saveRunConfigurations() {
         HUPPAAL.preferences.put(RunConfigurationPreferencesKeys.ConfigurationsList, gson.toJson(controller.savedConfigurationsList.getItems()));
-        HUPPAAL.showToast("Saved RunConfigurations");
-        if(onRunConfigsSaved != null)
-            onRunConfigsSaved.run();
+        HUPPAAL.showToast("Saved");
     }
 
     private void closeWindow() {
+        if(controller.savedConfigurationsList.getSelectionModel().getSelectedItem() != null)
+            HUPPAAL.preferences.put(RunConfigurationPreferencesKeys.CurrentlySelected, controller.savedConfigurationsList.getSelectionModel().getSelectedItem().name);
+        if(onWindowClosed != null)
+            onWindowClosed.run();
         stage.close();
     }
 }

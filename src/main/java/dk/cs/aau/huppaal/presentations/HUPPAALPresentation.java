@@ -22,7 +22,7 @@ import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -48,11 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 
 import static dk.cs.aau.huppaal.utility.colors.EnabledColor.enabledColors;
 
@@ -397,6 +393,8 @@ public class HUPPAALPresentation extends StackPane {
         }).start();
     }
 
+    private ChangeListener<RunConfigurationButton> pickerListener;
+    private RunConfigurationButton editButton;
     private void initializeRunConfigPicker() {
         var runConfigsJson = HUPPAAL.preferences.get(RunConfigurationPreferencesKeys.ConfigurationsList, "[]");
         var lastRunConfig = HUPPAAL.preferences.get(RunConfigurationPreferencesKeys.CurrentlySelected, "");
@@ -404,33 +402,42 @@ public class HUPPAALPresentation extends StackPane {
 
         // Add all the default things
         controller.runConfigurationPicker.getItems().clear(); // Clear, because this function might be called again during runtime
-        controller.runConfigurationPicker.getItems().add(generateRunConfigurationEditButton());
+        if(editButton == null)
+            editButton = generateRunConfigurationEditButton();
+        controller.runConfigurationPicker.getItems().add(editButton);
+
         if (runConfigurations.isEmpty())
-            controller.runConfigurationPicker.getItems().add(new RunConfigurationButton(Optional.empty(), new JFXButton("<no run configurations>")));
+            controller.runConfigurationPicker.setPromptText("<No Run Configs>");
+        else
+            controller.runConfigurationPicker.setPromptText("Select Config");
+
         for (var c : runConfigurations)
             controller.runConfigurationPicker.getItems().add(new RunConfigurationButton(Optional.of(c), new JFXButton(c.name)));
 
         // set the last picked run config to be the currently selected one
-        if (!Strings.isNullOrEmpty(lastRunConfig)) {
-            var e = controller.runConfigurationPicker.getItems().stream().filter(b -> {
+        if (!Strings.isNullOrEmpty(lastRunConfig))
+            controller.runConfigurationPicker.getItems().stream().filter(b -> {
                 if (b.runConfiguration().isPresent())
                     return b.runConfiguration().get().name.equals(lastRunConfig);
                 return false;
-            }).findAny();
-            e.ifPresent(b -> controller.runConfigurationPicker.setValue(b));
-        }
+            }).findAny().ifPresent(b -> controller.runConfigurationPicker.setValue(b));
 
         // When a new selection happens
-        controller.runConfigurationPicker.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
-            if (oldValue == newValue || newValue == null)
-                return;
-            newValue.button().fire();
-            if (newValue.runConfiguration().isEmpty())
-                Platform.runLater(() -> controller.runConfigurationPicker.setValue(oldValue));
-            else
-                HUPPAAL.preferences.put(RunConfigurationPreferencesKeys.CurrentlySelected, newValue.runConfiguration().get().name);
-            initializeRunConfigExecuteButton();
-        });
+        if(pickerListener == null) {
+            pickerListener = (observable, oldValue, newValue) -> {
+                if (oldValue == newValue || newValue == null)
+                    return;
+                if(newValue.runConfiguration().isPresent())
+                    HUPPAAL.preferences.put(RunConfigurationPreferencesKeys.CurrentlySelected, newValue.runConfiguration().get().name);
+                initializeRunConfigExecuteButton();
+                newValue.button().fire();
+            };
+            controller.runConfigurationPicker.getSelectionModel().selectedItemProperty().addListener(pickerListener);
+            controller.runConfigurationPicker.getSelectionModel().selectedItemProperty().addListener((e,o,n) -> {
+                if(n == editButton)
+                    controller.runConfigurationPicker.getSelectionModel().select(null);
+            });
+        }
 
         initializeRunConfigExecuteButton();
     }
@@ -445,19 +452,19 @@ public class HUPPAALPresentation extends StackPane {
         }
     }
 
-    Stage runconfigWindow;
-    RunConfigurationEditorPresentation runConfigurationEditorPresentation;
+    private Stage runconfigWindow;
+
     private RunConfigurationButton generateRunConfigurationEditButton() {
+        if(runconfigWindow == null) {
+            runconfigWindow = new Stage();
+            runconfigWindow.setTitle("Run Configuration Editor");
+            var runConfigurationEditorPresentation = new RunConfigurationEditorPresentation(runconfigWindow);
+            runConfigurationEditorPresentation.setOnClosed(this::initializeRunConfigPicker);
+            runconfigWindow.setScene(new Scene(runConfigurationEditorPresentation));
+        }
         var btn = new JFXButton("Edit Configs...");
         btn.setOnAction(event -> {
             try {
-                if(runconfigWindow == null) {
-                    runconfigWindow = new Stage();
-                    runconfigWindow.setTitle("Run Configuration Editor");
-                    runConfigurationEditorPresentation = new RunConfigurationEditorPresentation(runconfigWindow);
-                    runConfigurationEditorPresentation.setOnRunConfigsSaved(this::initializeRunConfigPicker);
-                    runconfigWindow.setScene(new Scene(runConfigurationEditorPresentation));
-                }
                 runconfigWindow.show();
             } catch (Exception e) {
                 e.printStackTrace();
