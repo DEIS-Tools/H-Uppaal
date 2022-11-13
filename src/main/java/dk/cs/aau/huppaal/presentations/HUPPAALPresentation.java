@@ -339,10 +339,10 @@ public class HUPPAALPresentation extends StackPane {
         JFXTooltip tooltip;
         var c = controller.runConfigurationPicker.getSelectionModel().getSelectedItem();
         if(c == null || c.runConfiguration().isEmpty()) {
-            tooltip = new JFXTooltip("no run configuration is selected");
+            tooltip = new JFXTooltip("No run configuration is selected");
             controller.runConfigurationExecuteButton.setEnabled(false);
             controller.runConfigurationExecuteButton.setOpacity(0.3);
-            controller.runConfigurationExecuteButton.setOnMouseClicked(e -> HUPPAAL.showToast("no run configuration is selected"));
+            controller.runConfigurationExecuteButton.setOnMouseClicked(e -> HUPPAAL.showToast("No run configuration is selected"));
         } else {
             tooltip = new JFXTooltip("Run " + c.runConfiguration().get().name);
             controller.runConfigurationExecuteButton.setEnabled(true);

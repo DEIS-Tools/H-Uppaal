@@ -752,7 +752,7 @@ public class HUPPAALController implements Initializable {
     private void generateUppaalModelClicked() {
         var mainComponent = HUPPAAL.getProject().getMainComponent();
         if (mainComponent == null) {
-            HUPPAAL.showToast("no main component");
+            HUPPAAL.showToast("No main component");
             return;
         }
 
