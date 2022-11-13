@@ -153,7 +153,7 @@ public class RunConfigurationEditorPresentation extends BorderPane {
 
     private void saveRunConfigurations() {
         HUPPAAL.preferences.put(RunConfigurationPreferencesKeys.ConfigurationsList, gson.toJson(controller.savedConfigurationsList.getItems()));
-        HUPPAAL.showToast("Saved");
+        HUPPAAL.showToast("Saved Run Configurations");
     }
 
     private void closeWindow() {

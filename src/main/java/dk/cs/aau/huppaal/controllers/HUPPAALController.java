@@ -30,6 +30,7 @@ import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -41,6 +42,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -129,6 +131,7 @@ public class HUPPAALController implements Initializable {
     public MenuItem menuBarHelpHelp;
     public MenuItem menuBarEditBalance;
     public MenuItem menuBarProjectExecuteRunConfigMenuItem;
+    public MenuItem menuBarProjectEditConfigs;
 
     public JFXSnackbar snackbar;
     public HBox statusBar;
@@ -610,6 +613,8 @@ public class HUPPAALController implements Initializable {
         // Project
         menuBarProjectExecuteRunConfigMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
         menuBarProjectExecuteRunConfigMenuItem.setOnAction(event -> executeSelectedRunConfiguration());
+        menuBarProjectEditConfigs.setAccelerator(new KeyCodeCombination(KeyCode.K, KeyCombination.SHORTCUT_DOWN));
+        menuBarProjectEditConfigs.setOnAction(event -> openRunConfigurationEditor());
     }
 
     private void initializeMessages() {
@@ -806,6 +811,22 @@ public class HUPPAALController implements Initializable {
             return;
         }
         executeRunConfiguration(c.runConfiguration().get());
+    }
+
+    public Stage runConfigEditorWindow;
+    public RunConfigurationEditorPresentation runConfigurationEditorPresentation;
+    public void openRunConfigurationEditor() {
+        if(runConfigEditorWindow == null) {
+            runConfigEditorWindow = new Stage();
+            runConfigEditorWindow.setTitle("Run Configuration Editor");
+            runConfigurationEditorPresentation = new RunConfigurationEditorPresentation(runConfigEditorWindow);
+            runConfigEditorWindow.setScene(new Scene(runConfigurationEditorPresentation));
+        }
+        try {
+            runConfigEditorWindow.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private final static String[] sysEnv = System.getenv().entrySet().stream().map((e) -> e.getKey() + "=" + e.getValue()).toArray(String[]::new);

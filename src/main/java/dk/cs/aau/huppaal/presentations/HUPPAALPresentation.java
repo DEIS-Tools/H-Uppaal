@@ -399,23 +399,12 @@ public class HUPPAALPresentation extends StackPane {
         }
     }
 
-    private Stage runconfigWindow;
 
     private RunConfigurationButton generateRunConfigurationEditButton() {
-        if(runconfigWindow == null) {
-            runconfigWindow = new Stage();
-            runconfigWindow.setTitle("Run Configuration Editor");
-            var runConfigurationEditorPresentation = new RunConfigurationEditorPresentation(runconfigWindow);
-            runConfigurationEditorPresentation.setOnClosed(this::initializeRunConfigPicker);
-            runconfigWindow.setScene(new Scene(runConfigurationEditorPresentation));
-        }
         var btn = new JFXButton("Edit Configs...");
         btn.setOnAction(event -> {
-            try {
-                runconfigWindow.show();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            controller.runConfigurationEditorPresentation.setOnClosed(this::initializeRunConfigPicker);
+            controller.openRunConfigurationEditor();
         });
         return new RunConfigurationButton(Optional.empty(), btn);
     }

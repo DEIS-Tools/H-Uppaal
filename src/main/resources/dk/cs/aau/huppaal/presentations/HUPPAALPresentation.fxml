@@ -234,6 +234,11 @@
                             <FontIcon iconLiteral="gmi-play-arrow" iconSize="24" fill="black"/>
                         </graphic>
                     </MenuItem>
+                    <MenuItem fx:id="menuBarProjectEditConfigs" text="Edit Run Configs">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-settings" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
                 </Menu>
 
                 <Menu text="Preferences">
