@@ -122,7 +122,7 @@
 
                         <Region minWidth="16"/>
 
-                        <JFXRippler fx:id="runConfigurationExecuteButton">
+                        <JFXRippler fx:id="runConfigurationExecuteButton" onMouseClicked="#executeSelectedRunConfiguration">
                             <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton">
                                 <FontIcon fx:id="runConfigurationExecuteButtonIcon" iconLiteral="gmi-play-arrow" iconSize="24" fill="white"/>
                             </StackPane>
@@ -224,6 +224,14 @@
                     <MenuItem fx:id="menuBarViewQueryPanel" text="Query Panel">
                         <graphic>
                             <FontIcon iconLiteral="gmi-check" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                </Menu>
+
+                <Menu text="Project">
+                    <MenuItem fx:id="menuBarProjectExecuteRunConfigMenuItem" text="Execute Run Configuration">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-play-arrow" iconSize="24" fill="black"/>
                         </graphic>
                     </MenuItem>
                 </Menu>

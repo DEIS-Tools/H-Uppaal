@@ -332,59 +332,12 @@ public class HUPPAALPresentation extends StackPane {
             tooltip = new JFXTooltip("No run configuration is selected");
             controller.runConfigurationExecuteButton.setEnabled(false);
             controller.runConfigurationExecuteButton.setOpacity(0.3);
-            controller.runConfigurationExecuteButton.setOnMouseClicked(e -> HUPPAAL.showToast("No run configuration is selected"));
         } else {
             tooltip = new JFXTooltip("Run " + c.runConfiguration().get().name);
             controller.runConfigurationExecuteButton.setEnabled(true);
             controller.runConfigurationExecuteButton.setOpacity(1.0);
-            controller.runConfigurationExecuteButton.setOnMouseClicked(e -> executeRunConfiguration(c.runConfiguration().get()));
         }
         JFXTooltip.install(controller.runConfigurationExecuteButton, tooltip);
-    }
-
-    private final static String[] sysEnv = System.getenv().entrySet().stream().map((e) -> e.getKey() + "=" + e.getValue()).toArray(String[]::new);
-    private Process proc;
-    private void executeRunConfiguration(RunConfiguration config) {
-        // Stop the currently running process if it is running
-        if(proc != null && proc.isAlive()) {
-            proc.destroy();
-            return;
-        }
-
-        // Else start the run configuration
-        new Thread(() -> {
-            try {
-                var rt = Runtime.getRuntime();
-                if(config.program.isEmpty())
-                    throw new Exception("No program to run in selected run configuration");
-                var dir = new File(config.executionDir);
-                if(!(dir.exists() && dir.isDirectory()))
-                    throw new Exception(String.format("'%s' does not exist or is not a directory", config.executionDir));
-                proc = rt.exec(config.program + " " + config.arguments,
-                                ArrayUtils.merge(sysEnv, config.environmentVariables.split(";")),
-                                dir);
-                var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-                var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-                controller.runConfigurationExecuteButtonIcon.setIconLiteral("gmi-stop");
-                controller.runConfigurationExecuteButtonIcon.setIconColor(Color.RED.getColor(Color.Intensity.I300));
-                String s;
-                while((s = stdi.readLine()) != null) {
-                    var finalS = s;
-                    Platform.runLater(() -> CodeAnalysis.addMessage(finalS));
-                }
-                while((s = stde.readLine()) != null) {
-                    var finalS = s;
-                    Platform.runLater(() -> CodeAnalysis.addMessage(new CodeAnalysis.Message(finalS, CodeAnalysis.MessageType.ERROR)));
-                }
-                HUPPAAL.showToast(config.name + " finished("+proc.exitValue()+")");
-            } catch (Exception e) {
-                HUPPAAL.showToast(e.getMessage());
-                e.printStackTrace();
-            } finally {
-                controller.runConfigurationExecuteButtonIcon.setIconLiteral("gmi-play-arrow");
-                controller.runConfigurationExecuteButtonIcon.setIconColor(javafx.scene.paint.Color.WHITE);
-            }
-        }).start();
     }
 
     private ChangeListener<RunConfigurationButton> pickerListener;

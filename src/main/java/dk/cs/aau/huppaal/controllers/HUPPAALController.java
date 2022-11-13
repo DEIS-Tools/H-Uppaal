@@ -7,10 +7,12 @@ import dk.cs.aau.huppaal.abstractions.*;
 import dk.cs.aau.huppaal.backend.*;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.presentations.*;
+import dk.cs.aau.huppaal.runconfig.RunConfiguration;
 import dk.cs.aau.huppaal.runconfig.RunConfigurationButton;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import dk.cs.aau.huppaal.utility.colors.EnabledColor;
+import dk.cs.aau.huppaal.utility.helpers.ArrayUtils;
 import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
 import dk.cs.aau.huppaal.utility.helpers.ZoomHelper;
 import dk.cs.aau.huppaal.utility.keyboard.Keybind;
@@ -126,6 +128,7 @@ public class HUPPAALController implements Initializable {
     public MenuItem menuBarFileExportAsXML;
     public MenuItem menuBarHelpHelp;
     public MenuItem menuBarEditBalance;
+    public MenuItem menuBarProjectExecuteRunConfigMenuItem;
 
     public JFXSnackbar snackbar;
     public HBox statusBar;
@@ -603,6 +606,10 @@ public class HUPPAALController implements Initializable {
                 previousIdentifiers.forEach(Location::setId);
             }, "Balanced location identifiers", "shuffle");
         });
+
+        // Project
+        menuBarProjectExecuteRunConfigMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
+        menuBarProjectExecuteRunConfigMenuItem.setOnAction(event -> executeSelectedRunConfiguration());
     }
 
     private void initializeMessages() {
@@ -789,6 +796,61 @@ public class HUPPAALController implements Initializable {
                 },
                 "Nudge " + selectedElements + " in direction: " + direction,
                 "open-with");
+    }
+
+    @FXML
+    public void executeSelectedRunConfiguration() {
+        var c = runConfigurationPicker.getSelectionModel().getSelectedItem();
+        if(c == null || c.runConfiguration().isEmpty()) {
+            HUPPAAL.showToast("No run configuration is selected");
+            return;
+        }
+        executeRunConfiguration(c.runConfiguration().get());
+    }
+
+    private final static String[] sysEnv = System.getenv().entrySet().stream().map((e) -> e.getKey() + "=" + e.getValue()).toArray(String[]::new);
+    private Process proc;
+    private void executeRunConfiguration(RunConfiguration config) {
+        // Stop the currently running process if it is running
+        if(proc != null && proc.isAlive()) {
+            proc.destroy();
+            return;
+        }
+
+        // Else start the run configuration
+        new Thread(() -> {
+            try {
+                var rt = Runtime.getRuntime();
+                if(config.program.isEmpty())
+                    throw new Exception("No program to run in selected run configuration");
+                var dir = new File(config.executionDir);
+                if(!(dir.exists() && dir.isDirectory()))
+                    throw new Exception(String.format("'%s' does not exist or is not a directory", config.executionDir));
+                proc = rt.exec(config.program + " " + config.arguments,
+                        ArrayUtils.merge(sysEnv, config.environmentVariables.split(";")),
+                        dir);
+                var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+                var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+                runConfigurationExecuteButtonIcon.setIconLiteral("gmi-stop");
+                runConfigurationExecuteButtonIcon.setIconColor(Color.RED.getColor(Color.Intensity.I300));
+                String s;
+                while((s = stdi.readLine()) != null) {
+                    var finalS = s;
+                    Platform.runLater(() -> CodeAnalysis.addMessage(finalS));
+                }
+                while((s = stde.readLine()) != null) {
+                    var finalS = s;
+                    Platform.runLater(() -> CodeAnalysis.addMessage(new CodeAnalysis.Message(finalS, CodeAnalysis.MessageType.ERROR)));
+                }
+                HUPPAAL.showToast(config.name + " finished("+proc.exitValue()+")");
+            } catch (Exception e) {
+                HUPPAAL.showToast(e.getMessage());
+                e.printStackTrace();
+            } finally {
+                runConfigurationExecuteButtonIcon.setIconLiteral("gmi-play-arrow");
+                runConfigurationExecuteButtonIcon.setIconColor(javafx.scene.paint.Color.WHITE);
+            }
+        }).start();
     }
 
     @FXML
