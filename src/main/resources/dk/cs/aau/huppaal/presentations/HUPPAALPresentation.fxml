@@ -42,7 +42,7 @@
 
                         <!-- UNDO -->
                         <JFXRippler fx:id="undo">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#undoClicked">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#undoClicked">
                                 <FontIcon iconLiteral="gmi-undo" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -51,7 +51,7 @@
 
                         <!-- REDO -->
                         <JFXRippler fx:id="redo">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#redoClicked">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#redoClicked">
                                 <FontIcon iconLiteral="gmi-redo" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -60,7 +60,7 @@
 
                         <!-- ZOOM IN -->
                         <JFXRippler fx:id="zoomIn">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#zoomInClicked">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#zoomInClicked">
                                 <FontIcon iconLiteral="gmi-zoom-in" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -69,7 +69,7 @@
 
                         <!-- ZOOM IN -->
                         <JFXRippler fx:id="zoomOut">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#zoomOutClicked">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#zoomOutClicked">
                                 <FontIcon iconLiteral="gmi-zoom-out" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -78,7 +78,7 @@
 
                         <!-- ZOOM TO FIT -->
                         <JFXRippler fx:id="zoomToFit">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#zoomToFitClicked">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#zoomToFitClicked">
                                 <FontIcon iconLiteral="gmi-zoom-out-map" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -87,7 +87,7 @@
 
                         <!-- RESET ZOOM -->
                         <JFXRippler fx:id="resetZoom">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#resetZoomClicked">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#resetZoomClicked">
                                 <FontIcon iconLiteral="gmi-crop-original" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -96,7 +96,7 @@
 
                         <!-- DELETE SELECTED -->
                         <JFXRippler fx:id="deleteSelected">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#deleteSelectedClicked">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#deleteSelectedClicked">
                                 <FontIcon iconLiteral="gmi-delete" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
@@ -105,8 +105,26 @@
 
                         <!-- COLOR SELECTED -->
                         <JFXRippler fx:id="colorSelected">
-                            <StackPane minWidth="40" minHeight="40">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton">
                                 <FontIcon iconLiteral="gmi-color-lens" iconSize="24" fill="white"/>
+                            </StackPane>
+                        </JFXRippler>
+
+                        <Region minWidth="16"/>
+                        <StackPane>
+                            <Rectangle width="1" height="32" fill="black" opacity="0.2"/>
+                        </StackPane>
+
+                        <Region minWidth="16"/>
+                        <StackPane>
+                            <ComboBox fx:id="runConfigurationPicker" promptText="Select Config"/>
+                        </StackPane>
+
+                        <Region minWidth="16"/>
+
+                        <JFXRippler fx:id="runConfigurationExecuteButton" onMouseClicked="#executeSelectedRunConfiguration">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton">
+                                <FontIcon fx:id="runConfigurationExecuteButtonIcon" iconLiteral="gmi-play-arrow" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
 
@@ -118,12 +136,11 @@
 
                         <!-- GENERATE UPPAAL MODEL FOR PROJECT -->
                         <JFXRippler fx:id="generateUppaalModel">
-                            <StackPane minWidth="40" minHeight="40" onMouseClicked="#generateUppaalModelClicked">
+                            <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#generateUppaalModelClicked">
                                 <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
                     </HBox>
-
                 </StackPane>
 
                 <QueryPanePresentation
@@ -211,8 +228,21 @@
                     </MenuItem>
                 </Menu>
 
+                <Menu text="Project">
+                    <MenuItem fx:id="menuBarProjectExecuteRunConfigMenuItem" text="Execute Run Configuration">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-play-arrow" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                    <MenuItem fx:id="menuBarProjectEditConfigs" text="Edit Run Configs">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-settings" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                </Menu>
+
                 <Menu text="Preferences">
-                    <MenuItem fx:id="menuBarPreferencesUppaalLocation" text="Change UPPAAL Location">
+                    <MenuItem fx:id="menuBarPreferencesUppaalLocation" text="Set UPPAAL Location">
                         <graphic>
                             <FontIcon iconLiteral="gmi-insert-drive-file" iconSize="24" fill="black"/>
                         </graphic>
@@ -238,13 +268,13 @@
                style="-fx-padding: 0 0 20 0">
         <JFXTabPane fx:id="tabPane" style="-fx-background-color: -grey-200;">
             <Tab text="Information" fx:id="infoLogTab">
-                <LogTabPresentation fx:id="infoLog" textColor="#FFFFFF"/>
+                <LogTabPresentation fx:id="infoLog" textColor="#ffffff"/>
             </Tab>
             <Tab text="Warning" fx:id="warnLogTab">
-                <LogTabPresentation fx:id="warnLog" textColor="#FDEFBD"/>
+                <LogTabPresentation fx:id="warnLog" textColor="#fff176"/>
             </Tab>
             <Tab text="Error" fx:id="errLogTab">
-                <LogTabPresentation fx:id="errLog" textColor="#FF8082"/>
+                <LogTabPresentation fx:id="errLog" textColor="#e57373"/>
             </Tab>
 
             <Tab fx:id="backendErrorsTab" text="Backend Errors">
@@ -280,9 +310,7 @@
                 <StackPane minWidth="50" minHeight="35"
                            onMouseClicked="#collapseMessagesClicked"
                            StackPane.alignment="TOP_RIGHT">
-
                     <FontIcon fx:id="collapseMessagesIcon" iconLiteral="gmi-expand-less" iconSize="24" fill="white"/>
-
                 </StackPane>
             </JFXRippler>
         </HBox>
@@ -298,25 +326,31 @@
     <HBox minHeight="20" maxHeight="20" StackPane.alignment="BOTTOM_CENTER"
           fx:id="statusBar"
           style="-fx-padding: 0 10 0 10">
-
-        <StackPane>
-            <Label fx:id="statusLabel" styleClass="sub-caption"/>
-        </StackPane>
-
-        <Region HBox.hgrow="ALWAYS"/>
-
-        <HBox fx:id="queryStatusContainer" opacity="0">
-            <StackPane>
-                <JFXSpinner radius="5"/>
-            </StackPane>
-
-            <Region minWidth="5"/>
-
-            <StackPane>
-                <Label fx:id="queryLabel" styleClass="sub-caption"/>
-            </StackPane>
-        </HBox>
-
+        <BorderPane HBox.hgrow="ALWAYS">
+            <left>
+                <StackPane>
+                    <Label fx:id="statusLabel" styleClass="sub-caption"/>
+                </StackPane>
+            </left>
+            <center>
+                <HBox fx:id="queryStatusContainer" opacity="0">
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane>
+                        <JFXSpinner radius="3"/>
+                    </StackPane>
+                    <Region minWidth="5"/>
+                    <StackPane>
+                        <Label fx:id="queryLabel" styleClass="sub-caption"/>
+                    </StackPane>
+                    <Region minWidth="5" HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </center>
+            <right>
+                <StackPane>
+                    <Label fx:id="versionLabel" styleClass="sub-caption"/>
+                </StackPane>
+            </right>
+        </BorderPane>
     </HBox>
 
     <!-- Query Result Dialog -->

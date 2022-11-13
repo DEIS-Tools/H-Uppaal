@@ -100,24 +100,32 @@ public class CodeAnalysis {
     }
 
     @Deprecated
-    public static void addMessage(final Component component, final Message message) {
-        if(!ENABLED) return;
+    public static void addMessage(Message message) {
+        addMessage(null, message);
+    }
 
-        if (message.getMessageType().equals(MessageType.WARNING)) {
-            addToWarnings(component, message);
-        } else if (message.getMessageType().equals(MessageType.ERROR)) {
-            addToErrors(component, message);
+    @Deprecated
+    public static void addMessage(String message) {
+        addMessage(new Message(message));
+    }
+
+    @Deprecated
+    public static void addMessage(final Component component, final Message message) {
+        if(!ENABLED)
+            return;
+        switch (message.getMessageType()) {
+            case ERROR -> addToErrors(component, message);
+            case WARNING -> addToWarnings(component, message);
         }
     }
 
     @Deprecated
     public static void removeMessage(final Component component, final Message message) {
-        if(!ENABLED) return;
-
-        if (message.getMessageType().equals(MessageType.WARNING)) {
-            removeFromWarnings(component, message);
-        } else if (message.getMessageType().equals(MessageType.ERROR)) {
-            removeFromErrors(component, message);
+        if(!ENABLED)
+            return;
+        switch (message.getMessageType()) {
+            case ERROR -> removeFromErrors(component, message);
+            case WARNING -> removeFromWarnings(component, message);
         }
     }
 
@@ -165,7 +173,7 @@ public class CodeAnalysis {
     public static class Message {
         private final UUID id;
         private final MessageType messageType;
-        private StringProperty message;
+        private final StringProperty message;
 
         private ObservableList<Nearable> nearables = FXCollections.observableArrayList();
 
@@ -176,7 +184,15 @@ public class CodeAnalysis {
             this.nearables.addAll(nearables);
         }
 
-        public Message(final String message, final MessageType messageType, final List<Nearable> nearables) {
+        public Message(String message) {
+            this(message, MessageType.WARNING);
+        }
+
+        public Message(String message, MessageType type) {
+            this(message, type, new ArrayList<>());
+        }
+
+        public Message(String message, MessageType messageType, List<Nearable> nearables) {
             this.message = new SimpleStringProperty(message);
             this.messageType = messageType;
             this.id = UUID.randomUUID();

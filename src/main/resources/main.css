@@ -226,6 +226,53 @@
 	-fx-padding: 20 0 40 0;
 }
 
+/* COMBO-BOX STYLING */
+.combo-box .list-cell {
+	-fx-text-fill: white;
+	-fx-background: white;
+	-fx-background-color: transparent;
+	-fx-fit-to-width: true;
+}
+
+.combo-box-popup .list-view {
+	-fx-text-fill: -fx-text-base-color;
+	-fx-background-color: white, white;
+	-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 8, 0.0 , 0 , 0 );
+}
+
+.combo-box-popup .list-view .list-cell {
+	-fx-text-fill: -fx-text-base-color;
+	-fx-background-color: white;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+	-fx-text-fill: white;
+	-fx-background-color: cornflowerblue;
+}
+
+.combo-box-base {
+	-fx-text-fill: -fx-text-base-color;
+	-fx-background-color: transparent;
+	-fx-border-color: grey;
+	-fx-border-width: 1;
+	-fx-border-radius: 5;
+}
+
+.combo-box-base:disabled {
+	-fx-opacity: .4;
+}
+
+.huppaalButton:hover {
+	-fx-background-color: rgba(255, 255, 255, 0.1);
+	-fx-background-radius: 5;
+}
+
+.border-1 {
+	-fx-border-width: 1;
+	-fx-border-radius: 5;
+}
+
+
 .light-text {
 	-fx-fill: white;
 }

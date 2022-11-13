@@ -22,6 +22,7 @@ import javafx.scene.layout.HBox;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.net.URI;
 import java.util.Optional;
 
@@ -60,7 +61,13 @@ public class LogTabPresentation extends HBox {
                 }
                 case COMPONENT -> selectComponent(ref1);
                 // Try to open the link
-                default -> Desktop.getDesktop().browse(new URI(ref));
+                default -> {
+                    var f = new File(ref);
+                    if(f.exists())
+                        Desktop.getDesktop().open(f);
+                    else
+                        Desktop.getDesktop().browse(new URI(ref));
+                }
             }
         } catch (Exception e) {
             HUPPAAL.showToast(e.getMessage());
