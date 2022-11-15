@@ -157,11 +157,7 @@ public class LogTabPresentation extends HBox {
     }
 
     private void scrollToLastLine() {
-        try {
-            scrollPane.estimatedScrollYProperty().setValue(scrollPane.getContent().totalHeightEstimateProperty().getValue());
-        } catch (Exception e) {
-            Log.addError(e.getMessage());
-        }
+        scrollPane.scrollYBy(logArea.totalHeightEstimateProperty().getValue());
     }
 
     private void setupWordWrap() {
