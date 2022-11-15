@@ -48,7 +48,7 @@ public record Log(
         addLog(new Log(UUID.randomUUID(), DEFAULT_SERVICE, message, LogLevel.Information));
     }
     public static synchronized void addLog(Log message) {
-        System.out.println(message.service + ": " + message.message);
+        System.out.println(message.service + ": " + message.message); // TODO: Remove this before merging!
         if(!logs.containsKey(message.service()))
             logs.put(message.service(), new ArrayList<>());
         logs.get(message.service()).add(message);

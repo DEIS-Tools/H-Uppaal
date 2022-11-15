@@ -55,23 +55,24 @@ public class LogTabPresentation extends HBox {
             var ref  = matcher.group("ref");
             var ref1 = matcher.group("ref1");
             var ref2 = Optional.ofNullable(matcher.group("ref2"));
+            var notValidLink = "Not a valid %s link: %s".formatted(link.getQuantifier().name().toLowerCase(), link.getLink());
             switch (link.getQuantifier()) {
                 case LOCATION -> {
                     if(ref2.isEmpty())
-                        Log.addWarning("Not a valid location link: %s - directing to '%s'".formatted(link.getLink(), ref1));
+                        Log.addWarning(notValidLink);
                     var component = selectComponent(ref1);
                     ref2.ifPresent(s -> selectLocation(component, s));
                 }
                 case COMPONENT -> selectComponent(ref1);
                 case SUBCOMPONENT -> {
                     if(ref2.isEmpty())
-                        Log.addWarning("Not a valid subcomponent link: %s - directing to '%s'".formatted(link.getLink(), ref1));
+                        Log.addWarning(notValidLink);
                     var component = selectComponent(ref1);
                     ref2.ifPresent(s -> selectSubComponent(component, s));
                 }
                 case JORK -> {
                     if(ref2.isEmpty())
-                        Log.addWarning("Not a valid jork link: %s - directing to '%s'".formatted(link.getLink(), ref1));
+                        Log.addWarning(notValidLink);
                     var component = selectComponent(ref1);
                     ref2.ifPresent(s -> selectJork(component, s));
                 }
