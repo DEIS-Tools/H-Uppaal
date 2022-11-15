@@ -6,10 +6,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CodeAnalysis {
 
@@ -79,23 +76,29 @@ public class CodeAnalysis {
         errors.remove(message);
     }
 
-    public static void addMessage(final Component component, final Message message) {
-        if(!ENABLED) return;
+    public static void addMessage(Message message) {
+        addMessage(null, message);
+    }
 
-        if (message.getMessageType().equals(MessageType.WARNING)) {
-            addToWarnings(component, message);
-        } else if (message.getMessageType().equals(MessageType.ERROR)) {
-            addToErrors(component, message);
+    public static void addMessage(String message) {
+        addMessage(new Message(message));
+    }
+
+    public static void addMessage(final Component component, final Message message) {
+        if(!ENABLED)
+            return;
+        switch (message.getMessageType()) {
+            case ERROR -> addToErrors(component, message);
+            case WARNING -> addToWarnings(component, message);
         }
     }
 
     public static void removeMessage(final Component component, final Message message) {
-        if(!ENABLED) return;
-
-        if (message.getMessageType().equals(MessageType.WARNING)) {
-            removeFromWarnings(component, message);
-        } else if (message.getMessageType().equals(MessageType.ERROR)) {
-            removeFromErrors(component, message);
+        if(!ENABLED)
+            return;
+        switch (message.getMessageType()) {
+            case ERROR -> removeFromErrors(component, message);
+            case WARNING -> removeFromWarnings(component, message);
         }
     }
 
@@ -132,20 +135,26 @@ public class CodeAnalysis {
     public static class Message {
 
         private final MessageType messageType;
-        private StringProperty message;
+        private final StringProperty message;
 
         private ObservableList<Nearable> nearables = FXCollections.observableArrayList();
 
-        public Message(final String message, final MessageType messageType, final Nearable... nearables) {
-            this.message = new SimpleStringProperty(message);
-            this.messageType = messageType;
-            Collections.addAll(this.nearables, nearables);
+        public Message(String message) {
+            this(message, MessageType.WARNING);
         }
 
-        public Message(final String message, final MessageType messageType, final List<Nearable> nearables) {
+        public Message(String message, MessageType type) {
+            this(message, type, new ArrayList<>());
+        }
+
+        public Message(String message, MessageType messageType, Nearable... nearables) {
+            this(message, messageType, Arrays.stream(nearables).toList());
+        }
+
+        public Message(String message, MessageType messageType, List<Nearable> nearables) {
             this.message = new SimpleStringProperty(message);
             this.messageType = messageType;
-            nearables.forEach(nearable -> this.nearables.add(nearable));
+            this.nearables.addAll(nearables);
         }
 
         public MessageType getMessageType() {

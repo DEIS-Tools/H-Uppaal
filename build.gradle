@@ -10,7 +10,7 @@ mainClassName = 'HUPPAAL'
 
 allprojects {
     group = 'dk.cs.aau.huppaal'
-    version = '1.1.0'
+    version = '1.2.0'
 }
 
 def getGitCommitSha = { ->
@@ -144,7 +144,7 @@ dependencies {
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-core', version: '12.3.1'
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-material-pack', version: '12.3.1'
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: '12.3.1'
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.9.0'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10'
     implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
     implementation group: 'org.hildan.fxgson', name: 'fx-gson', version: '4.0.1'
     implementation group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.10.9'
