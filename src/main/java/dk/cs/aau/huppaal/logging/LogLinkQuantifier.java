@@ -1,21 +1,26 @@
 package dk.cs.aau.huppaal.logging;
 
 import dk.cs.aau.huppaal.presentations.logging.TextStyle;
-import javafx.scene.paint.Color;
+import dk.cs.aau.huppaal.utility.colors.Color;
 
 public enum LogLinkQuantifier {
     // CASE/Link Color
-    LOCATION("#ffa86c"),
-    COMPONENT("#C9FF6C"),
-    GENERIC("#abc1fb"),
-    UNKNOWN;
+    COMPONENT(Color.PURPLE),
+    GENERIC(Color.BLUE),
+    LOCATION(Color.YELLOW),
+    SUBCOMPONENT(Color.YELLOW),
+    JORK(Color.YELLOW),
+    EDGE(Color.CYAN),
+    NAIL(Color.CYAN),
+    UNKNOWN(Color.GREY);
 
     private final TextStyle style;
+
     LogLinkQuantifier() {
         this.style = TextStyle.EMPTY;
     }
-    LogLinkQuantifier(String webColor) {
-        this.style = TextStyle.textColor(Color.web(webColor));
+    LogLinkQuantifier(Color color) {
+        this.style = TextStyle.textColor(color.getColor(Color.Intensity.I500));
     }
 
     public TextStyle getStyle() {

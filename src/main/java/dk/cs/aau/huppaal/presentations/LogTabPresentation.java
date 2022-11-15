@@ -63,6 +63,19 @@ public class LogTabPresentation extends HBox {
                     ref2.ifPresent(s -> selectLocation(component, s));
                 }
                 case COMPONENT -> selectComponent(ref1);
+                case SUBCOMPONENT -> {
+                    if(ref2.isEmpty())
+                        Log.addWarning("Not a valid subcomponent link: %s - directing to '%s'".formatted(link.getLink(), ref1));
+                    var component = selectComponent(ref1);
+                    ref2.ifPresent(s -> selectSubComponent(component, s));
+                }
+                case JORK -> {
+                    if(ref2.isEmpty())
+                        Log.addWarning("Not a valid jork link: %s - directing to '%s'".formatted(link.getLink(), ref1));
+                    var component = selectComponent(ref1);
+                    ref2.ifPresent(s -> selectJork(component, s));
+                }
+                case NAIL, EDGE -> Log.addInfo("Edges and nails are not selectable yet");
                 // Try to open the link
                 default -> {
                     var f = new File(ref);
@@ -96,6 +109,20 @@ public class LogTabPresentation extends HBox {
         if(location.isEmpty())
             Log.addWarning("No such location '%s' in component '%s'".formatted(locationId, parentComponent.getName()));
         location.ifPresent(SelectHelper::select);
+    }
+
+    private void selectSubComponent(Component parentComponent, String subcomponentId) {
+        var subcomponent = parentComponent.getSubComponents().stream().filter(c -> c.getIdentifier().equals(subcomponentId)).findAny();
+        if(subcomponent.isEmpty())
+            Log.addWarning("No such subcomponent '%s' in component '%s'".formatted(subcomponent, parentComponent.getName()));
+        subcomponent.ifPresent(SelectHelper::select);
+    }
+
+    private void selectJork(Component parentComponent, String jorkId) {
+        var jork = parentComponent.getJorks().stream().filter(c -> c.getId().equals(jorkId)).findAny();
+        if(jork.isEmpty())
+            Log.addWarning("No such jork '%s' in component '%s'".formatted(jorkId, parentComponent.getName()));
+        jork.ifPresent(SelectHelper::select);
     }
 
     private void onLogAdded(Log log) {

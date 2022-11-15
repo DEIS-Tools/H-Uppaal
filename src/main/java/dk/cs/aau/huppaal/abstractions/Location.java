@@ -53,10 +53,11 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
 
     private final ObjectProperty<Reachability> reachability = new SimpleObjectProperty<>();
 
-    private Component parent;
+    private final Component parent;
 
-    public Location() {
+    public Location(Component parent) {
         resetId();
+        this.parent = parent;
         bindReachabilityAnalysis();
     }
 

@@ -27,7 +27,7 @@ public class JorkPresentation extends Group implements SelectHelper.Selectable {
     private final JorkController controller;
 
     public JorkPresentation(@NamedArg("type") final String type) {
-        this(new Jork(type.equals("JOIN") ? Jork.Type.JOIN : Jork.Type.FORK), null);
+        this(new Jork(type.equals("JOIN") ? Jork.Type.JOIN : Jork.Type.FORK, null), null);
     }
 
     public JorkPresentation(final Jork newJork, final Component component) {

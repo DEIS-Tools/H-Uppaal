@@ -419,7 +419,7 @@ public class ComponentController implements Initializable {
             contextMenu.addClickableListElement("Add Location", event -> {
                 contextMenu.close();
 
-                final Location newLocation = new Location();
+                final Location newLocation = new Location(component);
 
                 double x = DropDownMenu.x - LocationPresentation.RADIUS / 2;
                 x = Math.round(x / GRID_SIZE) * GRID_SIZE;
@@ -443,7 +443,7 @@ public class ComponentController implements Initializable {
             contextMenu.addClickableListElement("Add Fork", event -> {
                 contextMenu.close();
 
-                final Jork newJork = new Jork(Jork.Type.FORK);
+                final Jork newJork = new Jork(Jork.Type.FORK, component);
 
                 double x = DropDownMenu.x - LocationPresentation.RADIUS / 2;
                 x = Math.round(x / GRID_SIZE) * GRID_SIZE;
@@ -464,7 +464,7 @@ public class ComponentController implements Initializable {
             contextMenu.addClickableListElement("Add Join", event -> {
                 contextMenu.close();
 
-                final Jork newJork = new Jork(Jork.Type.JOIN);
+                final Jork newJork = new Jork(Jork.Type.JOIN, component);
 
                 double x = DropDownMenu.x - LocationPresentation.RADIUS / 2;
                 x = Math.round(x / GRID_SIZE) * GRID_SIZE;
@@ -490,7 +490,7 @@ public class ComponentController implements Initializable {
                     if (!c.equals(component)) {
                         subcomponentSelectionMenu.addClickableListElement(c.getName(), event -> {
                             contextMenu.close();
-                            var newSubComponent = new SubComponent(c);
+                            var newSubComponent = new SubComponent(c, component);
                             var x = DropDownMenu.x - GRID_SIZE * 2;
                             var y = DropDownMenu.y - GRID_SIZE * 2;
                             x -= x % GRID_SIZE;
@@ -558,7 +558,7 @@ public class ComponentController implements Initializable {
             finishEdgeContextMenu.addClickableListElement("Location", event -> {
                 finishEdgeContextMenu.close();
 
-                final Location location = new Location();
+                final Location location = new Location(component);
 
                 location.setColorIntensity(getComponent().getColorIntensity());
                 location.setColor(getComponent().getColor());
@@ -580,7 +580,7 @@ public class ComponentController implements Initializable {
             finishEdgeContextMenu.addClickableAndDisableableListElement("Fork", new SimpleBooleanProperty(unfinishedEdge.getSourceLocation() == null), event -> {
                 finishEdgeContextMenu.close();
 
-                final Jork jork = new Jork(Jork.Type.FORK);
+                final Jork jork = new Jork(Jork.Type.FORK, component);
 
                 unfinishedEdge.setTargetJork(jork);
 
@@ -599,7 +599,7 @@ public class ComponentController implements Initializable {
             finishEdgeContextMenu.addClickableAndDisableableListElement("Join", new SimpleBooleanProperty(unfinishedEdge.getSourceSubComponent() == null), event -> {
                 finishEdgeContextMenu.close();
 
-                final Jork jork = new Jork(Jork.Type.JOIN);
+                final Jork jork = new Jork(Jork.Type.JOIN, component);
 
                 unfinishedEdge.setTargetJork(jork);
 
@@ -621,7 +621,7 @@ public class ComponentController implements Initializable {
                     subMenu.addClickableListElement(c.getName(), event -> {
                         contextMenu.close();
 
-                        final SubComponent newSubComponent = new SubComponent(c);
+                        final SubComponent newSubComponent = new SubComponent(c, component);
 
                         unfinishedEdge.setTargetSubComponent(newSubComponent);
 
@@ -1008,7 +1008,7 @@ public class ComponentController implements Initializable {
 
         if ((event.isShiftDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
 
-            final Location location = new Location();
+            final Location location = new Location(component.get());
 
             double x = event.getX();
             x = Math.round(x / GRID_SIZE) * GRID_SIZE;

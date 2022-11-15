@@ -271,10 +271,10 @@
                 <LogTabPresentation fx:id="infoLog" textColor="#ffffff"/>
             </Tab>
             <Tab text="Warning" fx:id="warnLogTab">
-                <LogTabPresentation fx:id="warnLog" textColor="#fff176"/>
+                <LogTabPresentation fx:id="warnLog" textColor="#fff59d"/>
             </Tab>
             <Tab text="Error" fx:id="errLogTab">
-                <LogTabPresentation fx:id="errLog" textColor="#e57373"/>
+                <LogTabPresentation fx:id="errLog" textColor="#ef9a9a"/>
             </Tab>
 
             <Tab fx:id="backendErrorsTab" text="Backend Errors">
