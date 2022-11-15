@@ -936,7 +936,8 @@ public class HUPPAALController implements Initializable {
                     Log.addInfo(config.name, s);
                 while ((s = stde.readLine()) != null)
                     Log.addError(config.name, s);
-                var msg = config.name + " exited with code " + proc.exitValue();
+                var exitCode = proc.waitFor();
+                var msg = config.name + " exited with code " + exitCode;
                 Log.addInfo(config.name, msg);
 
                 HUPPAAL.showToast(msg);
