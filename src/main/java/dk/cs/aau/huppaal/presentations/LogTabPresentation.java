@@ -27,6 +27,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.net.URI;
 import java.util.Optional;
+import java.util.UUID;
 
 public class LogTabPresentation extends HBox {
     public LogTabController controller;
@@ -76,7 +77,13 @@ public class LogTabPresentation extends HBox {
                     var component = selectComponent(ref1);
                     ref2.ifPresent(s -> selectJork(component, s));
                 }
-                case NAIL, EDGE -> Log.addInfo("Edges and nails are not selectable yet");
+                case EDGE -> {
+                    if(ref2.isEmpty())
+                        Log.addWarning(notValidLink);
+                    var component = selectComponent(ref1);
+                    ref2.ifPresent(s -> selectEdge(component, s));
+                }
+                case NAIL -> Log.addInfo("Edges and nails are not selectable yet");
                 // Try to open the link
                 default -> {
                     var f = new File(ref);
@@ -124,6 +131,13 @@ public class LogTabPresentation extends HBox {
         if(jork.isEmpty())
             Log.addWarning("No such jork '%s' in component '%s'".formatted(jorkId, parentComponent.getName()));
         jork.ifPresent(SelectHelper::select);
+    }
+
+    private void selectEdge(Component parentComponent, String edgeId) {
+        var edge = parentComponent.getEdges().stream().filter(c -> c.getUuid().equals(UUID.fromString(edgeId))).findAny();
+        if(edge.isEmpty())
+            Log.addWarning("No such edge '%s' in component '%s'".formatted(edgeId, parentComponent.getName()));
+        edge.ifPresent(SelectHelper::select);
     }
 
     private void onLogAdded(Log log) {

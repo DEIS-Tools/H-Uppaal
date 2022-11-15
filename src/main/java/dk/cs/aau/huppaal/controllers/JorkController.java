@@ -100,7 +100,7 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
             } else if (event.isSecondaryButtonDown()) {
                 showContextMenu();
             } else if ((event.isShiftDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
-                final Edge newEdge = new Edge(getJork());
+                final Edge newEdge = new Edge(getJork(), component);
 
                 KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
                     component.removeEdge(newEdge);
@@ -124,7 +124,7 @@ public class JorkController implements Initializable, SelectHelper.ItemSelectabl
 
         contextMenu.addClickableListElement("Draw edge",
                 (mouseEvent) -> {
-                    final Edge newEdge = new Edge(getJork());
+                    final Edge newEdge = new Edge(getJork(), component.get());
 
                     KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
                         getComponent().removeEdge(newEdge);

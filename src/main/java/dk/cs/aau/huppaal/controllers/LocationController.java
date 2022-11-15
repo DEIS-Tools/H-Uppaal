@@ -117,7 +117,7 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
 
         dropDownMenu.addClickableListElement("Draw edge",
                 (event) -> {
-                        final Edge newEdge = new Edge(getLocation());
+                        final Edge newEdge = new Edge(getLocation(), component.get());
 
                         KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
                             getComponent().removeEdge(newEdge);
@@ -379,7 +379,7 @@ public class LocationController implements Initializable, SelectHelper.ItemSelec
                 } else {
                     // If shift is being held down, start drawing a new edge
                     if ((event.isShiftDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
-                        final Edge newEdge = new Edge(getLocation());
+                        final Edge newEdge = new Edge(getLocation(), component);
 
                         KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
                             component.removeEdge(newEdge);

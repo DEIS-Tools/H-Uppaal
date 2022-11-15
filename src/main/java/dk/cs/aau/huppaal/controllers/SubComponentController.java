@@ -87,7 +87,7 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
 
         dropDownMenu.addClickableListElement("Draw edge",
                 (event) -> {
-                    final Edge newEdge = new Edge(getSubComponent());
+                    final Edge newEdge = new Edge(getSubComponent(), parentComponent.get());
 
                     KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
                         getParentComponent().removeEdge(newEdge);
@@ -284,7 +284,7 @@ public class SubComponentController implements Initializable, SelectHelper.ItemS
 
             } else if ((event.isShiftDown() && event.isPrimaryButtonDown()) || event.isMiddleButtonDown()) {
 
-                final Edge newEdge = new Edge(getSubComponent());
+                final Edge newEdge = new Edge(getSubComponent(), parentComponent.get());
 
                 KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
                     getParentComponent().removeEdge(newEdge);
