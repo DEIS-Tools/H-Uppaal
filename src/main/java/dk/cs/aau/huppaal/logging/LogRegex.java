@@ -22,7 +22,7 @@ public class LogRegex {
         }
         // For humans:
         // [<display>](<quantifier>:<ref1>/<ref2>?)
-        var x = "\\[(?<display>[^]]+)]\\((?<quantifier>"+sb+"):(?<ref>(?<ref1>\\S+)(?<ref2>/\\S+)?)\\)";
+        var x = "\\[(?<display>[^]]+)]\\((?<quantifier>"+sb+"):(?<ref>(?<ref1>[^/]+)/?(?<ref2>\\S+)?)\\)";
         return Pattern.compile(x);
     }
 }

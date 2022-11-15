@@ -490,14 +490,14 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         setDeclarations(json.getAsJsonPrimitive(DECLARATIONS).getAsString());
 
         json.getAsJsonArray(LOCATIONS).forEach(jsonElement -> {
-            final Location newLocation = new Location((JsonObject) jsonElement);
+            final Location newLocation = new Location((JsonObject) jsonElement, this);
             locations.add(newLocation);
         });
 
-        final Location newInitialLocation = new Location(json.getAsJsonObject(INITIAL_LOCATION));
+        final Location newInitialLocation = new Location(json.getAsJsonObject(INITIAL_LOCATION), this);
         setInitialLocation(newInitialLocation);
 
-        final Location newFinalLocation = new Location(json.getAsJsonObject(FINAL_LOCATION));
+        final Location newFinalLocation = new Location(json.getAsJsonObject(FINAL_LOCATION), this);
         setFinalLocation(newFinalLocation);
 
         json.getAsJsonArray(JORKS).forEach(jsonElement -> {

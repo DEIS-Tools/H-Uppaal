@@ -101,7 +101,7 @@ public class LocationPresentation extends Group implements MouseTrackable, Selec
     }
 
     private static Location initialHelpDialogLocation(final String initial) {
-        final Location location = new Location("L" + id++);
+        final Location location = new Location("L" + id++, null);
 
         if (initial.equals("INITIAL")) {
             location.setType(Location.Type.INITIAL);

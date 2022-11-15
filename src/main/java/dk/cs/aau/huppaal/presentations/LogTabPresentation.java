@@ -3,6 +3,8 @@ package dk.cs.aau.huppaal.presentations;
 import com.hp.hpl.jena.shared.NotFoundException;
 import dk.cs.aau.huppaal.BuildConfig;
 import dk.cs.aau.huppaal.HUPPAAL;
+import dk.cs.aau.huppaal.abstractions.Component;
+import dk.cs.aau.huppaal.abstractions.Location;
 import dk.cs.aau.huppaal.controllers.CanvasController;
 import dk.cs.aau.huppaal.controllers.LogTabController;
 import dk.cs.aau.huppaal.logging.Log;
@@ -48,7 +50,7 @@ public class LogTabPresentation extends HBox {
         try {
             var matcher = LogRegex.PATTERN.matcher(link.getLink());
             if(!matcher.find()) // *should* never happen
-                throw new RuntimeException("Not a valid %s link pattern: %s".formatted(BuildConfig.NAME,link.getLink()));
+                throw new RuntimeException("Not a valid %s link pattern: '%s'".formatted(BuildConfig.NAME,link.getLink()));
             // TODO: When syntactic elements have UUIDs to identify them, we should look at those IDs (instead/aswell)
             var ref  = matcher.group("ref");
             var ref1 = matcher.group("ref1");
@@ -56,8 +58,9 @@ public class LogTabPresentation extends HBox {
             switch (link.getQuantifier()) {
                 case LOCATION -> {
                     if(ref2.isEmpty())
-                        Log.addWarning("Not a valid location link: %s - directing to the component anyway".formatted(link.getLink()));
-                    selectComponent(ref1); // TODO: Select Location
+                        Log.addWarning("Not a valid location link: %s - directing to '%s'".formatted(link.getLink(), ref1));
+                    var component = selectComponent(ref1);
+                    ref2.ifPresent(s -> selectLocation(component, s));
                 }
                 case COMPONENT -> selectComponent(ref1);
                 // Try to open the link
@@ -76,16 +79,23 @@ public class LogTabPresentation extends HBox {
     }
 
     // TODO: This function should be in SelectHelper, not the LogTabPresentation!
-    private void selectComponent(String componentId) throws NotFoundException {
+    private Component selectComponent(String componentId) throws NotFoundException {
         var component = HUPPAAL.getProject().getComponents().stream().filter(c -> c.getName().equals(componentId)).findAny();
         if(component.isEmpty())
-            throw new NotFoundException("No such component %s".formatted(componentId));
+            throw new NotFoundException("No such component '%s'".formatted(componentId));
         if(!CanvasController.getActiveComponent().equals(component.get())) {
             SelectHelper.elementsToBeSelected = FXCollections.observableArrayList();
             CanvasController.setActiveComponent(component.get());
         }
         SelectHelper.clearSelectedElements();
-        // TODO: SelectHelper.select(nearable);
+        return component.get();
+    }
+
+    private void selectLocation(Component parentComponent, String locationId) {
+        var location = parentComponent.getLocationsWithInitialAndFinal().stream().filter(l -> l.getId().equals(locationId)).findAny();
+        if(location.isEmpty())
+            Log.addWarning("No such location '%s' in component '%s'".formatted(locationId, parentComponent.getName()));
+        location.ifPresent(SelectHelper::select);
     }
 
     private void onLogAdded(Log log) {
@@ -157,7 +167,7 @@ public class LogTabPresentation extends HBox {
     }
 
     private void scrollToLastLine() {
-        scrollPane.scrollYBy(logArea.totalHeightEstimateProperty().getValue());
+        Platform.runLater(() -> scrollPane.scrollYBy(logArea.totalHeightEstimateProperty().getValue()));
     }
 
     private void setupWordWrap() {

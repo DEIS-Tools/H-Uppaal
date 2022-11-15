@@ -53,19 +53,23 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
 
     private final ObjectProperty<Reachability> reachability = new SimpleObjectProperty<>();
 
+    private Component parent;
+
     public Location() {
         resetId();
         bindReachabilityAnalysis();
     }
 
-    public Location(final String id) {
+    public Location(final String id, Component parent) {
         setId(id);
+        this.parent = parent;
         bindReachabilityAnalysis();
     }
 
-    public Location(final JsonObject jsonObject) {
+    public Location(final JsonObject jsonObject, Component parent) {
         hiddenID.incrementAndGet();
         deserialize(jsonObject);
+        this.parent = parent;
         bindReachabilityAnalysis();
     }
 
@@ -327,14 +331,14 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
         setInvariantY(json.getAsJsonPrimitive(INVARIANT_Y).getAsDouble());
     }
 
-
-
     @Override
     public String generateNearString() {
         // TODO: Locations should know their parent component
         // TODO: Locations should be identified through a UUID
+        if(parent == null)
+            return generateNearStringOld();
         return "[%s](location:%s/%s)".formatted(generateNearStringOld(),
-                "ParentPlaceholder", "IdPlaceholder");
+                parent.getName(), getId());
     }
 
     private String generateNearStringOld() {
