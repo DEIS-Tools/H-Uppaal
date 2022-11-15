@@ -1,11 +1,7 @@
 package dk.cs.aau.huppaal.presentations;
 
-import com.hp.hpl.jena.shared.NotFoundException;
 import dk.cs.aau.huppaal.BuildConfig;
 import dk.cs.aau.huppaal.HUPPAAL;
-import dk.cs.aau.huppaal.abstractions.Component;
-import dk.cs.aau.huppaal.abstractions.Location;
-import dk.cs.aau.huppaal.controllers.CanvasController;
 import dk.cs.aau.huppaal.controllers.LogTabController;
 import dk.cs.aau.huppaal.logging.Log;
 import dk.cs.aau.huppaal.logging.LogRegex;
@@ -18,7 +14,6 @@ import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
 import javafx.application.Platform;
 import javafx.beans.NamedArg;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -27,7 +22,6 @@ import java.awt.Desktop;
 import java.io.File;
 import java.net.URI;
 import java.util.Optional;
-import java.util.UUID;
 
 public class LogTabPresentation extends HBox {
     public LogTabController controller;
@@ -61,27 +55,27 @@ public class LogTabPresentation extends HBox {
                 case LOCATION -> {
                     if(ref2.isEmpty())
                         Log.addWarning(notValidLink);
-                    var component = selectComponent(ref1);
-                    ref2.ifPresent(s -> selectLocation(component, s));
+                    var component = SelectHelper.selectComponent(ref1);
+                    ref2.ifPresent(s -> SelectHelper.selectLocation(component, s));
                 }
-                case COMPONENT -> selectComponent(ref1);
+                case COMPONENT -> SelectHelper.selectComponent(ref1);
                 case SUBCOMPONENT -> {
                     if(ref2.isEmpty())
                         Log.addWarning(notValidLink);
-                    var component = selectComponent(ref1);
-                    ref2.ifPresent(s -> selectSubComponent(component, s));
+                    var component = SelectHelper.selectComponent(ref1);
+                    ref2.ifPresent(s -> SelectHelper.selectSubComponent(component, s));
                 }
                 case JORK -> {
                     if(ref2.isEmpty())
                         Log.addWarning(notValidLink);
-                    var component = selectComponent(ref1);
-                    ref2.ifPresent(s -> selectJork(component, s));
+                    var component = SelectHelper.selectComponent(ref1);
+                    ref2.ifPresent(s -> SelectHelper.selectJork(component, s));
                 }
                 case EDGE -> {
                     if(ref2.isEmpty())
                         Log.addWarning(notValidLink);
-                    var component = selectComponent(ref1);
-                    ref2.ifPresent(s -> selectEdge(component, s));
+                    var component = SelectHelper.selectComponent(ref1);
+                    ref2.ifPresent(s -> SelectHelper.selectEdge(component, s));
                 }
                 case NAIL -> Log.addInfo("Edges and nails are not selectable yet");
                 // Try to open the link
@@ -97,47 +91,6 @@ public class LogTabPresentation extends HBox {
             HUPPAAL.showToast(e.getMessage());
             Log.addError(e.getMessage());
         }
-    }
-
-    // TODO: This function should be in SelectHelper, not the LogTabPresentation!
-    private Component selectComponent(String componentId) throws NotFoundException {
-        var component = HUPPAAL.getProject().getComponents().stream().filter(c -> c.getName().equals(componentId)).findAny();
-        if(component.isEmpty())
-            throw new NotFoundException("No such component '%s'".formatted(componentId));
-        if(!CanvasController.getActiveComponent().equals(component.get())) {
-            SelectHelper.elementsToBeSelected = FXCollections.observableArrayList();
-            CanvasController.setActiveComponent(component.get());
-        }
-        SelectHelper.clearSelectedElements();
-        return component.get();
-    }
-
-    private void selectLocation(Component parentComponent, String locationId) {
-        var location = parentComponent.getLocationsWithInitialAndFinal().stream().filter(l -> l.getId().equals(locationId)).findAny();
-        if(location.isEmpty())
-            Log.addWarning("No such location '%s' in component '%s'".formatted(locationId, parentComponent.getName()));
-        location.ifPresent(SelectHelper::select);
-    }
-
-    private void selectSubComponent(Component parentComponent, String subcomponentId) {
-        var subcomponent = parentComponent.getSubComponents().stream().filter(c -> c.getIdentifier().equals(subcomponentId)).findAny();
-        if(subcomponent.isEmpty())
-            Log.addWarning("No such subcomponent '%s' in component '%s'".formatted(subcomponent, parentComponent.getName()));
-        subcomponent.ifPresent(SelectHelper::select);
-    }
-
-    private void selectJork(Component parentComponent, String jorkId) {
-        var jork = parentComponent.getJorks().stream().filter(c -> c.getId().equals(jorkId)).findAny();
-        if(jork.isEmpty())
-            Log.addWarning("No such jork '%s' in component '%s'".formatted(jorkId, parentComponent.getName()));
-        jork.ifPresent(SelectHelper::select);
-    }
-
-    private void selectEdge(Component parentComponent, String edgeId) {
-        var edge = parentComponent.getEdges().stream().filter(c -> c.getUuid().equals(UUID.fromString(edgeId))).findAny();
-        if(edge.isEmpty())
-            Log.addWarning("No such edge '%s' in component '%s'".formatted(edgeId, parentComponent.getName()));
-        edge.ifPresent(SelectHelper::select);
     }
 
     private void onLogAdded(Log log) {
