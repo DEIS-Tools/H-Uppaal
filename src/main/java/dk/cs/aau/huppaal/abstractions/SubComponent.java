@@ -158,7 +158,6 @@ public class SubComponent implements Serializable, Circular, Nearable {
 
     @Override
     public String generateNearString() {
-        // TODO: Subcomponents should know their parent component
         return "[%s](subcomponent:%s/%s)".formatted(getIdentifier(), parent.getName(), getIdentifier());
     }
 }
