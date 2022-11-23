@@ -47,44 +47,44 @@ public class LogTabPresentation extends HBox {
             if(!matcher.find()) // *should* never happen
                 throw new RuntimeException("Not a valid %s link pattern: '%s'".formatted(BuildConfig.NAME,link.getLink()));
             // TODO: When syntactic elements have UUIDs to identify them, we should look at those IDs (instead/aswell)
-            var ref  = matcher.group("ref");
-            var ref1 = matcher.group("ref1");
-            var ref2 = Optional.ofNullable(matcher.group("ref2"));
+            var regexLink = matcher.group("link");
+            var regexComponent = matcher.group("component");
+            var regexIdentifier = Optional.ofNullable(matcher.group("identifier"));
             var notValidLink = "Not a valid %s link: %s".formatted(link.getQuantifier().name().toLowerCase(), link.getLink());
             switch (link.getQuantifier()) {
                 case LOCATION -> {
-                    if(ref2.isEmpty())
+                    if(regexIdentifier.isEmpty())
                         Log.addWarning(notValidLink);
-                    var component = SelectHelper.selectComponent(ref1);
-                    ref2.ifPresent(s -> SelectHelper.selectLocation(component, s));
+                    var component = SelectHelper.selectComponent(regexComponent);
+                    regexIdentifier.ifPresent(s -> SelectHelper.selectLocation(component, s));
                 }
-                case COMPONENT -> SelectHelper.selectComponent(ref1);
+                case COMPONENT -> SelectHelper.selectComponent(regexComponent);
                 case SUBCOMPONENT -> {
-                    if(ref2.isEmpty())
+                    if(regexIdentifier.isEmpty())
                         Log.addWarning(notValidLink);
-                    var component = SelectHelper.selectComponent(ref1);
-                    ref2.ifPresent(s -> SelectHelper.selectSubComponent(component, s));
+                    var component = SelectHelper.selectComponent(regexComponent);
+                    regexIdentifier.ifPresent(s -> SelectHelper.selectSubComponent(component, s));
                 }
                 case JORK -> {
-                    if(ref2.isEmpty())
+                    if(regexIdentifier.isEmpty())
                         Log.addWarning(notValidLink);
-                    var component = SelectHelper.selectComponent(ref1);
-                    ref2.ifPresent(s -> SelectHelper.selectJork(component, s));
+                    var component = SelectHelper.selectComponent(regexComponent);
+                    regexIdentifier.ifPresent(s -> SelectHelper.selectJork(component, s));
                 }
                 case EDGE -> {
-                    if(ref2.isEmpty())
+                    if(regexIdentifier.isEmpty())
                         Log.addWarning(notValidLink);
-                    var component = SelectHelper.selectComponent(ref1);
-                    ref2.ifPresent(s -> SelectHelper.selectEdge(component, s));
+                    var component = SelectHelper.selectComponent(regexComponent);
+                    regexIdentifier.ifPresent(s -> SelectHelper.selectEdge(component, s));
                 }
                 case NAIL -> Log.addInfo("Edges and nails are not selectable yet");
                 // Try to open the link
                 default -> {
-                    var f = new File(ref);
+                    var f = new File(regexLink);
                     if(f.exists())
                         Desktop.getDesktop().open(f);
                     else
-                        Desktop.getDesktop().browse(new URI(ref));
+                        Desktop.getDesktop().browse(new URI(regexLink));
                 }
             }
         } catch (Exception e) {
