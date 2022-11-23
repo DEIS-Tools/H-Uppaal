@@ -946,7 +946,6 @@ public class HUPPAALController implements Initializable {
         } catch (Exception e) {
             Log.addError(e.getMessage());
             HUPPAAL.showToast(e.getMessage());
-            e.printStackTrace();
         } finally {
             runConfigurationExecuteButtonIcon.setIconLiteral("gmi-play-arrow");
             runConfigurationExecuteButtonIcon.setIconColor(javafx.scene.paint.Color.WHITE);
