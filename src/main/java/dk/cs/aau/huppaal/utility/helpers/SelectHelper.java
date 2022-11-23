@@ -93,28 +93,28 @@ public class SelectHelper {
     public static void selectLocation(Component parentComponent, String locationId) {
         var location = parentComponent.getLocationsWithInitialAndFinal().stream().filter(l -> l.getId().equals(locationId)).findAny();
         if(location.isEmpty())
-            Log.addWarning("No such location '%s' in component '%s'".formatted(locationId, parentComponent.getName()));
+            throw new NotFoundException("No such location '%s' in component '%s'".formatted(locationId, parentComponent.getName()));
         location.ifPresent(SelectHelper::select);
     }
 
     public static void selectSubComponent(Component parentComponent, String subcomponentId) {
         var subcomponent = parentComponent.getSubComponents().stream().filter(c -> c.getIdentifier().equals(subcomponentId)).findAny();
         if(subcomponent.isEmpty())
-            Log.addWarning("No such subcomponent '%s' in component '%s'".formatted(subcomponent, parentComponent.getName()));
+            throw new NotFoundException("No such subcomponent '%s' in component '%s'".formatted(subcomponent, parentComponent.getName()));
         subcomponent.ifPresent(SelectHelper::select);
     }
 
     public static void selectJork(Component parentComponent, String jorkId) {
         var jork = parentComponent.getJorks().stream().filter(c -> c.getId().equals(jorkId)).findAny();
         if(jork.isEmpty())
-            Log.addWarning("No such jork '%s' in component '%s'".formatted(jorkId, parentComponent.getName()));
+            throw new NotFoundException("No such jork '%s' in component '%s'".formatted(jorkId, parentComponent.getName()));
         jork.ifPresent(SelectHelper::select);
     }
 
     public static void selectEdge(Component parentComponent, String edgeId) {
         var edge = parentComponent.getEdges().stream().filter(c -> c.getUuid().equals(UUID.fromString(edgeId))).findAny();
         if(edge.isEmpty())
-            Log.addWarning("No such edge '%s' in component '%s'".formatted(edgeId, parentComponent.getName()));
+            throw new NotFoundException("No such edge '%s' in component '%s'".formatted(edgeId, parentComponent.getName()));
         edge.ifPresent(SelectHelper::select);
     }
 
