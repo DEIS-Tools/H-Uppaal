@@ -24,8 +24,8 @@ import java.net.URI;
 import java.util.Optional;
 
 public class LogTabPresentation extends HBox {
-    public LogTabController controller;
-    public boolean autoscroll, wordwrap;
+    public final LogTabController controller;
+    private boolean autoscroll, wordwrap;
     private final HyperlinkTextArea logArea;
     private VirtualizedScrollPane<HyperlinkTextArea> scrollPane;
     private int logAreaChangeEventListenerCounter = 0; // hack to avoid this insanity: https://stackoverflow.com/questions/14558266/clean-javafx-property-listeners-and-bindings-memory-leaks
@@ -34,7 +34,7 @@ public class LogTabPresentation extends HBox {
             return;
         Platform.runLater(this::scrollToLastLine);
     };
-    
+
     public LogTabPresentation(@NamedArg("textColor") String textColor) {
         controller = PresentationFxmlLoader.loadSetRoot("LogTabPresentation.fxml", this);
         wordwrap = true;
