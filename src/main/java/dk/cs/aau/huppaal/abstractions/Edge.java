@@ -596,29 +596,6 @@ public class Edge implements Serializable, Nearable {
         return getTargetCircular().toString();
     }
 
-    @Deprecated
-    private String generateNearStringOld() {
-        var result = "Edge";
-
-        if (getSourceLocation() != null) {
-            result += " from " + getSourceLocation().generateNearString();
-        } else if (getSourceJork() != null) {
-            result += " from " + getSourceJork().generateNearString();
-        } else {
-            result += " from " + getSourceCircular();
-        }
-
-        if (getTargetLocation() != null) {
-            result += " to " + getTargetLocation().generateNearString();
-        } else if (getTargetJork() != null) {
-            result += " to " + getTargetJork().generateNearString();
-        } else {
-            result += " to " + getTargetCircular();
-        }
-
-        return result;
-    }
-
     public enum PropertyType {
         NONE(-1),
         SELECTION(0),

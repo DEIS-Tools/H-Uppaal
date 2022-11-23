@@ -335,12 +335,15 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
     @Override
     public String generateNearString() {
         if(parent == null)
-            return generateNearStringOld();
-        return "[%s](location:%s/%s)".formatted(generateNearStringOld(), parent.getName(), getId());
+            return toString();
+        return "[%s](location:%s/%s)".formatted(toString(), parent.getName(), getId());
     }
 
-    private String generateNearStringOld() {
-        return (!Strings.isNullOrEmpty(getNickname()) ? (getNickname() + " (" + getId() + ")") : getId());
+    @Override
+    public String toString() {
+        if(Strings.isNullOrEmpty(getNickname()))
+            return getId();
+        return getNickname();
     }
 
     public enum Type {

@@ -113,11 +113,12 @@ public class Jork implements Serializable, Nearable, LocationAware {
     @Override
     public String generateNearString() {
         if(parent == null)
-            return generateNearStringOld();
-        return "[%s](jork:%s/%s)".formatted(generateNearStringOld(), parent.getName(), getId());
+            return toString();
+        return "[%s](jork:%s/%s)".formatted(toString(), parent.getName(), getId());
     }
 
-    private String generateNearStringOld() {
+    @Override
+    public String toString() {
         if (getType().equals(Type.FORK))
             return "Fork " + getId();
         return "Join " + getId();
