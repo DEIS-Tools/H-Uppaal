@@ -25,12 +25,10 @@ import com.jfoenix.controls.*;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
-import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.When;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -60,7 +58,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class HUPPAALController implements Initializable {
@@ -887,7 +884,7 @@ public class HUPPAALController implements Initializable {
             HUPPAAL.showToast("No run configuration is selected");
             return;
         }
-        executeRunConfiguration(c.runConfiguration().get());
+        executeRunConfigurationAsync(c.runConfiguration().get());
     }
 
     public Stage runConfigEditorWindow;
@@ -908,48 +905,52 @@ public class HUPPAALController implements Initializable {
 
     private final static String[] sysEnv = System.getenv().entrySet().stream().map((e) -> e.getKey() + "=" + e.getValue()).toArray(String[]::new);
     private Process proc;
-    private void executeRunConfiguration(RunConfiguration config) {
+    private void executeRunConfigurationAsync(RunConfiguration config) {
         // Stop the currently running process if it is running
         if(proc != null && proc.isAlive()) {
             proc.destroy();
             return;
         }
-
         // Else start the run configuration
-        new Thread(() -> {
-            try {
-                var rt = Runtime.getRuntime();
-                if(config.program.isEmpty())
-                    throw new Exception("No program to run in selected run configuration");
-                var dir = new File(config.executionDir);
-                if(!(dir.exists() && dir.isDirectory()))
-                    throw new Exception(String.format("'%s' does not exist or is not a directory", config.executionDir));
-                proc = rt.exec(config.program + " " + config.arguments,
-                        ArrayUtils.merge(sysEnv, config.environmentVariables.split(";")),
-                        dir);
-                var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-                var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-                runConfigurationExecuteButtonIcon.setIconLiteral("gmi-stop");
-                runConfigurationExecuteButtonIcon.setIconColor(Color.RED.getColor(Color.Intensity.I300));
-                String s;
-                while ((s = stdi.readLine()) != null)
-                    Log.addInfo(config.name, s);
-                while ((s = stde.readLine()) != null)
-                    Log.addError(config.name, s);
-                var exitCode = proc.waitFor();
-                var msg = config.name + " exited with code " + exitCode;
-                Log.addInfo(config.name, msg);
+        new Thread(() -> executeRunConfiguration(config)).start();
+    }
 
-                HUPPAAL.showToast(msg);
-            } catch (Exception e) {
-                Log.addError(e.getMessage());
-                HUPPAAL.showToast(e.getMessage());
-                e.printStackTrace();
-            } finally {
-                runConfigurationExecuteButtonIcon.setIconLiteral("gmi-play-arrow");
-                runConfigurationExecuteButtonIcon.setIconColor(javafx.scene.paint.Color.WHITE);
-            }
-        }).start();
+    private void executeRunConfiguration(RunConfiguration config) {
+        try {
+            if(config.program.isEmpty())
+                throw new Exception("No program to run in selected run configuration");
+            var dir = new File(config.executionDir);
+            if(!(dir.exists() && dir.isDirectory()))
+                throw new Exception("'%s' does not exist or is not a directory".formatted(config.executionDir));
+
+            proc = Runtime.getRuntime().exec(config.program + " " + config.arguments,
+                    ArrayUtils.merge(sysEnv, config.environmentVariables.split(";")),
+                    dir);
+            var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+
+            runConfigurationExecuteButtonIcon.setIconLiteral("gmi-stop");
+            runConfigurationExecuteButtonIcon.setIconColor(Color.RED.getColor(Color.Intensity.I300));
+
+            String s;
+            while ((s = stdi.readLine()) != null)
+                Log.addInfo(config.name, s);
+
+            while ((s = stde.readLine()) != null)
+                Log.addError(config.name, s);
+
+            var exitCode = proc.waitFor();
+            var msg = config.name + " exited with code " + exitCode;
+            Log.addInfo(config.name, msg);
+            HUPPAAL.showToast(msg);
+        } catch (Exception e) {
+            Log.addError(e.getMessage());
+            HUPPAAL.showToast(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            runConfigurationExecuteButtonIcon.setIconLiteral("gmi-play-arrow");
+            runConfigurationExecuteButtonIcon.setIconColor(javafx.scene.paint.Color.WHITE);
+        }
     }
 
     @FXML
