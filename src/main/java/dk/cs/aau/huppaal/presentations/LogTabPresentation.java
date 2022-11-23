@@ -130,13 +130,19 @@ public class LogTabPresentation extends HBox {
         });
 
         Tooltip.install(controller.wrapTextButton, new Tooltip("Toggle word wrap"));
-        controller.wrapTextButton.setOnMouseClicked(e -> {
-            wordwrap = !wordwrap;
-            setupWordWrap();
-        });
+        controller.wrapTextButton.setOnMouseClicked(e -> toggleWordwrap());
 
         Tooltip.install(controller.autoscrollLogButton, new Tooltip("Toggle autoscroll"));
         controller.autoscrollLogButton.setOnMouseClicked(e -> toggleAutoScroll());
+    }
+
+    private void toggleWordwrap() {
+        setWordwrap(!wordwrap);
+    }
+
+    private void setWordwrap(boolean value) {
+        wordwrap = value;
+        setupWordWrap();
     }
 
     private void toggleAutoScroll() {
