@@ -28,6 +28,13 @@ public class LogTabPresentation extends HBox {
     public boolean autoscroll, wordwrap;
     private final HyperlinkTextArea logArea;
     private VirtualizedScrollPane<HyperlinkTextArea> scrollPane;
+    private int logAreaChangeEventListenerCounter = 0; // hack to avoid this insanity: https://stackoverflow.com/questions/14558266/clean-javafx-property-listeners-and-bindings-memory-leaks
+    private final ChangeListener<String> logAreaChangeEventListener = (e,o,n) -> {
+        if(scrollPane == null)
+            return;
+        Platform.runLater(this::scrollToLastLine);
+    };
+    
     public LogTabPresentation(@NamedArg("textColor") String textColor) {
         controller = PresentationFxmlLoader.loadSetRoot("LogTabPresentation.fxml", this);
         wordwrap = true;
@@ -141,24 +148,31 @@ public class LogTabPresentation extends HBox {
         setupAutoscroll();
     }
 
-    private final ChangeListener<String> logAreaChangeEventListener = (e,o,n) -> {
-        if(scrollPane == null)
-            return;
-        Platform.runLater(this::scrollToLastLine);
-    };
-
     private void setupAutoscroll() {
         if(autoscroll) {
             controller.autoscrollLogButtonIcon.setIconLiteral("gmi-playlist-add-check");
             controller.autoscrollLogButton.setStyle("-fx-background-color: rgba(255,255,255,0.1)");
-            logArea.textProperty().addListener(logAreaChangeEventListener);
+            addLogAreaChangeEventListener();
             scrollToLastLine();
         } else {
             controller.autoscrollLogButtonIcon.setIconLiteral("gmi-playlist-play");
             controller.autoscrollLogButton.setStyle("");
-            logArea.textProperty().removeListener(logAreaChangeEventListener);
+            removeLogAreaChangeEventListener();
             scrollPane.estimatedScrollYProperty().unbind();
         }
+    }
+
+    private void addLogAreaChangeEventListener() {
+        if(logAreaChangeEventListenerCounter <= 0) {
+            logArea.textProperty().addListener(logAreaChangeEventListener);
+            logAreaChangeEventListenerCounter++;
+        }
+    }
+
+    private void removeLogAreaChangeEventListener() {
+        logArea.textProperty().removeListener(logAreaChangeEventListener);
+        if(--logAreaChangeEventListenerCounter < 0)
+            logAreaChangeEventListenerCounter = 0;
     }
 
     private void scrollToLastLine() {
