@@ -1,10 +1,10 @@
 package dk.cs.aau.huppaal.logging;
 
 import dk.cs.aau.huppaal.BuildConfig;
-import dk.cs.aau.huppaal.utility.FuncInterfaces.Runnable1;
 import javafx.application.Platform;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Logging framework for all your messaging needs. A log entry consists of:
@@ -23,7 +23,7 @@ public record Log(
 ) {
     public static final String DEFAULT_SERVICE = BuildConfig.NAME;
     public static final Map<String, List<Log>> logs = new HashMap<>();
-    private static final List<Runnable1<Log>> onLogAddedSubscribers = new ArrayList<>();
+    private static final List<Consumer<Log>> onLogAddedSubscribers = new ArrayList<>();
     private static final List<Runnable> onLogRemovedSubscribers = new ArrayList<>();
 
     public static void addError(String message) {
@@ -53,7 +53,7 @@ public record Log(
             logs.put(message.service(), new ArrayList<>());
         logs.get(message.service()).add(message);
         // Use runLater because the addLog might've been called from a thread that's not the main thread
-        onLogAddedSubscribers.forEach(r -> Platform.runLater(() -> r.run(message)));
+        onLogAddedSubscribers.forEach(r -> Platform.runLater(() -> r.accept(message)));
     }
     public static synchronized void clearAllLogs() {
         for(var l : logs.entrySet())
@@ -76,7 +76,7 @@ public record Log(
         // Use runLater because the clearLogs might've been called from a thread that's not the main thread
         onLogRemovedSubscribers.forEach(Platform::runLater);
     }
-    public static synchronized void addOnLogAddedListener(Runnable1<Log> r) {
+    public static synchronized void addOnLogAddedListener(Consumer<Log> r) {
         onLogAddedSubscribers.add(r);
     }
     public static synchronized void addOnLogRemovedListener(Runnable r) {
