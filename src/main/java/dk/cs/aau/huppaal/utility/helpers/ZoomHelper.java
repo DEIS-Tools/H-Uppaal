@@ -15,34 +15,23 @@ public class ZoomHelper {
         grid = newGrid;
     }
 
-    public static void zoomIn() {
-        double newScale = canvasPresentation.getScaleX();
-        double delta = 1.2;
-
+    public static void zoom(double delta) {
+        var newScale = canvasPresentation.getScaleX();
         newScale *= delta;
-
-        //Limit for zooming in
-        if(newScale > 8){
+        if(newScale > 8) //Limit for zooming in
             return;
-        }
-
+        if(newScale < 0.4) //Limit for zooming out
+            return;
         canvasPresentation.setScaleX(newScale);
         canvasPresentation.setScaleY(newScale);
     }
 
+    public static void zoomIn() {
+        zoom(1.2);
+    }
+
     public static void zoomOut() {
-        double newScale = canvasPresentation.getScaleX();
-        double delta = 1.2;
-
-        newScale /= delta;
-
-        //Limit for zooming out
-        if(newScale < 0.4){
-            return;
-        }
-
-        canvasPresentation.setScaleX(newScale);
-        canvasPresentation.setScaleY(newScale);
+        zoom(0.8);
     }
 
     public static void resetZoom() {
