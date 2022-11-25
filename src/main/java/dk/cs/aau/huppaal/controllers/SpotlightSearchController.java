@@ -52,19 +52,19 @@ public class SpotlightSearchController implements Initializable {
             var components = getComponentNames(searchTerm);
             for(var c : components) {
                 if(newLabels.size() < maxSearchSize)
-                    newLabels.add(new SpotlightSearchResultPresentation(c));
+                    newLabels.add(new SpotlightSearchResultPresentation(c).withClickEffect(this::closeStage));
             }
 
             var locations = getLocations(searchTerm);
             for (var l : locations) {
                 if(newLabels.size() < maxSearchSize)
-                    newLabels.add(new SpotlightSearchResultPresentation(l.getKey(), l.getValue()));
+                    newLabels.add(new SpotlightSearchResultPresentation(l.getKey(), l.getValue()).withClickEffect(this::closeStage));
             }
 
             var edges = getEdges(searchTerm);
             for (var e : edges) {
                 if(newLabels.size() < maxSearchSize)
-                    newLabels.add(new SpotlightSearchResultPresentation(e.getKey(), e.getValue()));
+                    newLabels.add(new SpotlightSearchResultPresentation(e.getKey(), e.getValue()).withClickEffect(this::closeStage));
             }
 
             Platform.runLater(() -> {
@@ -74,9 +74,15 @@ public class SpotlightSearchController implements Initializable {
         });
 
         searchTextField.setOnAction(e -> {
-            if(resultsBox.getChildren() != null && resultsBox.getChildren().size() > 0)
-                ((SpotlightSearchResultPresentation)resultsBox.getChildren().get(0)).click();
+            if(resultsBox.getChildren() != null && resultsBox.getChildren().size() > 0) {
+                ((SpotlightSearchResultPresentation) resultsBox.getChildren().get(0)).click();
+                closeStage();
+            }
         });
+    }
+
+    private void closeStage() {
+        HUPPAAL.toggleSearchModal.run();
     }
 
     private List<Component> getComponentNames(Pattern searchVal) {

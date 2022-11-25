@@ -10,7 +10,7 @@
          fx:controller="dk.cs.aau.huppaal.controllers.SpotlightSearchController">
     <VBox HBox.hgrow="ALWAYS">
         <HBox style="-fx-padding: 10 10 5 10" spacing="10">
-            <FontIcon iconLiteral="gmi-search" iconSize="22"/>
+            <FontIcon iconLiteral="gmi-search" iconSize="22" iconColor="darkgray"/>
             <JFXTextField fx:id="searchTextField" promptText="search regex or literal..." HBox.hgrow="ALWAYS"/>
         </HBox>
         <ScrollPane VBox.vgrow="ALWAYS" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" fitToWidth="true">

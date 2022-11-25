@@ -13,9 +13,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.Optional;
+
 
 public class SpotlightSearchResultPresentation extends HBox {
     private Runnable clickEvent;
+    private Optional<Runnable> onClickEffect = Optional.empty();
 
     public SpotlightSearchResultPresentation(Component parent, Edge edge) {
         this("gmi-near-me", Color.GREEN.getColor(Color.Intensity.I800), edge.generatePeakyString());
@@ -52,7 +55,7 @@ public class SpotlightSearchResultPresentation extends HBox {
         });
     }
 
-    public SpotlightSearchResultPresentation(String icon, javafx.scene.paint.Color iconColor, String name) {
+    private SpotlightSearchResultPresentation(String icon, javafx.scene.paint.Color iconColor, String name) {
         initializeIcon(icon, iconColor);
         initializeName(name);
         initializeHover();
@@ -99,5 +102,11 @@ public class SpotlightSearchResultPresentation extends HBox {
 
     public void click() {
         clickEvent.run();
+        onClickEffect.ifPresent(Runnable::run);
+    }
+
+    public SpotlightSearchResultPresentation withClickEffect(Runnable r) {
+        onClickEffect = Optional.ofNullable(r);
+        return this;
     }
 }

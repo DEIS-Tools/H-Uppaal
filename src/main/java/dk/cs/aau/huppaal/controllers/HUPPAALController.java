@@ -153,6 +153,7 @@ public class HUPPAALController implements Initializable {
     public FontIcon runConfigurationExecuteButtonIcon;
     public LogTabPresentation infoLog, warnLog, errLog;
     public Tab infoLogTab, warnLogTab, errLogTab;
+    public MenuItem menuBarViewSearch;
     private double tabPanePreviousY = 0;
     private boolean shouldISkipOpeningTheMessagesContainer = true;
 
@@ -619,6 +620,9 @@ public class HUPPAALController implements Initializable {
             var isOpen = HUPPAAL.toggleQueryPane();
             menuBarViewQueryPanel.getGraphic().opacityProperty().bind(new When(isOpen).then(1).otherwise(0));
         });
+
+        menuBarViewSearch.setAccelerator(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
+        menuBarViewSearch.setOnAction(event -> HUPPAAL.toggleSearchModal.run());
 
         menuBarHelpHelp.setOnAction(event -> HUPPAAL.showHelp());
 

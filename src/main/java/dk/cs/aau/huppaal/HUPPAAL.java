@@ -25,7 +25,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -58,7 +57,9 @@ public class HUPPAAL extends Application {
     private static Project project;
     private static HUPPAALPresentation presentation;
     public static SimpleStringProperty projectDirectory = new SimpleStringProperty();
-    private Stage debugStage, searchStage;
+    private Stage debugStage;
+    public Stage searchStage;
+    public static Runnable toggleSearchModal;
     private HBox searchBox;
 
     {
@@ -245,7 +246,7 @@ public class HUPPAAL extends Application {
             }
         }));
 
-        KeyboardTracker.registerKeybind("SPOTLIGHT_SEARCH", new Keybind(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), () -> {
+        toggleSearchModal = () -> {
             try {
                 if(searchStage == null) {
                     searchStage = new Stage();
@@ -272,7 +273,7 @@ public class HUPPAAL extends Application {
                 searchStage = null;
                 Log.addError(e.getMessage());
             }
-        }));
+        };
 
         stage.setOnCloseRequest(event -> {
             UPPAALDriverManager.getInstance().stopEngines();
