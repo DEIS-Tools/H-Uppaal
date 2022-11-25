@@ -14,7 +14,6 @@ import javafx.util.Pair;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
@@ -62,7 +61,7 @@ public class SpotlightSearchController implements Initializable {
                     newLabels.add(new SpotlightSearchResultPresentation(l.getKey(), l.getValue()));
             }
 
-            var edges = getEdgesBasedOnTags(searchTerm);
+            var edges = getEdges(searchTerm);
             for (var e : edges) {
                 if(newLabels.size() < maxSearchSize)
                     newLabels.add(new SpotlightSearchResultPresentation(e.getKey(), e.getValue()));
@@ -98,14 +97,17 @@ public class SpotlightSearchController implements Initializable {
                 .toList();
     }
 
-    private List<Pair<Component, Edge>> getEdgesBasedOnTags(Pattern searchVal) {
+    private List<Pair<Component, Edge>> getEdges(Pattern searchVal) {
         return HUPPAAL.getProject().getComponents().stream()
                 .map(c -> c.getEdges().stream()
                         .filter(e ->
                                 searchVal.matcher(e.getUpdate()).find() ||
                                 searchVal.matcher(e.getGuard()).find()  ||
                                 searchVal.matcher(e.getSelect()).find() ||
-                                searchVal.matcher(e.getSync()).find())
+                                searchVal.matcher(e.getSync()).find()   ||
+                                searchVal.matcher(e.getSourceLocation().getId()).find() ||
+                                searchVal.matcher(e.getTargetLocation().getId()).find()
+                        )
                         .map(e -> new Pair<>(c,e))
                         .toList())
                 .flatMap(List::stream)
