@@ -252,8 +252,8 @@ public class HUPPAAL extends Application {
                     searchBox = new HBox();
                     searchStage.initStyle(StageStyle.UNDECORATED);
                     searchStage.setScene(new Scene(PresentationFxmlLoader.loadSetRootGetElement("SpotlightSearchPresentation.fxml", searchBox),
-                            scene.getWidth() * 0.3,
-                            scene.getHeight() * 0.7));
+                            screen.getBounds().getWidth() * 0.4,
+                            screen.getBounds().getHeight() * 0.6));
                     searchStage.initModality(Modality.WINDOW_MODAL);
                     searchStage.initOwner(scene.getWindow());
                     searchStage.addEventHandler(KeyEvent.KEY_PRESSED, (t) -> {
@@ -269,6 +269,7 @@ public class HUPPAAL extends Application {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                searchStage = null;
                 Log.addError(e.getMessage());
             }
         }));

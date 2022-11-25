@@ -5,13 +5,9 @@ import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Component;
 import dk.cs.aau.huppaal.abstractions.Edge;
 import dk.cs.aau.huppaal.abstractions.Location;
-import dk.cs.aau.huppaal.logging.Log;
 import dk.cs.aau.huppaal.presentations.SpotlightSearchResultPresentation;
-import dk.cs.aau.huppaal.utility.helpers.SelectHelper;
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
@@ -21,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
 public class SpotlightSearchController implements Initializable {
     public HBox root;
@@ -46,7 +43,12 @@ public class SpotlightSearchController implements Initializable {
         searchTextField.textProperty().addListener((obs, oldValue, newValue) -> {
             int maxSearchSize = 100;
             var newLabels = new ArrayList<SpotlightSearchResultPresentation>();
-            var searchTerm = newValue.toLowerCase();
+            Pattern searchTerm;
+            try {
+                searchTerm = Pattern.compile(newValue, Pattern.CASE_INSENSITIVE);
+            } catch (Exception e) {
+                searchTerm = Pattern.compile(newValue, Pattern.CASE_INSENSITIVE | Pattern.LITERAL);
+            }
 
             var components = getComponentNames(searchTerm);
             for(var c : components) {
@@ -54,7 +56,7 @@ public class SpotlightSearchController implements Initializable {
                     newLabels.add(new SpotlightSearchResultPresentation(c));
             }
 
-            var locations = getLocationsBasedOnNicknames(searchTerm);
+            var locations = getLocations(searchTerm);
             for (var l : locations) {
                 if(newLabels.size() < maxSearchSize)
                     newLabels.add(new SpotlightSearchResultPresentation(l.getKey(), l.getValue()));
@@ -71,28 +73,39 @@ public class SpotlightSearchController implements Initializable {
                 resultsBox.getChildren().addAll(newLabels);
             });
         });
+
+        searchTextField.setOnAction(e -> {
+            if(resultsBox.getChildren() != null && resultsBox.getChildren().size() > 0)
+                ((SpotlightSearchResultPresentation)resultsBox.getChildren().get(0)).click();
+        });
     }
 
-    private List<Component> getComponentNames(String searchVal) {
-        if(searchVal.isEmpty())
-            return Collections.emptyList();
-        return HUPPAAL.getProject().getComponents().stream().filter(c -> c.getName().toLowerCase().contains(searchVal)).toList();
+    private List<Component> getComponentNames(Pattern searchVal) {
+        return HUPPAAL.getProject().getComponents().stream()
+                .filter(c -> searchVal.matcher(c.getName()).find())
+                .toList();
     }
 
-    private List<Pair<Component,Location>> getLocationsBasedOnNicknames(String searchVal) {
+    private List<Pair<Component,Location>> getLocations(Pattern searchVal) {
         return HUPPAAL.getProject().getComponents().stream()
                 .map(c -> c.getLocations().stream()
-                        .filter(l -> l.getNickname().toLowerCase().contains(searchVal))
+                        .filter(l ->
+                                searchVal.matcher(l.getId()).find() ||
+                                searchVal.matcher(l.getNickname()).find())
                         .map(l -> new Pair<>(c,l))
                         .toList())
                 .flatMap(List::stream)
                 .toList();
     }
 
-    private List<Pair<Component, Edge>> getEdgesBasedOnTags(String searchVal) {
+    private List<Pair<Component, Edge>> getEdgesBasedOnTags(Pattern searchVal) {
         return HUPPAAL.getProject().getComponents().stream()
                 .map(c -> c.getEdges().stream()
-                        .filter(e -> (e.getUpdate().toLowerCase().contains(searchVal) || e.getGuard().toLowerCase().contains(searchVal)))
+                        .filter(e ->
+                                searchVal.matcher(e.getUpdate()).find() ||
+                                searchVal.matcher(e.getGuard()).find()  ||
+                                searchVal.matcher(e.getSelect()).find() ||
+                                searchVal.matcher(e.getSync()).find())
                         .map(e -> new Pair<>(c,e))
                         .toList())
                 .flatMap(List::stream)

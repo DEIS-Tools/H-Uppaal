@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.control.Label?>
 <?import com.jfoenix.controls.JFXTextField?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <fx:root xmlns:fx="http://javafx.com/fxml/1"
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="HBox"
          fx:id="root"
          fx:controller="dk.cs.aau.huppaal.controllers.SpotlightSearchController">
     <VBox HBox.hgrow="ALWAYS">
-        <JFXTextField fx:id="searchTextField" promptText="search..."/>
-        <ScrollPane AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" fitToWidth="true">
-            <VBox fx:id="resultsBox">
-                <Label text="Search for anything"/>
-            </VBox>
+        <HBox style="-fx-padding: 10 10 5 10" spacing="10">
+            <FontIcon iconLiteral="gmi-search" iconSize="22"/>
+            <JFXTextField fx:id="searchTextField" promptText="search regex or literal..." HBox.hgrow="ALWAYS"/>
+        </HBox>
+        <ScrollPane VBox.vgrow="ALWAYS" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" fitToWidth="true">
+            <VBox fx:id="resultsBox"/>
         </ScrollPane>
     </VBox>
 </fx:root>
