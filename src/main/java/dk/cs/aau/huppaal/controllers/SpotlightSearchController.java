@@ -74,10 +74,8 @@ public class SpotlightSearchController implements Initializable {
         });
 
         searchTextField.setOnAction(e -> {
-            if(resultsBox.getChildren() != null && resultsBox.getChildren().size() > 0) {
+            if(resultsBox.getChildren() != null && resultsBox.getChildren().size() > 0)
                 ((SpotlightSearchResultPresentation) resultsBox.getChildren().get(0)).click();
-                closeStage();
-            }
         });
     }
 
@@ -106,17 +104,23 @@ public class SpotlightSearchController implements Initializable {
     private List<Pair<Component, Edge>> getEdges(Pattern searchVal) {
         return HUPPAAL.getProject().getComponents().stream()
                 .map(c -> c.getEdges().stream()
-                        .filter(e ->
-                                searchVal.matcher(e.getUpdate()).find() ||
-                                searchVal.matcher(e.getGuard()).find()  ||
-                                searchVal.matcher(e.getSelect()).find() ||
-                                searchVal.matcher(e.getSync()).find()   ||
-                                searchVal.matcher(e.getSourceLocation().getId()).find() ||
-                                searchVal.matcher(e.getTargetLocation().getId()).find()
-                        )
+                        .filter(e -> searchVal.matcher(e.getUpdate()).find() ||
+                                     searchVal.matcher(e.getGuard()).find() ||
+                                     searchVal.matcher(e.getSelect()).find() ||
+                                     searchVal.matcher(e.getSync()).find() ||
+                                     matchesEdgeSourceOrTarget(e, searchVal))
                         .map(e -> new Pair<>(c,e))
                         .toList())
                 .flatMap(List::stream)
                 .toList();
+    }
+
+    private boolean matchesEdgeSourceOrTarget(Edge e, Pattern searchVal) {
+        return (e.getSourceLocation() != null && searchVal.matcher(e.getSourceLocation().getId()).find()) ||
+               (e.getTargetLocation() != null && searchVal.matcher(e.getTargetLocation().getId()).find()) ||
+               (e.getSourceJork() != null && searchVal.matcher(e.getSourceJork().getId()).find()) ||
+               (e.getTargetJork() != null && searchVal.matcher(e.getTargetJork().getId()).find()) ||
+               (e.getSourceSubComponent() != null && searchVal.matcher(e.getSourceSubComponent().getIdentifier()).find()) ||
+               (e.getTargetSubComponent() != null && searchVal.matcher(e.getTargetSubComponent().getIdentifier()).find());
     }
 }

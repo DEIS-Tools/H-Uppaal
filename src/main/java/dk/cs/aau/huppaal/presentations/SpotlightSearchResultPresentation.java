@@ -17,8 +17,8 @@ import java.util.Optional;
 
 
 public class SpotlightSearchResultPresentation extends HBox {
-    private Runnable clickEvent;
-    private Optional<Runnable> onClickEffect = Optional.empty();
+    private Runnable clickEvent = () -> {};
+    private Runnable onClickEffect = () -> {};
 
     public SpotlightSearchResultPresentation(Component parent, Edge edge) {
         this("gmi-near-me", Color.GREEN.getColor(Color.Intensity.I800), edge.generatePeakyString());
@@ -27,10 +27,6 @@ public class SpotlightSearchResultPresentation extends HBox {
             SelectHelper.selectComponent(parent.getName());
             SelectHelper.select(edge);
         };
-        setOnMouseClicked((e) -> {
-            if(e.getClickCount() >= 2)
-                click();
-        });
     }
 
     public SpotlightSearchResultPresentation(Component parent, Location location) {
@@ -40,19 +36,11 @@ public class SpotlightSearchResultPresentation extends HBox {
             SelectHelper.selectComponent(parent.getName());
             SelectHelper.select(location);
         };
-        setOnMouseClicked((e) -> {
-            if(e.getClickCount() >= 2)
-                click();
-        });
     }
 
     public SpotlightSearchResultPresentation(Component component) {
         this("gmi-branding-watermark", Color.BLUE.getColor(Color.Intensity.I800), component.getName());
         this.clickEvent = () -> SelectHelper.selectComponent(component.getName());
-        setOnMouseClicked((e) -> {
-            if(e.getClickCount() >= 2)
-                click();
-        });
     }
 
     private SpotlightSearchResultPresentation(String icon, javafx.scene.paint.Color iconColor, String name) {
@@ -60,12 +48,12 @@ public class SpotlightSearchResultPresentation extends HBox {
         initializeName(name);
         initializeHover();
         initializeSpacing();
+        initializeClickEvent();
     }
 
     private void initializeIcon(String icon, javafx.scene.paint.Color color) {
-        var fi = new FontIcon();
+        var fi = new FontIcon(icon);
         fi.setIconSize(15);
-        fi.setIconLiteral(icon);
         fi.setIconColor(color);
         getChildren().add(fi);
     }
@@ -100,13 +88,17 @@ public class SpotlightSearchResultPresentation extends HBox {
         getChildren().add(l);
     }
 
+    private void initializeClickEvent() {
+        setOnMouseClicked((e) -> click());
+    }
+
     public void click() {
         clickEvent.run();
-        onClickEffect.ifPresent(Runnable::run);
+        onClickEffect.run();
     }
 
     public SpotlightSearchResultPresentation withClickEffect(Runnable r) {
-        onClickEffect = Optional.ofNullable(r);
+        onClickEffect = r;
         return this;
     }
 }
