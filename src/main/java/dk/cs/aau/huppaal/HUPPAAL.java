@@ -7,9 +7,11 @@ import dk.cs.aau.huppaal.backend.UPPAALDriverManager;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.controllers.CanvasController;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
+import dk.cs.aau.huppaal.logging.Log;
 import dk.cs.aau.huppaal.presentations.BackgroundThreadPresentation;
 import dk.cs.aau.huppaal.presentations.HUPPAALPresentation;
 import dk.cs.aau.huppaal.presentations.UndoRedoHistoryPresentation;
+import dk.cs.aau.huppaal.presentations.util.PresentationFxmlLoader;
 import dk.cs.aau.huppaal.utility.keyboard.Keybind;
 import dk.cs.aau.huppaal.utility.keyboard.KeyboardTracker;
 import com.google.common.io.Files;
@@ -23,11 +25,15 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
 import jiconfont.javafx.IconFontFX;
 import org.apache.commons.io.FileUtils;
@@ -35,14 +41,12 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 
 public class HUPPAAL extends Application {
 
@@ -54,7 +58,8 @@ public class HUPPAAL extends Application {
     private static Project project;
     private static HUPPAALPresentation presentation;
     public static SimpleStringProperty projectDirectory = new SimpleStringProperty();
-    private Stage debugStage;
+    private Stage debugStage, searchStage;
+    private HBox searchBox;
 
     {
         try {
@@ -237,6 +242,34 @@ public class HUPPAAL extends Application {
                 //stage.requestFocus();
             } catch (final Exception e) {
                 e.printStackTrace();
+            }
+        }));
+
+        KeyboardTracker.registerKeybind("SPOTLIGHT_SEARCH", new Keybind(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), () -> {
+            try {
+                if(searchStage == null) {
+                    searchStage = new Stage();
+                    searchBox = new HBox();
+                    searchStage.initStyle(StageStyle.UNDECORATED);
+                    searchStage.setScene(new Scene(PresentationFxmlLoader.loadSetRootGetElement("SpotlightSearchPresentation.fxml", searchBox),
+                            scene.getWidth() * 0.3,
+                            scene.getHeight() * 0.7));
+                    searchStage.initModality(Modality.WINDOW_MODAL);
+                    searchStage.initOwner(scene.getWindow());
+                    searchStage.addEventHandler(KeyEvent.KEY_PRESSED, (t) -> {
+                        if(t.getCode()==KeyCode.ESCAPE && searchStage.isShowing())
+                            searchStage.close();
+                    });
+                }
+                if(searchStage.isShowing())
+                    searchStage.close();
+                else {
+                    searchStage.show();
+                    searchBox.requestFocus();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.addError(e.getMessage());
             }
         }));
 

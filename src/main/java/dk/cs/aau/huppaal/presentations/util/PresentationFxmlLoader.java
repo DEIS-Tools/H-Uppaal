@@ -5,29 +5,28 @@ import javafx.fxml.JavaFXBuilderFactory;
 
 
 public class PresentationFxmlLoader {
-    public static <T,R> R load(String resource, T that) {
+    public static <R> R load(String resource) {
+        return load("../" + resource, PresentationFxmlLoader.class);
+    }
+    public static <T,R> R load(String resource, Class<T> clazz) {
         try {
-            var url = that.getClass().getResource(resource);
-            var fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(url);
-            fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
-            fxmlLoader.load(url.openStream());
-            return fxmlLoader.getController();
+            var url = clazz.getResource(resource);
+            if(url == null)
+                throw new NullPointerException("Could not find resource: '%s'".formatted(resource));
+            return FXMLLoader.load(url);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
     }
 
-    public static <T,R> R loadSetRoot(String resource, T that) {
-        return loadSetRoot(resource, that, that);
-    }
-
-    public static <T,R> R loadSetRoot(String resource, T that, T root) {
+    public static <T,R> R loadSetRoot(String resource, T root) {
         try {
-            var url = that.getClass().getResource(resource);
+            var url = PresentationFxmlLoader.class.getResource("../" + resource);
+            if(url == null)
+                throw new NullPointerException("Could not find resource: '%s'".formatted(resource));
             var fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(url);
             fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
+            fxmlLoader.setLocation(url);
             fxmlLoader.setRoot(root);
             fxmlLoader.load(url.openStream());
             return fxmlLoader.getController();
@@ -36,4 +35,18 @@ public class PresentationFxmlLoader {
         }
     }
 
+    public static <T,R> R loadSetRootGetElement(String resource, T root) {
+        try {
+            var url = PresentationFxmlLoader.class.getResource("../" + resource);
+            if(url == null)
+                throw new NullPointerException("Could not find resource: '%s'".formatted(resource));
+            var fxmlLoader = new FXMLLoader();
+            fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
+            fxmlLoader.setLocation(url);
+            fxmlLoader.setRoot(root);
+            return fxmlLoader.load(url.openStream());
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }

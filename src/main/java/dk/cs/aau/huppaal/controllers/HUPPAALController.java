@@ -324,7 +324,7 @@ public class HUPPAALController implements Initializable {
             }
         });
         tabPane.getSelectionModel().selectedItemProperty().addListener((e,o,n) -> {
-            if(n == null)
+            if(n == null || n.getGraphic() == null)
                 return;
             ((FontIcon) n.getGraphic()).setIconColor(javafx.scene.paint.Color.WHITE);
         });
