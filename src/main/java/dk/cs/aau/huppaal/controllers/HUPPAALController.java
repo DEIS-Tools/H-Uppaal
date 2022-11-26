@@ -6,6 +6,8 @@ import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.*;
 import dk.cs.aau.huppaal.backend.*;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
+import dk.cs.aau.huppaal.logging.Log;
+import dk.cs.aau.huppaal.logging.LogLevel;
 import dk.cs.aau.huppaal.presentations.*;
 import dk.cs.aau.huppaal.runconfig.RunConfiguration;
 import dk.cs.aau.huppaal.runconfig.RunConfigurationButton;
@@ -21,6 +23,7 @@ import dk.cs.aau.huppaal.utility.keyboard.NudgeDirection;
 import dk.cs.aau.huppaal.utility.keyboard.Nudgeable;
 import com.jfoenix.controls.*;
 import javafx.animation.Interpolator;
+import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
 import javafx.application.Platform;
 import javafx.beans.binding.When;
@@ -55,7 +58,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class HUPPAALController implements Initializable {
@@ -149,7 +151,8 @@ public class HUPPAALController implements Initializable {
     private static Text _queryTextResult;
     private static Text _queryTextQuery;
     public FontIcon runConfigurationExecuteButtonIcon;
-
+    public LogTabPresentation infoLog, warnLog, errLog;
+    public Tab infoLogTab, warnLogTab, errLogTab;
     private double tabPanePreviousY = 0;
     private boolean shouldISkipOpeningTheMessagesContainer = true;
 
@@ -260,8 +263,12 @@ public class HUPPAALController implements Initializable {
         initializeNoMainComponentError();
         initializeUppaalFileNotFoundWarning();
         initializeGenerateUppaalButton();
+        initializeLogTabs();
 
         ZoomHelper.setCanvas(canvas);
+
+        initializeNotificationJumpTransition();
+        initializeLogTabNotifications();
     }
 
     private void initializeGenerateUppaalButton() {
@@ -270,6 +277,72 @@ public class HUPPAALController implements Initializable {
             JFXTooltip.install(generateUppaalModel, new JFXTooltip("The UPPAAL server file does not exist"));
         else
             initializeReachabilityAnalysisThread();
+    }
+
+    private ScaleTransition infoIconJumpTransition, warnIconJumpTransition, errorIconJumpTransition;
+
+    private void initializeNotificationJumpTransition() {
+        infoIconJumpTransition = createNotificationJumpTransition();
+        infoIconJumpTransition.setNode(infoLogTab.getGraphic());
+        warnIconJumpTransition = createNotificationJumpTransition();
+        warnIconJumpTransition.setNode(warnLogTab.getGraphic());
+        errorIconJumpTransition = createNotificationJumpTransition();
+        errorIconJumpTransition.setNode(errLogTab.getGraphic());
+    }
+
+    private ScaleTransition createNotificationJumpTransition() {
+        var notificationJumpTransition = new ScaleTransition();
+        notificationJumpTransition.interpolatorProperty().set(Interpolator.SPLINE(.87, .13, .62, .32));
+        notificationJumpTransition.setDuration(new Duration(200));
+        notificationJumpTransition.setFromX(1);
+        notificationJumpTransition.setFromY(1);
+        notificationJumpTransition.setByX(1.15);
+        notificationJumpTransition.setByY(1.15);
+        notificationJumpTransition.setAutoReverse(true);
+        notificationJumpTransition.setCycleCount(2);
+        return notificationJumpTransition;
+    }
+
+    private void initializeLogTabNotifications() {
+        Log.addOnLogAddedListener(log -> {
+            var selectedTab = Optional.ofNullable(tabPane.getSelectionModel().selectedItemProperty().get());
+            Optional<Tab> tabToChange = switch (log.level()) {
+                case Information -> Optional.of(infoLogTab);
+                case Warning -> Optional.of(warnLogTab);
+                case Error -> Optional.of(errLogTab);
+                default -> Optional.empty();
+            };
+            if(tabToChange.isEmpty())
+                return;
+            if(selectedTab.isEmpty() || selectedTab.get() != tabToChange.get()) {
+                ((FontIcon) tabToChange.get().getGraphic()).setIconColor(Color.YELLOW.getColor(Color.Intensity.I800));
+                switch (log.level()) {
+                    case Information -> infoIconJumpTransition.play();
+                    case Warning -> warnIconJumpTransition.play();
+                    case Error -> errorIconJumpTransition.play();
+                }
+            }
+        });
+        tabPane.getSelectionModel().selectedItemProperty().addListener((e,o,n) -> {
+            if(n == null)
+                return;
+            ((FontIcon) n.getGraphic()).setIconColor(javafx.scene.paint.Color.WHITE);
+        });
+    }
+
+    private void initializeLogTabs() {
+        infoLog.controller.level = LogLevel.Information;
+        warnLog.controller.level = LogLevel.Warning;
+        errLog.controller.level  = LogLevel.Error;
+        infoLogTab.setGraphic(createLogTabIcon("gmi-info", javafx.scene.paint.Color.WHITE));
+        warnLogTab.setGraphic(createLogTabIcon("gmi-warning", javafx.scene.paint.Color.WHITE));
+        errLogTab.setGraphic(createLogTabIcon("gmi-error", javafx.scene.paint.Color.WHITE));
+    }
+
+    private FontIcon createLogTabIcon(String iconName, javafx.scene.paint.Color color) {
+        var i = new FontIcon(iconName);
+        i.setIconColor(color);
+        return i;
     }
 
     private void initializeReachabilityAnalysisThread() {
@@ -350,9 +423,10 @@ public class HUPPAALController implements Initializable {
 
                 } catch (final BackendException e) {
                     // Something went wrong with creating the document
+                    Log.addError(e.getMessage());
                     e.printStackTrace();
-                } catch (final Exception ignored) {
-                    // The main component is null. Ignore.
+                } catch (final Exception e) {
+                    Log.addError(e.getMessage());
                 }
             }
         }).start();
@@ -405,7 +479,7 @@ public class HUPPAALController implements Initializable {
 
     private void initializeUppaalFileNotFoundWarning() {
         var uppaalNotFoundMessage = new CodeAnalysis.Message("Please set the UPPAAL server location through the 'Preferences' tab.\n" +
-                "Make sure to have UPPAAL installed. This can be done at uppaal.org", CodeAnalysis.MessageType.WARNING);
+                "Make sure to have UPPAAL installed. This can be done at [uppaal.org](generic:https://www.uppaal.org)", CodeAnalysis.MessageType.WARNING);
         UPPAALDriverManager.getUppalFilePathProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue.equals("dummy"))
                 CodeAnalysis.addMessage(null, uppaalNotFoundMessage);
@@ -810,7 +884,7 @@ public class HUPPAALController implements Initializable {
             HUPPAAL.showToast("No run configuration is selected");
             return;
         }
-        executeRunConfiguration(c.runConfiguration().get());
+        executeRunConfigurationAsync(c.runConfiguration().get());
     }
 
     public Stage runConfigEditorWindow;
@@ -831,47 +905,51 @@ public class HUPPAALController implements Initializable {
 
     private final static String[] sysEnv = System.getenv().entrySet().stream().map((e) -> e.getKey() + "=" + e.getValue()).toArray(String[]::new);
     private Process proc;
-    private void executeRunConfiguration(RunConfiguration config) {
+    private void executeRunConfigurationAsync(RunConfiguration config) {
         // Stop the currently running process if it is running
         if(proc != null && proc.isAlive()) {
             proc.destroy();
             return;
         }
-
         // Else start the run configuration
-        new Thread(() -> {
-            try {
-                var rt = Runtime.getRuntime();
-                if(config.program.isEmpty())
-                    throw new Exception("No program to run in selected run configuration");
-                var dir = new File(config.executionDir);
-                if(!(dir.exists() && dir.isDirectory()))
-                    throw new Exception(String.format("'%s' does not exist or is not a directory", config.executionDir));
-                proc = rt.exec(config.program + " " + config.arguments,
-                        ArrayUtils.merge(sysEnv, config.environmentVariables.split(";")),
-                        dir);
-                var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-                var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-                runConfigurationExecuteButtonIcon.setIconLiteral("gmi-stop");
-                runConfigurationExecuteButtonIcon.setIconColor(Color.RED.getColor(Color.Intensity.I300));
-                String s;
-                while((s = stdi.readLine()) != null) {
-                    var finalS = s;
-                    Platform.runLater(() -> CodeAnalysis.addMessage(finalS));
-                }
-                while((s = stde.readLine()) != null) {
-                    var finalS = s;
-                    Platform.runLater(() -> CodeAnalysis.addMessage(new CodeAnalysis.Message(finalS, CodeAnalysis.MessageType.ERROR)));
-                }
-                HUPPAAL.showToast(config.name + " finished("+proc.exitValue()+")");
-            } catch (Exception e) {
-                HUPPAAL.showToast(e.getMessage());
-                e.printStackTrace();
-            } finally {
-                runConfigurationExecuteButtonIcon.setIconLiteral("gmi-play-arrow");
-                runConfigurationExecuteButtonIcon.setIconColor(javafx.scene.paint.Color.WHITE);
-            }
-        }).start();
+        new Thread(() -> executeRunConfiguration(config)).start();
+    }
+
+    private void executeRunConfiguration(RunConfiguration config) {
+        try {
+            if(config.program.isEmpty())
+                throw new Exception("No program to run in selected run configuration");
+            var dir = new File(config.executionDir);
+            if(!(dir.exists() && dir.isDirectory()))
+                throw new Exception("'%s' does not exist or is not a directory".formatted(config.executionDir));
+
+            proc = Runtime.getRuntime().exec(config.program + " " + config.arguments,
+                    ArrayUtils.merge(sysEnv, config.environmentVariables.split(";")),
+                    dir);
+            var stdi = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            var stde = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+
+            runConfigurationExecuteButtonIcon.setIconLiteral("gmi-stop");
+            runConfigurationExecuteButtonIcon.setIconColor(Color.RED.getColor(Color.Intensity.I300));
+
+            String s;
+            while ((s = stdi.readLine()) != null)
+                Log.addInfo(config.name, s);
+
+            while ((s = stde.readLine()) != null)
+                Log.addError(config.name, s);
+
+            var exitCode = proc.waitFor();
+            var msg = config.name + " exited with code " + exitCode;
+            Log.addInfo(config.name, msg);
+            HUPPAAL.showToast(msg);
+        } catch (Exception e) {
+            Log.addError(e.getMessage());
+            HUPPAAL.showToast(e.getMessage());
+        } finally {
+            runConfigurationExecuteButtonIcon.setIconLiteral("gmi-play-arrow");
+            runConfigurationExecuteButtonIcon.setIconColor(javafx.scene.paint.Color.WHITE);
+        }
     }
 
     @FXML

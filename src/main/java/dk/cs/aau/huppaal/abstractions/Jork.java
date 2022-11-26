@@ -24,9 +24,11 @@ public class Jork implements Serializable, Nearable, LocationAware {
     // Styling properties
     private final DoubleProperty x = new SimpleDoubleProperty(0d);
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
+    private final Component parent;
 
-    public Jork(final Type type) {
+    public Jork(final Type type, Component parent) {
         setType(type);
+        this.parent = parent;
 
         if (type.equals(Type.JOIN)) {
             setId("J" + idGenerator.incrementAndGet());
@@ -35,8 +37,9 @@ public class Jork implements Serializable, Nearable, LocationAware {
         }
     }
 
-    public Jork(final JsonObject jsonObject) {
+    public Jork(final JsonObject jsonObject, Component parent) {
         deserialize(jsonObject);
+        this.parent = parent;
     }
 
     public String getId() {
@@ -109,17 +112,16 @@ public class Jork implements Serializable, Nearable, LocationAware {
 
     @Override
     public String generateNearString() {
-        String result = "";
+        if(parent == null)
+            return toString();
+        return "[%s](jork:%s/%s)".formatted(toString(), parent.getName(), getId());
+    }
 
-        if (getType().equals(Type.FORK)) {
-            result += "Fork ";
-        } else {
-            result += "Join ";
-        }
-
-        result += getId();
-
-        return result;
+    @Override
+    public String toString() {
+        if (getType().equals(Type.FORK))
+            return "Fork " + getId();
+        return "Join " + getId();
     }
 
     public enum Type {

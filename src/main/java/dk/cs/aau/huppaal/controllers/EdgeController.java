@@ -780,11 +780,11 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
 
                 //Create the new edge with the same source as the old edge
                 if(source instanceof Location) {
-                    newEdge = new Edge((Location) source);
+                    newEdge = new Edge((Location) source, component.get());
                 } else if (source instanceof Jork) {
-                    newEdge = new Edge((Jork) source);
+                    newEdge = new Edge((Jork) source, component.get());
                 } else {
-                    newEdge = new Edge((SubComponent) source);
+                    newEdge = new Edge((SubComponent) source, component.get());
                 }
 
                 KeyboardTracker.registerKeybind(KeyboardTracker.ABANDON_EDGE, new Keybind(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
@@ -819,11 +819,11 @@ public class EdgeController implements Initializable, SelectHelper.ItemSelectabl
 
                 //Create the new edge with the same source as the old edge
                 if(source instanceof Location) {
-                    newEdge = new Edge((Location) source);
+                    newEdge = new Edge((Location) source, component.get());
                 } else if (source instanceof Jork) {
-                    newEdge = new Edge((Jork) source);
+                    newEdge = new Edge((Jork) source, component.get());
                 } else {
-                    newEdge = new Edge((SubComponent) source);
+                    newEdge = new Edge((SubComponent) source, component.get());
                 }
 
                 //Set the source to a new MouseCircular, which will follow the mouse and handle setting the new source

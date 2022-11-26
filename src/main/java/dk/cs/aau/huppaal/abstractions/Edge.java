@@ -13,12 +13,13 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static dk.cs.aau.huppaal.presentations.CanvasPresentation.GRID_SIZE;
 
 public class Edge implements Serializable, Nearable {
-
+    private static final String UUID = "uuid";
     private static final String SOURCE_LOCATION = "source_location";
     private static final String TARGET_LOCATION = "target_location";
     private static final String SOURCE_SUB_COMPONENT = "source_sub_component";
@@ -32,6 +33,7 @@ public class Edge implements Serializable, Nearable {
     private static final String NAILS = "nails";
 
     // Verification properties
+    private UUID uuid = java.util.UUID.randomUUID();
     private final ObjectProperty<Location> sourceLocation = new SimpleObjectProperty<>();
     private final ObjectProperty<Location> targetLocation = new SimpleObjectProperty<>();
     private final ObjectProperty<SubComponent> sourceSubComponent = new SimpleObjectProperty<>();
@@ -53,23 +55,29 @@ public class Edge implements Serializable, Nearable {
     private ObjectProperty<Circular> sourceCircular = new SimpleObjectProperty<>();
     private ObjectProperty<Circular> targetCircular = new SimpleObjectProperty<>();
 
-    public Edge(final Location sourceLocation) {
+    private final Component parent;
+
+    public Edge(final Location sourceLocation, Component parent) {
         setSourceLocation(sourceLocation);
+        this.parent = parent;
         bindReachabilityAnalysis();
     }
 
-    public Edge(final SubComponent sourceComponent) {
+    public Edge(final SubComponent sourceComponent, Component parent) {
         setSourceSubComponent(sourceComponent);
+        this.parent = parent;
         bindReachabilityAnalysis();
     }
 
-    public Edge(final Jork sourceJork) {
+    public Edge(final Jork sourceJork, Component parent) {
         setSourceJork(sourceJork);
+        this.parent = parent;
         bindReachabilityAnalysis();
     }
 
     public Edge(final JsonObject jsonObject, final Component component) {
         deserialize(jsonObject, component);
+        this.parent = component;
         bindReachabilityAnalysis();
     }
 
@@ -109,6 +117,10 @@ public class Edge implements Serializable, Nearable {
 
     public StringProperty selectProperty() {
         return select;
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 
     public String getGuard() {
@@ -466,6 +478,7 @@ public class Edge implements Serializable, Nearable {
     public JsonObject serialize() {
         final JsonObject result = new JsonObject();
 
+        result.addProperty(UUID, uuid.toString());
         if (getSourceLocation() != null) {
             result.addProperty(SOURCE_LOCATION, getSourceLocation().getId());
         }
@@ -505,6 +518,9 @@ public class Edge implements Serializable, Nearable {
         // Find the initial and final location of the component of the edge
         final Location initialLocation = component.getInitialLocation();
         final Location finalLocation = component.getFinalLocation();
+
+        if(json.has(UUID))
+            uuid = java.util.UUID.fromString(json.get(UUID).getAsJsonPrimitive().getAsString());
 
         // Sets a location to be either source or target location if the location matches the json content
         final Consumer<Location> setFromAndToLocationIfMatches = (location) -> {
@@ -557,25 +573,27 @@ public class Edge implements Serializable, Nearable {
 
     @Override
     public String generateNearString() {
-        String result = "Edge";
+        return "[%s](edge:%s/%s)".formatted(generateFromToString(), parent.getName(), uuid.toString());
+    }
 
-        if (getSourceLocation() != null) {
-            result += " from " + getSourceLocation().generateNearString();
-        } else if (getSourceJork() != null) {
-            result += " from " + getSourceJork().generateNearString();
-        } else {
-            result += " from " + getSourceCircular();
-        }
+    private String generateFromToString() {
+        return "%s -> %s".formatted(getSourceName(), getTargetName());
+    }
 
-        if (getTargetLocation() != null) {
-            result += " to " + getTargetLocation().generateNearString();
-        } else if (getTargetJork() != null) {
-            result += " to " + getTargetJork().generateNearString();
-        } else {
-            result += " to " + getTargetCircular();
-        }
+    private String getSourceName() {
+        if(getSourceLocation() != null)
+            return getSourceLocation().getId();
+        if(getSourceJork() != null)
+            return getSourceJork().getId();
+        return getSourceCircular().toString();
+    }
 
-        return result;
+    private String getTargetName() {
+        if(getTargetLocation() != null)
+            return getTargetLocation().getId();
+        if (getTargetJork() != null)
+            return getTargetJork().getId();
+        return getTargetCircular().toString();
     }
 
     public enum PropertyType {

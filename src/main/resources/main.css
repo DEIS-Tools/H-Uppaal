@@ -271,3 +271,38 @@
 	-fx-border-width: 1;
 	-fx-border-radius: 5;
 }
+
+
+.light-text {
+	-fx-fill: white;
+}
+
+.hoverbutton {
+	-fx-background-radius: 5;
+	-fx-padding: 3 3 3 3;
+}
+
+.hoverbutton:hover {
+	-fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.log-text {
+	-fx-font-family: "Roboto Mono Medium";
+	-fx-font-size: 13.0;
+	-fx-background-color: #323738;
+	-fx-padding: 8;
+}
+
+.log-toolbar {
+	-fx-background-color: #334850;
+}
+
+.log-text-entry {
+	-fx-text-fill: white;
+	-fx-fill: white;
+}
+
+.hyperlink {
+	-fx-text-fill: #ffa86c;
+	-fx-fill: #ffa86c;
+}

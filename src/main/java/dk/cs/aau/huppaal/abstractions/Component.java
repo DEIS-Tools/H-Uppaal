@@ -95,14 +95,14 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         }
 
         // A component must have at least one initial location
-        final Location initialLocation = new Location();
+        final Location initialLocation = new Location(this);
         initialLocation.setType(Location.Type.INITIAL);
         initialLocation.setColorIntensity(getColorIntensity());
         initialLocation.setColor(getColor());
         this.initialLocation.set(initialLocation);
 
         // A component must have at least one final location
-        final Location finalLocation = new Location();
+        final Location finalLocation = new Location(this);
         finalLocation.setType(Location.Type.FINAl);
         finalLocation.setColorIntensity(getColorIntensity());
         finalLocation.setColor(getColor());
@@ -490,23 +490,23 @@ public class Component implements Serializable, DropDownMenu.HasColor {
         setDeclarations(json.getAsJsonPrimitive(DECLARATIONS).getAsString());
 
         json.getAsJsonArray(LOCATIONS).forEach(jsonElement -> {
-            final Location newLocation = new Location((JsonObject) jsonElement);
+            final Location newLocation = new Location((JsonObject) jsonElement, this);
             locations.add(newLocation);
         });
 
-        final Location newInitialLocation = new Location(json.getAsJsonObject(INITIAL_LOCATION));
+        final Location newInitialLocation = new Location(json.getAsJsonObject(INITIAL_LOCATION), this);
         setInitialLocation(newInitialLocation);
 
-        final Location newFinalLocation = new Location(json.getAsJsonObject(FINAL_LOCATION));
+        final Location newFinalLocation = new Location(json.getAsJsonObject(FINAL_LOCATION), this);
         setFinalLocation(newFinalLocation);
 
         json.getAsJsonArray(JORKS).forEach(jsonElement -> {
-            final Jork newJork = new Jork((JsonObject) jsonElement);
+            final Jork newJork = new Jork((JsonObject) jsonElement, this);
             jorks.add(newJork);
         });
 
         json.getAsJsonArray(SUBCOMPONENTS).forEach(jsonElement -> {
-            final SubComponent newSubComponent = new SubComponent((JsonObject) jsonElement);
+            final SubComponent newSubComponent = new SubComponent((JsonObject) jsonElement, this);
             subComponents.add(newSubComponent);
         });
 

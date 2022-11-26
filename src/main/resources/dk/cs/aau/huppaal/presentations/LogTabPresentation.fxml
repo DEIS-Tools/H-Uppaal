@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import com.jfoenix.controls.JFXRippler?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         styleClass="log-toolbar"
+         type="HBox"
+         fx:controller="dk.cs.aau.huppaal.controllers.LogTabController">
+    <BorderPane HBox.hgrow="ALWAYS">
+        <left>
+            <HBox style="-fx-padding: 8 8 8 8; -fx-border-width: 0.1; -fx-border-color: white; -fx-border-style: hidden solid hidden hidden;">
+                <VBox spacing="5">
+                    <JFXRippler fx:id="clearLogsButton" ripplerFill="white" styleClass="hoverbutton">
+                        <FontIcon iconLiteral="gmi-clear-all" iconColor="white" iconSize="22"/>
+                    </JFXRippler>
+                    <JFXRippler fx:id="wrapTextButton" ripplerFill="white" styleClass="hoverbutton">
+                        <FontIcon iconLiteral="gmi-wrap-text" iconColor="white" iconSize="22" fx:id="wrapTextButtonIcon"/>
+                    </JFXRippler>
+                    <JFXRippler fx:id="autoscrollLogButton" ripplerFill="white" styleClass="hoverbutton">
+                        <FontIcon iconLiteral="gmi-playlist-play" iconColor="white" iconSize="22" fx:id="autoscrollLogButtonIcon"/>
+                    </JFXRippler>
+                </VBox>
+            </HBox>
+        </left>
+        <center>
+            <StackPane fx:id="logAreaInsertionPoint" styleClass="body2-mono"/>
+        </center>
+    </BorderPane>
+</fx:root>

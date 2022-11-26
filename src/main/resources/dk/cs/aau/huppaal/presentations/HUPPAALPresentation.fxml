@@ -267,6 +267,15 @@
                StackPane.alignment="BOTTOM_CENTER"
                style="-fx-padding: 0 0 20 0">
         <JFXTabPane fx:id="tabPane" style="-fx-background-color: -grey-200;">
+            <Tab text="Information" fx:id="infoLogTab">
+                <LogTabPresentation fx:id="infoLog" textColor="#ffffff"/>
+            </Tab>
+            <Tab text="Warning" fx:id="warnLogTab">
+                <LogTabPresentation fx:id="warnLog" textColor="#fff59d"/>
+            </Tab>
+            <Tab text="Error" fx:id="errLogTab">
+                <LogTabPresentation fx:id="errLog" textColor="#ef9a9a"/>
+            </Tab>
 
             <Tab fx:id="backendErrorsTab" text="Backend Errors">
                 <ScrollPane fx:id="backendErrorsScrollPane"

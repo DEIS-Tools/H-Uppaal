@@ -28,14 +28,17 @@ public class SubComponent implements Serializable, Circular, Nearable {
     private final DoubleProperty y = new SimpleDoubleProperty(0d);
     private final DoubleProperty width = new SimpleDoubleProperty(200d);
     private final DoubleProperty height = new SimpleDoubleProperty(200d);
+    private final Component parent;
 
-    public SubComponent(final Component component) {
+    public SubComponent(final Component component, Component parent) {
         setComponent(component);
-        setIdentifier("S" + String.valueOf(hashCode()));
+        this.parent = parent;
+        setIdentifier("S" + hashCode());
     }
 
-    public SubComponent(final JsonObject object) {
+    public SubComponent(final JsonObject object, Component parent) {
         deserialize(object);
+        this.parent = parent;
     }
 
     public Component getComponent() {
@@ -155,6 +158,6 @@ public class SubComponent implements Serializable, Circular, Nearable {
 
     @Override
     public String generateNearString() {
-        return "Subcomponent " + getIdentifier();
+        return "[%s](subcomponent:%s/%s)".formatted(getIdentifier(), parent.getName(), getIdentifier());
     }
 }

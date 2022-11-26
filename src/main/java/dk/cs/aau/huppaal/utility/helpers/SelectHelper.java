@@ -1,10 +1,16 @@
 package dk.cs.aau.huppaal.utility.helpers;
 
+import com.hp.hpl.jena.shared.NotFoundException;
+import dk.cs.aau.huppaal.HUPPAAL;
+import dk.cs.aau.huppaal.abstractions.Component;
 import dk.cs.aau.huppaal.code_analysis.Nearable;
 import dk.cs.aau.huppaal.controllers.CanvasController;
+import dk.cs.aau.huppaal.logging.Log;
 import dk.cs.aau.huppaal.utility.colors.Color;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.util.UUID;
 
 public class SelectHelper {
 
@@ -70,6 +76,46 @@ public class SelectHelper {
 
     public static javafx.scene.paint.Color getBorderColor() {
         return getColor(SELECT_COLOR_INTENSITY_BORDER);
+    }
+
+    public static Component selectComponent(String componentId) throws NotFoundException {
+        var component = HUPPAAL.getProject().getComponents().stream().filter(c -> c.getName().equals(componentId)).findAny();
+        if(component.isEmpty())
+            throw new NotFoundException("No such component '%s'".formatted(componentId));
+        if(!CanvasController.getActiveComponent().equals(component.get())) {
+            SelectHelper.elementsToBeSelected = FXCollections.observableArrayList();
+            CanvasController.setActiveComponent(component.get());
+        }
+        SelectHelper.clearSelectedElements();
+        return component.get();
+    }
+
+    public static void selectLocation(Component parentComponent, String locationId) {
+        var location = parentComponent.getLocationsWithInitialAndFinal().stream().filter(l -> l.getId().equals(locationId)).findAny();
+        if(location.isEmpty())
+            throw new NotFoundException("No such location '%s' in component '%s'".formatted(locationId, parentComponent.getName()));
+        location.ifPresent(SelectHelper::select);
+    }
+
+    public static void selectSubComponent(Component parentComponent, String subcomponentId) {
+        var subcomponent = parentComponent.getSubComponents().stream().filter(c -> c.getIdentifier().equals(subcomponentId)).findAny();
+        if(subcomponent.isEmpty())
+            throw new NotFoundException("No such subcomponent '%s' in component '%s'".formatted(subcomponent, parentComponent.getName()));
+        subcomponent.ifPresent(SelectHelper::select);
+    }
+
+    public static void selectJork(Component parentComponent, String jorkId) {
+        var jork = parentComponent.getJorks().stream().filter(c -> c.getId().equals(jorkId)).findAny();
+        if(jork.isEmpty())
+            throw new NotFoundException("No such jork '%s' in component '%s'".formatted(jorkId, parentComponent.getName()));
+        jork.ifPresent(SelectHelper::select);
+    }
+
+    public static void selectEdge(Component parentComponent, String edgeId) {
+        var edge = parentComponent.getEdges().stream().filter(c -> c.getUuid().equals(UUID.fromString(edgeId))).findAny();
+        if(edge.isEmpty())
+            throw new NotFoundException("No such edge '%s' in component '%s'".formatted(edgeId, parentComponent.getName()));
+        edge.ifPresent(SelectHelper::select);
     }
 
     public interface Selectable {
