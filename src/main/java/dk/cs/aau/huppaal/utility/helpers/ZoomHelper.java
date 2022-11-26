@@ -16,14 +16,15 @@ public class ZoomHelper {
     }
 
     public static void zoom(double delta) {
-        var newScale = canvasPresentation.getScaleX();
-        newScale *= delta;
+        var newScale = canvasPresentation.getScaleX() * delta;
         if(newScale > 8) //Limit for zooming in
             return;
         if(newScale < 0.4) //Limit for zooming out
             return;
         canvasPresentation.setScaleX(newScale);
         canvasPresentation.setScaleY(newScale);
+        canvasPresentation.setTranslateX(canvasPresentation.getTranslateX() * delta);
+        canvasPresentation.setTranslateY(canvasPresentation.getTranslateY() * delta);
     }
 
     public static void zoomIn() {
