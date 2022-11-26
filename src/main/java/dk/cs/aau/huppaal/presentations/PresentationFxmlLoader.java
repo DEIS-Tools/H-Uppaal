@@ -1,4 +1,4 @@
-package dk.cs.aau.huppaal.presentations.util;
+package dk.cs.aau.huppaal.presentations;
 
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
@@ -6,7 +6,7 @@ import javafx.fxml.JavaFXBuilderFactory;
 
 public class PresentationFxmlLoader {
     public static <R> R load(String resource) {
-        return load("../" + resource, PresentationFxmlLoader.class);
+        return load(resource, PresentationFxmlLoader.class);
     }
     public static <T,R> R load(String resource, Class<T> clazz) {
         try {
@@ -21,7 +21,7 @@ public class PresentationFxmlLoader {
 
     public static <T,R> R loadSetRoot(String resource, T root) {
         try {
-            var url = PresentationFxmlLoader.class.getResource("../" + resource);
+            var url = root.getClass().getResource(resource);
             if(url == null)
                 throw new NullPointerException("Could not find resource: '%s'".formatted(resource));
             var fxmlLoader = new FXMLLoader();
@@ -37,7 +37,7 @@ public class PresentationFxmlLoader {
 
     public static <T,R> R loadSetRootGetElement(String resource, T root) {
         try {
-            var url = PresentationFxmlLoader.class.getResource("../" + resource);
+            var url = PresentationFxmlLoader.class.getResource(resource);
             if(url == null)
                 throw new NullPointerException("Could not find resource: '%s'".formatted(resource));
             var fxmlLoader = new FXMLLoader();

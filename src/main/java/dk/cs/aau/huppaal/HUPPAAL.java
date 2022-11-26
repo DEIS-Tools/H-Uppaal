@@ -11,7 +11,7 @@ import dk.cs.aau.huppaal.logging.Log;
 import dk.cs.aau.huppaal.presentations.BackgroundThreadPresentation;
 import dk.cs.aau.huppaal.presentations.HUPPAALPresentation;
 import dk.cs.aau.huppaal.presentations.UndoRedoHistoryPresentation;
-import dk.cs.aau.huppaal.presentations.util.PresentationFxmlLoader;
+import dk.cs.aau.huppaal.presentations.PresentationFxmlLoader;
 import dk.cs.aau.huppaal.utility.keyboard.Keybind;
 import dk.cs.aau.huppaal.utility.keyboard.KeyboardTracker;
 import com.google.common.io.Files;
