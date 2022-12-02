@@ -37,6 +37,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -101,9 +102,9 @@ public class HUPPAAL extends Application {
                 java.nio.file.Files.delete(p);
 
             // Save components
-            var gson = new GsonBuilder().setPrettyPrinting().create();
+            var gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
             for(var c : HUPPAAL.getProject().getComponents()) {
-                var writer = new FileWriter(String.format(projectDirectory.getValue() + File.separator + "%s.json", c.getName()));
+                var writer = new FileWriter(String.format(projectDirectory.getValue() + File.separator + "%s.json", c.getName()), StandardCharsets.UTF_8);
                 gson.toJson(c.serialize(), writer);
                 writer.close();
             }
@@ -111,7 +112,7 @@ public class HUPPAAL extends Application {
             // Save queries
             var queries = new JsonArray();
             HUPPAAL.getProject().getQueries().forEach(query -> queries.add(query.serialize()));
-            var writer = new FileWriter(projectDirectory.getValue() + File.separator + "Queries.json");
+            var writer = new FileWriter(projectDirectory.getValue() + File.separator + "Queries.json", StandardCharsets.UTF_8);
             gson.toJson(queries, writer);
             writer.close();
 
