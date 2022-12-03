@@ -151,6 +151,18 @@ public class HUPPAAL extends Application {
     }
 
     @Override
+    public void init() {
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            try {
+                Log.addError(t.getName(), e.getMessage());
+            } catch(Throwable throwable) {
+                throwable.printStackTrace();
+            }
+            e.printStackTrace();
+        });
+    }
+
+    @Override
     public void start(final Stage stage) throws Exception {
         // Load or create new project
         project = new Project();
