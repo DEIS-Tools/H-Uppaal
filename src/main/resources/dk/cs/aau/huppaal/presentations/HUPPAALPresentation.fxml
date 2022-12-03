@@ -226,6 +226,11 @@
                             <FontIcon iconLiteral="gmi-check" iconSize="24" fill="black"/>
                         </graphic>
                     </MenuItem>
+                    <MenuItem fx:id="menuBarViewSearch" text="Search...">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-search" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
                 </Menu>
 
                 <Menu text="Project">

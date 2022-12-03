@@ -1,6 +1,7 @@
 package dk.cs.aau.huppaal.presentations;
 
 import dk.cs.aau.huppaal.controllers.CanvasController;
+import dk.cs.aau.huppaal.logging.Log;
 import dk.cs.aau.huppaal.utility.UndoRedoStack;
 import dk.cs.aau.huppaal.utility.helpers.CanvasDragHelper;
 import dk.cs.aau.huppaal.utility.helpers.MouseTrackable;
@@ -71,6 +72,18 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
 
             */
             CanvasDragHelper.makeDraggable(this, mouseEvent -> mouseEvent.getButton().equals(MouseButton.SECONDARY));
+            setOnScroll(e -> {
+                var dx = getTranslateX() + e.getDeltaX();
+                var dy = getTranslateY() + e.getDeltaY();
+                if(e.isShiftDown()) { // shift enables you to scroll with one wheel to the side
+                    dx = getTranslateX() + e.getDeltaY();
+                    dy = getTranslateY() + e.getDeltaX();
+                }
+                setTranslateX(dx);
+                setTranslateY(dy);
+            });
+            // support trackpads
+            setOnZoom(e -> ZoomHelper.zoom(e.getZoomFactor()));
         } catch (final IOException ioe) {
             throw new IllegalStateException(ioe);
         }

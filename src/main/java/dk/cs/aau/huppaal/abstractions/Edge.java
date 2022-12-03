@@ -5,6 +5,7 @@ import dk.cs.aau.huppaal.controllers.ComponentController;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
 import dk.cs.aau.huppaal.presentations.JorkPresentation;
 import dk.cs.aau.huppaal.utility.colors.Color;
+import dk.cs.aau.huppaal.utility.helpers.ArrayUtils;
 import dk.cs.aau.huppaal.utility.helpers.Circular;
 import dk.cs.aau.huppaal.utility.serialize.Serializable;
 import com.google.gson.JsonArray;
@@ -576,8 +577,14 @@ public class Edge implements Serializable, Nearable {
         return "[%s](edge:%s/%s)".formatted(generateFromToString(), parent.getName(), uuid.toString());
     }
 
-    private String generateFromToString() {
+    public String generateFromToString() {
         return "%s -> %s".formatted(getSourceName(), getTargetName());
+    }
+
+    public String generatePeakyString() {
+        return "%s -> %s (%s) [%s]".formatted(getSourceName(), getTargetName(),
+                ArrayUtils.substringIgnoreLen(getGuard(), 0, 25),
+                ArrayUtils.substringIgnoreLen(getUpdate(), 0,25));
     }
 
     private String getSourceName() {

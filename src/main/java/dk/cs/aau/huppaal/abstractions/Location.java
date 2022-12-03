@@ -269,11 +269,9 @@ public class Location implements Circular, Serializable, Nearable, DropDownMenu.
     }
 
     public String getMostDescriptiveIdentifier() {
-        if(!Strings.isNullOrEmpty(getNickname())) {
-            return getNickname();
-        } else {
-            return getId();
-        }
+        if(!Strings.isNullOrEmpty(getNickname()))
+            return getNickname() + " ( "+getId()+" )";
+        return getId();
     }
 
     public Reachability getReachability() {

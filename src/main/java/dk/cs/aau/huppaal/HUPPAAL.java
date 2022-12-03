@@ -7,9 +7,11 @@ import dk.cs.aau.huppaal.backend.UPPAALDriverManager;
 import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.controllers.CanvasController;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
+import dk.cs.aau.huppaal.logging.Log;
 import dk.cs.aau.huppaal.presentations.BackgroundThreadPresentation;
 import dk.cs.aau.huppaal.presentations.HUPPAALPresentation;
 import dk.cs.aau.huppaal.presentations.UndoRedoHistoryPresentation;
+import dk.cs.aau.huppaal.presentations.PresentationFxmlLoader;
 import dk.cs.aau.huppaal.utility.keyboard.Keybind;
 import dk.cs.aau.huppaal.utility.keyboard.KeyboardTracker;
 import com.google.common.io.Files;
@@ -23,11 +25,14 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import jiconfont.icons.google_material_design_icons.GoogleMaterialDesignIcons;
 import jiconfont.javafx.IconFontFX;
 import org.apache.commons.io.FileUtils;
@@ -35,14 +40,12 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 
 public class HUPPAAL extends Application {
 
@@ -55,6 +58,9 @@ public class HUPPAAL extends Application {
     private static HUPPAALPresentation presentation;
     public static SimpleStringProperty projectDirectory = new SimpleStringProperty();
     private Stage debugStage;
+    public Stage searchStage;
+    public static Runnable toggleSearchModal;
+    private HBox searchBox;
 
     {
         try {
@@ -142,6 +148,18 @@ public class HUPPAAL extends Application {
     private void forceCreateFolder(final String directoryPath) throws IOException {
         final File directory = new File(directoryPath);
         FileUtils.forceMkdir(directory);
+    }
+
+    @Override
+    public void init() {
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            try {
+                Log.addError(t.getName(), e.getMessage());
+            } catch(Throwable throwable) {
+                throwable.printStackTrace();
+            }
+            e.printStackTrace();
+        });
     }
 
     @Override
@@ -239,6 +257,35 @@ public class HUPPAAL extends Application {
                 e.printStackTrace();
             }
         }));
+
+        toggleSearchModal = () -> {
+            try {
+                if(searchStage == null) {
+                    searchStage = new Stage();
+                    searchBox = new HBox();
+                    searchStage.initStyle(StageStyle.UNDECORATED);
+                    searchStage.setScene(new Scene(PresentationFxmlLoader.loadSetRootGetElement("ProjectSearchPresentation.fxml", searchBox),
+                            screen.getBounds().getWidth() * 0.4,
+                            screen.getBounds().getHeight() * 0.6));
+                    searchStage.initModality(Modality.WINDOW_MODAL);
+                    searchStage.initOwner(scene.getWindow());
+                    searchStage.addEventHandler(KeyEvent.KEY_PRESSED, (t) -> {
+                        if(t.getCode()==KeyCode.ESCAPE && searchStage.isShowing())
+                            searchStage.close();
+                    });
+                }
+                if(searchStage.isShowing())
+                    searchStage.close();
+                else {
+                    searchStage.show();
+                    searchBox.requestFocus();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                searchStage = null;
+                Log.addError(e.getMessage());
+            }
+        };
 
         stage.setOnCloseRequest(event -> {
             UPPAALDriverManager.getInstance().stopEngines();
