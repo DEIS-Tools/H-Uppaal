@@ -7,7 +7,7 @@
          xmlns="http://javafx.com/javafx/8.0.76-ea"
          type="HBox"
          fx:id="root"
-         fx:controller="dk.cs.aau.huppaal.controllers.SpotlightSearchController">
+         fx:controller="dk.cs.aau.huppaal.controllers.ProjectSearchController">
     <VBox HBox.hgrow="ALWAYS">
         <HBox style="-fx-padding: 10 10 5 10" spacing="10">
             <FontIcon iconLiteral="gmi-search" iconSize="22" iconColor="darkgray"/>

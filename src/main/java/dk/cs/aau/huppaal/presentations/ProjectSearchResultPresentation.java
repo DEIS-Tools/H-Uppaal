@@ -13,14 +13,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.Optional;
 
-
-public class SpotlightSearchResultPresentation extends HBox {
+public class ProjectSearchResultPresentation extends HBox {
     private Runnable clickEvent = () -> {};
     private Runnable onClickEffect = () -> {};
 
-    public SpotlightSearchResultPresentation(Component parent, Edge edge) {
+    public ProjectSearchResultPresentation(Component parent, Edge edge) {
         this("gmi-near-me", Color.GREEN.getColor(Color.Intensity.I800), edge.generatePeakyString());
         initializeContext(parent.getName());
         this.clickEvent = () -> {
@@ -29,7 +27,7 @@ public class SpotlightSearchResultPresentation extends HBox {
         };
     }
 
-    public SpotlightSearchResultPresentation(Component parent, Location location) {
+    public ProjectSearchResultPresentation(Component parent, Location location) {
         this("gmi-adjust", Color.PURPLE.getColor(Color.Intensity.I800), location.getMostDescriptiveIdentifier());
         initializeContext(parent.getName());
         this.clickEvent = () -> {
@@ -38,12 +36,12 @@ public class SpotlightSearchResultPresentation extends HBox {
         };
     }
 
-    public SpotlightSearchResultPresentation(Component component) {
+    public ProjectSearchResultPresentation(Component component) {
         this("gmi-branding-watermark", Color.BLUE.getColor(Color.Intensity.I800), component.getName());
         this.clickEvent = () -> SelectHelper.selectComponent(component.getName());
     }
 
-    private SpotlightSearchResultPresentation(String icon, javafx.scene.paint.Color iconColor, String name) {
+    private ProjectSearchResultPresentation(String icon, javafx.scene.paint.Color iconColor, String name) {
         initializeIcon(icon, iconColor);
         initializeName(name);
         initializeHover();
@@ -97,7 +95,7 @@ public class SpotlightSearchResultPresentation extends HBox {
         onClickEffect.run();
     }
 
-    public SpotlightSearchResultPresentation withClickEffect(Runnable r) {
+    public ProjectSearchResultPresentation withClickEffect(Runnable r) {
         onClickEffect = r;
         return this;
     }

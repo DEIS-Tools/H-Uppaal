@@ -252,7 +252,7 @@ public class HUPPAAL extends Application {
                     searchStage = new Stage();
                     searchBox = new HBox();
                     searchStage.initStyle(StageStyle.UNDECORATED);
-                    searchStage.setScene(new Scene(PresentationFxmlLoader.loadSetRootGetElement("SpotlightSearchPresentation.fxml", searchBox),
+                    searchStage.setScene(new Scene(PresentationFxmlLoader.loadSetRootGetElement("ProjectSearchPresentation.fxml", searchBox),
                             screen.getBounds().getWidth() * 0.4,
                             screen.getBounds().getHeight() * 0.6));
                     searchStage.initModality(Modality.WINDOW_MODAL);

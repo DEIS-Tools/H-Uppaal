@@ -5,7 +5,7 @@ import dk.cs.aau.huppaal.HUPPAAL;
 import dk.cs.aau.huppaal.abstractions.Component;
 import dk.cs.aau.huppaal.abstractions.Edge;
 import dk.cs.aau.huppaal.abstractions.Location;
-import dk.cs.aau.huppaal.presentations.SpotlightSearchResultPresentation;
+import dk.cs.aau.huppaal.presentations.ProjectSearchResultPresentation;
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.HBox;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
-public class SpotlightSearchController implements Initializable {
+public class ProjectSearchController implements Initializable {
     public HBox root;
     public JFXTextField searchTextField;
     public VBox resultsBox;
@@ -41,7 +41,7 @@ public class SpotlightSearchController implements Initializable {
     private void initializeSearchTextField() {
         searchTextField.textProperty().addListener((obs, oldValue, newValue) -> {
             int maxSearchSize = 100;
-            var newLabels = new ArrayList<SpotlightSearchResultPresentation>();
+            var newLabels = new ArrayList<ProjectSearchResultPresentation>();
             Pattern searchTerm;
             try {
                 searchTerm = Pattern.compile(newValue, Pattern.CASE_INSENSITIVE);
@@ -52,19 +52,19 @@ public class SpotlightSearchController implements Initializable {
             var components = getComponentNames(searchTerm);
             for(var c : components) {
                 if(newLabels.size() < maxSearchSize)
-                    newLabels.add(new SpotlightSearchResultPresentation(c).withClickEffect(this::closeStage));
+                    newLabels.add(new ProjectSearchResultPresentation(c).withClickEffect(this::closeStage));
             }
 
             var locations = getLocations(searchTerm);
             for (var l : locations) {
                 if(newLabels.size() < maxSearchSize)
-                    newLabels.add(new SpotlightSearchResultPresentation(l.getKey(), l.getValue()).withClickEffect(this::closeStage));
+                    newLabels.add(new ProjectSearchResultPresentation(l.getKey(), l.getValue()).withClickEffect(this::closeStage));
             }
 
             var edges = getEdges(searchTerm);
             for (var e : edges) {
                 if(newLabels.size() < maxSearchSize)
-                    newLabels.add(new SpotlightSearchResultPresentation(e.getKey(), e.getValue()).withClickEffect(this::closeStage));
+                    newLabels.add(new ProjectSearchResultPresentation(e.getKey(), e.getValue()).withClickEffect(this::closeStage));
             }
 
             Platform.runLater(() -> {
@@ -75,7 +75,7 @@ public class SpotlightSearchController implements Initializable {
 
         searchTextField.setOnAction(e -> {
             if(resultsBox.getChildren() != null && resultsBox.getChildren().size() > 0)
-                ((SpotlightSearchResultPresentation) resultsBox.getChildren().get(0)).click();
+                ((ProjectSearchResultPresentation) resultsBox.getChildren().get(0)).click();
         });
     }
 
