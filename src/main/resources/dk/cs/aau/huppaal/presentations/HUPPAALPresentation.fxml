@@ -43,7 +43,7 @@
                         <!-- UNDO -->
                         <JFXRippler fx:id="undo">
                             <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#undoClicked">
-                                <FontIcon iconLiteral="gmi-undo" iconSize="24" fill="white"/>
+                                <FontIcon styleClass="toolbar-icon" iconLiteral="gmi-undo" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
 
@@ -52,7 +52,7 @@
                         <!-- REDO -->
                         <JFXRippler fx:id="redo">
                             <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#redoClicked">
-                                <FontIcon iconLiteral="gmi-redo" iconSize="24" fill="white"/>
+                                <FontIcon styleClass="toolbar-icon" iconLiteral="gmi-redo" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
 
@@ -61,7 +61,7 @@
                         <!-- ZOOM IN -->
                         <JFXRippler fx:id="zoomIn">
                             <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#zoomInClicked">
-                                <FontIcon iconLiteral="gmi-zoom-in" iconSize="24" fill="white"/>
+                                <FontIcon styleClass="toolbar-icon" iconLiteral="gmi-zoom-in" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
 
@@ -70,7 +70,7 @@
                         <!-- ZOOM IN -->
                         <JFXRippler fx:id="zoomOut">
                             <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#zoomOutClicked">
-                                <FontIcon iconLiteral="gmi-zoom-out" iconSize="24" fill="white"/>
+                                <FontIcon styleClass="toolbar-icon" iconLiteral="gmi-zoom-out" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
 
@@ -79,7 +79,7 @@
                         <!-- ZOOM TO FIT -->
                         <JFXRippler fx:id="zoomToFit">
                             <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#zoomToFitClicked">
-                                <FontIcon iconLiteral="gmi-zoom-out-map" iconSize="24" fill="white"/>
+                                <FontIcon styleClass="toolbar-icon" iconLiteral="gmi-zoom-out-map" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
 
@@ -88,7 +88,7 @@
                         <!-- RESET ZOOM -->
                         <JFXRippler fx:id="resetZoom">
                             <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#resetZoomClicked">
-                                <FontIcon iconLiteral="gmi-crop-original" iconSize="24" fill="white"/>
+                                <FontIcon styleClass="toolbar-icon" iconLiteral="gmi-crop-original" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
 
@@ -97,7 +97,7 @@
                         <!-- DELETE SELECTED -->
                         <JFXRippler fx:id="deleteSelected">
                             <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#deleteSelectedClicked">
-                                <FontIcon iconLiteral="gmi-delete" iconSize="24" fill="white"/>
+                                <FontIcon styleClass="toolbar-icon" iconLiteral="gmi-delete" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
 
@@ -106,7 +106,7 @@
                         <!-- COLOR SELECTED -->
                         <JFXRippler fx:id="colorSelected">
                             <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton">
-                                <FontIcon iconLiteral="gmi-color-lens" iconSize="24" fill="white"/>
+                                <FontIcon styleClass="toolbar-icon" iconLiteral="gmi-color-lens" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
 
@@ -124,7 +124,7 @@
 
                         <JFXRippler fx:id="runConfigurationExecuteButton" onMouseClicked="#executeSelectedRunConfiguration">
                             <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton">
-                                <FontIcon fx:id="runConfigurationExecuteButtonIcon" iconLiteral="gmi-play-arrow" iconSize="24" fill="white"/>
+                                <FontIcon styleClass="toolbar-icon" fx:id="runConfigurationExecuteButtonIcon" iconLiteral="gmi-play-arrow" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
 
@@ -137,7 +137,7 @@
                         <!-- GENERATE UPPAAL MODEL FOR PROJECT -->
                         <JFXRippler fx:id="generateUppaalModel">
                             <StackPane minWidth="40" maxHeight="40" styleClass="huppaalButton" onMouseClicked="#generateUppaalModelClicked">
-                                <FontIcon iconLiteral="gmi-archive" iconSize="24" fill="white"/>
+                                <FontIcon styleClass="toolbar-icon" iconLiteral="gmi-archive" iconSize="24" fill="white"/>
                             </StackPane>
                         </JFXRippler>
                     </HBox>
@@ -229,6 +229,11 @@
                     <MenuItem fx:id="menuBarViewSearch" text="Search...">
                         <graphic>
                             <FontIcon iconLiteral="gmi-search" iconSize="24" fill="black"/>
+                        </graphic>
+                    </MenuItem>
+                    <MenuItem text="Editor Icon Size">
+                        <graphic>
+                            <Slider value="24" min="10" max="100" fx:id="editorIconSizeSlider"/>
                         </graphic>
                     </MenuItem>
                 </Menu>

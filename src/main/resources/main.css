@@ -306,6 +306,10 @@
 	-fx-text-fill: #ffa86c;
 	-fx-fill: #ffa86c;
 }
+
+.toolbar-icon {
+	/* just meant for easy lookup of toolbar icons (for scaling etc.) */
+}
 .tag-text-area .scroll-bar:vertical {
 	-fx-pref-width: 1;
 	-fx-opacity: 0;

@@ -33,6 +33,7 @@ import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -155,6 +156,7 @@ public class HUPPAALController implements Initializable {
     public LogTabPresentation infoLog, warnLog, errLog;
     public Tab infoLogTab, warnLogTab, errLogTab;
     public MenuItem menuBarViewSearch;
+    public Slider editorIconSizeSlider;
     private double tabPanePreviousY = 0;
     private boolean shouldISkipOpeningTheMessagesContainer = true;
 
@@ -274,6 +276,25 @@ public class HUPPAALController implements Initializable {
 
         initializeNotificationJumpTransition();
         initializeLogTabNotifications();
+        initializeToolbarIconSizeSlider();
+    }
+
+    private void initializeToolbarIconSizeSlider() {
+        var nodes = toolbar.lookupAll(".toolbar-icon")
+                .stream()
+                .filter(e -> e instanceof FontIcon)
+                .map(e -> (FontIcon)e)
+                .toList();
+        var toolbarMaxHeightIconSizeOffset = toolbar.getMaxHeight() - nodes.get(0).getIconSize();
+        var iconParentContainerSizeOffset = ((Region)nodes.get(0).getParent()).getMaxHeight() - nodes.get(0).getIconSize();
+        editorIconSizeSlider.valueProperty().addListener((e,o,n) -> {
+            for(var node : nodes) {
+                node.setIconSize(n.intValue());
+                ((Region)node.getParent()).setMaxHeight(n.doubleValue() + iconParentContainerSizeOffset);
+                ((Region)node.getParent()).setMinWidth(n.doubleValue() + iconParentContainerSizeOffset);
+                toolbar.setMaxHeight(n.doubleValue() + toolbarMaxHeightIconSizeOffset);
+            }
+        });
     }
 
     private void initializeGenerateUppaalButton() {
