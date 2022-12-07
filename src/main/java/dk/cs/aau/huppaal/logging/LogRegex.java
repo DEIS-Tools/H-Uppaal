@@ -21,8 +21,8 @@ public class LogRegex {
             sb.append(sep).append(quantifier.name().toLowerCase());
         }
         // For humans:
-        // [<display>](<quantifier>:<ref1>/<ref2>?)
-        var x = "\\[(?<display>[^]]+)]\\((?<quantifier>"+sb+"):(?<link>(?<component>[^/]+)/?(?<identifier>\\S+)?)\\)";
-        return Pattern.compile(x);
+        // [<display>](<quantifier>:<component>/<identifier>?)
+        var z = "\\[(?<display>[^]]+)]\\((?<quantifier>"+sb+"):(?<link>((?<component>[^/]+?)/)?(?<identifier>(\\([^)]*\\))|[^(]+?)+?)\\)";
+        return Pattern.compile(z);
     }
 }

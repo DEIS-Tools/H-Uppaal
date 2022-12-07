@@ -62,7 +62,7 @@ public class LogTabPresentation extends HBox {
                     var component = SelectHelper.selectComponent(regexComponent);
                     regexIdentifier.ifPresent(s -> SelectHelper.selectLocation(component, s));
                 }
-                case COMPONENT -> SelectHelper.selectComponent(regexComponent);
+                case COMPONENT -> SelectHelper.selectComponent(regexLink);
                 case SUBCOMPONENT -> {
                     if(regexIdentifier.isEmpty())
                         Log.addWarning(notValidLink);
