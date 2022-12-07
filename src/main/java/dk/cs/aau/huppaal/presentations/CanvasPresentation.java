@@ -58,29 +58,10 @@ public class CanvasPresentation extends Pane implements MouseTrackable {
 
             initializeGrid();
 
-            /*
-
-            // Center on the component
-            controller.component.heightProperty().addListener(observable -> {
-                setTranslateY(getHeight() / 2 - controller.component.getHeight() / 2);
-                setTranslateX(getWidth() / 2 - controller.component.getWidth() / 2);
-            });
-
-            // Move the component half a grid size to align it to the grid
-            controller.component.setLayoutX(GRID_SIZE / 2);
-            controller.component.setLayoutY(GRID_SIZE / 2);
-
-            */
             CanvasDragHelper.makeDraggable(this, mouseEvent -> mouseEvent.getButton().equals(MouseButton.SECONDARY));
             setOnScroll(e -> {
-                var dx = getTranslateX() + e.getDeltaX();
-                var dy = getTranslateY() + e.getDeltaY();
-                if(e.isShiftDown()) { // shift enables you to scroll with one wheel to the side
-                    dx = getTranslateX() + e.getDeltaY();
-                    dy = getTranslateY() + e.getDeltaX();
-                }
-                setTranslateX(dx);
-                setTranslateY(dy);
+                setTranslateX(getTranslateX() + e.getDeltaX());
+                setTranslateY(getTranslateY() + e.getDeltaY());
             });
             // support trackpads
             setOnZoom(e -> ZoomHelper.zoom(e.getZoomFactor()));
