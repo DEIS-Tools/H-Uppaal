@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import com.jfoenix.controls.JFXSpinner?>
+<?import javafx.scene.layout.Region?>
+<fx:root xmlns:fx="http://javafx.com/fxml/1"
+         xmlns="http://javafx.com/javafx/8.0.76-ea"
+         type="StackPane"
+         fx:id="root"
+         fx:controller="dk.cs.aau.huppaal.controllers.PreloaderController"
+         style="-fx-padding: 25 50 25 50">
+    <BorderPane>
+        <center>
+            <ImageView fx:id="logo"/>
+        </center>
+        <bottom>
+            <VBox>
+                <HBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane>
+                        <JFXSpinner radius="3"/>
+                    </StackPane>
+                    <Region minWidth="5"/>
+                    <StackPane>
+                        <Label fx:id="statusLabel" styleClass="sub-caption" text="waiting"/>
+                    </StackPane>
+                    <Region minWidth="5" HBox.hgrow="ALWAYS"/>
+                </HBox>
+                <HBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane>
+                        <Label fx:id="projectNameLabel" styleClass="sub-caption" textFill="grey" text="project-name"/>
+                    </StackPane>
+                    <Region minWidth="5" HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
+        </bottom>
+    </BorderPane>
+</fx:root>

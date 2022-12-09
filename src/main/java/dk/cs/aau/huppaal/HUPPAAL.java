@@ -1,5 +1,6 @@
 package dk.cs.aau.huppaal;
 
+import com.sun.javafx.application.LauncherImpl;
 import dk.cs.aau.huppaal.abstractions.Component;
 import dk.cs.aau.huppaal.abstractions.Project;
 import dk.cs.aau.huppaal.abstractions.Query;
@@ -8,11 +9,8 @@ import dk.cs.aau.huppaal.code_analysis.CodeAnalysis;
 import dk.cs.aau.huppaal.controllers.CanvasController;
 import dk.cs.aau.huppaal.controllers.HUPPAALController;
 import dk.cs.aau.huppaal.logging.Log;
-import dk.cs.aau.huppaal.presentations.BackgroundThreadPresentation;
 import dk.cs.aau.huppaal.presentations.HUPPAALPresentation;
-import dk.cs.aau.huppaal.presentations.UndoRedoHistoryPresentation;
 import dk.cs.aau.huppaal.presentations.PresentationFxmlLoader;
-import dk.cs.aau.huppaal.utility.keyboard.Keybind;
 import dk.cs.aau.huppaal.utility.keyboard.KeyboardTracker;
 import com.google.common.io.Files;
 import com.google.gson.*;
@@ -24,10 +22,8 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
@@ -57,21 +53,19 @@ public class HUPPAAL extends Application {
     private static Project project;
     private static HUPPAALPresentation presentation;
     public static SimpleStringProperty projectDirectory = new SimpleStringProperty();
-    private Stage debugStage;
+    public static Stage debugStage;
     public Stage searchStage;
     public static Runnable toggleSearchModal;
     private HBox searchBox;
+    private Scene scene;
 
-    {
+    private static void initializeFileSystem() {
         try {
             preferences = Preferences.userRoot().node("HUPPAAL");
-            final File dir = new File(System.getProperty("user.home") + File.separator + "H-UPPAAL");
-            final String rootDirectory = dir.getPath() + File.separator;
-            if (!dir.exists()) {
-                if (!dir.mkdir()) {
-                    throw new IOException("Could not create project directory "+dir);
-                }
-            }
+            var dir = new File(System.getProperty("user.home") + File.separator + "H-UPPAAL");
+            var rootDirectory = dir.getPath() + File.separator;
+            if (!dir.exists() && !dir.mkdir())
+                throw new IOException("Could not create project directory "+dir);
             projectDirectory.set(preferences.get("latestProject", rootDirectory + "projects" + File.separator + "project"));
             projectDirectory.addListener((observable, oldValue, newValue) -> preferences.put("latestProject", newValue));
             temporaryProjectDirectory = rootDirectory + "projects" + File.separator + "temp";
@@ -80,14 +74,16 @@ public class HUPPAAL extends Application {
             forceCreateFolder(projectDirectory.getValue());
             forceCreateFolder(serverDirectory);
             forceCreateFolder(debugDirectory);
-        } catch (final IOException e) {
-            System.out.println("Could not create project directory!");
+        } catch (Exception e) {
+            System.out.println("Unable to initialize project files: " + e.getMessage());
+            e.printStackTrace();
             System.exit(2);
         }
     }
 
     public static void main(final String[] args) {
-        launch(HUPPAAL.class, args);
+        initializeFileSystem();
+        LauncherImpl.launchApplication(HUPPAAL.class, HUPPAALPreloader.class, args);
     }
 
     public static Project getProject() {
@@ -145,13 +141,36 @@ public class HUPPAAL extends Application {
         return presentation.toggleQueryPane();
     }
 
-    private void forceCreateFolder(final String directoryPath) throws IOException {
-        final File directory = new File(directoryPath);
-        FileUtils.forceMkdir(directory);
+    private static void forceCreateFolder(final String directoryPath) throws IOException {
+        FileUtils.forceMkdir(new File(directoryPath));
     }
 
     @Override
-    public void init() {
+    public void init() throws Exception {
+        notifyPreloader(new HUPPAALPreloader.Notification(HUPPAALPreloader.LoadStage.LOADING_PROJECT));
+        initDefaultExceptionHandler();
+        project = new Project();
+        loadPresentations();
+        initializeProjectFolder();
+        notifyPreloader(new HUPPAALPreloader.Notification(HUPPAALPreloader.LoadStage.INITALIZE_JFX));
+        initializeProjectSearchModal();
+        initScene();
+        initFonts();
+        initReachabilityService();
+        notifyPreloader(new HUPPAALPreloader.Notification(HUPPAALPreloader.LoadStage.AFTER_INIT));
+    }
+
+    private void initFonts() {
+        // Load the fonts required for the project
+        IconFontFX.register(GoogleMaterialDesignIcons.getIconFont());
+        loadFonts();
+    }
+
+    private void initReachabilityService() {
+        HUPPAALController.reachabilityServiceEnabled = true;
+    }
+
+    private void initDefaultExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
             try {
                 Log.addError(t.getName(), e.getMessage());
@@ -162,33 +181,16 @@ public class HUPPAAL extends Application {
         });
     }
 
-    @Override
-    public void start(final Stage stage) throws Exception {
-        // Load or create new project
-        project = new Project();
+    private void loadPresentations() {
+        presentation = new HUPPAALPresentation();
+    }
 
-        // Set the title and icon for the application
-        stage.setTitle("H-UPPAAL");
-        stage.getIcons().add(new Image("uppaal.ico"));
-
-        // Load the fonts required for the project
-        IconFontFX.register(GoogleMaterialDesignIcons.getIconFont());
-        loadFonts();
-
-        // Remove the classic decoration
-        // kyrke - 2020-04-17: Disabled due to bug https://bugs.openjdk.java.net/browse/JDK-8154847
-        //stage.initStyle(StageStyle.UNIFIED);
-
-        // Make the view used for the application
-        final HUPPAALPresentation huppaal = new HUPPAALPresentation();
-        presentation = huppaal;
-
+    private void initScene() {
         // Make the scene that we will use, and set its size to 80% of the primary screen
-        final Screen screen = Screen.getPrimary();
-        final Scene scene = new Scene(huppaal, screen.getVisualBounds().getWidth() * 0.8, screen.getVisualBounds().getHeight() * 0.8);
-        stage.setScene(scene);
+        var screenBounds = Screen.getPrimary().getVisualBounds();
+        scene = new Scene(presentation, screenBounds.getWidth() * 0.8, screenBounds.getHeight() * 0.8);
 
-        // Load all .css files used todo: these should be loaded in the view classes (?)
+        // Load all .css files used
         scene.getStylesheets().add("main.css");
         scene.getStylesheets().add("colors.css");
         scene.getStylesheets().add("model_canvas.css");
@@ -201,72 +203,20 @@ public class HUPPAAL extends Application {
 
         // Let our keyboard tracker handle all key presses
         scene.setOnKeyPressed(KeyboardTracker.handleKeyPress);
+    }
 
-        // Set the icon for the application
-        stage.getIcons().addAll(
-                new Image(getClass().getResource("ic_launcher/mipmap-hdpi/ic_launcher.png").toExternalForm()),
-                new Image(getClass().getResource("ic_launcher/mipmap-mdpi/ic_launcher.png").toExternalForm()),
-                new Image(getClass().getResource("ic_launcher/mipmap-xhdpi/ic_launcher.png").toExternalForm()),
-                new Image(getClass().getResource("ic_launcher/mipmap-xxhdpi/ic_launcher.png").toExternalForm()),
-                new Image(getClass().getResource("ic_launcher/mipmap-xxxhdpi/ic_launcher.png").toExternalForm())
-        );
-
-        initializeProjectFolder();
-
-        // We're now ready! Let the curtains fall!
-        stage.show();
-
-        HUPPAALController.reachabilityServiceEnabled = true;
-
-        // Register a key-bind for showing debug-information
-        KeyboardTracker.registerKeybind("DEBUG", new Keybind(new KeyCodeCombination(KeyCode.F12), () -> {
-            // Toggle the debug mode for the debug class (will update misc. debug variables which presentations bind to)
-            Debug.debugModeEnabled.set(!Debug.debugModeEnabled.get());
-
-            if (debugStage != null) {
-                debugStage.close();
-                debugStage = null;
-                return;
-            }
-
-            try {
-                final UndoRedoHistoryPresentation undoRedoHistoryPresentation = new UndoRedoHistoryPresentation();
-                undoRedoHistoryPresentation.setMinWidth(100);
-
-                final BackgroundThreadPresentation backgroundThreadPresentation = new BackgroundThreadPresentation();
-                backgroundThreadPresentation.setMinWidth(100);
-
-                final HBox root = new HBox(undoRedoHistoryPresentation, backgroundThreadPresentation);
-                root.setStyle("-fx-background-color: brown;");
-                HBox.setHgrow(undoRedoHistoryPresentation, Priority.ALWAYS);
-                HBox.setHgrow(backgroundThreadPresentation, Priority.ALWAYS);
-
-
-                debugStage = new Stage();
-                debugStage.setScene(new Scene(root));
-
-                debugStage.getScene().getStylesheets().add("main.css");
-                debugStage.getScene().getStylesheets().add("colors.css");
-
-                debugStage.setWidth(screen.getVisualBounds().getWidth() * 0.2);
-                debugStage.setHeight(screen.getVisualBounds().getWidth() * 0.3);
-
-                debugStage.show();
-                //stage.requestFocus();
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
-        }));
-
+    private void initializeProjectSearchModal() {
         toggleSearchModal = () -> {
             try {
                 if(searchStage == null) {
+                    var screenBounds = Screen.getPrimary().getBounds();
+
                     searchStage = new Stage();
                     searchBox = new HBox();
                     searchStage.initStyle(StageStyle.UNDECORATED);
                     searchStage.setScene(new Scene(PresentationFxmlLoader.loadSetRootGetElement("ProjectSearchPresentation.fxml", searchBox),
-                            screen.getBounds().getWidth() * 0.4,
-                            screen.getBounds().getHeight() * 0.6));
+                            screenBounds.getWidth() * 0.4,
+                            screenBounds.getHeight() * 0.6));
                     searchStage.initModality(Modality.WINDOW_MODAL);
                     searchStage.initOwner(scene.getWindow());
                     searchStage.addEventHandler(KeyEvent.KEY_PRESSED, (t) -> {
@@ -286,13 +236,6 @@ public class HUPPAAL extends Application {
                 Log.addError(e.getMessage());
             }
         };
-
-        stage.setOnCloseRequest(event -> {
-            UPPAALDriverManager.getInstance().stopEngines();
-
-            Platform.exit();
-            System.exit(0);
-        });
     }
 
     public static void initializeProjectFolder() throws IOException {
@@ -318,31 +261,46 @@ public class HUPPAAL extends Application {
             deserializeProject(directory);
             CodeAnalysis.enable();
 
-            // Generate all component presentations by making them the active component in the view one by one
-            Component initialShownComponent = null;
-            for (final Component component : HUPPAAL.getProject().getComponents()) {
-                // The first component should be shown if there is no main
-                if (initialShownComponent == null) {
-                    initialShownComponent = component;
-                }
-
-                // If the component is the main show that one
-                if (component.isIsMain()) {
-                    initialShownComponent = component;
-                }
-
-                CanvasController.setActiveComponent(component);
-            }
-
-            // If we found a component (preferably main) set that as active
-            if (initialShownComponent != null) {
-                CanvasController.setActiveComponent(initialShownComponent);
-            }
-
             serializationDone = true;
         }catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void start(final Stage stage) throws Exception {
+        notifyPreloader(new HUPPAALPreloader.Notification(HUPPAALPreloader.LoadStage.START_JFX));
+        initializeStage(stage);
+        stage.show();
+        notifyPreloader(new HUPPAALPreloader.Notification(HUPPAALPreloader.LoadStage.AFTER_SHOW));
+        setMainAsActiveComponent();
+        notifyPreloader(new HUPPAALPreloader.Notification(HUPPAALPreloader.LoadStage.FINISHED));
+    }
+
+    private void initializeStage(Stage stage) {
+        // kyrke - 2020-04-17: Disabled due to bug https://bugs.openjdk.java.net/browse/JDK-8154847
+        //stage.initStyle(StageStyle.UNIFIED);
+        stage.setTitle("H-UPPAAL");
+        stage.getIcons().add(new Image("uppaal.ico"));
+        stage.getIcons().addAll(
+                new Image(getClass().getResource("ic_launcher/mipmap-hdpi/ic_launcher.png").toExternalForm()),
+                new Image(getClass().getResource("ic_launcher/mipmap-mdpi/ic_launcher.png").toExternalForm()),
+                new Image(getClass().getResource("ic_launcher/mipmap-xhdpi/ic_launcher.png").toExternalForm()),
+                new Image(getClass().getResource("ic_launcher/mipmap-xxhdpi/ic_launcher.png").toExternalForm()),
+                new Image(getClass().getResource("ic_launcher/mipmap-xxxhdpi/ic_launcher.png").toExternalForm())
+        );
+        stage.setOnCloseRequest(event -> {
+            UPPAALDriverManager.getInstance().stopEngines();
+            Platform.exit();
+            System.exit(0);
+        });
+        stage.setScene(scene);
+    }
+
+    public static void setMainAsActiveComponent() {
+        for (var component : HUPPAAL.getProject().getComponents())
+            if (component.isIsMain())
+                CanvasController.setActiveComponent(component);
     }
 
     public static void uppaalDriverUpdated(){
