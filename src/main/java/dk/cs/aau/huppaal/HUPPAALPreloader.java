@@ -40,9 +40,8 @@ public class HUPPAALPreloader extends Preloader {
 
     @Override
     public void handleApplicationNotification(PreloaderNotification info) {
-        if(info instanceof Notification ninfo) {
-            System.out.println(ninfo.getStage().name());
-            switch (ninfo.getStage()) {
+        if(info instanceof Notification notificationInfo) {
+            switch (notificationInfo.getStage()) {
                 case LOADING_PROJECT -> presentation.getController().statusLabel.setText("Loading Project...");
                 case INITALIZE_JFX -> presentation.getController().statusLabel.setText("Initializing JFX...");
                 case AFTER_INIT -> presentation.getController().statusLabel.setText("Finished init...");
