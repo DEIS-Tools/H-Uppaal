@@ -218,45 +218,7 @@ public class HUPPAALController implements Initializable {
         KeyboardTracker.registerKeybind(KeyboardTracker.DELETE_SELECTED, new Keybind(new KeyCodeCombination(KeyCode.DELETE), this::deleteSelectedClicked));
 
         // Register a key-bind for showing debug-information
-        KeyboardTracker.registerKeybind("DEBUG", new Keybind(new KeyCodeCombination(KeyCode.F12), () -> {
-            // Toggle the debug mode for the debug class (will update misc. debug variables which presentations bind to)
-            Debug.debugModeEnabled.set(!Debug.debugModeEnabled.get());
-
-            if (HUPPAAL.debugStage != null) {
-                HUPPAAL.debugStage.close();
-                HUPPAAL.debugStage = null;
-                return;
-            }
-
-            try {
-                final UndoRedoHistoryPresentation undoRedoHistoryPresentation = new UndoRedoHistoryPresentation();
-                undoRedoHistoryPresentation.setMinWidth(100);
-
-                final BackgroundThreadPresentation backgroundThreadPresentation = new BackgroundThreadPresentation();
-                backgroundThreadPresentation.setMinWidth(100);
-
-                final HBox root = new HBox(undoRedoHistoryPresentation, backgroundThreadPresentation);
-                root.setStyle("-fx-background-color: brown;");
-                HBox.setHgrow(undoRedoHistoryPresentation, Priority.ALWAYS);
-                HBox.setHgrow(backgroundThreadPresentation, Priority.ALWAYS);
-
-
-                HUPPAAL.debugStage = new Stage();
-                HUPPAAL.debugStage.setScene(new Scene(root));
-
-                HUPPAAL.debugStage.getScene().getStylesheets().add("main.css");
-                HUPPAAL.debugStage.getScene().getStylesheets().add("colors.css");
-
-                var vb = Screen.getPrimary().getVisualBounds();
-                HUPPAAL.debugStage.setWidth(vb.getWidth() * 0.2);
-                HUPPAAL.debugStage.setHeight(vb.getWidth() * 0.3);
-
-                HUPPAAL.debugStage.show();
-                //stage.requestFocus();
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
-        }));
+        KeyboardTracker.registerKeybind("DEBUG", new Keybind(new KeyCodeCombination(KeyCode.F12), this::toggleDebugWindow));
 
         // Keybinds for coloring the selected elements
         EnabledColor.enabledColors.forEach(enabledColor -> {
@@ -996,6 +958,46 @@ public class HUPPAALController implements Initializable {
         } finally {
             runConfigurationExecuteButtonIcon.setIconLiteral("gmi-play-arrow");
             runConfigurationExecuteButtonIcon.setIconColor(javafx.scene.paint.Color.WHITE);
+        }
+    }
+
+    private void toggleDebugWindow() {
+        // Toggle the debug mode for the debug class (will update misc. debug variables which presentations bind to)
+        Debug.debugModeEnabled.set(!Debug.debugModeEnabled.get());
+
+        if (HUPPAAL.debugStage != null) {
+            HUPPAAL.debugStage.close();
+            HUPPAAL.debugStage = null;
+            return;
+        }
+
+        try {
+            final UndoRedoHistoryPresentation undoRedoHistoryPresentation = new UndoRedoHistoryPresentation();
+            undoRedoHistoryPresentation.setMinWidth(100);
+
+            final BackgroundThreadPresentation backgroundThreadPresentation = new BackgroundThreadPresentation();
+            backgroundThreadPresentation.setMinWidth(100);
+
+            final HBox root = new HBox(undoRedoHistoryPresentation, backgroundThreadPresentation);
+            root.setStyle("-fx-background-color: brown;");
+            HBox.setHgrow(undoRedoHistoryPresentation, Priority.ALWAYS);
+            HBox.setHgrow(backgroundThreadPresentation, Priority.ALWAYS);
+
+
+            HUPPAAL.debugStage = new Stage();
+            HUPPAAL.debugStage.setScene(new Scene(root));
+
+            HUPPAAL.debugStage.getScene().getStylesheets().add("main.css");
+            HUPPAAL.debugStage.getScene().getStylesheets().add("colors.css");
+
+            var vb = Screen.getPrimary().getVisualBounds();
+            HUPPAAL.debugStage.setWidth(vb.getWidth() * 0.2);
+            HUPPAAL.debugStage.setHeight(vb.getWidth() * 0.3);
+
+            HUPPAAL.debugStage.show();
+            //stage.requestFocus();
+        } catch (final Exception e) {
+            e.printStackTrace();
         }
     }
 
