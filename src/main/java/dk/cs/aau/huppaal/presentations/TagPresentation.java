@@ -18,6 +18,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.LineTo;
@@ -42,6 +43,9 @@ public class TagPresentation extends StackPane {
     private double dragOffsetX, dragOffsetY;
     private boolean wasDragged;
     private boolean hadInitialFocus = false;
+    private Path shape;
+    private JFXTextArea text;
+    private Label label;
 
     private static double TAG_HEIGHT = 1.6 * GRID_SIZE;
 
@@ -54,6 +58,7 @@ public class TagPresentation extends StackPane {
             fxmlLoader.setRoot(this);
             fxmlLoader.load(location.openStream());
 
+            lookupJfxThings();
             initializeShape();
             initializeLabel();
             initializeMouseTransparency();
@@ -61,6 +66,12 @@ public class TagPresentation extends StackPane {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private void lookupJfxThings() {
+        shape = (Path) lookup("#shape");
+        text = (JFXTextArea) lookup("#textArea");
+        label = (Label) lookup("#label");
     }
 
     private void initializeTextFocusHandler() {
@@ -79,20 +90,16 @@ public class TagPresentation extends StackPane {
     }
 
     private void initializeTextAid() {
-        var textField = (JFXTextArea) lookup("#textArea");
-
-        textField.textProperty().addListener((obs, oldText, newText) -> {
+        text.textProperty().addListener((obs, oldText, newText) -> {
             if (newText.contains(" ")) {
                 final String updatedString = newText.replace(" ", "_");
-                textField.setText(updatedString);
+                text.setText(updatedString);
             }
         });
     }
 
     private void initializeLabel() {
-        var label = (Label) lookup("#label");
-        var text = (JFXTextArea) lookup("#textArea");
-        var shape = (Path) lookup("#shape");
+        text.setWrapText(false);
         var insets = new Insets(0,2,0,2);
         text.setPadding(insets);
         label.setPadding(insets);
@@ -101,13 +108,11 @@ public class TagPresentation extends StackPane {
             var newHeight = Math.max(newBounds.getHeight(), TAG_HEIGHT);
             var resX = GRID_SIZE * 2 - (newWidth % (GRID_SIZE * 2));
             var resY = GRID_SIZE * 2 - (newHeight % (GRID_SIZE * 2));
-            newWidth += resX;
-            newHeight += resY;
+            newWidth += resX + (GRID_SIZE * 0.1);
+            newHeight += resY + (GRID_SIZE * 0.1);
 
-            text.setMinWidth(newWidth);
             text.setPrefWidth(newWidth);
-            text.setMinHeight(TAG_HEIGHT);
-            text.setPrefHeight(TAG_HEIGHT);
+            text.setPrefHeight(newHeight);
 
             l2.setX(newWidth);
             l3.setX(newWidth);
@@ -166,7 +171,6 @@ public class TagPresentation extends StackPane {
     private void initializeShape() {
         var width = 5000;
         var height = 5000;
-        var shape = (Path) lookup("#shape");
         var start = new MoveTo(0, 0);
 
         l2 = new LineTo(width, 0);

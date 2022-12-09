@@ -306,3 +306,11 @@
 	-fx-text-fill: #ffa86c;
 	-fx-fill: #ffa86c;
 }
+.tag-text-area .scroll-bar:vertical {
+	-fx-pref-width: 1;
+	-fx-opacity: 0;
+}
+.tag-text-area .scroll-bar:horizontal {
+	-fx-pref-height: 1;
+	-fx-opacity: 0;
+}
