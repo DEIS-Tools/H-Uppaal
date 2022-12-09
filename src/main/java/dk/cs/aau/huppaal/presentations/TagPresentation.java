@@ -113,7 +113,6 @@ public class TagPresentation extends StackPane {
 
             text.setPrefWidth(newWidth);
             text.setPrefHeight(newHeight);
-            //System.out.printf("%f x %f (%f x %f)%n", newWidth, newHeight, newBounds.getWidth(), newBounds.getHeight());
 
             l2.setX(newWidth);
             l3.setX(newWidth);
